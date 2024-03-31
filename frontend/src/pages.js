@@ -1,6 +1,5 @@
 import VueRouter from 'vue-router'
 import prefRoutes from '@config/user-preferences/pref-routes'
-import wizardRoutes from '@src/views/printer-wizard/wizard-routes'
 
 import NewOctoPrintTunnelPage from '@src/views/NewOctoPrintTunnelPage.vue'
 import OctoPrintTunnelPage from '@src/views/OctoPrintTunnelPage.vue'
@@ -14,6 +13,7 @@ import PrinterListPage from '@src/views/PrinterListPage.vue'
 import SharedPrinterPage from '@src/views/SharedPrinterPage.vue'
 import PrinterSettingsPage from '@src/views/PrinterSettingsPage.vue'
 import PrinterWizardPage from '@src/views/printer-wizard/PrinterWizardPage.vue'
+import PlatformSelectionPage from '@src/views/printer-wizard/PlatformSelectionPage.vue'
 import PrinterControlPage from '@src/views/PrinterControlPage.vue'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
@@ -44,14 +44,17 @@ const router = new VueRouter({
       path: '/user_preferences',
       component: UserPreferencesPage,
     },
+    {
+      path: '/printers/wizard/',
+      component: PlatformSelectionPage,
+    },
+    {
+      path: '/printers/wizard/link/:targetPlatform/',
+      component: PrinterWizardPage,
+    },
     ...Object.values(prefRoutes).map((route) => ({
       path: route,
       component: UserPreferencesPage,
-    })),
-
-    ...Object.values(wizardRoutes).map((route) => ({
-      path: route,
-      component: PrinterWizardPage,
     })),
   ],
 })

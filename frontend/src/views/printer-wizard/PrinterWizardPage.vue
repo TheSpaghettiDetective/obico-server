@@ -80,7 +80,6 @@
               </div>
 
               <div v-else>
-                <div v-if="$route.path === routes.printerWizardSetup">
                   <form-wizard color="var(--color-primary)" step-size="sm">
                     <h3 slot="title">
                       {{ title }}
@@ -94,7 +93,7 @@
                               <li>{{ $t("SSH to the Raspberry Pi your Klipper runs on.") }}</li>
                               <li>
                                 <div>{{ $t("Run:") }}</div>
-                                <pre class="mt-2">
+<pre class="mt-2">
 cd ~
 git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
 cd moonraker-obico
@@ -376,32 +375,6 @@ cd moonraker-obico
                       </i18next>
                     </div>
                   </div>
-                </div>
-                <div v-else class="container">
-                  <div class="row">
-                    <h3 class="col-sm-12 text-center p-3">{{ $t("Which platform are you using?") }}</h3>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-12 col-lg-6 p-4">
-                      <div class="wizard-card" @click="setTargetPlatform('octoprint')">
-                        <img :src="require('@static/img/octoprint_logo.png')" />
-                        <h3 class="mt-4">OctoPrint</h3>
-                        <div>{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</div>
-                      </div>
-                    </div>
-                    <div class="col-sm-12 col-lg-6 p-4">
-                      <div class="wizard-card" @click="setTargetPlatform('moonraker')">
-                        <div>
-                          <img :src="require('@static/img/klipper_logo.jpg')" />
-                          <img :src="require('@static/img/mainsail_logo.png')" />
-                          <img :src="require('@static/img/fluidd_logo.png')" />
-                        </div>
-                        <h3 class="mt-4">Klipper</h3>
-                        <h5>{{ $t("with Mainsail/Fluidd/Moonraker") }}</h5>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </b-col>
@@ -416,7 +389,6 @@ import axios from 'axios'
 import moment from 'moment'
 import urls from '@config/server-urls'
 import { onPrinterLinked } from '@config/event-handler'
-import routes from '@src/views/printer-wizard/wizard-routes'
 import { WizardButton, FormWizard, TabContent } from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.
@@ -467,7 +439,6 @@ export default {
       obicoDiscoveryPopup: null,
       apiCallIntervalId: null,
       targetPlatform: null,
-      routes,
     }
   },
   computed: {
@@ -501,10 +472,10 @@ export default {
       return new URLSearchParams(window.location.search).get('redirectToTunnelCreation')
     },
     targetOctoPrint() {
-      return this.targetPlatform === 'octoprint'
+      return this.$route.params.targetPlatform === 'octoprint'
     },
     targetMoonraker() {
-      return this.targetPlatform === 'moonraker'
+      return this.$route.params.targetPlatform === 'moonraker'
     },
   },
   created() {
@@ -513,11 +484,6 @@ export default {
       this.discoveryEnabled = false
     }
     this.getVerificationCode()
-
-    // Start from platform selection after page refresh
-    if (this.$route.path !== routes.printerWizard) {
-      this.$router.push(routes.printerWizard + `?${window.location.search}`)
-    }
   },
   methods: {
     oneTimePasscodeVerifyClicked() {
@@ -536,10 +502,6 @@ export default {
         .catch((error) => {
           this.oneTimePasscodeResult = 'failed'
         })
-    },
-    setTargetPlatform(platfrom) {
-      this.targetPlatform = platfrom
-      this.$router.push(routes.printerWizardSetup + `?${window.location.search}`)
     },
     setSavingStatus(propName, status) {
       if (status) {
@@ -768,24 +730,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-
-.wizard-card
-  background-color: var(--color-surface-primary)
-  border-radius: var(--border-radius-lg)
-  padding: 1em
-  display: flex
-  flex-direction: column
-  align-items: center
-  min-height: 24em
-  justify-content: center
-  text-align: center
-  &:hover
-    cursor: pointer
-    color: var(--color-primary)
-    background-color: var(--color-hover)
-.wizard-card img
-  height: 3em
-  margin: 1em
 
 .wizard-btn
   border-radius: 300px

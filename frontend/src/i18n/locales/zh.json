@@ -111,6 +111,7 @@
   "Adjust the speed of the cooling fan by setting a percentage value between 0 and 100. The default value is usually 100, which means the fan will run at full speed. Lowering the fan speed can reduce noise and save energy, but may also affect print quality if the printer gets too hot.": "通过设置0到100之间的百分比值来调整冷却风扇的速度。默认值通常为100，这意味着风扇将以全速运行。降低风扇速度可以减少噪音并节省能源，但如果打印机过热，也可能影响打印质量。",
   "Adjust the speed of your 3D printer by changing the speed of all movement commands by a specified factor. The default value is 100%, meaning that the printer will move at its standard speed. Lowering the print speed factor will slow down your print, while increasing it will speed it up. Value of 200% will double the speed.": "通过按指定因素更改所有移动命令的速度来调整3D打印机的速度。默认值为100%，意味着打印机将以其标准速度移动。降低打印速度因子将减慢打印速度，增加则会加快速度。200%的值将使速度加倍。",
   "Flow rate is the speed at which the printer extrudes plastic. If the flow rate is too high, the printer may extrude too much plastic and create blobs or stringing, while too low flow rate may result in weak and brittle prints. Adjusting the flow rate can help achieve the optimal balance between speed and quality. The default value is 100%.": "流速是打印机挤出塑料的速度。如果流速过高，打印机可能会挤出过多的塑料，造成滴落或拉丝现象；而流速过低可能导致打印物脆弱易断。调整流速可以帮助在速度和质量之间达到最佳平衡。默认值为100%。",
+  "No cost for three months. Plan renews after expiration. Cancel anytime.": "三个月不用花钱。 计划到期后续订。 随时取消。",
   "Printers": "打印机",
   "Print History": "打印历史",
   "G-Codes": "G-代码",

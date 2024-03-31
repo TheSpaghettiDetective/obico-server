@@ -255,6 +255,13 @@
                 {{$t("Flow rate is the speed at which the printer extrudes plastic. If the flow rate is too high, the printer may extrude too much plastic and create blobs or stringing, while too low flow rate may result in weak and brittle prints. Adjusting the flow rate can help achieve the optimal balance between speed and quality. The default value is 100%.")}}
               </p>
             </template>
+
+            <!-- coupon-entered-automatically -->
+            <template v-if="id === 'coupon-entered-automatically'">
+              <div>
+                <p>{{ $t('No cost for three months. Plan renews after expiration. Cancel anytime.') }}</p>
+              </div>
+            </template>
           </div>
         </div>
       </transition>

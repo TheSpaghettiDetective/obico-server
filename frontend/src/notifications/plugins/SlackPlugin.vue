@@ -26,7 +26,7 @@
           :src="require('@static/img/notification-guides/slack/slack_setup1.png')"
         />
         <br /><br />
-        <p>{{ $t("2. There is no 2. You are all set. It's this simple. :)") }}</p>
+        <p>{{ $t("2. There is no 2. You are all set. It's this simple. 😀") }}</p>
       </div>
       <div v-else>
         <p class="lead">{{ $t('Click the button below to add the {brandName} Slack App into your workspace:',{brandName:$syndicateText.brandName}) }}</p>

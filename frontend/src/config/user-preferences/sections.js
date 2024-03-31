@@ -1,4 +1,4 @@
-import routes from '@config/user-preferences/routes'
+import routes from '@config/user-preferences/pref-routes'
 import notificationPlugins from '@src/notifications/plugins'
 import { inMobileWebView } from '@src/lib/page-context'
 import i18n from '@src/i18n/i18n.js'

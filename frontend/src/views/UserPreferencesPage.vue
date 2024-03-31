@@ -129,7 +129,7 @@ import urls from '@config/server-urls'
 import PageLayout from '@src/components/PageLayout.vue'
 import { inMobileWebView } from '@src/lib/page-context'
 import sections from '@config/user-preferences/sections'
-import routes from '@config/user-preferences/routes'
+import routes from '@config/user-preferences/pref-routes'
 import { getNotificationSettingKey } from '@src/lib/utils'
 
 export default {

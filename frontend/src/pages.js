@@ -1,5 +1,5 @@
 import VueRouter from 'vue-router'
-import routes from '@config/user-preferences/routes'
+import prefRoutes from '@config/user-preferences/pref-routes'
 import wizardRoutes from '@src/views/printer-wizard/wizard-routes'
 
 import NewOctoPrintTunnelPage from '@src/views/NewOctoPrintTunnelPage.vue'
@@ -44,7 +44,7 @@ const router = new VueRouter({
       path: '/user_preferences',
       component: UserPreferencesPage,
     },
-    ...Object.values(routes).map((route) => ({
+    ...Object.values(prefRoutes).map((route) => ({
       path: route,
       component: UserPreferencesPage,
     })),

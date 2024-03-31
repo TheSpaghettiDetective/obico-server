@@ -426,8 +426,8 @@ import sortBy from 'lodash/sortBy'
 import theme from '@src/styles/main.sass'
 import PageLayout from '@src/components/PageLayout.vue'
 import SavingAnimation from '@src/components/SavingAnimation.vue'
-import DiscoveredPrinter from '@src/components/printers/DiscoveredPrinter.vue'
-import AutoLinkPopup from '@src/components/printers/AutoLinkPopup.vue'
+import DiscoveredPrinter from '@src/components/printers/wizard/DiscoveredPrinter.vue'
+import AutoLinkPopup from '@src/components/printers/wizard/AutoLinkPopup.vue'
 const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
 
 export default {

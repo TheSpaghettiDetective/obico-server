@@ -37,7 +37,4 @@ def additional_settings_export(request):
         brower_language = languages[0].split("-")[0]
         settings_dict["language"] = {"provider": brower_language}
 
-    language_header = request.META.get("HTTP_X_OBICO_LANGUAGE", None)
-    if language_header:
-        settings_dict["language"] = {"provider": language_header}
     return settings_dict

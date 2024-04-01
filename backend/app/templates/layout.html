@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 {% load user_dict from user_dict %}
 {% load bundle from vue %}
 {% load bundlechunk from vue %}
@@ -83,7 +84,7 @@
     {% elif not app_platform.platform %}
       <footer id="global-footer">
         <div class="container">
-          <p>&copy; {{ syndicate.brand_name }} {% now "Y" %}. All Rights Reserved.</p>
+          <p>&copy; {{ syndicate.brand_name }} {% now "Y" %}. {% trans "All Rights Reserved" %}.</p>
         </div>
       </footer>
     {% endif %}

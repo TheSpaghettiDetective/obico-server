@@ -1,6 +1,6 @@
 {% extends settings.TEMPLATE_LAYOUT %}
 {% load static %}
-
+{% load i18n %}
 {% block navbar %}
   {% if not app_platform.platform %}
     {% with view_name=request.resolver_match.view_name %}
@@ -23,34 +23,34 @@
           <ul class="navbar-nav">
             {% if user.is_authenticated %}
             <li class="nav-item {% if  'printers' in view_name %}active{% endif %}">
-              <a class="nav-link" href="/printers/">Printer
+              <a class="nav-link" href="/printers/">{% trans "Printer" %}
               </a>
             </li>
             <li class="nav-item {% if  'prints' in view_name %}active{% endif %}">
-              <a class="nav-link" href="/prints/">Time-lapse
+              <a class="nav-link" href="/prints/">{% trans "Time-lapse" %}
               </a>
             </li>
             <li class="nav-item {% if  'gcodes' in view_name %}active{% endif %}">
-              <a class="nav-link" href="/g_code_files/">G-Code
+              <a class="nav-link" href="/g_code_files/">{% trans "G-Code" %}
               </a>
             </li>
             {% endif %}
             {% block nav_item_pricing %}{% endblock nav_item_pricing %}
             <li class="nav-item">
-              <a class="nav-link" href="https://www.obico.io/help/">Help</a>
+              <a class="nav-link" href="https://www.obico.io/help/">{% trans "Help" %}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://obico.io/discord">Community</a>
+              <a class="nav-link" href="https://obico.io/discord">{% trans "Community" %}</a>
             </li>
           </ul>
           <ul class="navbar-nav ml-auto">
             {% if not user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="/accounts/login/">SIGN IN</a>
+                <a class="nav-link" href="/accounts/login/">{% trans "SIGN IN" %}</a>
               </li>
               {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
               <li class="nav-item">
-                <a class="nav-link" href="/accounts/signup/">Sign up</a>
+                <a class="nav-link" href="/accounts/signup/">{% trans "Sign up" %}</a>
               </li>
               {% endif %}
             {% else %}
@@ -59,10 +59,10 @@
                 aria-expanded="false">{{user.first_name|default:user.email}}
                 <span class="caret"></span></a>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes">
-                <a class="dropdown-item" href="/user_preferences/"><i class="fas fa-sliders-h"></i>Preferences</a>
+                <a class="dropdown-item" href="/user_preferences/"><i class="fas fa-sliders-h"></i>{% trans "Preferences" %}</a>
                 {% block nav_item_account %}{% endblock nav_item_account %}
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/accounts/logout/"><i class="fas fa-sign-out-alt"></i>Log out</a>
+                <a class="dropdown-item" href="/accounts/logout/"><i class="fas fa-sign-out-alt"></i>{% trans "Log out" %}</a>
               </div>
             </li>
             {% endif %}

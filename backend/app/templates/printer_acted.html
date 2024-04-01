@@ -1,5 +1,6 @@
 {% extends "non_vue_layout.html" %}
 {% load static %}
+{% load i18n %}
 {% load widget_tweaks %}
 
 {% block content %}
@@ -18,20 +19,27 @@
     <div class="col-sm-11 col-md-10 col-lg-8 printer-acted">
       <br />
       {% if succeeded %}
-      <p>Successfully sent command to OctoPrint to {{ action }} print
+      <p>
+        {% blocktrans with action as action %}
+        Successfully sent command to OctoPrint to {{ action }} print
+        {% endblocktrans %}
         <strong>"{{ printer.current_print.filename|default:'' }}
         </strong>"!</p>
-      <p>It may take a while to be executed by OctoPrint.</p>
+      <p>{% trans "It may take a while to be executed by OctoPrint." %}</p>
       {% else %}
-      <p>You are trying to {{ action }} a print but {{ printer.name }} is not printing... maybe you clicked a link in an
-        outdated email?</p>
+      <p>
+        {% blocktrans with action=action printer_name=printer.name %}
+        You are trying to {{ action }} a print but {{ printer_name }} is not printing... maybe you clicked a link in an
+        outdated email?
+        {% endblocktrans %}
+      </p>
       {% endif %}
     </div>
   </div>
   <div class="row justify-content-center">
     <div class="col-sm-11 col-md-10 col-lg-8 printer-acted">
       <br />
-      <a class="btn btn-secondary" href="/printers" role="button">Go to webcam view</a>
+      <a class="btn btn-secondary" href="/printers" role="button">{% trans "Go to webcam view" %}</a>
       <br /><br /><br />
     </div>
   </div>

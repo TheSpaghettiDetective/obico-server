@@ -1,7 +1,7 @@
 {% extends 'email/Layout.html' %}
-
+{% load i18n %}
 {% block email_content %}
 
-<p>It worked! You have successfully sent email from your self-hosted Obico Server.</p>
+<p>{% trans "It worked! You have successfully sent email from your self-hosted Obico Server." %}</p>
 
 {% endblock %}

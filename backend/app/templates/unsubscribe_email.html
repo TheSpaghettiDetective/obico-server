@@ -1,29 +1,29 @@
 {% extends "non_vue_layout.html" %}
-
+{% load i18n %}
 {% block content %}
 <div class="container">
   <div class="row justify-content-center p-5">
     <div class="col-12">
       <div class="p-5">
-        <h4 class="text-center">Got it! You will no longer receive emails
+        <h4 class="text-center">{$ trans "Got it! You will no longer receive emails" %}
           {% if email_list == 'print_done' %}
-          when a print job is done.
+          {% trans "when a print job is done." %}
           {% elif email_list == 'print_cancelled' %}
-          when a print job is cancelled.
+          {% trans "when a print job is cancelled." %}
           {% elif email_list == 'other_print_events' %}
-          on other print events.
+          {% trans "on other print events." %}
           {% elif email_list == 'filament_change' %}
-          when filament needs change.
+          {% trans "when filament needs change." %}
           {% elif email_list == 'failure_alert' %}
-          when a possible failure is detected.
+          {% trans "when a possible failure is detected." %}
           {% elif email_list == 'heater_status' %}
-          when a heater has reached the target or cooled down.
+          {% trans "when a heater has reached the target or cooled down." %}
           {% else %}
-          on account notifications.
+          {% trans "on account notifications." %}
           {% endif %}
         </h4>
         <br />
-        <p class="text-center"><a href="/user_preferences/notification_email/">Change notification preferences >>></a></p>
+        <p class="text-center"><a href="/user_preferences/notification_email/">{% trans "Change notification preferences" %} >>></a></p>
       </div>
     </div>
   </div>

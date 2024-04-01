@@ -10,10 +10,10 @@
   >
     <template #header>
       <div class="my-3">
-        <b-alert v-if="!supported" variant="warning">
+        <b-alert v-if="!supported" variant="warning" show>
           Push notifications are unfortunately not supported in your browser.
         </b-alert>
-        <b-alert v-else-if="denied" variant="warning">
+        <b-alert v-else-if="denied" variant="warning" show>
           Please click the small icon next to app.obico.io in the navigation bar and allow notifications, then add this device.
         </b-alert>
         <small v-else class="form-text text-muted">

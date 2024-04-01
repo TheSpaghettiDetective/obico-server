@@ -43,8 +43,8 @@ def disco_to_device_message_queue_key(
     return f'printer_discovery:{client_ip}:messages_to:{device_id}'
 
 
-def disco_one_time_passcode_key(code) -> str:
-    return f'printer_discovery_otp:{code}'
+def one_time_passcode_key(code) -> str:
+    return f'otp:{code}'
 
 
 def printer_key_prefix(printer_id):
@@ -307,11 +307,11 @@ def disco_pop_raw_device_messages(
 
 
 def lookup_value_by_one_time_passcode(code):
-    return REDIS.get(disco_one_time_passcode_key(code))
+    return REDIS.get(one_time_passcode_key(code))
 
 
 def set_value_by_one_time_passcode(new_code, ttl, value):
-    REDIS.setex(disco_one_time_passcode_key(new_code), ttl, value)
+    REDIS.setex(one_time_passcode_key(new_code), ttl, value)
 
 
 def pic_post_over_limit(printer_id, limit_per_minute):

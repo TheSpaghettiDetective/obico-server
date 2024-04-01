@@ -109,3 +109,11 @@ export default (router, components) => {
     },
   })
 }
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/service-worker.js').catch(err => {
+      console.error('ServiceWorker registration failed: ', err);
+    });
+  });
+}

@@ -31,4 +31,8 @@ export default {
     displayName: 'Webhook',
     componentName: 'WebhookPlugin',
   },
+  browser: {
+    displayName: 'Browser',
+    componentName: 'BrowserPlugin',
+  }
 }

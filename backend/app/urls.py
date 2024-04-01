@@ -44,6 +44,8 @@ urlpatterns = [
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
     path('slack_oauth_callback/', web_views.slack_oauth_callback, name='slack_oauth_callback'),
     path('printer_events/', web_views.printer_events),
+    
+    path('service-worker.js', web_views.service_worker),
 
     # tunnel v2 redirect and page with iframe
     re_path(

@@ -65,3 +65,13 @@
 # https://api.slack.com/legacy/oauth
 
 # SLACK_CLIENT_SECRET=
+
+# VAPID_PUBLIC_KEY=
+
+# VAPID_PRIVATE_KEY=
+# Vapid keys are used to encrypt Browser notifications. Keys can be generated with this command: `npx web-push generate-vapid-keys`.
+# Both public and private keys are required for the plugin to work.
+# NOTE: Replacing the keys with fresh ones will make notification to all previously registered devices stop working.
+
+# VAPID_SUBJECT=
+# Vapid subject is a valid email address that will be used as "sender". `mailto:` will be added by the plugin itself.

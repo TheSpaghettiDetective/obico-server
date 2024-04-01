@@ -83,36 +83,31 @@ class BrowserNotificationPlugin(BaseNotificationPlugin):
                     )
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
-        link = site.build_full_url(f'/printers/{context.printer.id}/control')
         title = self.get_failure_alert_title(context=context, link=link)
         text = self.get_failure_alert_text(context=context, link=link)
-        if not title or not text:
-            return
+        link = site.build_full_url(f'/printers/{context.printer.id}/control')
 
         self.send_notification(
-            access_token=access_token,
+            config=context.config,
             title=title,
-            body=text,
+            message=message,
+            image=context.img_url,
             link=link,
             tag=context.printer.name,
-            image=context.img_url,
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         title = self.get_printer_notification_title(context=context)
-        text = self.get_printer_notification_text(context=context)
-        if not text or not title:
-            return
-
+        message = self.get_printer_notification_text(context=context)
         link = site.build_full_url(f'/printers/{context.printer.id}/control')
 
         self.send_notification(
-            access_token=access_token,
+            config=context.config,
             title=title,
-            body=text,
+            message=message,
+            image=context.img_url,
             link=link,
             tag=context.printer.name,
-            image=context.img_url,
         )
 
     def send_test_message(self, context: TestMessageContext) -> None:
@@ -120,9 +115,9 @@ class BrowserNotificationPlugin(BaseNotificationPlugin):
             config=context.config,
             title='Test Notification',
             message='It works!',
-            image="http://localhost:3334/media/tsd-pics/snapshots/1/1711225060.616871_rotated.jpg?digest=YidtXHg5MEJceDA3XHgxMlx4ZTl2XHgwNFx4OWV7XHg5Y3JjXHg5NGczP1x4ODVceGJhXHhhMFx4MTBfXHgxZVx4YWRceGY2XHhjNlx4ZTZceGI3XHg5ZDdsXHIn",
-            link="http://localhost:3334/printers/1/control",
-            tag="printer1"
+            image="",
+            link="",
+            tag="test"
         )
 
 

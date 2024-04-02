@@ -446,9 +446,11 @@ GOOGLE_APPLICATION_CREDENTIALS = os.environ.get(
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
 INTERNAL_MEDIA_HOST = os.environ.get('INTERNAL_MEDIA_HOST')
-PICS_CONTAINER = os.environ.get('PICS_CONTAINER') or 'tsd-pics'
-TIMELAPSE_CONTAINER = os.environ.get('TIMELAPSE_CONTAINER') or 'tsd-timelapses'
-GCODE_CONTAINER = os.environ.get('GCODE_CONTAINER') or 'tsd-gcodes'
+
+PICS_CONTAINER = os.environ.get('PICS_CONTAINER', 'tsd-pics')
+TIMELAPSE_CONTAINER = os.environ.get('TIMELAPSE_CONTAINER', 'tsd-timelapses')
+GCODE_CONTAINER = os.environ.get('GCODE_CONTAINER', 'tsd-gcodes')
+PUBLIC_VERSION_CONTAINER = os.environ.get('PUBLIC_VERSION_CONTAINER', 'public-versioned')
 
 BUCKET_PREFIX = os.environ.get('BUCKET_PREFIX')
 ML_API_HOST = os.environ.get('ML_API_HOST')

@@ -94,7 +94,7 @@ oauthlib==3.2.2 ; python_version >= '3.6'
 packaging==23.2
 parso==0.8.3 ; python_version >= '3.6'
 phonenumbers==8.13.24
-pillow==10.1.0
+pillow==10.3.0
 priority==1.3.0
 prompt-toolkit==3.0.39 ; python_full_version >= '3.7.0'
 proto-plus==1.22.3 ; python_version >= '3.6'

@@ -36,7 +36,7 @@
         {% for error in form.non_field_errors %}
         <div class="text-danger">{{ error }}</div>
         {% endfor %}
-        <form class="signup form-signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">
+        <form class="signup form-signup" id="signup_form" method="POST" action="{% url 'account_signup' %}?{{request.GET.urlencode}}">
           {% csrf_token %}
           <input type="hidden" name="recaptcha_token" id='recaptcha'>
           {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}

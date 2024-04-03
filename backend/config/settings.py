@@ -294,6 +294,7 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_ALLOW_SIGN_UP = get_bool('ACCOUNT_ALLOW_SIGN_UP', False)
 
 AUTH_USER_MODEL = 'app.User'
+ACCOUNT_ADAPTER = 'app.accounts.AccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {

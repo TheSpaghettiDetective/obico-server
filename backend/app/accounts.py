@@ -1,6 +1,21 @@
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from allauth.account.adapter import DefaultAccountAdapter
+from django.conf import settings
 
+class AccountAdapter(DefaultAccountAdapter):
+    def get_login_redirect_url(self, request):
+        url = '/'
+        path = request.GET.get('redirect_url')
+        if path:
+            url = path
+        return url
+    def get_signup_redirect_url(self, request):
+        url = settings.ACCOUNT_SIGNUP_REDIRECT_URL
+        path = request.GET.get('redirect_url')
+        if path:
+            url = path
+        return url
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):

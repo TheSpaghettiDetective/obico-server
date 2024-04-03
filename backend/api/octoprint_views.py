@@ -267,7 +267,10 @@ class OctoPrinterDiscoveryView(APIView):
             one_time_passcode = request.data.pop('one_time_passcode')
             # When the user sends a one-time passcode, it is associated with the verification_code
             (maybe_new_one_time_passcode, verification_code) = request_one_time_passcode(one_time_passcode)
-            otp_response = {'one_time_passcode': maybe_new_one_time_passcode, 'verification_code': verification_code}
+            otp_response = {
+                'one_time_passcode': maybe_new_one_time_passcode,
+                'one_time_passlink': f'https://app.obico.io/otp/?one_time_passcode={maybe_new_one_time_passcode}',
+                'verification_code': verification_code}
 
         device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
 

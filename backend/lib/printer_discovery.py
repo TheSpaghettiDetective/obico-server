@@ -115,7 +115,7 @@ def get_active_devices_for_client_ip(
         if not device_info_raw:
             continue
 
-        dinfo = json.loads(raw)
+        dinfo = json.loads(device_info_raw)
         if dinfo is not None:
             dinfos.append(dinfo)
 

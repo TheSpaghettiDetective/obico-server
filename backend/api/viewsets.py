@@ -776,7 +776,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         devices = get_active_devices_for_client_ip(client_ip)
         if len(devices) > MAX_UNLINKED_PRINTERS_PER_IP:
             return Response([])
-        return Response([device.asdict() for device in devices])
+        return Response([device for device in devices])
 
     @report_validationerror
     def create(self, request):

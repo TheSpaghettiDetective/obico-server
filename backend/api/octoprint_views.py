@@ -23,10 +23,11 @@ import os
 import logging
 from ipware import get_client_ip
 from binascii import hexlify
+from ipware.utils import (
+    cleanup_ip, is_valid_ip, is_public_ip)
 
 from .utils import report_validationerror
 from lib.printer_discovery import (
-    DeviceInfo,
     pull_messages_for_device,
     update_presence_for_device,)
 from lib.one_time_passcode import request_one_time_passcode
@@ -272,17 +273,20 @@ class OctoPrinterDiscoveryView(APIView):
                 'one_time_passlink': f'https://app.obico.io/otp/?one_time_passcode={maybe_new_one_time_passcode}',
                 'verification_code': verification_code}
 
-        device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
+        device_info = request.data
+        device_info['host_or_ip'] = cleanup_ip(device_info['host_or_ip'])
+        if not is_valid_ip(device_info['host_or_ip']) or is_public_ip(device_info['host_or_ip']):
+            raise Http404("host_or_ip must be private ip address")
 
         update_presence_for_device(
             client_ip=client_ip,
-            device_id=device_info.device_id,
+            device_id=device_info['device_id'],
             device_info=device_info,
         )
 
         messages = pull_messages_for_device(
             client_ip=client_ip,
-            device_id=device_info.device_id
+            device_id=device_info['device_id'],
         )
 
         discovery_response = {'messages': [m.asdict() for m in messages]}

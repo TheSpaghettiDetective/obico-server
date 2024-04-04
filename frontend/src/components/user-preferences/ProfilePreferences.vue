@@ -78,7 +78,6 @@ export default {
 
   data() {
     return {
-      onlyName,
       firstName: this.user.first_name,
       lastName: this.user.last_name,
     }

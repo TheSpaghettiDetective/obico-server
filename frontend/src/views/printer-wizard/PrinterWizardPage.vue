@@ -430,7 +430,7 @@ export default {
       },
       oneTimePasscode: '',
       oneTimePasscodeResult: null,
-      useLegacyVerificationCode: false, // To simplify the flow, this can only change from false -> true.
+      useLegacyVerificationCode: true, // To simplify the flow, this can only change from false -> true.
       discoveryEnabled: true, // To simplify the flow, this can only change from true -> false.
       discoveryCount: 0,
       discoveredPrinters: [],
@@ -484,6 +484,10 @@ export default {
       this.discoveryEnabled = false
     }
     this.getVerificationCode()
+
+    if (new URLSearchParams(window.location.search).get('otp') === 'true') {
+      this.useLegacyVerificationCode = false
+    }
   },
   methods: {
     oneTimePasscodeVerifyClicked() {

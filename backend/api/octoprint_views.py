@@ -263,7 +263,7 @@ class OctoPrinterDiscoveryView(APIView):
             raise ImproperlyConfigured("cannot determine client_ip")
 
         otp_response = None
-        if 'one_time_passcode' in request.data: # For the agent that supports OTP
+        if os.environ.get('USE_OTP') == 'true' and 'one_time_passcode' in request.data: # For the agent that supports OTP
             one_time_passcode = request.data.pop('one_time_passcode')
             # When the user sends a one-time passcode, it is associated with the verification_code
             (maybe_new_one_time_passcode, verification_code) = request_one_time_passcode(one_time_passcode)

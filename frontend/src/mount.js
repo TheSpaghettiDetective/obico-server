@@ -43,7 +43,6 @@ import { syndicateTextConstant } from '@src/config/syndicateText'
 
 Vue.prototype.$syndicate = syndicate().provider
 Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().provider||'base'] || syndicateTextConstant.base
-Vue.prototype.$language = language().provider
 
 export default (router, components) => {
   initTheme()

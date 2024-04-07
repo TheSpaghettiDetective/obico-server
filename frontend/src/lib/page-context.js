@@ -23,5 +23,5 @@ export const syndicate = () => {
 }
 
 export const language = () => {
-  return JSON.parse(document.querySelector('#language-json').text)
+  return pageContext()['language']
 }

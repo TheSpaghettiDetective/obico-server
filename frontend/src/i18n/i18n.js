@@ -8,7 +8,7 @@ import entBaseZh from './locales/ent_zh.json';
 import {language} from '@src/lib/page-context'
 
 const getCurrentLanguage = () => {
-  return language().provider
+  return language()
 };
 
 

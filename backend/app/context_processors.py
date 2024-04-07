@@ -1,5 +1,6 @@
 import re
 import logging
+from django.utils import translation
 
 from django.conf import settings
 
@@ -21,10 +22,12 @@ def additional_context_export(request):
 
     brand_name = "Obico" if syndicate == "base" else syndicate.capitalize()
 
+    language = translation.get_language_from_request(request).split('-')[0] # ISO 639-1 standard is language_code-country_code
     return {
         'page_context': {
             'app_platform': platform,
             'syndicate': {"provider": syndicate, "brand_name": brand_name},
+            'language': language,
         }
     }
 
@@ -34,13 +37,4 @@ def additional_settings_export(request):
         'TWILIO_COUNTRY_CODES': settings.TWILIO_COUNTRY_CODES,
     }
 
-    accept_language_header = request.META.get("HTTP_ACCEPT_LANGUAGE", "")
-    languages = accept_language_header.split(",")
-    if languages:
-        brower_language = languages[0].split("-")[0]
-        settings_dict["language"] = {"provider": brower_language}
-
-    language_header = request.META.get("HTTP_X_OBICO_LANGUAGE", None)
-    if language_header:
-        settings_dict["language"] = {"provider": language_header}
     return settings_dict

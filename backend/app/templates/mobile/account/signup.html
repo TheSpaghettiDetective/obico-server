@@ -33,7 +33,7 @@
           <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
             role="button"><span><i class="fab fa-google mr-1"></i> Sign up with Google</span> </a>
         </div>
-          {% if app_platform.platform == 'ios' %}
+          {% if page_context.app_platform == 'ios' %}
           <div class="social-login">
             <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
               role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>Sign in with Apple</span> </a>

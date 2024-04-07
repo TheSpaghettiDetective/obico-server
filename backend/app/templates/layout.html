@@ -55,8 +55,7 @@
 
   {{ settings|json_script:"settings-json" }}
   {{ user|user_dict|json_script:"user-json" }}
-  {{ app_platform|json_script:"app-platform-json" }}
-  {{ syndicate|json_script:"syndicate-json"}}
+  {{ page_context|json_script:"page-context-json" }}
   {{ language|json_script:"language-json"}}
 </head>
 
@@ -80,7 +79,7 @@
       {% comment %} Do not render footer for printer control page {% endcomment %}
     {% elif request.path|slice:":10" == '/printers/' and request.path|slice:"-10:" == '/terminal/' %}
       {% comment %} Do not render footer for terminal page {% endcomment %}
-    {% elif not app_platform.platform %}
+    {% elif not page_context.app_platform %}
       <footer id="global-footer">
         <div class="container">
           <p>&copy; {{ syndicate.brand_name }} {% now "Y" %}. All Rights Reserved.</p>

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block navbar %}
-  {% if not app_platform.platform %}
+  {% if not page_context.app_platform %}
     {% with view_name=request.resolver_match.view_name %}
     <nav class="navbar navbar-expand-xl bg-dark static-top" id="dynamic-navbar">
       <div class="container">

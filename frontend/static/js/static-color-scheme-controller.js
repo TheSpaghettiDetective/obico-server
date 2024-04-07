@@ -4,7 +4,7 @@ const theme = {
   value: defaultTheme,
 }
 
-const syndicate = JSON.parse(document.querySelector('#syndicate-json').text)
+const syndicate = JSON.parse(document.querySelector('#page-context-json').text)['syndicate']
 
 // initialize theme for static pages
 initTheme(currentThemeValue(theme), syndicate.provider)

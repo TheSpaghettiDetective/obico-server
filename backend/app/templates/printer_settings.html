@@ -5,19 +5,19 @@
 {% endblock vue_content %}
 
 {% block body_bottom_ext %}
-  {% if not app_platform.platform %}
+  {% if not page_context.app_platform %}
     {{ block.super }}
   {% endif %}
 {% endblock %}
 
 {% block useful_libs %}
-  {% if not app_platform.platform %}
+  {% if not page_context.app_platform %}
     {{ block.super }}
   {% endif %}
 {% endblock %}
 
 {% block bootstrap_js %}
-  {% if not app_platform.platform %}
+  {% if not page_context.app_platform %}
     {{ block.super }}
   {% endif %}
 {% endblock %}

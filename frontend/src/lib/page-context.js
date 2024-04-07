@@ -1,5 +1,9 @@
+export const pageContext = () => {
+  return JSON.parse(document.querySelector('#page-context-json').text)
+}
+
 export const mobilePlatform = () => {
-  return JSON.parse(document.querySelector('#app-platform-json').text)['platform']
+  return pageContext()['app_platform']
 }
 
 export const inMobileWebView = () => {
@@ -15,7 +19,7 @@ export const settings = () => {
 }
 
 export const syndicate = () => {
-  return JSON.parse(document.querySelector('#syndicate-json').text)
+  return pageContext()['syndicate']
 }
 
 export const language = () => {

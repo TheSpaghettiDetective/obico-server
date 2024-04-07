@@ -20,23 +20,25 @@
         <div style="margin-bottom: 1rem; padding-left: 12px;">
           <div class="custom-control custom-checkbox form-check-inline">
             <input type="checkbox" class="custom-control-input" id="tos-checkbox" checked>
-            <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox"><small>By signing up, I agree to
-              the {{ syndicate.brand_name }} app's <a class="link" href="https://www.obico.io/terms.html">Terms of
-                Use</a> and <a class="link" href="https://www.obico.io/privacy.html">Privacy
-                Policy</a></small></label>
+            <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox"><small>
+              {% blocktrans with syndicate.brand_name as brand_name %}By signing up, I agree to
+              the {{ brand_name }} app's <a class="link" href="https://www.obico.io/terms.html">Terms of
+              Use</a> and <a class="link" href="https://www.obico.io/privacy.html">Privacy
+              Policy</a>{% endblocktrans %}
+              </label>
           </div>
         </div>
         {% if socialaccount_providers %}
         <div class="social-login">
           <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
-            role="button"><span><i class="fab fa-facebook-f mr-1"></i> Sign up with Facebook</span> </a>
+            role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign up with Facebook" %}</span> </a>
           <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
-            role="button"><span><i class="fab fa-google mr-1"></i> Sign up with Google</span> </a>
+            role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign up with Google" %}</span> </a>
         </div>
           {% if page_context.app_platform == 'ios' %}
           <div class="social-login">
             <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
-              role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>Sign in with Apple</span> </a>
+              role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>{% trans "Sign in with Apple" %}</span> </a>
           </div>
           {% endif %}
         {% endif %}
@@ -54,7 +56,7 @@
               {% endfor %}
             </small>
             {% else %}
-            <small id="emailHelp" class="form-text">We'll never share your email with anyone else.</small>
+            <small id="emailHelp" class="form-text">{% trans "We'll never share your email with anyone else." %}</small>
             {% endif %}
           </div>
           <div class="form-group">
@@ -66,7 +68,7 @@
               {% endfor %}
             </small>
             {% else %}
-            <small id="password1Help" class="form-text">At least 6 characters. And be secure, please.</small>
+            <small id="password1Help" class="form-text">{% trans "At least 6 characters. And be secure, please." %}</small>
             {% endif %}
           </div>
           <div class="form-group">

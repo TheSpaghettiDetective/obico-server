@@ -277,7 +277,7 @@ class OctoPrinterDiscoveryView(APIView):
         device_info = request.data
 
         device_info['host_or_ip'] = cleanup_ip(device_info['host_or_ip'])
-        if is_valid_ip(device_info['host_or_ip']) and is_public_ip(device_info['host_or_ip']):
+        if is_valid_ip(device_info['host_or_ip']) and not is_public_ip(device_info['host_or_ip']):
             update_presence_for_device(
                 client_ip=client_ip,
                 device_id=device_info['device_id'],

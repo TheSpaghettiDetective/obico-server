@@ -92,7 +92,7 @@
                             <ol>
                               <li>{{ $t("SSH to the Raspberry Pi your Klipper runs on.") }}</li>
                               <li>
-                                <div>{{ $t("Run:") }}</div>
+                                <div>{{ $t("Run") }}:</div>
 <pre class="mt-2">
 cd ~
 git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
@@ -189,7 +189,7 @@ cd moonraker-obico
                                   <span class="sr-only"></span>
                                 </div>
                                 <span class="sr-only"></span>
-                                {{ $t("Scanning..., {name} printer(s) found on your local network:",{name:discoveredPrinters.length}) }}
+                                {{ $t("Scanning..., {name} printer(s) found on your local network",{name:discoveredPrinters.length}) }}:
                               </div>
                               <discovered-printer
                                 v-for="discoveredPrinter in discoveredPrinters"
@@ -206,7 +206,7 @@ cd moonraker-obico
                               </i18next>
                             </div>
                             <div v-if="discoveryCount >= 2" class="text-muted">
-                              <div>{{$t("To link your printer, please make sure:")}}</div>
+                              <div>{{$t("To link your printer, please make sure")}}:</div>
                               <ul>
                                 <li>{{ $t("The printer is powered on. If you are using an external SBC such as a Raspberry Pi, make sure it's powered on as well.") }}</li>
                                 <li>
@@ -647,7 +647,7 @@ export default {
       }, 5000)
     },
     showVerificationCodeHelpModal() {
-      let html = `<p>${this.$i18next.t("The 6-digit code needs to be entered in the {brandName} plugin in OctoPrint. There are a few reasons why you can't find this page:",{brandName:this.$syndicateText.brandName})}</p>
+      let html = `<p>${this.$i18next.t("The 6-digit code needs to be entered in the {brandName} plugin in OctoPrint. There are a few reasons why you can't find this page",{brandName:this.$syndicateText.brandName})}:</p>
         <p><ul>
         <li style="margin: 10px 0;">${this.$i18next.t("You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click")} <a href="/printers/wizard/">here</a> ${this.$i18next.t("to walk through the process again.")}</li>
         <li style="margin: 10px 0;">${this.$i18next.t("The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to")} <b>1.5.0</b> ${this.$i18next.t("or later.")}</li>

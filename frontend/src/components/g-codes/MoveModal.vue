@@ -2,7 +2,8 @@
   <b-modal
     id="b-modal-move"
     :title="$t('Move item')"
-    ok-title="Place Here"
+    :ok-title="$t('Place Here')"
+    :cancel-title="$t('Cancel')"
     :ok-disabled="isSameDir || patchLoading"
     scrollable
     @ok="handleOk"

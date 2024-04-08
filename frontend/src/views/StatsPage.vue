@@ -114,12 +114,12 @@
                 <div class="legend">
                   <div class="line">
                     <div class="square success"></div>
-                    <div class="title">{{ $t("Finished:") }}</div>
+                    <div class="title">{{ $t("Finished") }}:</div>
                     <div class="value">{{ stats ? stats.total_succeeded_print_count : '' }}</div>
                   </div>
                   <div class="line">
                     <div class="square danger"></div>
-                    <div class="title">{{ $t("Cancelled:") }}</div>
+                    <div class="title">{{ $t("Cancelled") }}:</div>
                     <div class="value">{{ stats ? stats.total_cancelled_print_count : '' }}</div>
                   </div>
                 </div>

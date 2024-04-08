@@ -84,7 +84,7 @@
             <br />
             <em class="text-muted">
               <small>
-                <div>{{ $t("Notes:") }}</div>
+                <div>{{ $t("Notes") }}:</div>
                 <ul>
                   <li>
                     {{ $t('Send the secure link to anyone you want to share your printer feed with. They do NOT need the {brandName} account to see your printer feed.',{brandName:$syndicateText.brandName}) }}

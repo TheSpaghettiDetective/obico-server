@@ -129,7 +129,7 @@
       <slot name="footer"></slot>
     </div>
     <div v-else>
-      <p class="text-warning">{{ $t("Please configure the following variables in the '.env' file:") }}</p>
+      <p class="text-warning">{{ $t("Please configure the following variables in the '.env' file") }}:</p>
       <ul class="text-warning">
         <li v-for="variable in envVarsToSet" :key="variable">{{ variable }}</li>
       </ul>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <h5>{{ $t("Presets:") }}</h5>
+      <h5>{{ $t("Presets") }}:</h5>
     </div>
     <div>
       <b-form-select id="id_preset" v-model="currentPreset" class="form-control">

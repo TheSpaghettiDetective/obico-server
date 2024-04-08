@@ -29,7 +29,7 @@
         <p>{{ $t("2. There is no 2. You are all set. It's this simple. 😀") }}</p>
       </div>
       <div v-else>
-        <p class="lead">{{ $t('Click the button below to add the {brandName} Slack App into your workspace:',{brandName:$syndicateText.brandName}) }}</p>
+        <p class="lead">{{ $t('Click the button below to add the {brandName} Slack App into your workspace',{brandName:$syndicateText.brandName}) }}:</p>
         <a
           :href="`https://slack.com/oauth/v2/authorize?client_id=${slackClientId}&scope=channels:read,chat:write,groups:read&redirect_uri=${redirectUri}`"
         >

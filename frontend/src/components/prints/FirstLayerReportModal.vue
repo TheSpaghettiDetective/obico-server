@@ -84,7 +84,7 @@
             <b-row>
               <div class="description">
                 <p>
-                  {{ $t("You're first layer score is:") }}
+                  {{ $t("You're first layer score is") }}:
                    <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br>
                   {{ gradeResult.gradeRemarks }}
                 </p>
@@ -95,7 +95,7 @@
             <b-row>
               <div v-if="!isGradeA" class="info">
                 <p>
-                  <i18next :translation="$t(`Grade {localizedDom} usually means one of the following:`)">
+                  <i18next :translation="$t(`Grade {localizedDom} usually means one of the following`)">
                     <template #localizedDom>
                       <span :class="gradeResult.gradeAccent">{{gradeResult.grade}}</span>
                     </template>

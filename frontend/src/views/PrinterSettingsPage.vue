@@ -26,7 +26,7 @@
                 <!-- Potential failure section -->
                 <div class="failure-notification">
                   <div class="form-group mt-4 mb-4">
-                    <div class="form-label text-muted">{{ $t("When a potential failure is detected:") }}</div>
+                    <div class="form-label text-muted">{{ $t("When a potential failure is detected") }}:</div>
                     <saving-animation
                       :errors="errorMessages.action_on_failure_NONE"
                       :saving="saving.action_on_failure_NONE"

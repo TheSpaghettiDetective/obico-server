@@ -2,7 +2,8 @@
   <b-modal
     id="b-modal-pick-dates"
     :title="$t('Select Dates')"
-    ok-title="Apply"
+    :ok-title="$t('Apply')"
+    :cancel-title="$t('Cancel')"
     centered
     @ok="handleOk"
     @hidden="resetModal"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-01 19:16+0800\n"
+"POT-Creation-Date: 2024-04-08 16:58+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -184,11 +184,11 @@ msgstr ""
 "邮件确认请求</a>。"
 
 #: app/templates/account/login.html:7 app/templates/account/login.html:15
-#: app/templates/account/login.html:61 app/templates/account/signup.html:87
+#: app/templates/account/login.html:61 app/templates/account/signup.html:88
 #: app/templates/mobile/account/login.html:10
 #: app/templates/mobile/account/login.html:18
 #: app/templates/mobile/account/login.html:69
-#: app/templates/mobile/account/signup.html:91
+#: app/templates/mobile/account/signup.html:94
 #: app/templates/non_vue_layout.html:49
 msgid "SIGN IN"
 msgstr "登录"
@@ -288,16 +288,17 @@ msgstr "如果您已尝试了其他所有方法。"
 msgid "Close"
 msgstr "关闭"
 
-#: app/templates/account/login.html:101 app/templates/account/signup.html:85
+#: app/templates/account/login.html:101 app/templates/account/signup.html:86
+#: app/templates/mobile/account/signup.html:93
 msgid "OR"
 msgstr "或"
 
 #: app/templates/account/login.html:102 app/templates/account/signup.html:16
-#: app/templates/account/signup.html:83
+#: app/templates/account/signup.html:84
 #: app/templates/mobile/account/login.html:108
 #: app/templates/mobile/account/signup.html:11
 #: app/templates/mobile/account/signup.html:19
-#: app/templates/mobile/account/signup.html:88
+#: app/templates/mobile/account/signup.html:91
 #: app/templates/socialaccount/signup.html:9
 #: app/templates/socialaccount/signup.html:20
 msgid "SIGN UP"
@@ -402,7 +403,8 @@ msgstr "设置密码"
 msgid "Signup"
 msgstr "注册"
 
-#: app/templates/account/signup.html:21
+#: app/templates/account/signup.html:22
+#: app/templates/mobile/account/signup.html:25
 #, python-format
 msgid ""
 "By signing up, I agree to\n"
@@ -416,23 +418,23 @@ msgstr ""
 "obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://www."
 "obico.io/privacy.html\">隐私政策</a>"
 
-#: app/templates/account/signup.html:31
-#: app/templates/mobile/account/signup.html:34
+#: app/templates/account/signup.html:32
+#: app/templates/mobile/account/signup.html:37
 msgid "Sign up with Facebook"
 msgstr "使用 Facebook 注册"
 
-#: app/templates/account/signup.html:33
-#: app/templates/mobile/account/signup.html:36
+#: app/templates/account/signup.html:34
+#: app/templates/mobile/account/signup.html:39
 msgid "Sign up with Google"
 msgstr "使用 Google 注册"
 
-#: app/templates/account/signup.html:54
-#: app/templates/mobile/account/signup.html:59
+#: app/templates/account/signup.html:55
+#: app/templates/mobile/account/signup.html:62
 msgid "We'll never share your email with anyone else."
 msgstr "我们绝不会与他人分享您的电子邮件。"
 
-#: app/templates/account/signup.html:66
-#: app/templates/mobile/account/signup.html:71
+#: app/templates/account/signup.html:67
+#: app/templates/mobile/account/signup.html:74
 msgid "At least 6 characters. And be secure, please."
 msgstr "至少 6 个字符。请确保安全。"
 
@@ -501,18 +503,12 @@ msgstr ""
 "<strong>注意：</strong>您仍然可以<a href=\"%(email_url)s\">更改您的电子邮箱地"
 "址</a>。"
 
-#: app/templates/email/test_email.html:5
-msgid ""
-"It worked! You have successfully sent email from your self-hosted Obico "
-"Server."
-msgstr "成功了！您已成功从您自托管的 Obico 服务器发送了电子邮件。"
-
-#: app/templates/layout.html:89
+#: app/templates/layout.html:87
 msgid "All Rights Reserved"
 msgstr "版权所有"
 
 #: app/templates/mobile/account/login.html:29
-#: app/templates/mobile/account/signup.html:41
+#: app/templates/mobile/account/signup.html:44
 msgid "Sign in with Apple"
 msgstr "使用 Apple 登录"
 
@@ -532,27 +528,6 @@ msgid ""
 msgstr ""
 "您的登录凭证在移动应用和网页应用中是相同的。如果您之前使用网页应用注册，您可"
 "以使用相同的凭证在这里登录。"
-
-#: app/templates/mobile/account/signup.html:24
-#, fuzzy, python-format
-#| msgid ""
-#| "By signing up, I agree to\n"
-#| "            the %(brand_name)s app's <a class=\"link\" href=\"https://www."
-#| "obico.io/terms.html\">Terms of\n"
-#| "              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
-#| "privacy.html\">Privacy\n"
-#| "              Policy</a>"
-msgid ""
-"By signing up, I agree to\n"
-"              the %(brand_name)s app's <a class=\"link\" href=\"https://www."
-"obico.io/terms.html\">Terms of\n"
-"              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
-"privacy.html\">Privacy\n"
-"              Policy</a>"
-msgstr ""
-"通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://www."
-"obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://www."
-"obico.io/privacy.html\">隐私政策</a>"
 
 #: app/templates/new_octoprinttunnel_succeeded.html:7
 msgid "Succeeded"
@@ -604,12 +579,13 @@ msgid "Cancel"
 msgstr "取消"
 
 #: app/templates/printer_acted.html:23
-#, python-format
+#, fuzzy, python-format
+#| msgid "Successfully sent command to OctoPrint to %(action)s print\n"
 msgid ""
 "\n"
 "        Successfully sent command to OctoPrint to %(action)s print\n"
 "        "
-msgstr ""
+msgstr "已成功将命令发送到 OctoPrint 到 %(action)s 打印机\n"
 
 #: app/templates/printer_acted.html:28
 msgid "It may take a while to be executed by OctoPrint."
@@ -618,14 +594,13 @@ msgstr "可能需要一段时间才能由 OctoPrint 执行。"
 #: app/templates/printer_acted.html:31
 #, python-format
 msgid ""
-"\n"
-"        You are trying to %(action)s a print but %(printer_name)s is not "
-"printing... maybe you clicked a link in an\n"
-"        outdated email?\n"
-"        "
+" You are trying to %(action)s a print but %(printer_name)s is not "
+"printing... maybe you clicked a link in an outdated email? "
 msgstr ""
+"您正在尝试 %(action)s 打印，但 %(printer_name)s 没有打印...也许您单击了过期电"
+"子邮件中的链接？"
 
-#: app/templates/printer_acted.html:42
+#: app/templates/printer_acted.html:39
 msgid "Go to webcam view"
 msgstr "前往网络摄像头视图"
 
@@ -726,3 +701,70 @@ msgstr "在账户通知上。"
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
 msgstr "更改通知偏好设置"
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "                By signing up, I agree to the %(brand_name)s app's \n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ " 注册即表示我同意 %(brand_name)s 应用的 \n"
+#~ " "
+
+#~ msgid "Terms of Use"
+#~ msgstr "使用条款"
+
+#~ msgid "and"
+#~ msgstr "和"
+
+#~ msgid "Privacy Policy"
+#~ msgstr "隐私政策"
+
+#, fuzzy, python-format
+#~| msgid ""
+#~| "By signing up, I agree to\n"
+#~| "            the %(brand_name)s app's <a class=\"link\" href=\"https://"
+#~| "www.obico.io/terms.html\">Terms of\n"
+#~| "              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#~| "privacy.html\">Privacy\n"
+#~| "              Policy</a>"
+#~ msgid ""
+#~ "\n"
+#~ "                By signing up, I agree to the %(brand_name)s app's \n"
+#~ "                <a class=\"link\" href=\"https://www.obico.io/terms."
+#~ "html\">Terms of Use</a> \n"
+#~ "                and \n"
+#~ "                <a class=\"link\" href=\"https://www.obico.io/privacy."
+#~ "html\">Privacy Policy</a>\n"
+#~ "                "
+#~ msgstr ""
+#~ "通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://"
+#~ "www.obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://"
+#~ "www.obico.io/privacy.html\">隐私政策</a>"
+
+#, fuzzy, python-format
+#~| msgid ""
+#~| "By signing up, I agree to\n"
+#~| "            the %(brand_name)s app's <a class=\"link\" href=\"https://"
+#~| "www.obico.io/terms.html\">Terms of\n"
+#~| "              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#~| "privacy.html\">Privacy\n"
+#~| "              Policy</a>"
+#~ msgid ""
+#~ "By signing up, I agree to\n"
+#~ "                the %(brand_name)s app's <a class=\"link\" href=\"https://"
+#~ "www.obico.io/terms.html\">Terms of\n"
+#~ "                  Use</a> and <a class=\"link\" href=\"https://www.obico."
+#~ "io/privacy.html\">Privacy\n"
+#~ "                  Policy</a>"
+#~ msgstr ""
+#~ "通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://"
+#~ "www.obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://"
+#~ "www.obico.io/privacy.html\">隐私政策</a>"
+
+#~ msgid ""
+#~ "It worked! You have successfully sent email from your self-hosted Obico "
+#~ "Server."
+#~ msgstr "成功了！您已成功从您自托管的 Obico 服务器发送了电子邮件。"

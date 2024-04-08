@@ -28,10 +28,7 @@
       <p>{% trans "It may take a while to be executed by OctoPrint." %}</p>
       {% else %}
       <p>
-        {% blocktrans with action=action printer_name=printer.name %}
-        You are trying to {{ action }} a print but {{ printer_name }} is not printing... maybe you clicked a link in an
-        outdated email?
-        {% endblocktrans %}
+        {% blocktrans with action=action printer_name=printer.name %} You are trying to {{ action }} a print but {{ printer_name }} is not printing... maybe you clicked a link in an outdated email? {% endblocktrans %}
       </p>
       {% endif %}
     </div>

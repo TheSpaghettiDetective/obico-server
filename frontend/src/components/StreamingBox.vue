@@ -438,8 +438,8 @@ export default {
       this.$swal.Prompt.fire({
         title: `${this.$i18next.t('Webcam stream buffering')}`,
         html: `
-          <p>${this.$i18next.t("When you see the messaging about webcam stream is 'buffering' occasionally, you can just reload the page. If this message repeatedly appears, it may indicate one of the problems:")}</p>
-          <p class="lead">${this.$i18next.t("1. A constricted video stream on your Raspberry Pi. The most common reasons are:")}</p>
+          <p>${this.$i18next.t("When you see the messaging about webcam stream is 'buffering' occasionally, you can just reload the page. If this message repeatedly appears, it may indicate one of the problems")}:</p>
+          <p class="lead">${this.$i18next.t("1. A constricted video stream on your Raspberry Pi. The most common reasons are")}:</p>
           <ul>
             <li>${this.$i18next.t("Camera resolution is set too high.")}</li>
             <li>${this.$i18next.t("Camera framerate is set too high.")}</li>

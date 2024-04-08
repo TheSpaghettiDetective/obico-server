@@ -145,7 +145,7 @@
 
               <div class="mt-5">
                 <p class="lead">
-                  <i18next :translation="$t('Tunnel access by {localizedDom} (make sure you trust it):')">
+                  <i18next :translation="$t('Tunnel access by {localizedDom} (make sure you trust it)')">
                     <template #localizedDom>
                       <span class="font-weight-bold">{{appDisplayName}}</span>
                     </template>
@@ -185,7 +185,7 @@
               </div>
             </div>
             <div class="mt-4">
-              <p class="text-muted small mb-1">{{ $t("Security notes:") }}</p>
+              <p class="text-muted small mb-1">{{ $t("Security notes") }}:</p>
               <ul class="text-muted small pl-4">
                 <li>
                   {{ $t("The app can only access the tunnel, not your {brandName} account info such as your email address.",{brandName:$syndicateText.brandName}) }}
@@ -231,7 +231,7 @@
               </ul>
               <div>
                 🔥🔥🔥
-                <i18next :translation="$t('Upgrade to {brandName} Pro Account ({localizedDom}) to get premium features:')">
+                <i18next :translation="$t('Upgrade to {brandName} Pro Account ({localizedDom}) to get premium features')">
                     <template #localizedDom>
                       <a href="https://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("from $4/mo")}}</a>
                     </template>

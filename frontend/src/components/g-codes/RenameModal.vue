@@ -3,6 +3,7 @@
     id="b-modal-rename"
     :title="$t('Enter new name')"
     :ok-title="$t('Rename')"
+    :cancel-title="$t('Cancel')"
     centered
     @ok="handleOk"
     @hidden="resetModal"

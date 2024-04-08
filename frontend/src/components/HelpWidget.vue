@@ -43,7 +43,7 @@
             <!-- basic-streaming-on-pricing-page -->
             <template v-if="id === 'basic-streaming-on-pricing-page'">
               <div>
-                {{$t("Basic Streaming:")}}
+                {{$t("Basic Streaming")}}:
                 <ul>
                   <li>{{ $t("Up to 5 FPS (frame-per-second)") }}</li>
                   <li>{{ $t("Throttled for 30 seconds every minute") }}</li>
@@ -113,7 +113,7 @@
             <!-- premium-streaming-on-pricing-page -->
             <template v-if="id === 'premium-streaming-on-pricing-page'">
               <div>
-                {{$t("Premium Streaming:")}}
+                {{$t("Premium Streaming")}}:
                 <ul>
                   <li>{{ $t("Up to 25 FPS (frame-per-second)") }}</li>
                   <li>{{ $t("Un-throttled") }}</li>
@@ -158,12 +158,12 @@
             <!-- 3rd-party-app-integration-free-on-pricing-page -->
             <template v-if="id === '3rd-party-app-integration-free-on-pricing-page'">
               <div>
-                <div>{{ $t("The monthly cap is shared between 3rd-party app and OctoPrint tunnel:") }}</div>
+                <div>{{ $t("The monthly cap is shared between 3rd-party app and OctoPrint tunnel") }}:</div>
                 <ul>
                   <li>{{ $t("The combined usage can't exceed 300MB per month.") }}</li>
                   <li>{{ $t("Data usage is reset on the 1st day of each month.") }}</li>
                 </ul>
-                <p>{{ $t("Supported 3rd-party mobile apps:") }}</p>
+                <p>{{ $t("Supported 3rd-party mobile apps") }}:</p>
                 <img class="logo-icon" :src="require('@static/img/octoapp.webp')" />
                 <img class="logo-icon" :src="require('@static/img/printoid.webp')" />
                 <img class="logo-icon" :src="require('@static/img/octopod.webp')" />
@@ -174,7 +174,7 @@
             <!-- 3rd-party-app-integration-pro-on-pricing-page -->
             <template v-if="id === '3rd-party-app-integration-pro-on-pricing-page'">
               <div>
-                <p>{{ $t("Supported 3rd-party mobile apps:") }}</p>
+                <p>{{ $t("Supported 3rd-party mobile apps") }}:</p>
                 <img class="logo-icon" :src="require('@static/img/octoapp.webp')" />
                 <img class="logo-icon" :src="require('@static/img/printoid.webp')" />
                 <img class="logo-icon" :src="require('@static/img/octopod.webp')" />
@@ -186,7 +186,7 @@
             <template v-if="id === 'filament-change-on-notification-preferences'">
               <i>
                 <ul>
-                  {{$t("Required versions:")}}
+                  {{$t("Required versions")}}:
                   <li>{{ $t("OctoPrint 1.7.0 or higher") }}</li>
                   <li>{{$t("The {brandName} plugin 1.8.11 or higher",{brandName: $syndicateText.brandName })}}</li>
                 </ul>
@@ -196,7 +196,7 @@
                 {{ $t('Host_action_commands must be enabled in your firmware to make it possible for your filament runout sensor to communicate with OctoPrint and the {brandName} app. If you enable action commands in your firmware, then the filament runout sensor can work properly and the {brandName} app can notify you when the filament runs out. Unfortunately, without host_action_commands enabled, OctoPrint is unable to communicate with the printer to know that a filament runout was detected.',{brandName:$syndicateText.brandName}) }}
               </p>
 
-              <p>{{ $t("To enable support, you need to do the following:") }}</p>
+              <p>{{ $t("To enable support, you need to do the following") }}:</p>
               <ul>
                 <li>
                   {{$t("Marlin: Uncomment #define HOST_ACTION_COMMANDS in Configuration_adv.h and recompile. See here for more information on host_action_commands.")}}
@@ -215,7 +215,7 @@
               <p>
                 {{ $t('G-code files uploaded to your {brandName} account before upgrading to {brandName} for OctoPrint version 2.3.0 or {brandName} for Klipper version 1.2.0 do not include filament usage data.',{brandName:$syndicateText.brandName}) }}
               </p>
-              <p><strong>{{ $t("To ensure accurate filament usage and other statistics:") }}</strong></p>
+              <p><strong>{{ $t("To ensure accurate filament usage and other statistics") }}:</strong></p>
               <ul>
                 <li>
                   {{ $t('Upload G-code files and start prints directly through {brandName} instead of OctoPrint/Klipper.',{brandName:$syndicateText.brandName}) }}

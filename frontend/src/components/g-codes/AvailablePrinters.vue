@@ -135,7 +135,7 @@ export default {
     selectPrinter(printer) {
       if (!printer.isPrintable()) {
         this.$swal.Reject.fire({
-          title: `${this.$i18next.t(`{name} isn't ready for print for one of the following reasons:`,{name:printer.name})}`,
+          title: `${this.$i18next.t(`{name} isn't ready for print for one of the following reasons`,{name:printer.name})}:`,
           html: `<ul style="text-align: left">
             <li>${this.$i18next.t(`{name} is powered off or not connected to the Internet`,{name:printer.agentDisplayName()})}</li>
             <li>${this.$i18next.t("Printer is not connected to {name}",{name:printer.agentDisplayName()})}</li>

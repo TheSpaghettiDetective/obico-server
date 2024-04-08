@@ -306,6 +306,7 @@ import {
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
 import CascadedDropdown from '@src/components/CascadedDropdown'
+import i18n from '@src/i18n/i18n.js'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
@@ -315,9 +316,9 @@ const PAGE_SIZE = 24
 const SortingLocalStoragePrefix = 'gcodesSorting'
 const SortingOptions = {
   options: [
-    { title: 'Name', key: 'filename', folderKey: 'name' },
-    { title: 'Size', key: 'num_bytes' },
-    { title: 'Created', key: 'created_at', folderKey: 'created_at' },
+    { title: `${i18n.t('Name')}`, key: 'filename', folderKey: 'name' },
+    { title: `${i18n.t('Size')}`, key: 'num_bytes' },
+    { title: `${i18n.t('Created')}`, key: 'created_at', folderKey: 'created_at' },
   ],
   default: { sorting: 'created_at', direction: 'desc' },
 }
@@ -571,7 +572,7 @@ export default {
     switchToPrinterStorage(printer) {
       if (!this.isPrinterBrowsable(printer)) {
         this.$swal.Reject.fire({
-          title: `${this.$i18next.t(`{name} isn't available for browsing files for one of the following reasons:`,{name:printer.name})}`,
+          title: `${this.$i18next.t(`{name} isn't available for browsing files for one of the following reasons`,{name:printer.name})}:`,
           html: `<ul style="text-align: left">
             <li>${this.$i18next.t('{name} is powered off or not connected to the Internet',{name:printer.agentDisplayName()})}</li>
             <li>${this.$i18next.t('Printer is not connected to {name}',{name:printer.agentDisplayName()})}</li>

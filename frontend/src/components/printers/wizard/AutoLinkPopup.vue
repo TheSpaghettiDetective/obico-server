@@ -102,7 +102,7 @@ export default {
           this.$swal.Prompt.fire({
             icon: 'error',
             title: `${this.$i18next.t('Handshake failed!')}`,
-            html: `<p>${this.$i18next.t("Please make sure:")}</p>
+            html: `<p>${this.$i18next.t("Please make sure")}:</p>
               <ul>
                 <li>${this.$i18next.t("The OctoPrint you want to link is at {host}:{port}, and it's connected to the same local network as your computer/phone.",{host:this.discoveredPrinter.host_or_ip,port:this.discoveredPrinter.port})}</li>
                 <li>${this.$i18next.t("The version of plugin is 1.8.0 or above.")}</li>

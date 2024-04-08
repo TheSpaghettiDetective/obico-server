@@ -9,7 +9,7 @@
     <br />
     <div class="mb-5">
       <div>
-        <h5>{{ $t("Presets:") }}</h5>
+        <h5>{{ $t("Presets") }}:</h5>
       </div>
       <div>
         <b-form-select
@@ -28,7 +28,7 @@
         </b-form-select>
       </div>
       <br />
-      <h5>{{ $t("Manual:") }}</h5>
+      <h5>{{ $t("Manual") }}:</h5>
       <div>
         <slider-input
           v-model="value"

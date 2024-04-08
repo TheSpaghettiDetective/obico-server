@@ -14,10 +14,10 @@
   {% block meta_viewport %}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   {% endblock meta_viewport %}
-  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. {{ syndicate.brand_name }} is the easiest way to monitor and control your 3D printer from anywhere.">
+  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. {{ page_context.syndicate.brand_name }} is the easiest way to monitor and control your 3D printer from anywhere.">
   <meta name="author" content="">
 
-  <title>{{ syndicate.brand_name }}</title>
+  <title>{{ page_context.syndicate.brand_name }}</title>
 
   <!-- Font Awesome -->
   <link
@@ -82,7 +82,7 @@
     {% elif not page_context.app_platform %}
       <footer id="global-footer">
         <div class="container">
-          <p>&copy; {{ syndicate.brand_name }} {% now "Y" %}. {% trans "All Rights Reserved" %}.</p>
+          <p>&copy; {{ page_context.syndicate.brand_name }} {% now "Y" %}. {% trans "All Rights Reserved" %}.</p>
         </div>
       </footer>
     {% endif %}

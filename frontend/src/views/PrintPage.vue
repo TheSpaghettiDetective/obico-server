@@ -339,7 +339,7 @@
                   </b-card>
                 </div>
                 <div v-else class="card-container">
-                  <p class="text-secondary mt-3">{{ $t("Time-Lapse video unavailable because:") }}</p>
+                  <p class="text-secondary mt-3">{{ $t("Time-Lapse video unavailable because") }}:</p>
                   <ul>
                     <li class="text-secondary mt-3">
                       {{ $t("The {brandName} server is still processing the time-lapse;",{brandName:$syndicateText.brandName}) }}

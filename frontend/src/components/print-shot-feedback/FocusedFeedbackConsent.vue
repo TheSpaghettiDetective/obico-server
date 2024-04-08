@@ -1,11 +1,11 @@
 <template>
   <div class="card-body consent-section">
     <div>
-      {{$t("Number of snapshots:")}}
+      {{$t("Number of snapshots")}}:
       <span class="feedback-estimate">{{ print.printshotfeedback_set.length }}</span>
     </div>
     <p>
-      {{$t("Estimated time to finish:")}}
+      {{$t("Estimated time to finish")}}:
       <span class="feedback-estimate">{{ estimatedFeedbackTime }}</span>
     </p>
     <p class="font-weight-light">
@@ -48,11 +48,11 @@
     </div>
     <br />
     <div>
-      <span class="text-muted">{{ $t("File:") }}</span>
+      <span class="text-muted">{{ $t("File") }}:</span>
       {{ print.filename }}
     </div>
     <div>
-      <span class="text-muted">{{ $t("Printed:") }}</span>
+      <span class="text-muted">{{ $t("Printed") }}:</span>
       {{ print.started_at.fromNow() }}
     </div>
     <br />

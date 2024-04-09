@@ -2,17 +2,6 @@
   <page-layout>
     <template #content>
       <b-container>
-        <b-row v-if="printerIdToLink">
-          <div class="col-sm-12 col-lg-8">
-            <div class="text-warning">
-              <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {localizedDom}.`)">
-                <template #localizedDom>
-                  <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$syndicateText.brandName})}}</a>
-                </template>
-              </i18next>
-            </div>
-          </div>
-        </b-row>
         <b-row>
           <b-col>
             <div class="form-container full-on-mobile">
@@ -204,7 +193,7 @@ export default {
   },
   computed: {
     printerIdToLink() {
-      return new URLSearchParams(window.location.search.substring(1)).get('printerId')
+      return this.$route.query.printerId;
     },
     title() {
       return this.printerIdToLink ? 'Re-Link Printer' : 'Link Printer'
@@ -234,14 +223,11 @@ export default {
     },
   },
   created() {
-    if (this.printerIdToLink) {
-      // Re-link currently doesn't support auto-discovery on the plugin side
-      this.discoveryEnabled = false
-    }
     if (this.targetOctoPrint) {
       this.useLegacyVerificationCode = true
     }
     this.getVerificationCode()
+    this.discoverPrinter()
   },
   methods: {
     oneTimePasscodeVerifyClicked() {

@@ -56,7 +56,7 @@ cd moonraker-obico
           <div class="col-sm-12 col-lg-6 p-4">
             <b-button
               variant="primary"
-              @click="this.$router.push(`/printers/wizard/guide/${$route.params.targetPlatform}`)"
+              @click="goForward"
             >
               {{ $t("Next") }}
             </b-button>
@@ -83,7 +83,14 @@ export default {
     },
   },
   methods: {
-
+    goForward() {
+      this.$router.push({
+        path: `/printers/wizard/link/${$route.params.targetPlatform}/`,
+        query: {
+          ...this.$route.query,
+        }
+      });
+    },
   },
 }
 </script>

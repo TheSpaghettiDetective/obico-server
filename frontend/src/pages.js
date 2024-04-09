@@ -15,6 +15,7 @@ import PrinterSettingsPage from '@src/views/PrinterSettingsPage.vue'
 import PrinterWizardPage from '@src/views/printer-wizard/PrinterWizardPage.vue'
 import TargetPlatformSelectionPage from '@src/views/printer-wizard/TargetPlatformSelectionPage.vue'
 import ObicoInstallationGuidePage from '@src/views/printer-wizard/ObicoInstallationGuidePage.vue'
+import AddPrinterSuccessPage from '@src/views/printer-wizard/AddPrinterSuccessPage.vue'
 import PrinterControlPage from '@src/views/PrinterControlPage.vue'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
@@ -56,6 +57,10 @@ const router = new VueRouter({
     {
       path: '/printers/wizard/link/:targetPlatform/',
       component: PrinterWizardPage,
+    },
+    {
+      path: '/printers/wizard/success/:printerId/',
+      component: AddPrinterSuccessPage,
     },
     ...Object.values(prefRoutes).map((route) => ({
       path: route,

@@ -33,7 +33,7 @@
                 <img :src="require('@static/img/fluidd_logo.png')" />
               </div>
               <h3 class="mt-4">{{ $t("Generic Klipper - Self Installed") }}</h3>
-              <h5>{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig.") }}</h5>
+              <h5>{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig") }}</h5>
             </div>
           </div>
         </div>

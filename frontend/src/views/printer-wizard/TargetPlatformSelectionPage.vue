@@ -2,6 +2,17 @@
   <page-layout>
     <template #content>
       <div class="container">
+        <b-row v-if="printerIdToLink">
+          <div class="col-sm-12 col-lg-8">
+            <div class="text-warning">
+              <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {localizedDom}.`)">
+                <template #localizedDom>
+                  <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$syndicateText.brandName})}}</a>
+                </template>
+              </i18next>
+            </div>
+          </div>
+        </b-row>
         <div class="row">
           <h3 class="col-sm-12 text-center p-3">{{ $t("Which platform are you using?") }}</h3>
         </div>
@@ -62,6 +73,11 @@ export default {
     return {
       devicesWithObicoPreInstalled: [],
     }
+  },
+  computed: {
+    printerIdToLink() {
+      return this.$route.query.printerId;
+    },
   },
   async created() {
     const response = await fetch(`https://storage.googleapis.com/public-versioned/devices_with_obico_preinstalled.json?ts=${Date.now()}`);

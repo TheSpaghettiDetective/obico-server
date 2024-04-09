@@ -16,81 +16,6 @@
         <b-row>
           <b-col>
             <div class="form-container full-on-mobile">
-              <div v-if="verifiedPrinter" class="text-center py-5">
-                <svg class="success-checkmark">
-                  <use href="#svg-success-checkmark" />
-                </svg>
-                <h3 class="pb-4">{{ $t("Successfully linked to your account!") }}</h3>
-                <div
-                  class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center"
-                >
-                  <saving-animation
-                    :errors="errorMessages.printer_name"
-                    :saving="saving.printer_name"
-                  >
-                    <div class="printer-name-input">
-                      <div class="edit-icon">
-                        <i class="fas fa-pen"></i>
-                      </div>
-                      <input
-                        v-model="verifiedPrinter.name"
-                        type="text"
-                        class="dark"
-                        :placeholder="$t('Printer name')"
-                        @input="updatePrinterName"
-                      />
-                    </div>
-                  </saving-animation>
-                  <div>
-                    <div class="text-muted mx-auto text-center font-weight-light">
-                      {{$t("Give your printer a shiny name.")}}
-                    </div>
-                  </div>
-                </div>
-                <br /><br />
-                <div
-                  class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center"
-                >
-                  <div v-if="redirectToTunnelCreation" class="mt-4">
-                    <a
-                      :href="redirectToTunnelCreation"
-                      class="btn btn-primary btn-block mx-auto btn-lg"
-                      >{{ $t("Authorize App Access") }}</a
-                    >
-                  </div>
-                  <div v-else>
-                    <div class="mt-4">
-                      <a href="/printers/" class="btn btn-primary btn-block mx-auto btn-lg"
-                        >{{ $t("Go Check Out Printer Feed!") }}</a
-                      >
-                    </div>
-                    <div class="mt-5">
-                      <a
-                        href="/user_preferences/notification_twilio/"
-                        class="btn btn-outline-secondary btn-block mx-auto"
-                        >{{ $t("Add Phone Number") }}</a
-                      >
-                    </div>
-                    <div>
-                      <div class="text-muted mx-auto text-center font-weight-light">
-                        {{$t("Receive text (SMS) in case of print failures.")}}
-                      </div>
-                    </div>
-                    <div class="mt-4">
-                      <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto"
-                        >{{ $t("Change Printer Settings") }}</a
-                      >
-                    </div>
-                    <div>
-                      <div class="text-muted mx-auto text-center font-weight-light">
-                        {{$t("You can always change it later.")}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div v-else>
 
                         <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
                         <div class="discover">
@@ -223,7 +148,6 @@
                       </i18next>
                     </div>
                   </div>
-              </div>
             </div>
           </b-col>
         </b-row>
@@ -245,7 +169,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 import sortBy from 'lodash/sortBy'
 import theme from '@src/styles/main.sass'
 import PageLayout from '@src/components/PageLayout.vue'
-import SavingAnimation from '@src/components/SavingAnimation.vue'
 import DiscoveredPrinter from '@src/components/printers/wizard/DiscoveredPrinter.vue'
 import AutoLinkPopup from '@src/components/printers/wizard/AutoLinkPopup.vue'
 const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
@@ -257,7 +180,6 @@ export default {
     WizardButton,
     Loading,
     PageLayout,
-    SavingAnimation,
     DiscoveredPrinter,
   },
   data() {
@@ -267,15 +189,6 @@ export default {
       verifiedPrinter: null,
       onVerificationStep: false,
       copied: false,
-      saving: {},
-      errorMessages: {},
-      delayedSubmit: {
-        // Make pause before sending new value to API
-        printer_name: {
-          delay: 1000,
-          timeoutId: null,
-        },
-      },
       oneTimePasscode: '',
       oneTimePasscodeResult: null,
       useLegacyVerificationCode: false, // To simplify the flow, this can only change from false -> true.
@@ -286,7 +199,6 @@ export default {
       gotSecret: null,
       obicoDiscoveryPopup: null,
       apiCallIntervalId: null,
-      targetPlatform: null,
     }
   },
   computed: {
@@ -295,9 +207,6 @@ export default {
     },
     title() {
       return this.printerIdToLink ? 'Re-Link Printer' : 'Link Printer'
-    },
-    editPrinterUrl() {
-      return `/printers/${this.verifiedPrinter.id}/`
     },
     expiryMoment() {
       if (this.verificationCode) {
@@ -316,9 +225,6 @@ export default {
     canStartLinking() {
       return this.verificationCode?.code && this.discoveredPrinters?.length > 0
     },
-    redirectToTunnelCreation() {
-      return new URLSearchParams(window.location.search).get('redirectToTunnelCreation')
-    },
     targetOctoPrint() {
       return this.$route.params.targetPlatform === 'octoprint'
     },
@@ -332,7 +238,6 @@ export default {
       this.discoveryEnabled = false
     }
     this.getVerificationCode()
-
   },
   methods: {
     oneTimePasscodeVerifyClicked() {
@@ -351,40 +256,6 @@ export default {
         .catch((error) => {
           this.oneTimePasscodeResult = 'failed'
         })
-    },
-    setSavingStatus(propName, status) {
-      if (status) {
-        delete this.errorMessages[propName]
-      }
-      this.$set(this.saving, propName, status)
-    },
-    updatePrinterName() {
-      if ('name' in this.verifiedPrinter && this.verifiedPrinter.name) {
-        const delayInfo = this.delayedSubmit['printer_name']
-        if (delayInfo['timeoutId']) {
-          clearTimeout(delayInfo['timeoutId'])
-        }
-        this.delayedSubmit['printer_name']['timeoutId'] = setTimeout(() => {
-          this.setSavingStatus('printer_name', true)
-          // Make request to API
-          return axios
-            .patch(urls.printer(this.verifiedPrinter.id), {
-              name: this.verifiedPrinter.name,
-            })
-            .then(() => {
-              this.setSavingStatus('printer_name', false)
-            })
-            .catch((error) => {
-              this.errorDialog(error, 'Failed to update printer name')
-            })
-        }, delayInfo['delay'])
-        return
-      } else {
-        const delayInfo = this.delayedSubmit['printer_name']
-        if (delayInfo['timeoutId']) {
-          clearTimeout(delayInfo['timeoutId'])
-        }
-      }
     },
     verificationCodeUrl() {
       const baseUrl = urls.verificationCode()
@@ -439,6 +310,12 @@ export default {
             if (onPrinterLinked) {
               onPrinterLinked()
             }
+            this.$router.push({
+              path: `/printers/wizard/success/${this.verifiedPrinter.id}/`,
+              query: {
+                ...this.$route.query,
+              }
+            });
           }
         }
       })

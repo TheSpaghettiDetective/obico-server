@@ -752,7 +752,7 @@ class OneTimePasscodeViewSet(
         verification_code = request.data.get('verification_code')
         one_time_passcode = request.data.get('one_time_passcode')
 
-        verification_code_obj = get_object_or_404(OneTimeVerificationCode, user=request.user, code=verification_code, printer=None)
+        verification_code_obj = get_object_or_404(OneTimeVerificationCode, user=request.user, code=verification_code)
 
         if not check_one_time_passcode(one_time_passcode, verification_code_obj.code):
             return JsonResponse({'detail': 'Not Found'}, status=status.HTTP_404_NOT_FOUND)

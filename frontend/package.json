@@ -33,7 +33,6 @@
     "semver": "^7.3.5",
     "vue": "^2.6.11",
     "vue-click-outside": "^1.1.0",
-    "vue-form-wizard": "^0.8.4",
     "vue-loading-overlay": "^3.3.2",
     "vue-moment": "^4.1.0",
     "vue-mugen-scroll": "^0.2.6",

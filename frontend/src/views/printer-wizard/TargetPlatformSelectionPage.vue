@@ -45,7 +45,7 @@ export default {
   methods: {
     setTargetPlatform(platform) {
       this.targetPlatform = platform
-      this.$router.push(`/printers/wizard/link/${platform}`);
+      this.$router.push(`/printers/wizard/guide/${platform}`);
     },
   },
 }

@@ -2,9 +2,20 @@
   <page-layout>
     <template #content>
       <b-container>
+        <b-row v-if="printerIdToLink">
+          <div class="col-sm-12 col-lg-8">
+            <div class="text-warning">
+              <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {localizedDom}.`)">
+                <template #localizedDom>
+                  <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$syndicateText.brandName})}}</a>
+                </template>
+              </i18next>
+            </div>
+          </div>
+        </b-row>
         <b-row>
           <b-col>
-            <div class="wizard-container form-container full-on-mobile">
+            <div class="form-container full-on-mobile">
               <div v-if="verifiedPrinter" class="text-center py-5">
                 <svg class="success-checkmark">
                   <use href="#svg-success-checkmark" />
@@ -80,100 +91,7 @@
               </div>
 
               <div v-else>
-                  <form-wizard color="var(--color-primary)" step-size="sm">
-                    <h3 slot="title">
-                      {{ title }}
-                    </h3>
 
-                    <tab-content v-if="targetMoonraker" :title="`Install ${$syndicateText.brandName} for Klipper`">
-                      <div class="container">
-                        <div class="row justify-content-center pb-3">
-                          <div class="col-sm-12 col-lg-8">
-                            <ol>
-                              <li>{{ $t("SSH to the Raspberry Pi your Klipper runs on.") }}</li>
-                              <li>
-                                <div>{{ $t("Run:") }}</div>
-<pre class="mt-2">
-cd ~
-git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
-cd moonraker-obico
-./install.sh
-                              </pre
-                                >
-                              </li>
-                              <li>{{ $t("Follow the installation steps.") }}</li>
-                            </ol>
-                          </div>
-                        </div>
-                      </div>
-                    </tab-content>
-                    <tab-content
-                      v-if="printerIdToLink && targetOctoPrint"
-                      :title="$t('Open Plugin Settings')"
-                    >
-                      <div class="container">
-                        <div class="row justify-content-center pb-3">
-                          <div class="col-sm-12 col-lg-8">
-                            <div class="text-warning">
-                              <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {localizedDom}.`)">
-                                <template #localizedDom>
-                                  <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$syndicateText.brandName})}}</a>
-                                </template>
-                              </i18next>
-                            </div>
-                            <ol>
-                              <li>{{ $t("Open OctoPrint in another browser tab.") }}</li>
-                              <li>
-                                {{ $t("Select") }}
-                                <em>"{{$t("OctoPrint settings menu → {brandName} for OctoPrint",{brandName:$syndicateText.brandName})}}"</em>.
-
-                              </li>
-                              <li>{{ $t("Select ") }}<em>{{ $t("Troubleshooting → Re-run Wizard") }}</em>.</li>
-                            </ol>
-                          </div>
-                        </div>
-                        <div class="row justify-content-center">
-                          <div class="col-sm-12 col-lg-8 img-container">
-                            <img
-                              class="mx-auto"
-                              :src="
-                                require('@static/img/octoprint-plugin-guide/plugin_rerun_setup.png')
-                              "
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </tab-content>
-                    <tab-content v-if="!printerIdToLink && targetOctoPrint" :title="$t('Install Plugin')">
-                      <div class="container">
-                        <div class="row justify-content-center pb-3">
-                          <div class="col-sm-12 col-lg-8">
-                            <ol>
-                              <li>{{ $t("Open OctoPrint in another browser tab.") }}</li>
-                              <li>
-                                {{ $t("Select") }}
-                                <em>"{{$t("OctoPrint settings menu → Plugin Manager → Get More...")}}"</em>.
-                              </li>
-                              <li>{{ $t("Enter '{brandName}' to locate the plugin. Click",{brandName:$syndicateText.brandName}) }} <em>"{{$t("Install")}}"</em>.</li>
-                              <li>{{ $t("Restart OctoPrint when prompted.") }}</li>
-                            </ol>
-                          </div>
-                        </div>
-                        <div class="row justify-content-center">
-                          <div class="col-sm-12 col-lg-8 img-container">
-                            <img
-                              class="mx-auto screenshot"
-                              :src="
-                                require('@static/img/octoprint-plugin-guide/install_plugin.png')
-                              "
-                              @click="zoomIn($event)"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </tab-content>
-                    <template v-if="discoveryEnabled">
-                      <tab-content :title="$t('Link It!')">
                         <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
                         <div class="discover">
                           <div class="discover-body">
@@ -219,47 +137,6 @@ cd moonraker-obico
                             </div>
                           </div>
                         </div>
-                      </tab-content>
-                    </template>
-                    <template v-else>
-                      <tab-content v-if="targetOctoPrint" :title="$t('Plugin Wizard')">
-                        <div class="container">
-                          <div class="row justify-content-center pb-3">
-                            <div class="col-sm-12 col-lg-8">
-                              <ol>
-
-                                <li>
-                                  <i18next :translation="$t(`Wait for {localizedDom} wizard to popup.`)">
-                                    <template #localizedDom>
-                                      <em>"{{$t("{brandName} for OctoPrint",{brandName:$syndicateText.brandName})}}"</em>
-                                    </template>
-                                  </i18next>
-                                </li>
-                                <li>{{ $t("Follow the instructions in the wizard.") }}</li>
-                                <li>
-                                  <i18next :translation="$t(`Select {localizedDom} when asked.`)">
-                                    <template #localizedDom>
-                                      <em>"{{$t("Web Setup")}}"</em>
-                                    </template>
-                                  </i18next>
-                                </li>
-                              </ol>
-                            </div>
-                          </div>
-                          <div class="row justify-content-center">
-                            <div class="col-sm-12 col-lg-8 img-container">
-                              <img
-                                class="mx-auto screenshot"
-                                :src="
-                                  require('@static/img/octoprint-plugin-guide/plugin_wizard_websetup.png')
-                                "
-                                @click="zoomIn($event)"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </tab-content>
-                      <tab-content :title="$t('Enter Code')">
                         <div v-if="useLegacyVerificationCode" class="container">
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
@@ -337,35 +214,6 @@ cd moonraker-obico
                             </div>
                           </div>
                         </div>
-                      </tab-content>
-                    </template>
-
-                    <template slot="footer" slot-scope="props">
-                      <div class="wizard-footer-left">
-                        <wizard-button
-                          v-if="props.activeTabIndex > 0"
-                          class="btn btn-link btn-back"
-                          @click.native="
-                            props.prevTab();
-                            prevTab(props.activeTabIndex)
-                          "
-                          >&lt; {{$t("Back")}}</wizard-button
-                        >
-                      </div>
-                      <div class="wizard-footer-right">
-                        <wizard-button
-                          v-if="!props.isLastStep"
-                          class="wizard-footer-right wizard-btn"
-                          :style="{ ...props.fillButtonStyle, color: 'var(--color-on-primary)' }"
-                          @click.native="
-                            props.nextTab();
-                            nextTab(props.activeTabIndex)
-                          "
-                          >{{$t("Next")}} &gt;</wizard-button
-                        >
-                      </div>
-                    </template>
-                  </form-wizard>
                   <div class="row">
                     <div class="helper col-sm-12">
                       <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
@@ -430,7 +278,7 @@ export default {
       },
       oneTimePasscode: '',
       oneTimePasscodeResult: null,
-      useLegacyVerificationCode: true, // To simplify the flow, this can only change from false -> true.
+      useLegacyVerificationCode: false, // To simplify the flow, this can only change from false -> true.
       discoveryEnabled: true, // To simplify the flow, this can only change from true -> false.
       discoveryCount: 0,
       discoveredPrinters: [],
@@ -485,9 +333,6 @@ export default {
     }
     this.getVerificationCode()
 
-    if (new URLSearchParams(window.location.search).get('otp') === 'true') {
-      this.useLegacyVerificationCode = false
-    }
   },
   methods: {
     oneTimePasscodeVerifyClicked() {
@@ -539,44 +384,6 @@ export default {
         if (delayInfo['timeoutId']) {
           clearTimeout(delayInfo['timeoutId'])
         }
-      }
-    },
-    /**
-     * Functions prevTab() and nextTab() are used to remove .checked class from circle steps
-     * following current step (.checked class isn't removed by default after clicking Back
-     * button, which causes showiing logo inside furter steps, not only completed ones).
-     */
-    prevTab() {
-      document
-        .querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle')
-        .classList.remove('checked')
-      this.onVerificationStep = false
-    },
-    nextTab(activeStep) {
-      document
-        .querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle')
-        .classList.add('checked')
-      this.onVerificationStep = activeStep == 1 // nextTab is called before activeStep changes
-      if (activeStep == 0 && this.discoveryEnabled && this.discoveryCount == 0) {
-        this.discoverPrinter()
-      }
-      if (this.onVerificationStep) {
-        const copyFunc = this.copyCode
-        let ctrlDown = false,
-          ctrlKey = 17,
-          cmdKey = 91,
-          cKey = 67
-        document.addEventListener('keydown', function (e) {
-          if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true
-        })
-        document.addEventListener('keyup', function (e) {
-          if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false
-        })
-        document.addEventListener('keydown', function (e) {
-          if (ctrlDown && e.keyCode == cKey) {
-            copyFunc()
-          }
-        })
       }
     },
     verificationCodeUrl() {
@@ -734,16 +541,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-
-.wizard-btn
-  border-radius: 300px
-.wizard-container
-  padding: 1em
-  background: var(--color-surface-secondary)
-  -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
-  box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
-  border: none !important
-  border-radius: var(--border-radius-lg)
 .btn-back
   color: var(--color-text-primary)
   min-width: auto
@@ -795,31 +592,6 @@ pre
 // TODO merge 2 style blocks
 
 // Step label (not active)
-.wizard-container .vue-form-wizard .wizard-nav-pills > li:not(.active) > a > span
-  color: var(--color-text-primary)
-// Adjust numbers in the circles (form steps)
-.wizard-nav.wizard-nav-pills .wizard-icon-circle i
-  position: relative
-  right: 2px
-// Show logo inside completed sorm step circles
-.wizard-nav.wizard-nav-pills li:not(.active)
-  .wizard-icon-circle.checked i
-    display: none
-  .wizard-icon-circle.checked
-    background-color: var(--color-primary)
-    &:before
-      $size: 20px
-      content: ""
-      display: block
-      width: $size
-      height: $size
-      background-image: url('/static/img/tick_dark.svg')
-      background-size: $size $size
-      position: absolute
-      top: calc(50% - $size / 2)
-      left: calc(50% - $size / 2)
-      bottom: calc(50% - $size / 2)
-      right: calc(50% - $size / 2)
 .success-checkmark
   width: 6rem
   height: 6rem

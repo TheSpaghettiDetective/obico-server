@@ -14,6 +14,7 @@ import SharedPrinterPage from '@src/views/SharedPrinterPage.vue'
 import PrinterSettingsPage from '@src/views/PrinterSettingsPage.vue'
 import PrinterWizardPage from '@src/views/printer-wizard/PrinterWizardPage.vue'
 import TargetPlatformSelectionPage from '@src/views/printer-wizard/TargetPlatformSelectionPage.vue'
+import ObicoInstallationGuidePage from '@src/views/printer-wizard/ObicoInstallationGuidePage.vue'
 import PrinterControlPage from '@src/views/PrinterControlPage.vue'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
@@ -47,6 +48,10 @@ const router = new VueRouter({
     {
       path: '/printers/wizard/',
       component: TargetPlatformSelectionPage,
+    },
+    {
+      path: '/printers/wizard/guide/:targetPlatform/',
+      component: ObicoInstallationGuidePage,
     },
     {
       path: '/printers/wizard/link/:targetPlatform/',

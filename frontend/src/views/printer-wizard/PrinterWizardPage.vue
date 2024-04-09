@@ -100,7 +100,7 @@
                       @click="zoomIn($event)"
                     />
                     <img
-                      v-if="targetMoonraker"
+                      v-if="targetKlipper"
                       class="screenshot"
                       :src="
                         require('@static/img/octoprint-plugin-guide/moonraker_verification_code.png')
@@ -150,7 +150,7 @@
                 <div class="helper col-sm-12">
                   <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
                     <template #localizedDom>
-                      <a target="_blank" :href="targetMoonraker? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
+                      <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
                     </template>
                   </i18next>
                 </div>
@@ -229,8 +229,8 @@ export default {
     targetOctoPrint() {
       return this.$route.params.targetPlatform === 'octoprint'
     },
-    targetMoonraker() {
-      return this.$route.params.targetPlatform === 'moonraker'
+    targetKlipper() {
+      return this.$route.params.targetPlatform.startsWith('klipper-');
     },
   },
   created() {

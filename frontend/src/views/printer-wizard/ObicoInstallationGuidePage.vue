@@ -30,7 +30,7 @@
               </div>
             </div>
           </div>
-          <div v-if="targetMoonraker"  class="container">
+          <div v-if="targetKlipper"  class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8">
                 <ol>
@@ -78,7 +78,7 @@ export default {
     targetOctoPrint() {
       return this.$route.params.targetPlatform === 'octoprint'
     },
-    targetMoonraker() {
+    targetKlipper() {
       return this.$route.params.targetPlatform === 'moonraker'
     },
   },

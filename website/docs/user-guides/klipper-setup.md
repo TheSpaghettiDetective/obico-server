@@ -12,6 +12,17 @@ import TabItem from '@theme/TabItem';
  This guide is for the users who use Klipper with Moonraker and **Mainsail or Fluidd**. If you are using OctoPrint with Klipper, please follow the [Obico for OctoPrint guide](octoprint-plugin-setup.md) instead.
 :::
 
+:::tip
+This guide is for users who installed Klipper themselves. If you have a printer that came with Klipper pre-installed, follow the guide for your 3D printer: 
+- [Creality K1 Series](https://www.obico.io/blog/remote-access-creality-k1/)
+- [Elegoo Neptune 4 Series](https://obico.io/blog/elegoo-neptune-4-and-obico-ai-3d-printing-revolution/)
+- [Kingroon KLP1](https://obico.io/blog/kingroon-klipper-remote-access-and-ai/)
+- [Kingroon KP3S Pro V2](https://obico.io/blog/kingroon-klipper-remote-access-and-ai/)
+- [Qidi X Series](https://obico.io/blog/qidi-tech-x-series-klipper-remote-access-and-ai/)
+- [Creality Sonic Pad](https://www.obico.io/blog/sonic-pad-remote-access-ai/)
+- [Sovol SV08 Series](https://obico.io/blog/sovol-svo7-series-klipper-remote-access-ai/)
+:::tip 
+
 :::info
 This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
 :::

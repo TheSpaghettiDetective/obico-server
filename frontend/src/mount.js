@@ -36,6 +36,7 @@ import {
   faLayerGroup,
   faChevronDown,
   faRulerVertical,
+  faCheck
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 import { syndicate,language } from '@src/lib/page-context'
@@ -97,7 +98,8 @@ export default (router, components) => {
     faGear,
     faLayerGroup,
     faChevronDown,
-    faRulerVertical
+    faRulerVertical,
+    faCheck
   )
   Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 

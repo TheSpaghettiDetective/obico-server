@@ -273,21 +273,21 @@ class OctoPrinterDiscoveryView(APIView):
                 'one_time_passlink': f'https://app.obico.io/otp/?one_time_passcode={maybe_new_one_time_passcode}',
                 'verification_code': verification_code}
 
+        messages = []
         device_info = request.data
+
         device_info['host_or_ip'] = cleanup_ip(device_info['host_or_ip'])
-        if not is_valid_ip(device_info['host_or_ip']) or is_public_ip(device_info['host_or_ip']):
-            raise Http404("host_or_ip must be private ip address")
+        if is_valid_ip(device_info['host_or_ip']) and not is_public_ip(device_info['host_or_ip']):
+            update_presence_for_device(
+                client_ip=client_ip,
+                device_id=device_info['device_id'],
+                device_info=device_info,
+            )
 
-        update_presence_for_device(
-            client_ip=client_ip,
-            device_id=device_info['device_id'],
-            device_info=device_info,
-        )
-
-        messages = pull_messages_for_device(
-            client_ip=client_ip,
-            device_id=device_info['device_id'],
-        )
+            messages = pull_messages_for_device(
+                client_ip=client_ip,
+                device_id=device_info['device_id'],
+            )
 
         discovery_response = {'messages': [m.asdict() for m in messages]}
         if otp_response:
@@ -328,7 +328,7 @@ class OneTimeVerificationCodeVerifyView(APIView):
             code.save()
             return Response(OneTimeVerificationCodeSerializer(code, many=False).data)
         else:
-            raise Http404("Requested resource does not exist")
+            return Response({'detail': "Requested resource does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class PrinterEventView(CreateAPIView):

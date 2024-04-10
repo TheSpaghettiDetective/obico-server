@@ -91,7 +91,7 @@ MIDDLEWARE = [
     'django.middleware.gzip.GZipMiddleware',
     'app.middleware.RefreshSessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.locale.LocaleMiddleware', 
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -263,8 +263,8 @@ SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)
 
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '1800/hour',
-        'user': '1800/hour',
+        'anon': '3600/hour',
+        'user': '3600/hour',
     },
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',

@@ -119,35 +119,72 @@
                       </div>
                     </div>
                   </div>
-                  <div v-else class="container">
-                    <div class="row justify-content-center pb-3">
-                      <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
-                        <input
-                          type="text"
-                          class="form-control"
-                          aria-label="One time code"
-                          v-model="oneTimePasscode"
-                        />
+                  <div v-else class="container pt-5">
+                    <div class="row justify-content-center pb-1">
+                      <div class="col-sm-12 col-md-8 col-lg-6 d-flex flex-column align-items-center">
+                        <div class="d-flex align-items-center">
+                          <input
+                            type="text"
+                            class="form-control code-btn"
+                            aria-label="One-time Passcode"
+                            v-model="oneTimePasscode"
+                            :disabled="oneTimePasscodeStatus === 'inprogress'"
+                            @input="oneTimePasscodeChanged"
+                          />
+                          <div class="spinner-border text-primary ml-2" role="status" v-if="oneTimePasscodeStatus === 'inprogress'">
+                            <span class="sr-only">Loading...</span>
+                          </div>
+                        </div>
                       </div>
-                      <div v-if="oneTimePasscodeResult === 'failed'" class="text-danger" >
+                    </div>
+                    <div class="row justify-content-center pb-3">
+                      <div v-if="oneTimePasscodeStatus === 'failed'" class="text-danger col-sm-12 d-flex flex-column align-items-center">
                         {{$t("Invalid code. Is it expired?")}}
                       </div>
-                    </div>
-                    <div class="row justify-content-center pb-3">
-                      <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
-                        <b-button class="link-btn" @click="oneTimePasscodeVerifyClicked">
-                          {{$t("Verify")}}
-                        </b-button>
+                      <div v-else class="col-sm-12 d-flex flex-column align-items-center">
+                        {{$t("Enter the One-time Passcode")}}
                       </div>
                     </div>
-                    <div>
-                      <i18next :translation="$t(`If you using Obico for OctoPrint older than 2.5.0, or Obico for Klipper older than 1.6.0, switch to {localizedDom}.`)">
-                        <template #localizedDom>
-                          <a class="link" @click="useLegacyVerificationCode = true">{{$t("6-digit verification code")}}</a>
-                        </template>
-                      </i18next>
+                    <div class="mt-4">
+                      <muted-alert class="muted-alert">
+                        <i18next :translation="$t(`If you using Obico for OctoPrint older than 2.5.0, or Obico for Klipper older than 1.6.0, switch to {localizedDom}.`)">
+                          <template #localizedDom>
+                            <a class="link" @click="useLegacyVerificationCode = true">{{$t("6-digit verification code")}}</a>
+                          </template>
+                        </i18next>
+                      </muted-alert>
                     </div>
                   </div>
+                </div>
+              </b-row>
+              <b-row v-if="!discoveryEnabled && !useLegacyVerificationCode" class="center mt-3 mb-5">
+                <div class="col-md-4 p-4">
+                    <h4 class="text-center font-weight-bold">{{ $t("Touch Screen") }}</h4>
+                    <img src="@static/img/printer-wizard/klipperScreenMenu.png" style="max-width: 80%;" alt="">
+                    <ol>
+                      <li>{{ $t("Check to see if your printer already has Obico installed your printer screen.") }}</li>
+                      <li>{{ $t("Navigate to the settings menu on the LCD screen of your printer.") }}</li>
+                      <li>{{ $t("Find the “Link Obico” menu item and tap it to open the connection screen.") }}</li>
+                    </ol>
+                </div>
+                <div class="col-md-4 p-4">
+                    <h4 class="text-center font-weight-bold">{{ $t("LCD Screen ") }}</h4>
+                    <img src="@static/img/printer-wizard/lcdScreenLarge.png" style="max-width: 80%;" alt="">
+                    <ol>
+                      <li>{{ $t("Check to see if your printer already has Obico Easy Link installed on the LCD menu.") }}</li>
+                      <li>{{ $t("Navigate to the settings menu on the LCD screen of your printer.") }}</li>
+                      <li>{{ $t("Find the “Link Obico” menu item.") }}</li>
+                    </ol>
+                </div>
+                <div class="col-md-4 p-4">
+                    <h4 class="text-center font-weight-bold">{{ $t("Install Via SSH") }}</h4>
+                    <img src="@static/img/printer-wizard/commandLinePrompt.png" style="max-width: 80%;" alt="">
+                    <ol>
+                      <li>{{ $t("If you can't find Obico Easy Link, you will need to SSH to your printer to install Obico. You will need to find a guide that works for your printer.") }}</li>
+                    </ol>
+                    <div>
+                      <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/">{{ $t("Show me how") }}</a>
+                    </div>
                 </div>
               </b-row>
               <div class="d-flex justify-content-between button-wrap">
@@ -184,6 +221,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 import sortBy from 'lodash/sortBy'
 import theme from '@src/styles/main.sass'
 import PageLayout from '@src/components/PageLayout.vue'
+import MutedAlert from '@src/components/MutedAlert.vue'
 import DiscoveredPrinter from '@src/components/printers/wizard/DiscoveredPrinter.vue'
 import AutoLinkPopup from '@src/components/printers/wizard/AutoLinkPopup.vue'
 import PrinterProgress from '../../components/printers/wizard/PrinterProgress.vue';
@@ -195,7 +233,8 @@ export default {
     Loading,
     PageLayout,
     DiscoveredPrinter,
-    PrinterProgress
+    PrinterProgress,
+    MutedAlert,
   },
   data() {
     return {
@@ -204,7 +243,7 @@ export default {
       verifiedPrinter: null,
       copied: false,
       oneTimePasscode: '',
-      oneTimePasscodeResult: null,
+      oneTimePasscodeStatus: null,
       useLegacyVerificationCode: false, // To simplify the flow, this can only change from false -> true.
       discoveryEnabled: true,
       discoveryCount: 0,
@@ -254,22 +293,26 @@ export default {
     this.discoverPrinter()
   },
   methods: {
-    oneTimePasscodeVerifyClicked() {
-      axios
-        .post(urls.oneTimePasscodes(), {
-          one_time_passcode: this.oneTimePasscode,
-          verification_code: this.verificationCode.code,
-        })
-        .then((resp) => {
-          if (resp.status === 200) {
-            this.oneTimePasscodeResult = 'passed'
-          } else {
-            this.oneTimePasscodeResult = 'failed'
-          }
-        })
-        .catch((error) => {
-          this.oneTimePasscodeResult = 'failed'
-        })
+    oneTimePasscodeChanged() {
+      this.oneTimePasscode = this.oneTimePasscode.toLowerCase();
+
+      // Call API when input reaches 5 characters
+      if (this.oneTimePasscode.length === 5) {
+        this.oneTimePasscodeStatus = 'inprogress'
+        axios
+          .post(urls.oneTimePasscodes(), {
+            one_time_passcode: this.oneTimePasscode,
+            verification_code: this.verificationCode.code,
+          })
+          .then((resp) => {
+            if (resp.status !== 200) {
+              this.oneTimePasscodeStatus = 'failed'
+            }
+          })
+          .catch((error) => {
+            this.oneTimePasscodeStatus = 'failed'
+          })
+      }
     },
     verificationCodeUrl() {
       const baseUrl = urls.verificationCode()
@@ -322,7 +365,7 @@ export default {
       }, 5000)
     },
     showVerificationCodeHelpModal() {
-      let html = `<p>${this.$i18next.t("The 6-digit code needs to be entered in the {brandName} plugin in OctoPrint. There are a few reasons why you can't find this page:",{brandName:this.$syndicateText.brandName})}</p>
+      let html = `<p>${this.$i18next.t("The 6-digit code needs to be entered in the Obico plugin in OctoPrint. There are a few reasons why you can't find this page:",{brandName:this.$syndicateText.brandName})}</p>
         <p><ul>
         <li style="margin: 10px 0;">${this.$i18next.t("You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click")} <a href="/printers/wizard/">here</a> ${this.$i18next.t("to walk through the process again.")}</li>
         <li style="margin: 10px 0;">${this.$i18next.t("The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to")} <b>1.5.0</b> ${this.$i18next.t("or later.")}</li>
@@ -330,7 +373,7 @@ export default {
         </ul></p>`
 
       if (!this.targetOctoPrint) {
-        html = `<p>${this.$i18next.t("The 6-digit code needs to be entered to the")} <em>${this.$i18next.t("{brandName} for OctoPrint",{brandName:this.$syndicateText.brandName})}</em> ${this.$i18next.t("installation script.")}</p>
+        html = `<p>${this.$i18next.t("The 6-digit code needs to be entered to the Obico for Klipper installation script.")}</p>
         <p>${this.$i18next.t("Check")} <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/"${this.$i18next.t("this set up guide")}</a> ${this.$i18next.t("for detailed instructions.")}</p>`
       }
 

@@ -12,7 +12,7 @@
         </b-row>
         <div>
           <div v-if="targetKlipperPreInstall" class="kilpper-pre-install-wrap">
-            <img src="@static/img/printer-wizard/command-line.png" alt="">
+            <img src="@static/img/printer-wizard/commandLinePrompt.png" alt="">
             <div class="text-wrap">
               <h4>{{ $t("If you haven’t installed Obico Klipper, You need to find the right guide for your printer to install it.The basic steps involves") }}:</h4>
               <ol>

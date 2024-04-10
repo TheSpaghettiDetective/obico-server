@@ -45,7 +45,7 @@
               </div>
             </div>
           </div>
-          <div v-if="targetKlipper" class="klipper-wrap">
+          <div v-if="targetKlipperGeneric" class="klipper-wrap">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-10">
                 <ol>
@@ -70,7 +70,7 @@ cd moonraker-obico
               <div class="img-wrap">
                 <img :src="printerItem.image_url" alt="">
               </div>
-              
+
             </div>
             <div class="line"></div>
             <div class="printer-right">
@@ -79,7 +79,7 @@ cd moonraker-obico
                 <li>{{ $t('2. Power on the 3D printer and make sure it is connected to WiFi.') }}</li>
                 <li>{{ $t('3. Tap “Next” when you are ready.') }}</li>
               </ol>
-              
+
             </div>
           </div>
         </div>
@@ -125,8 +125,11 @@ export default {
     targetKlipperPreInstall() {
       return this.$route.params.targetPlatform === 'klipper-preinstalled'
     },
-    targetKlipper() {
+    targetKlipperGeneric() {
       return this.$route.params.targetPlatform === 'klipper-generic'
+    },
+    targetKlipper() {
+      return this.$route.params.targetPlatform.startsWith('klipper-');
     },
   },
   methods: {
@@ -196,7 +199,7 @@ export default {
       display:flex;
       flex-direction: column;
       align-items:center;
-  
+
       .img-wrap{
         margin-top:20px;
         background-color: var(--color-surface-primary);
@@ -211,7 +214,7 @@ export default {
       align-self: stretch;
       width:1px;
       background-color: #fff;
-      
+
     }
     .printer-right{
       flex:1;
@@ -227,6 +230,6 @@ export default {
       cursor: pointer;
     }
   }
-  
+
 }
 </style>

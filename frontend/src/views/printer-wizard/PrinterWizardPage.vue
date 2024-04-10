@@ -13,135 +13,143 @@
                   <PrinterProgress :step="2"></PrinterProgress>
                 </div>
               </b-row>
-              <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
-              <div v-if="discoveryEnabled" class="discover">
-                <div class="discover-body">
-                  <div v-if="!canStartLinking" style="text-align: center">
-                    <div class="spinner-border big" role="status">
-                      <span class="sr-only"></span>
-                    </div>
-                    <div class="lead">{{ $t("Scanning...") }}</div>
-                  </div>
-                  <div v-else>
-                    <div class="lead my-3">
-                      <div class="spinner-border" role="status">
-                        <span class="sr-only"></span>
+
+              <b-row class="center mt-3 mb-5">
+                <div class="col-sm-12 col-lg-8">
+                  <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
+                  <div v-if="discoveryEnabled" class="discover">
+                    <div class="discover-body">
+                      <div v-if="!canStartLinking" style="text-align: center">
+                        <div class="spinner-border big" role="status">
+                          <span class="sr-only"></span>
+                        </div>
+                        <div class="lead">{{ $t("Scanning...") }}</div>
                       </div>
-                      <span class="sr-only"></span>
-                      {{ $t("Scanning..., {name} printer(s) found on your local network:",{name:discoveredPrinters.length}) }}
+                      <div v-else>
+                        <div class="lead my-3">
+                          <div class="spinner-border" role="status">
+                            <span class="sr-only"></span>
+                          </div>
+                          <span class="sr-only"></span>
+                          {{ $t("Scanning..., {name} printer(s) found on your local network:",{name:discoveredPrinters.length}) }}
+                        </div>
+                        <discovered-printer
+                          v-for="discoveredPrinter in discoveredPrinters"
+                          :key="discoveredPrinter.device_id"
+                          :discovered-printer="discoveredPrinter"
+                          @auto-link-printer="autoLinkPrinter"
+                        />
+                      </div>
+                      <div v-if="discoveryCount >= 2" class="text-muted">
+                        <div>{{$t("To link your printer, please make sure:")}}</div>
+                        <ul>
+                          <li>{{ $t("The printer is powered on. If you are using an external SBC such as a Raspberry Pi, make sure it's powered on as well.") }}</li>
+                          <li>
+                            {{$t("The printer or SBC is connected to the same local network as your phone/computer.")}}
+                          </li>
+                          <li v-if="targetOctoPrint">{{ $t("{brandName} for OctoPrint is 1.8.0 or above.",{brandName:$syndicateText.brandName}) }}</li>
+                        </ul>
+                      </div>
+                      <div class="d-flex flex-column align-items-center">
+                        <div class="mt-5 mb-3">
+                        {{ $t(`Can’t find the printer you want to link? Switch to manual linking instead.`) }}
+                        </div>
+                        <button
+                          class="btn btn-outline-secondary"
+                          type="button"
+                          @click="discoveryEnabled = false"
+                        >
+                          {{ $t("Switch to manual linking") }}
+                        </button>
+                      </div>
                     </div>
-                    <discovered-printer
-                      v-for="discoveredPrinter in discoveredPrinters"
-                      :key="discoveredPrinter.device_id"
-                      :discovered-printer="discoveredPrinter"
-                      @auto-link-printer="autoLinkPrinter"
-                    />
                   </div>
-                  <div class="mt-5 mb-3">
-                    <i18next :translation="$t(`Can't find the printer you want to link? Switch to {localizedDom} instead.`)">
-                      <template #localizedDom>
-                        <a class="link" @click="discoveryEnabled = false">{{$t("Manual Setup")}}</a>
-                      </template>
-                    </i18next>
-                  </div>
-                  <div v-if="discoveryCount >= 2" class="text-muted">
-                    <div>{{$t("To link your printer, please make sure:")}}</div>
-                    <ul>
-                      <li>{{ $t("The printer is powered on. If you are using an external SBC such as a Raspberry Pi, make sure it's powered on as well.") }}</li>
-                      <li>
-                        {{$t("The printer or SBC is connected to the same local network as your phone/computer.")}}
-                      </li>
-                      <li v-if="targetOctoPrint">{{ $t("{brandName} for OctoPrint is 1.8.0 or above.",{brandName:$syndicateText.brandName}) }}</li>
-                      <li v-else>{{ $t("{brandName} for Klipper is 1.5.0 or above.",{brandName:$syndicateText.brandName}) }}
-                        </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div v-else-if="useLegacyVerificationCode" class="container">
-                <div class="row justify-content-center pb-3">
-                  <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
-                    <input
-                      ref="code"
-                      disabled
-                      class="code-btn"
-                      :value="`${verificationCode && verificationCode.code}`"
-                    />
-                    <small class="mx-auto py-1" :class="{ 'text-muted': !copied }">{{
-                      copied
-                        ? $t('Code copied to system clipboard')
-                        : $t('Ctrl-C/Cmd-C to copy the code')
-                    }}</small>
-                    <div class="mx-auto pt-1 pb-4">
-                      <span class="text-muted">{{ $t("Code will expire in ") }}</span
-                      >{{ timeToExpire }}
+                  <div v-else-if="useLegacyVerificationCode" class="container">
+                    <div class="row justify-content-center pb-3">
+                      <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
+                        <input
+                          ref="code"
+                          disabled
+                          class="code-btn"
+                          :value="`${verificationCode && verificationCode.code}`"
+                        />
+                        <small class="mx-auto py-1" :class="{ 'text-muted': !copied }">{{
+                          copied
+                            ? $t('Code copied to system clipboard')
+                            : $t('Ctrl-C/Cmd-C to copy the code')
+                        }}</small>
+                        <div class="mx-auto pt-1 pb-4">
+                          <span class="text-muted">{{ $t("Code will expire in ") }}</span
+                          >{{ timeToExpire }}
+                        </div>
+                        <div class="lead">
+                          <i18next :translation="$t(`Enter the {localizedDom}`)">
+                            <template #localizedDom>
+                              <strong>{{$t("6-digit verification code")}}</strong>
+                            </template>
+                          </i18next>
+                        </div>
+                      </div>
                     </div>
-                    <div class="lead">
-                      <i18next :translation="$t(`Enter the {localizedDom}`)">
+                    <div class="row justify-content-center">
+                      <div class="col-sm-12 col-lg-8 img-container">
+                        <img
+                          v-if="targetOctoPrint"
+                          class="screenshot"
+                          :src="
+                            require('@static/img/octoprint-plugin-guide/plugin_verification_code.png')
+                          "
+                          @click="zoomIn($event)"
+                        />
+                        <img
+                          v-if="targetKlipper"
+                          class="screenshot"
+                          :src="
+                            require('@static/img/octoprint-plugin-guide/moonraker_verification_code.png')
+                          "
+                          @click="zoomIn($event)"
+                        />
+                        <div class="helper mx-auto py-2">
+                          <a
+                            class="link font-weight-bold"
+                            @click="showVerificationCodeHelpModal"
+                            >{{ $t("Can't find the page to enter the 6-digit code?") }}</a
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="container">
+                    <div class="row justify-content-center pb-3">
+                      <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
+                        <input
+                          type="text"
+                          class="form-control"
+                          aria-label="One time code"
+                          v-model="oneTimePasscode"
+                        />
+                      </div>
+                      <div v-if="oneTimePasscodeResult === 'failed'" class="text-danger" >
+                        {{$t("Invalid code. Is it expired?")}}
+                      </div>
+                    </div>
+                    <div class="row justify-content-center pb-3">
+                      <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
+                        <b-button class="link-btn" @click="oneTimePasscodeVerifyClicked">
+                          {{$t("Verify")}}
+                        </b-button>
+                      </div>
+                    </div>
+                    <div>
+                      <i18next :translation="$t(`If you using Obico for OctoPrint older than 2.5.0, or Obico for Klipper older than 1.6.0, switch to {localizedDom}.`)">
                         <template #localizedDom>
-                          <strong>{{$t("6-digit verification code")}}</strong>
+                          <a class="link" @click="useLegacyVerificationCode = true">{{$t("6-digit verification code")}}</a>
                         </template>
                       </i18next>
                     </div>
                   </div>
                 </div>
-                <div class="row justify-content-center">
-                  <div class="col-sm-12 col-lg-8 img-container">
-                    <img
-                      v-if="targetOctoPrint"
-                      class="screenshot"
-                      :src="
-                        require('@static/img/octoprint-plugin-guide/plugin_verification_code.png')
-                      "
-                      @click="zoomIn($event)"
-                    />
-                    <img
-                      v-if="targetKlipper"
-                      class="screenshot"
-                      :src="
-                        require('@static/img/octoprint-plugin-guide/moonraker_verification_code.png')
-                      "
-                      @click="zoomIn($event)"
-                    />
-                    <div class="helper mx-auto py-2">
-                      <a
-                        class="link font-weight-bold"
-                        @click="showVerificationCodeHelpModal"
-                        >{{ $t("Can't find the page to enter the 6-digit code?") }}</a
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div v-else class="container">
-                <div class="row justify-content-center pb-3">
-                  <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
-                    <input
-                      type="text"
-                      class="form-control"
-                      aria-label="One time code"
-                      v-model="oneTimePasscode"
-                    />
-                  </div>
-                  <div v-if="oneTimePasscodeResult === 'failed'" class="text-danger" >
-                    {{$t("Invalid code. Is it expired?")}}
-                  </div>
-                </div>
-                <div class="row justify-content-center pb-3">
-                  <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
-                    <b-button class="link-btn" @click="oneTimePasscodeVerifyClicked">
-                      {{$t("Verify")}}
-                    </b-button>
-                  </div>
-                </div>
-                <div>
-                  <i18next :translation="$t(`If you using Obico for OctoPrint older than 2.5.0, or Obico for Klipper older than 1.6.0, switch to {localizedDom}.`)">
-                    <template #localizedDom>
-                      <a class="link" @click="useLegacyVerificationCode = true">{{$t("6-digit verification code")}}</a>
-                    </template>
-                  </i18next>
-                </div>
-              </div>
+              </b-row>
               <div class="d-flex justify-content-between button-wrap">
                 <div class="back" @click="$router.back()">
                   <i class="fas fa-chevron-left"></i>

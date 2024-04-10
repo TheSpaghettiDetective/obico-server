@@ -20,7 +20,7 @@
           <div class="col-sm-12 col-lg-8"><PrinterProgress :step="0"></PrinterProgress></div>
         </b-row>
         <div v-if="devicesWithObicoPreInstalled.length > 0" class="row mt-4">
-          <div class="col-sm-12 col-lg-6 py-4">
+          <div class="col-sm-12 col-lg-6 pt-4">
             <h4 class="py-3">{{ $t("Devices with Obico Pre-installed") }}</h4>
             <div class="printer-list">
               <div v-for="item in devicesWithObicoPreInstalled" :key="item.id" @click="targetPlatformClicked('klipper-obico-enabled',item)" class="printer-item">
@@ -34,7 +34,7 @@
 
           </div>
         </div>
-        <div class="wizard-card-list">
+        <div class="wizard-card-list py-4">
           <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-preinstalled')">
               <div class="img-wrap">
                 <img :src="require('@static/img/klipper_logo.jpg')" />

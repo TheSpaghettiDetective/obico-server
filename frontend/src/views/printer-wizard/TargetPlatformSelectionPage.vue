@@ -24,13 +24,14 @@
             <h4 class="py-3">{{ $t("Devices with Obico Pre-installed") }}</h4>
             <div class="printer-list">
               <div v-for="item in devicesWithObicoPreInstalled" :key="item.id" @click="targetPlatformClicked('klipper-obico-enabled',item)" class="printer-item">
-                <div class="img-wrap">
+                <div class="img-wrap clickable">
                   <img :src="item.image_url" alt="">
                 </div>
-                <div class="item-label">{{ item.model }}</div>
+                <div class="item-label">{{ item.brand }}</div>
+                <h5 class="item-label"><b>{{ item.model }}</b></h5>
               </div>
             </div>
-            
+
           </div>
         </div>
         <div class="wizard-card-list">
@@ -42,10 +43,7 @@
                 <h3 >{{ $t("Pre-Installed Klipper Printer") }}</h3>
                 <h5>{{ $t("Creality K1, Sonic Pad, Sovol SV07, Kingroon KLP1, Elegoo Neptune 4, etc...") }}</h5>
               </div>
-            
             </div>
-          
-        
             <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-generic')">
               <div class="img-wrap">
                 <img :src="require('@static/img/klipper_logo.jpg')" />
@@ -53,30 +51,23 @@
                   <img :src="require('@static/img/mainsail_logo.png')" />
                   <img :src="require('@static/img/fluidd_logo.png')" />
                 </div>
-                
               </div>
               <div class="text-wrap">
                 <h3 >{{ $t("Generic Klipper - Self Installed") }}</h3>
                 <h5>{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig") }}</h5>
               </div>
-             
             </div>
-          
-        
             <div class="wizard-card-horizontal" @click="targetPlatformClicked('octoprint')">
               <div class="img-wrap">
                 <img :src="require('@static/img/octoprint_logo.png')" />
               </div>
-              
+
               <div class="text-wrap">
                 <h3 >OctoPrint</h3>
                 <h5>{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</h5>
               </div>
             </div>
         </div>
-        
-            
-          
       </div>
     </template>
   </page-layout>
@@ -119,6 +110,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+
+.clickable {
+  &:hover{
+    cursor: pointer;
+  }
+}
 .container{
   background-color:#2D3E4F;
   padding:70px 140px;
@@ -143,31 +141,9 @@ export default {
       }
     }
   }
-    
 }
-  
 
 
-.wizard-card{
-  background-color: var(--color-surface-primary);
-  border-radius: var(--border-radius-lg);
-  padding: 1em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 24em;
-  justify-content: center;
-  text-align: center;
-  &:hover{
-    cursor: pointer;
-    color: var(--color-primary);
-    background-color: var(--color-hover);
-  }
-  img{
-    height: 3em;
-    margin: 1em;
-  }
-}
 .wizard-card-list{
   margin-top:40px;
   .wizard-card-horizontal{
@@ -179,7 +155,7 @@ export default {
     border-radius: var(--border-radius-md);
     padding:20px;
     cursor: pointer;
-  
+
   .img-wrap{
     img{
       width: 5em;
@@ -199,12 +175,7 @@ export default {
       font-size:16px;
     }
   }
-
 }
 }
 
-
-  
-  
- 
 </style>

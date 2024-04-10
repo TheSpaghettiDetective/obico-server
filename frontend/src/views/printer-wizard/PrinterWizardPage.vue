@@ -5,7 +5,14 @@
         <b-row>
           <b-col>
             <div class="form-container full-on-mobile">
-
+              <div class="row">
+                <h3 class="col-sm-12 text-center p-3">{{ $t("Plugin Setup") }}</h3>
+              </div>
+              <b-row class="center mt-3 mb-5">
+                <div class="col-sm-12 col-lg-8">
+                  <PrinterProgress :step="2"></PrinterProgress>
+                </div>
+              </b-row>
               <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
               <div v-if="discoveryEnabled" class="discover">
                 <div class="discover-body">
@@ -135,6 +142,12 @@
                   </i18next>
                 </div>
               </div>
+              <div class="d-flex justify-content-between button-wrap">
+                <div class="back" @click="$router.back()">
+                  <i class="fas fa-chevron-left"></i>
+                  <span> {{ $t("Back") }}</span>
+                </div>
+              </div>
               <div class="row">
                 <div class="helper col-sm-12">
                   <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
@@ -165,6 +178,8 @@ import theme from '@src/styles/main.sass'
 import PageLayout from '@src/components/PageLayout.vue'
 import DiscoveredPrinter from '@src/components/printers/wizard/DiscoveredPrinter.vue'
 import AutoLinkPopup from '@src/components/printers/wizard/AutoLinkPopup.vue'
+import PrinterProgress from '../../components/printers/wizard/PrinterProgress.vue';
+
 const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
 
 export default {
@@ -172,6 +187,7 @@ export default {
     Loading,
     PageLayout,
     DiscoveredPrinter,
+    PrinterProgress
   },
   data() {
     return {

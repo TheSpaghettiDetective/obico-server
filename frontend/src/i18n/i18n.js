@@ -40,6 +40,7 @@ i18n
       escapeValue: false,
     },
     debug: true,
+    nsSeparator:false
   });
 
 export default i18n;

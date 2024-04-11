@@ -507,7 +507,7 @@
   "The app can only access the tunnel, not your {brandName} account info such as your email address.": "The app can only access the tunnel, not your {{brandName}} account info such as your email address.",
   "The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.": "The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.",
   "Log Out": "Log Out",
-  "Free {platformDisplayName} Tunnel": "Free {platformDisplayName} Tunnel",
+  "Free {platformDisplayName} Tunnel": "Free {{platformDisplayName}} Tunnel",
   "Powered by {brandName}": "Powered by {{brandName}}",
   "With the Free {platformDisplayName} Tunnel by {brandName}, you can now use {appDisplayName} to": "With the Free {{platformDisplayName}} Tunnel by {{brandName}}, you can now use {{appDisplayName}} to",
   "securely control and monitor your printer from anywhere": "securely control and monitor your printer from anywhere",

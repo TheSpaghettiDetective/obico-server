@@ -1,7 +1,7 @@
 <template>
   <page-layout>
     <template #content>
-      <div class="container">
+      <div class="form-container">
         <div class="row">
           <h3 class="col-sm-12 text-center p-3">{{ $t("Plugin Setup") }}</h3>
         </div>
@@ -146,13 +146,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  background-color: #2D3E4F;
-  padding: 70px 140px 10px;
-  border-radius: 16px;
-  margin-top: 60px;
-
-
+.form-container {
   .kilpper-pre-install-wrap {
     display: flex;
     flex-direction: column;

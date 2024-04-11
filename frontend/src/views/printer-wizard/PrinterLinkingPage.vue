@@ -14,7 +14,7 @@
                 </div>
               </b-row>
 
-              <b-row class="center mt-3 mb-5">
+              <b-row class="center py-5">
                 <div class="col-sm-12 col-lg-8">
                   <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
                   <div v-if="discoveryEnabled" class="discover">
@@ -40,7 +40,7 @@
                           @auto-link-printer="autoLinkPrinter"
                         />
                       </div>
-                      <div v-if="discoveryCount >= 2" class="text-muted">
+                      <div v-if="discoveryCount >= 2" class="text-muted pt-4">
                         <div>{{$t("To link your printer, please make sure:")}}</div>
                         <ul>
                           <li>{{ $t("The printer is powered on. If you are using an external SBC such as a Raspberry Pi, make sure it's powered on as well.") }}</li>
@@ -226,8 +226,6 @@ import DiscoveredPrinter from '@src/components/printers/wizard/DiscoveredPrinter
 import AutoLinkPopup from '@src/components/printers/wizard/AutoLinkPopup.vue'
 import PrinterProgress from '../../components/printers/wizard/PrinterProgress.vue';
 
-const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
-
 export default {
   components: {
     Loading,
@@ -391,12 +389,6 @@ export default {
     callPrinterDiscoveryApi() {
       if (!this.discoveryEnabled) {
         return
-      }
-      if (this.discoveryCount >= MAX_DISCOVERY_CALLS && this.discoveredPrinters.length === 0) {
-        this.discoveryEnabled = false
-        this.$swal.Toast.fire({
-          title: `${this.$i18next.t('No devices discovered on your local network. Switched to manual linking.')}`,
-        })
       }
       this.discoveryCount += 1
       axios.get(urls.printerDiscovery()).then((resp) => {

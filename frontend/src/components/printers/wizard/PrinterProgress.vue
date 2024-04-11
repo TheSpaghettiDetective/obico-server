@@ -46,7 +46,7 @@ export default {
   align-items:center;
   justify-content: space-between;
   width:100%;
-
+  padding:0 30px;
   .circle{
     background-color: #fff;
     border:1px solid #c6c6c6;

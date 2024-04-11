@@ -1,7 +1,7 @@
 <template>
   <page-layout>
     <template #content>
-      <div class="container">
+      <div class="form-container">
         <b-row v-if="printerIdToLink">
           <div class="col-sm-12 col-lg-8">
             <div class="text-warning">
@@ -16,10 +16,10 @@
         <div class="row">
           <h3 class="col-sm-12 text-center p-3">{{ $t("Which platform are you using?") }}</h3>
         </div>
-        <b-row class="center mt-3">
+        <b-row class="center mt-3 mb-5 pb-5">
           <div class="col-sm-12 col-lg-8"><PrinterProgress :step="0"></PrinterProgress></div>
         </b-row>
-        <div v-if="devicesWithObicoPreInstalled.length > 0" class="row mt-4">
+        <div v-if="devicesWithObicoPreInstalled.length > 0" class="row">
           <div class="col-sm-12 col-lg-6 py-4">
             <h4 class="py-3">{{ $t("Devices with Obico Pre-installed") }}</h4>
             <div class="printer-list">
@@ -117,11 +117,8 @@ export default {
     cursor: pointer;
   }
 }
-.container{
-  background-color:#2D3E4F;
-  padding:70px 140px;
-  border-radius:16px;
-  margin-top:60px;
+.form-container{
+
   .printer-list{
     display:flex;
     gap:20px;
@@ -146,6 +143,7 @@ export default {
 
 .wizard-card-list{
   margin-top:40px;
+
   .wizard-card-horizontal{
     margin-top:20px;
     display:flex;

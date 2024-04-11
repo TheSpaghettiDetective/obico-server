@@ -331,7 +331,7 @@
   "Loading...": "Loading...",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Your 30-Day {localizedDom} Free Trial Has Started!",
   "Pro Plan": "Pro Plan",
-  "{trialDaysLeft} Days Left on Your {localizedDom} Free Trial!": "{trialDaysLeft} Days Left on Your {localizedDom} Free Trial!",
+  "{trialDaysLeft} Days Left on Your {localizedDom} Free Trial!": "{{trialDaysLeft}} Days Left on Your {localizedDom} Free Trial!",
   "Unlimited, 25 FPS Premium Webcam Streaming": "Unlimited, 25 FPS Premium Webcam Streaming",
   "250 Hours Watched by AI for Failure Detection": "250 Hours Watched by AI for Failure Detection",
   "G-Code Remote Upload and Printing": "G-Code Remote Upload and Printing",

@@ -34,7 +34,7 @@
 
           </div>
         </div>
-        <div class="wizard-card-list">
+        <div class="wizard-card-list py-4">
           <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-preinstalled')">
               <div class="img-wrap">
                 <img :src="require('@static/img/klipper_logo.jpg')" />

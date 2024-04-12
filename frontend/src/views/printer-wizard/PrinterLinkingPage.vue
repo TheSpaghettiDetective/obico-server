@@ -4,7 +4,7 @@
       <b-container>
         <b-row>
           <b-col>
-            <div class="form-container full-on-mobile">
+            <div class="form-container full-on-mobile border-radius-lg">
               <div class="row">
                 <h3 class="col-sm-12 text-center p-3">{{ $t("Plugin Setup") }}</h3>
               </div>

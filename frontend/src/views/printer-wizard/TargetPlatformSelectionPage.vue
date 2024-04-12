@@ -1,74 +1,80 @@
 <template>
   <page-layout>
     <template #content>
-      <div class="form-container">
-        <b-row v-if="printerIdToLink">
-          <div class="col-sm-12 col-lg-8">
-            <div class="text-warning">
-              <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {localizedDom}.`)">
-                <template #localizedDom>
-                  <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$syndicateText.brandName})}}</a>
-                </template>
-              </i18next>
-            </div>
-          </div>
-        </b-row>
-        <div class="row">
-          <h3 class="col-sm-12 text-center p-3">{{ $t("Which platform are you using?") }}</h3>
-        </div>
-        <b-row class="center mt-3 mb-5 pb-5">
-          <div class="col-sm-12 col-lg-8"><PrinterProgress :step="0"></PrinterProgress></div>
-        </b-row>
-        <div v-if="devicesWithObicoPreInstalled.length > 0" class="row">
-          <div class="col-sm-12 col-lg-6 py-4">
-            <h4 class="py-3">{{ $t("Devices with Obico Pre-installed") }}</h4>
-            <div class="printer-list">
-              <div v-for="item in devicesWithObicoPreInstalled" :key="item.id" @click="targetPlatformClicked('klipper-obico-enabled',item)" class="printer-item">
-                <div class="img-wrap clickable">
-                  <img :src="item.image_url" alt="">
+      <b-container>
+        <b-row>
+          <b-col>
+            <div class="form-container full-on-mobile border-radius-lg">
+              <b-row v-if="printerIdToLink">
+                <div class="col-sm-12 col-lg-8">
+                  <div class="text-warning">
+                    <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {localizedDom}.`)">
+                      <template #localizedDom>
+                        <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$syndicateText.brandName})}}</a>
+                      </template>
+                    </i18next>
+                  </div>
                 </div>
-                <div class="item-label">{{ item.brand }}</div>
-                <h5 class="item-label"><b>{{ item.model }}</b></h5>
+              </b-row>
+              <div class="row">
+                <h3 class="col-sm-12 text-center p-3">{{ $t("Which platform are you using?") }}</h3>
               </div>
-            </div>
+              <b-row class="center mt-3 mb-5 pb-5">
+                <div class="col-sm-12 col-lg-8"><PrinterProgress :step="0"></PrinterProgress></div>
+              </b-row>
+              <div v-if="devicesWithObicoPreInstalled.length > 0" class="row">
+                <div class="col-sm-12 col-lg-6 py-4">
+                  <h4 class="py-3">{{ $t("Devices with Obico Pre-installed") }}</h4>
+                  <div class="printer-list">
+                    <div v-for="item in devicesWithObicoPreInstalled" :key="item.id" @click="targetPlatformClicked('klipper-obico-enabled',item)" class="printer-item">
+                      <div class="img-wrap clickable">
+                        <img :src="item.image_url" alt="">
+                      </div>
+                      <div class="item-label">{{ item.brand }}</div>
+                      <h5 class="item-label"><b>{{ item.model }}</b></h5>
+                    </div>
+                  </div>
 
-          </div>
-        </div>
-        <div class="wizard-card-list py-4">
-          <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-preinstalled')">
-              <div class="img-wrap">
-                <img :src="require('@static/img/klipper_logo.jpg')" />
-              </div>
-              <div class="text-wrap">
-                <h3 >{{ $t("Pre-Installed Klipper Printer") }}</h3>
-                <h5>{{ $t("Creality K1, Sonic Pad, Sovol SV07, Kingroon KLP1, Elegoo Neptune 4, etc...") }}</h5>
-              </div>
-            </div>
-            <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-generic')">
-              <div class="img-wrap">
-                <img :src="require('@static/img/klipper_logo.jpg')" />
-                <div class="img-tip">
-                  <img :src="require('@static/img/mainsail_logo.png')" />
-                  <img :src="require('@static/img/fluidd_logo.png')" />
                 </div>
               </div>
-              <div class="text-wrap">
-                <h3 >{{ $t("Generic Klipper - Self Installed") }}</h3>
-                <h5>{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig") }}</h5>
-              </div>
-            </div>
-            <div class="wizard-card-horizontal" @click="targetPlatformClicked('octoprint')">
-              <div class="img-wrap">
-                <img :src="require('@static/img/octoprint_logo.png')" />
-              </div>
+              <div class="wizard-card-list py-4">
+                <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-preinstalled')">
+                    <div class="img-wrap">
+                      <img :src="require('@static/img/klipper_logo.jpg')" />
+                    </div>
+                    <div class="text-wrap">
+                      <h3 >{{ $t("Pre-Installed Klipper Printer") }}</h3>
+                      <h5>{{ $t("Creality K1, Sonic Pad, Sovol SV07, Kingroon KLP1, Elegoo Neptune 4, etc...") }}</h5>
+                    </div>
+                  </div>
+                  <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-generic')">
+                    <div class="img-wrap">
+                      <img :src="require('@static/img/klipper_logo.jpg')" />
+                      <div class="img-tip">
+                        <img :src="require('@static/img/mainsail_logo.png')" />
+                        <img :src="require('@static/img/fluidd_logo.png')" />
+                      </div>
+                    </div>
+                    <div class="text-wrap">
+                      <h3 >{{ $t("Generic Klipper - Self Installed") }}</h3>
+                      <h5>{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig") }}</h5>
+                    </div>
+                  </div>
+                  <div class="wizard-card-horizontal" @click="targetPlatformClicked('octoprint')">
+                    <div class="img-wrap">
+                      <img :src="require('@static/img/octoprint_logo.png')" />
+                    </div>
 
-              <div class="text-wrap">
-                <h3 >OctoPrint</h3>
-                <h5>{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</h5>
+                    <div class="text-wrap">
+                      <h3 >OctoPrint</h3>
+                      <h5>{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</h5>
+                    </div>
+                  </div>
               </div>
             </div>
-        </div>
-      </div>
+          </b-col>
+        </b-row>
+      </b-container>
     </template>
   </page-layout>
 </template>

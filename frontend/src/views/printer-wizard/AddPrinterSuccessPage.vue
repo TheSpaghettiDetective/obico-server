@@ -3,9 +3,9 @@
     <template #content>
       <div class="container">
         <div class="row">
-          <div class="col-sm-12 col-lg-6 p-4">
+          <div class="col-sm-12 p-4">
 
-            <div class="form-container full-on-mobile">
+            <div class="form-container full-on-mobile border-radius-lg">
               <div v-if="verifiedPrinter" class="text-center py-5">
                 <svg class="success-checkmark">
                   <use href="#svg-success-checkmark" />

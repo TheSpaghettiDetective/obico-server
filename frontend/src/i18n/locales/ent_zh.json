@@ -331,7 +331,7 @@
   "Loading...": "正在加载...",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "您的30天{localizedDom}免费试用已经开始！",
   "Pro Plan": "专业计划",
-  "{trialDaysLeft} Days Left on Your {localizedDom} Free Trial!": "您的{localizedDom}免费试用还剩{{trialDaysLeft}}天！",
+  "{trialDaysLeft} Days Left on Your {localizedDom} Free Trial!": "您的{localizedDom}免费试用还剩{trialDaysLeft}天！",
   "Unlimited, 25 FPS Premium Webcam Streaming": "无限制，25 FPS 高级网络摄像头流",
   "250 Hours Watched by AI for Failure Detection": "250小时由AI观看以进行故障检测",
   "G-Code Remote Upload and Printing": "G-Code远程上传和打印",

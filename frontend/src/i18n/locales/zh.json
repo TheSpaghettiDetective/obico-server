@@ -570,7 +570,6 @@
   "this set up guide": "这个设置指南",
   "for detailed instructions.": "获取详细说明。",
   "Can't find the page to enter the 6-digit code?": "找不到输入6位数代码的页面？",
-  "No devices discovered on your local network. Switched to manual linking.": "在您的本地网络上未发现任何设备。 切换到手动链接。",
   "Scanning...": "正在扫描...",
   "Scanning..., {name} printer(s) found on your local network:": "正在扫描...，在您的本地网络上发现了{{name}}台打印机：",
   "To link your printer, please make sure:": "要链接您的打印机，请确保：",

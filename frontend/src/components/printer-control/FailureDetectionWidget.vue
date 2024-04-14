@@ -65,7 +65,7 @@
           </div>
           <div class="line">
             <label class="label" :for="'pause_on_failure-toggle-' + printer.id">
-              {{t("Pause on detected failures")}}
+              {{ $t("Pause on detected failures") }}
               <div v-if="!pauseOnFailure" class="text-muted">
                 {{$t("You will still be alerted via notifications.")}}
               </div>

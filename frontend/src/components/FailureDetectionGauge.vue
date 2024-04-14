@@ -85,17 +85,17 @@ export default {
     },
     titleText() {
       if (!this.isWatching) {
-        return 'Not Watching'
+        return `${this.$i18next.t('Not Watching')}`
       }
       switch (this.level()) {
         case 0:
-          return 'Looking Good'
+          return `${this.$i18next.t('Looking Good')}`
         case 1:
-          return 'Fishy...'
+          return `${this.$i18next.t('Fishy...')}`
         case 2:
-          return 'Failing!'
+          return `${this.$i18next.t('Failing!')}`
         default:
-          return 'Looking Good'
+          return `${this.$i18next.t("Looking Good")}`
       }
     },
     titleColor() {

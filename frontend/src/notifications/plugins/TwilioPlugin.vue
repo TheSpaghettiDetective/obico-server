@@ -10,7 +10,7 @@
   >
     <template #configuration>
       <div class="form-group row">
-        <label for="id_email" class="col-12 col-form-label">Phone Number</label>
+        <label for="id_email" class="col-12 col-form-label">{{ $t("Phone Number") }}</label>
         <div class="col-12 col-form-label">
           <saving-animation
             :errors="errorMessages[settingKey('config')]"
@@ -23,7 +23,7 @@
                   v-model="phoneCountryCode"
                   type="text"
                   class="form-control"
-                  placeholder="Country Code"
+                  :placeholder="$t('Country Code')"
                 />
               </div>
               <div class="col-sm-6 col-md-8">
@@ -32,7 +32,7 @@
                   v-model="phoneNumber"
                   type="text"
                   class="form-control"
-                  placeholder="Phone Number"
+                  :placeholder="$t('Phone Number')"
                 />
               </div>
             </div>
@@ -86,8 +86,8 @@ export default {
       notificationSettings: [
         {
           id: 'notify_on_failure_alert',
-          title: 'Failure alerts',
-          description: 'When possible failures are detected',
+          title: `${this.$i18next.t('Failure alerts')}`,
+          description: `${this.$i18next.t('When possible failures are detected')}`,
         },
       ],
       configUpdateTimeout: null,
@@ -125,7 +125,7 @@ export default {
         this.$emit(
           'addErrorMessage',
           this.settingKey('config'),
-          "Oops, we don't send SMS to this country code"
+          `${this.$i18next.t("Oops, we don't send SMS to this country code")}`
         )
       } else {
         if (this.phoneNumber) {

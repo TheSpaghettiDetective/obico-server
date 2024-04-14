@@ -4,8 +4,8 @@
       <b-container>
         <b-row class="justify-content-center">
           <b-col lg="8" class="text-center">
-            <h1 class="pb-2">Upload Time-lapse</h1>
-            <p class="pb-2">Upload time-lapse videos to test Obico's AI failure detection.</p>
+            <h1 class="pb-2">{{ $t("Upload Time-lapse") }}</h1>
+            <p class="pb-2">{{ $t("Upload time-lapse videos to test {brandName}'s AI failure detection.",{brandName:$syndicateText.brandName}) }}</p>
             <vue-dropzone
               id="dropzone"
               class="upload-box"
@@ -15,8 +15,8 @@
             >
               <div class="dz-message needsclick">
                 <i class="fas fa-upload fa-2x"></i> <br />
-                Drop files here or click to upload.<br />
-                *.mp4 or *.mpg files only. Up to 100MB each.
+                {{$t("Drop files here or click to upload.")}}<br />
+                {{$t("*.mp4 or *.mpg files only. Up to 100MB each.")}}
               </div>
             </vue-dropzone>
             <div v-show="uploaded" class="pt-5">
@@ -27,11 +27,10 @@
                 />
                 <div class="py-2 text-center">
                   <div class="py-2">
-                    The Obico Server is running failure detection on the time-lapse video(s) you
-                    uploaded.
+                    {{ $t("The {brandName} Server is running failure detection on the time-lapse video(s) you uploaded.",{brandName:$syndicateText.brandName}) }}
                   </div>
-                  <div>We will send you email when it is done.</div>
-                  <a href="/prints/">Check status now >>></a>
+                  <div>{{ $t("We will send you email when it is done.") }}</div>
+                  <a href="/prints/">{{ $t("Check status now >>>") }}</a>
                 </div>
               </div>
             </div>

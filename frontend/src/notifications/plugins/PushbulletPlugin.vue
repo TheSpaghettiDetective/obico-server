@@ -3,8 +3,8 @@
     :error-messages="errorMessages"
     :saving="saving"
     :notification-channel="notificationChannel"
-    config-variable-title="Access Token"
-    config-variable-placeholder="Pushbullet Access Token"
+    :config-variable-title="$t('Access Token')"
+    :config-variable-placeholder="$t('Pushbullet Access Token')"
     config-variable-name="access_token"
     @createNotificationChannel="$emit('createNotificationChannel', $event)"
     @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
@@ -13,9 +13,12 @@
   >
     <template #header>
       <small class="form-text text-muted">
-        If you have a Pushbullet account, you can
-        <a href="https://www.pushbullet.com/#settings" target="_blank">generate an access token</a>
-        and enter it here.
+        <i18next :translation="$t('If you have a Pushbullet account, you can {localizedDom} and enter it here.')">
+          <template #localizedDom>
+            <a href="https://www.pushbullet.com/#settings" target="_blank">{{$t("generate an access token")}}</a>
+          </template>
+        </i18next>
+
       </small>
     </template>
   </notification-channel-template>

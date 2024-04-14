@@ -1,21 +1,25 @@
 <template>
   <div>
-    <h2 class="text-center">Printer Feed Sharing</h2>
+    <h2 class="text-center">{{ $t("Printer Feed Sharing") }}</h2>
     <hr />
     <div v-if="!isProAccount">
       <h5 class="mb-5">
-        Wait! You need to <a href="/ent_pub/pricing/">upgrade to the Pro plan</a> to enable Printer
-        feed.
+        <i18next :translation="$t('Wait! You need to {localizedDom} to enable Printer feed.')">
+          <template #localizedDom>
+            <a href="/ent_pub/pricing/">{{$t("upgrade to the Pro plan")}}</a>
+          </template>
+        </i18next>
+
       </h5>
-      <p>Printer feed sharing is a Pro feature.</p>
+      <p>{{ $t("Printer feed sharing is a Pro feature.") }}</p>
       <p>
-        <a
-          href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know"
-          >Running the Obico app incurs non-trivial amount of costs</a
-        >. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us
-        run the Obico app smoothly.
+        <a  href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">
+          {{ $t('Running the {brandName} app incurs non-trivial amount of costs',{brandName:$syndicateText.brandName}) }}
+          </a>.
+          {{ $t('With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run the {brandName} app smoothly.',{brandName:$syndicateText.brandName}) }}
+
       </p>
-      <p><a href="/ent_pub/pricing/">Check out Pro pricing >>></a></p>
+      <p><a href="/ent_pub/pricing/">{{ $t("Check out Pro pricing >>>") }}</a></p>
     </div>
     <div v-else>
       <div class="py-3">
@@ -31,7 +35,7 @@
             class="custom-control-label"
             :for="'sharing_enabled-toggle-' + printer.id"
             style="font-size: 1rem"
-            >Share live feed for printer "<b>{{ printer.name }}</b
+            >{{ $t("Share live feed for printer ") }}"<b>{{ printer.name }}</b
             >"</label
           >
         </div>
@@ -67,25 +71,29 @@
               </div>
             </div>
             <div class="my-1">
-              Click the clipboard icon above to copy the secure shareable link to your clipboard.
+              {{$t("Click the clipboard icon above to copy the secure shareable link to your clipboard.")}}
             </div>
             <div class="my-1">
-              You can test the shareable link by right-clicking <a :href="sharedLink">here</a> and
-              select "Open Link in Incognito Window".
+              <i18next :translation="$t(`You can test the shareable link by right-clicking {localizedDom} and select 'Open Link in Incognito Window'.`)">
+                <template #localizedDom>
+                  <a :href="sharedLink">{{$t("here")}}</a>
+                </template>
+              </i18next>
+
             </div>
             <br />
             <em class="text-muted">
               <small>
-                <div>Notes:</div>
+                <div>{{ $t("Notes") }}:</div>
                 <ul>
                   <li>
-                    Send the secure link to anyone you want to share your printer feed with. They do
-                    NOT need the Obico account to see your printer feed.
+                    {{ $t('Send the secure link to anyone you want to share your printer feed with. They do NOT need the {brandName} account to see your printer feed.',{brandName:$syndicateText.brandName}) }}
+
                   </li>
                   <li>
-                    Anyone with this shareable link will be able to see your printer feed.
+                    {{$t("Anyone with this shareable link will be able to see your printer feed.")}}
                     <a href="https://www.obico.io/docs/user-guides/printer-feed-sharing/"
-                      >Learn more about what they can see.</a
+                      >{{ $t("Learn more about what they can see.") }}</a
                     >
                   </li>
                 </ul>

@@ -19,14 +19,14 @@
         {% if socialaccount_providers %}
         <div class="social-login">
           <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
-            role="button"><span><i class="fab fa-facebook-f mr-1"></i> Sign In with Facebook</span> </a>
+            role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign In with Facebook" %}</span> </a>
           <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
-            role="button"><span><i class="fab fa-google mr-1"></i> Sign In with Google</span> </a>
+            role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign In with Google" %}</span> </a>
         </div>
-          {% if app_platform.platform == 'ios' %}
+          {% if page_context.app_platform == 'ios' %}
           <div class="social-login">
             <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
-              role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>Sign in with Apple</span> </a>
+              role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>{% trans "Sign in with Apple" %}</span> </a>
           </div>
           {% endif %}
         {% endif %}
@@ -39,11 +39,11 @@
             {# user signed up using social accounts might not have password #}
             {% if form.no_password_yet %}
             <span class="text-danger">
-              This email was previously signed up using either Google or Facebook.
+              {% trans "This email was previously signed up using either Google or Facebook." %}
             </span>
             <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Click here to reset your password" %}</a>.
             {% else %}
-            <span class="text-danger">Wrong email or password.</span>
+            <span class="text-danger">{% trans "Wrong email or password." %}</span>
             <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
             {% endif %}
           </div>
@@ -59,7 +59,7 @@
           <div style="padding-top: 0.5rem;">
             <div class="custom-control custom-checkbox form-check-inline">
               <input type="checkbox" checked name="remember" class="custom-control-input" id="remember-checkbox">
-              <label class="custom-control-label" style="font-size: 16px;" for="remember-checkbox">Remember me</label>
+              <label class="custom-control-label" style="font-size: 16px;" for="remember-checkbox">{% trans "Remember me" %}</label>
             </div>
           </div>
           {% endwith %}
@@ -87,14 +87,14 @@
                       </div>
                       <div class="modal-body text-left">
                         <ul>
-                          <li>Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the web app, you can use the same to sign in here.</li>
-                          <li>Even if you previously signed up an account using Google or Facebook, you can still <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> using the same email address.</li>
-                          <li class="text-warning">If you can't sign in the mobile app, re-install the mobile app and try it again.</li>
-                          <li><a class="link" href="mailto:support@obico.io">Contact us</a> if you have tried everything else.</li>
+                          <li>{% trans "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the web app, you can use the same to sign in here." %}</li>
+                          <li>{% trans "Even if you previously signed up an account using Google or Facebook, you can still" %} <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> {% trans "using the same email address." %}</li>
+                          <li class="text-warning">{% trans "If you can't sign in the mobile app, re-install the mobile app and try it again." %}</li>
+                          <li><a class="link" href="mailto:support@obico.io">{% trans "Contact us" %}</a> {% trans "if you have tried everything else." %}</li>
                         </ul>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Close" %}</button>
                       </div>
                     </div>
                   </div>

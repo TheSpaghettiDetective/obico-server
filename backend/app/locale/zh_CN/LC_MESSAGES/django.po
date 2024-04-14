@@ -1,0 +1,770 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-08 16:58+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: app/admin.py:40
+msgid "Personal info"
+msgstr "个人信息"
+
+#: app/admin.py:41
+msgid "Permissions"
+msgstr "权限"
+
+#: app/admin.py:43
+msgid "Important dates"
+msgstr "重要日期"
+
+#: app/models.py:82
+msgid "email address"
+msgstr "电子邮箱地址"
+
+#: app/templates/account/account_inactive.html:5
+#: app/templates/account/account_inactive.html:9
+msgid "Account Inactive"
+msgstr "账户未激活"
+
+#: app/templates/account/account_inactive.html:10
+msgid "This account is inactive."
+msgstr "此账户未激活。"
+
+#: app/templates/account/email.html:5
+msgid "Account"
+msgstr "账户"
+
+#: app/templates/account/email.html:12
+msgid "E-mail Addresses"
+msgstr "电子邮箱地址"
+
+#: app/templates/account/email.html:14
+msgid "The following e-mail addresses are associated with your account:"
+msgstr "以下电子邮箱地址与您的账户关联："
+
+#: app/templates/account/email.html:29
+msgid "Primary"
+msgstr "主要的"
+
+#: app/templates/account/email.html:31
+msgid "Verified"
+msgstr "已验证"
+
+#: app/templates/account/email.html:33
+msgid "Unverified"
+msgstr "未验证"
+
+#: app/templates/account/email.html:41
+msgid "Make Primary"
+msgstr "设为主要"
+
+#: app/templates/account/email.html:43
+msgid "Re-send Verification"
+msgstr "重新发送验证"
+
+#: app/templates/account/email.html:45
+#: app/templates/socialaccount/connections.html:36
+msgid "Remove"
+msgstr "移除"
+
+#: app/templates/account/email.html:52
+msgid "Warning:"
+msgstr "警告："
+
+#: app/templates/account/email.html:53
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, etc."
+msgstr ""
+"您当前没有设置任何电子邮箱地址。您真的应该添加一个电子邮箱地址，这样您就可以"
+"接收通知、重置密码等。"
+
+#: app/templates/account/email.html:60
+msgid "Add E-mail Address"
+msgstr "添加电子邮箱地址"
+
+#: app/templates/account/email.html:68
+msgid "Add E-mail"
+msgstr "添加电子邮箱"
+
+#: app/templates/account/email/email_confirmation_message.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
+"\n"
+"To confirm this is correct, go to:\n"
+"%(activate_url)s\n"
+msgstr ""
+"来自 %(site_name)s 的问候！\n"
+"\n"
+"您收到这封电子邮件是因为用户 %(user_display)s 将您的作为电子邮箱地址以连接他"
+"们的账户。\n"
+"\n"
+"要确认这是正确的，请前往：\n"
+"%(activate_url)s\n"
+
+#: app/templates/account/email/email_confirmation_message.txt:8
+#, python-format
+msgid "Thank you from %(site_name)s!\n"
+msgstr "来自 %(site_name)s 的感谢！\n"
+
+#: app/templates/account/email/email_confirmation_subject.txt:3
+msgid "Please Confirm Your E-mail Address"
+msgstr "请确认您的电子邮箱地址"
+
+#: app/templates/account/email/password_reset_key_message.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+"来自 %(site_name)s 的问候！\n"
+"\n"
+"您收到这封电子邮件是因为您或其他人请求了您的用户账户密码。\n"
+"如果您没有请求重置密码，可以安全地忽略此邮件。点击下面的链接来重置您的密码。"
+
+#: app/templates/account/email/password_reset_key_message.txt:8
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr "如果您忘记了，您的用户名是 %(username)s。"
+
+#: app/templates/account/email/password_reset_key_message.txt:10
+#, python-format
+msgid ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+"感谢您使用 %(site_name)s！\n"
+"%(site_domain)s"
+
+#: app/templates/account/email/password_reset_key_subject.txt:3
+msgid "Password Reset E-mail"
+msgstr "密码重置电子邮件"
+
+#: app/templates/account/email_confirm.html:7
+#: app/templates/account/email_confirm.html:15
+msgid "Confirm E-mail Address"
+msgstr "确认电子邮箱地址"
+
+#: app/templates/account/email_confirm.html:17
+#, python-format
+msgid "Please confirm you own <a href=\"mailto:%(email)s\">%(email)s</a>."
+msgstr "请确认您拥有 <a href=\"mailto:%(email)s\">%(email)s</a>。"
+
+#: app/templates/account/email_confirm.html:19
+msgid "Confirm"
+msgstr "确认"
+
+#: app/templates/account/email_confirm.html:28
+#, python-format
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+"此电子邮件确认链接已过期或无效。请<a href=\"%(email_url)s\">发起一个新的电子"
+"邮件确认请求</a>。"
+
+#: app/templates/account/login.html:7 app/templates/account/login.html:15
+#: app/templates/account/login.html:61 app/templates/account/signup.html:88
+#: app/templates/mobile/account/login.html:10
+#: app/templates/mobile/account/login.html:18
+#: app/templates/mobile/account/login.html:69
+#: app/templates/mobile/account/signup.html:94
+#: app/templates/non_vue_layout.html:49
+msgid "SIGN IN"
+msgstr "登录"
+
+#: app/templates/account/login.html:20
+#: app/templates/mobile/account/login.html:22
+msgid "Sign In with Facebook"
+msgstr "使用 Facebook 登录"
+
+#: app/templates/account/login.html:22
+#: app/templates/mobile/account/login.html:24
+msgid "Sign In with Google"
+msgstr "使用 Google 登录"
+
+#: app/templates/account/login.html:36
+#: app/templates/mobile/account/login.html:44
+msgid "Click here to reset your password"
+msgstr "点击这里重置您的密码"
+
+#: app/templates/account/login.html:39 app/templates/account/login.html:65
+#: app/templates/mobile/account/login.html:47
+#: app/templates/mobile/account/login.html:73
+msgid "Forgot Password?"
+msgstr "忘记密码？"
+
+#: app/templates/account/login.html:54
+#: app/templates/mobile/account/login.html:62
+msgid "Remember me"
+msgstr "记住我"
+
+#: app/templates/account/login.html:68
+#: app/templates/mobile/account/login.html:76
+msgid "Having Trouble?"
+msgstr "遇到问题？"
+
+#: app/templates/account/login.html:75
+#: app/templates/mobile/account/login.html:83
+msgid "Having trouble?"
+msgstr "遇到问题？"
+
+#: app/templates/account/login.html:82
+msgid ""
+"Your sign-in credential is the same for the mobile app and the web app. If "
+"you previously signed up using the mobile app, you can use the same to sign "
+"in here."
+msgstr ""
+"您的登录凭证在移动应用和网页应用中是相同的。如果您之前使用移动应用注册，您可"
+"以使用相同的凭证在这里登录。"
+
+#: app/templates/account/login.html:83
+msgid ""
+"\"Sign in with Apple\" is not available in the web app. If you want to use "
+"the web app, please sign up for a different account and<a class=\"link\" "
+"target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-"
+"printer/\">re-link your printer\"</a> "
+msgstr ""
+"网页应用中不可使用“通过 Apple 登录”。如果您想使用网页应用，请注册一个不同的账"
+"户并<a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/"
+"user-guides/relink-printer/\">重新链接您的打印机</a>"
+
+#: app/templates/account/login.html:84
+#: app/templates/mobile/account/login.html:91
+msgid ""
+"Even if you previously signed up an account using Google or Facebook, you "
+"can still"
+msgstr "即使您之前使用 Google 或 Facebook 注册了账户，您仍然可以"
+
+#: app/templates/account/login.html:84
+#: app/templates/mobile/account/login.html:91
+msgid "reset password"
+msgstr "重置密码"
+
+#: app/templates/account/login.html:84
+#: app/templates/mobile/account/login.html:91
+msgid "using the same email address."
+msgstr "使用相同的电子邮件地址。"
+
+#: app/templates/account/login.html:85
+#: app/templates/mobile/account/login.html:92
+msgid ""
+"If you can't sign in the mobile app, re-install the mobile app and try it "
+"again."
+msgstr "如果您无法在移动应用中登录，请重新安装移动应用并再次尝试。"
+
+#: app/templates/account/login.html:86
+#: app/templates/mobile/account/login.html:93
+msgid "Contact us"
+msgstr "联系我们"
+
+#: app/templates/account/login.html:86
+#: app/templates/mobile/account/login.html:93
+msgid "if you have tried everything else."
+msgstr "如果您已尝试了其他所有方法。"
+
+#: app/templates/account/login.html:90
+#: app/templates/mobile/account/login.html:97
+msgid "Close"
+msgstr "关闭"
+
+#: app/templates/account/login.html:101 app/templates/account/signup.html:86
+#: app/templates/mobile/account/signup.html:93
+msgid "OR"
+msgstr "或"
+
+#: app/templates/account/login.html:102 app/templates/account/signup.html:16
+#: app/templates/account/signup.html:84
+#: app/templates/mobile/account/login.html:108
+#: app/templates/mobile/account/signup.html:11
+#: app/templates/mobile/account/signup.html:19
+#: app/templates/mobile/account/signup.html:91
+#: app/templates/socialaccount/signup.html:9
+#: app/templates/socialaccount/signup.html:20
+msgid "SIGN UP"
+msgstr "注册"
+
+#: app/templates/account/logout.html:5 app/templates/account/logout.html:9
+#: app/templates/account/logout.html:18
+msgid "Sign Out"
+msgstr "登出"
+
+#: app/templates/account/logout.html:11
+msgid "Are you sure you want to sign out?"
+msgstr "您确定要登出吗？"
+
+#: app/templates/account/messages/cannot_delete_primary_email.txt:2
+#, python-format
+msgid "You cannot remove your primary e-mail address (%(email)s)."
+msgstr "您不能移除您的主要电子邮箱地址 (%(email)s)。"
+
+#: app/templates/account/messages/email_confirmed.txt:2
+#, python-format
+msgid "You have confirmed %(email)s."
+msgstr "您已确认 %(email)s。"
+
+#: app/templates/account/messages/email_deleted.txt:2
+#, python-format
+msgid "Removed e-mail address %(email)s."
+msgstr "已移除电子邮箱地址 %(email)s。"
+
+#: app/templates/account/messages/password_changed.txt:2
+msgid "Password successfully changed."
+msgstr "密码已成功更改。"
+
+#: app/templates/account/messages/password_set.txt:2
+msgid "Password successfully set."
+msgstr "密码已成功设置。"
+
+#: app/templates/account/messages/primary_email_set.txt:2
+msgid "Primary e-mail address set."
+msgstr "主要电子邮箱地址已设置。"
+
+#: app/templates/account/messages/unverified_primary_email.txt:2
+msgid "Your primary e-mail address must be verified."
+msgstr "您的主要电子邮箱地址必须经过验证。"
+
+#: app/templates/account/password_change.html:6
+#: app/templates/account/password_change.html:13
+#: app/templates/account/password_change.html:20
+#: app/templates/account/password_reset_from_key.html:6
+#: app/templates/account/password_reset_from_key.html:14
+#: app/templates/account/password_reset_from_key.html:49
+#: app/templates/account/password_reset_from_key_done.html:6
+#: app/templates/account/password_reset_from_key_done.html:12
+msgid "Change Password"
+msgstr "更改密码"
+
+#: app/templates/account/password_reset.html:6
+#: app/templates/account/password_reset.html:13
+#: app/templates/account/password_reset_done.html:6
+#: app/templates/account/password_reset_done.html:12
+msgid "Password Reset"
+msgstr "密码重置"
+
+#: app/templates/account/password_reset.html:33
+msgid "Reset My Password"
+msgstr "重置我的密码"
+
+#: app/templates/account/password_reset_done.html:18
+msgid ""
+"We have sent you an e-mail. Please contact us if you do not receive it "
+"within a few\n"
+"              minutes."
+msgstr "我们已向您发送了一封电子邮件。如果您在几分钟内没有收到，请联系我们。"
+
+#: app/templates/account/password_reset_from_key.html:14
+msgid "Bad Token"
+msgstr "无效令牌"
+
+#: app/templates/account/password_reset_from_key.html:19
+#, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+"密码重置链接无效，可能是因为它已经被使用过。请请求<a "
+"href=\"%(passwd_reset_url)s\">新的密码重置</a>。"
+
+#: app/templates/account/password_reset_from_key.html:53
+#: app/templates/account/password_reset_from_key_done.html:13
+msgid "Your password is now changed."
+msgstr "您的密码现在已更改。"
+
+#: app/templates/account/password_set.html:5
+#: app/templates/account/password_set.html:12
+#: app/templates/account/password_set.html:20
+msgid "Set Password"
+msgstr "设置密码"
+
+#: app/templates/account/signup.html:8
+#: app/templates/socialaccount/signup.html:5
+msgid "Signup"
+msgstr "注册"
+
+#: app/templates/account/signup.html:22
+#: app/templates/mobile/account/signup.html:25
+#, python-format
+msgid ""
+"By signing up, I agree to\n"
+"            the %(brand_name)s app's <a class=\"link\" href=\"https://www."
+"obico.io/terms.html\">Terms of\n"
+"              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+"privacy.html\">Privacy\n"
+"              Policy</a>"
+msgstr ""
+"通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://www."
+"obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://www."
+"obico.io/privacy.html\">隐私政策</a>"
+
+#: app/templates/account/signup.html:32
+#: app/templates/mobile/account/signup.html:37
+msgid "Sign up with Facebook"
+msgstr "使用 Facebook 注册"
+
+#: app/templates/account/signup.html:34
+#: app/templates/mobile/account/signup.html:39
+msgid "Sign up with Google"
+msgstr "使用 Google 注册"
+
+#: app/templates/account/signup.html:55
+#: app/templates/mobile/account/signup.html:62
+msgid "We'll never share your email with anyone else."
+msgstr "我们绝不会与他人分享您的电子邮件。"
+
+#: app/templates/account/signup.html:67
+#: app/templates/mobile/account/signup.html:74
+msgid "At least 6 characters. And be secure, please."
+msgstr "至少 6 个字符。请确保安全。"
+
+#: app/templates/account/signup_closed.html:5
+#: app/templates/account/signup_closed.html:9
+msgid "Sign Up Closed"
+msgstr "注册已关闭"
+
+#: app/templates/account/signup_closed.html:10
+msgid "We are sorry, but the sign up is currently closed."
+msgstr "很抱歉，但目前注册已关闭。"
+
+#: app/templates/account/snippets/already_logged_in.html:5
+msgid "Note"
+msgstr "注意"
+
+#: app/templates/account/snippets/already_logged_in.html:5
+#, python-format
+msgid "you are already logged in as %(user_display)s."
+msgstr "您已作为 %(user_display)s 登录。"
+
+#: app/templates/account/snippets/password_change_form.html:4
+msgid "Passwords must be At least 6 characters. And be secure, please."
+msgstr "密码必须至少为 6 个字符。并请确保安全。"
+
+#: app/templates/account/verification_sent.html:5
+#: app/templates/account/verification_sent.html:9
+#: app/templates/account/verified_email_required.html:5
+#: app/templates/account/verified_email_required.html:9
+msgid "Verify Your E-mail Address"
+msgstr "验证您的电子邮箱地址"
+
+#: app/templates/account/verification_sent.html:11
+msgid ""
+"We have sent an e-mail to you for verification. Follow the link provided to "
+"finalize the signup process. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr ""
+"我们已向您发送了一封用于验证的电子邮件。请按照提供的链接完成注册过程。如果您"
+"在几分钟内没有收到，请联系我们。"
+
+#: app/templates/account/verified_email_required.html:13
+msgid ""
+"This part of the site requires us to verify that\n"
+"  you are who you claim to be. For this purpose, we require that you\n"
+"  verify ownership of your e-mail address. "
+msgstr ""
+"本网站的这部分需要我们验证您是您所声称的人。为此，我们要求您验证您的电子邮箱"
+"地址的所有权。"
+
+#: app/templates/account/verified_email_required.html:17
+msgid ""
+"We have sent an e-mail to you for\n"
+"  verification. Please click on the link inside this e-mail. Please\n"
+"  contact us if you do not receive it within a few minutes."
+msgstr ""
+"我们已向您发送了一封用于验证的电子邮件。请点击此邮件内的链接。如果您在几分钟"
+"内没有收到，请联系我们。"
+
+#: app/templates/account/verified_email_required.html:21
+#, python-format
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
+"mail address</a>."
+msgstr ""
+"<strong>注意：</strong>您仍然可以<a href=\"%(email_url)s\">更改您的电子邮箱地"
+"址</a>。"
+
+#: app/templates/layout.html:87
+msgid "All Rights Reserved"
+msgstr "版权所有"
+
+#: app/templates/mobile/account/login.html:29
+#: app/templates/mobile/account/signup.html:44
+msgid "Sign in with Apple"
+msgstr "使用 Apple 登录"
+
+#: app/templates/mobile/account/login.html:42
+msgid "This email was previously signed up using either Google or Facebook."
+msgstr "此电子邮件之前是使用 Google 或 Facebook 注册的。"
+
+#: app/templates/mobile/account/login.html:46
+msgid "Wrong email or password."
+msgstr "错误的电子邮件或密码。"
+
+#: app/templates/mobile/account/login.html:90
+msgid ""
+"Your sign-in credential is the same for the mobile app and the web app. If "
+"you previously signed up using the web app, you can use the same to sign in "
+"here."
+msgstr ""
+"您的登录凭证在移动应用和网页应用中是相同的。如果您之前使用网页应用注册，您可"
+"以使用相同的凭证在这里登录。"
+
+#: app/templates/new_octoprinttunnel_succeeded.html:7
+msgid "Succeeded"
+msgstr "成功"
+
+#: app/templates/non_vue_layout.html:26
+msgid "Printer"
+msgstr "打印机"
+
+#: app/templates/non_vue_layout.html:30
+msgid "Time-lapse"
+msgstr "延时摄影"
+
+#: app/templates/non_vue_layout.html:34
+msgid "G-Code"
+msgstr "G-代码"
+
+#: app/templates/non_vue_layout.html:40
+msgid "Help"
+msgstr "帮助"
+
+#: app/templates/non_vue_layout.html:43
+msgid "Community"
+msgstr "社区"
+
+#: app/templates/non_vue_layout.html:53
+msgid "Sign up"
+msgstr "注册"
+
+#: app/templates/non_vue_layout.html:62
+msgid "Preferences"
+msgstr "偏好设置"
+
+#: app/templates/non_vue_layout.html:65
+msgid "Log out"
+msgstr "登出"
+
+#: app/templates/oauth2_provider/authorize.html:11
+#: app/templates/oauth2_provider/authorize.html:33
+msgid "Authorize"
+msgstr "授权"
+
+#: app/templates/oauth2_provider/authorize.html:20
+msgid "requires the following permissions"
+msgstr "需要以下权限"
+
+#: app/templates/oauth2_provider/authorize.html:32
+msgid "Cancel"
+msgstr "取消"
+
+#: app/templates/printer_acted.html:23
+#, fuzzy, python-format
+#| msgid "Successfully sent command to OctoPrint to %(action)s print\n"
+msgid ""
+"\n"
+"        Successfully sent command to OctoPrint to %(action)s print\n"
+"        "
+msgstr "已成功将命令发送到 OctoPrint 到 %(action)s 打印机\n"
+
+#: app/templates/printer_acted.html:28
+msgid "It may take a while to be executed by OctoPrint."
+msgstr "可能需要一段时间才能由 OctoPrint 执行。"
+
+#: app/templates/printer_acted.html:31
+#, python-format
+msgid ""
+" You are trying to %(action)s a print but %(printer_name)s is not "
+"printing... maybe you clicked a link in an outdated email? "
+msgstr ""
+"您正在尝试 %(action)s 打印，但 %(printer_name)s 没有打印...也许您单击了过期电"
+"子邮件中的链接？"
+
+#: app/templates/printer_acted.html:39
+msgid "Go to webcam view"
+msgstr "前往网络摄像头视图"
+
+#: app/templates/socialaccount/authentication_error.html:5
+#: app/templates/socialaccount/authentication_error.html:9
+msgid "Social Network Login Failure"
+msgstr "社交网络登录失败"
+
+#: app/templates/socialaccount/authentication_error.html:10
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr "尝试通过您的社交网络账户登录时发生错误。"
+
+#: app/templates/socialaccount/connections.html:5
+#: app/templates/socialaccount/connections.html:9
+msgid "Account Connections"
+msgstr "账户连接"
+
+#: app/templates/socialaccount/connections.html:12
+msgid ""
+"You can sign in to your account using any of the following third party "
+"accounts:"
+msgstr "您可以使用以下任何第三方账户登录到您的账户："
+
+#: app/templates/socialaccount/connections.html:44
+msgid ""
+"You currently have no social network accounts connected to this account."
+msgstr "您目前没有任何社交网络账户连接到此账户。"
+
+#: app/templates/socialaccount/connections.html:47
+msgid "Add a 3rd Party Account"
+msgstr "添加第三方账户"
+
+#: app/templates/socialaccount/login_cancelled.html:5
+#: app/templates/socialaccount/login_cancelled.html:9
+msgid "Login Cancelled"
+msgstr "登录已取消"
+
+#: app/templates/socialaccount/login_cancelled.html:13
+#, python-format
+msgid ""
+"You decided to cancel logging in to our site using one of your existing "
+"accounts. If this was a mistake, please proceed to <a "
+"href=\"%(login_url)s\">sign in</a>."
+msgstr ""
+"您决定取消使用您现有的账户之一登录到我们的网站。如果这是一个错误，请继续<a "
+"href=\"%(login_url)s\">登录</a>。"
+
+#: app/templates/socialaccount/messages/account_connected.txt:2
+msgid "The social account has been connected."
+msgstr "社交账户已连接。"
+
+#: app/templates/socialaccount/messages/account_connected_other.txt:2
+msgid "The social account is already connected to a different account."
+msgstr "社交账户已连接到另一个账户。"
+
+#: app/templates/socialaccount/messages/account_disconnected.txt:2
+msgid "The social account has been disconnected."
+msgstr "社交账户已断开连接。"
+
+#: app/templates/socialaccount/signup.html:11
+#, python-format
+msgid ""
+"You are about to use your %(provider_name)s account to login to\n"
+"  %(site_name)s. As a final step, please complete the following form:"
+msgstr ""
+"您即将使用您的 %(provider_name)s 账户登录到 %(site_name)s。作为最后一步，请完"
+"成以下表单："
+
+#: app/templates/unsubscribe_email.html:10
+msgid "when a print job is done."
+msgstr "当打印任务完成时。"
+
+#: app/templates/unsubscribe_email.html:12
+msgid "when a print job is cancelled."
+msgstr "当打印任务被取消时。"
+
+#: app/templates/unsubscribe_email.html:14
+msgid "on other print events."
+msgstr "在其他打印事件上。"
+
+#: app/templates/unsubscribe_email.html:16
+msgid "when filament needs change."
+msgstr "当需要更换丝料时。"
+
+#: app/templates/unsubscribe_email.html:18
+msgid "when a possible failure is detected."
+msgstr "当检测到可能的故障时。"
+
+#: app/templates/unsubscribe_email.html:20
+msgid "when a heater has reached the target or cooled down."
+msgstr "当加热器达到目标温度或冷却时。"
+
+#: app/templates/unsubscribe_email.html:22
+msgid "on account notifications."
+msgstr "在账户通知上。"
+
+#: app/templates/unsubscribe_email.html:26
+msgid "Change notification preferences"
+msgstr "更改通知偏好设置"
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "                By signing up, I agree to the %(brand_name)s app's \n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ " 注册即表示我同意 %(brand_name)s 应用的 \n"
+#~ " "
+
+#~ msgid "Terms of Use"
+#~ msgstr "使用条款"
+
+#~ msgid "and"
+#~ msgstr "和"
+
+#~ msgid "Privacy Policy"
+#~ msgstr "隐私政策"
+
+#, fuzzy, python-format
+#~| msgid ""
+#~| "By signing up, I agree to\n"
+#~| "            the %(brand_name)s app's <a class=\"link\" href=\"https://"
+#~| "www.obico.io/terms.html\">Terms of\n"
+#~| "              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#~| "privacy.html\">Privacy\n"
+#~| "              Policy</a>"
+#~ msgid ""
+#~ "\n"
+#~ "                By signing up, I agree to the %(brand_name)s app's \n"
+#~ "                <a class=\"link\" href=\"https://www.obico.io/terms."
+#~ "html\">Terms of Use</a> \n"
+#~ "                and \n"
+#~ "                <a class=\"link\" href=\"https://www.obico.io/privacy."
+#~ "html\">Privacy Policy</a>\n"
+#~ "                "
+#~ msgstr ""
+#~ "通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://"
+#~ "www.obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://"
+#~ "www.obico.io/privacy.html\">隐私政策</a>"
+
+#, fuzzy, python-format
+#~| msgid ""
+#~| "By signing up, I agree to\n"
+#~| "            the %(brand_name)s app's <a class=\"link\" href=\"https://"
+#~| "www.obico.io/terms.html\">Terms of\n"
+#~| "              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#~| "privacy.html\">Privacy\n"
+#~| "              Policy</a>"
+#~ msgid ""
+#~ "By signing up, I agree to\n"
+#~ "                the %(brand_name)s app's <a class=\"link\" href=\"https://"
+#~ "www.obico.io/terms.html\">Terms of\n"
+#~ "                  Use</a> and <a class=\"link\" href=\"https://www.obico."
+#~ "io/privacy.html\">Privacy\n"
+#~ "                  Policy</a>"
+#~ msgstr ""
+#~ "通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://"
+#~ "www.obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://"
+#~ "www.obico.io/privacy.html\">隐私政策</a>"
+
+#~ msgid ""
+#~ "It worked! You have successfully sent email from your self-hosted Obico "
+#~ "Server."
+#~ msgstr "成功了！您已成功从您自托管的 Obico 服务器发送了电子邮件。"

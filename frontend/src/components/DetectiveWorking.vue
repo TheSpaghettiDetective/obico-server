@@ -6,7 +6,7 @@
       alt="Obi is still working"
     />
     <div class="card-img-overlay" style="background-color: rgba(0, 0, 0, 0.6)">
-      <h5 class="card-title text-center">Obi is still busy working on your time-lapse</h5>
+      <h5 class="card-title text-center">{{ $t("Obi is still busy working on your time-lapse") }}</h5>
     </div>
   </div>
 </template>

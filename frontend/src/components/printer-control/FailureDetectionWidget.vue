@@ -1,6 +1,6 @@
 <template>
   <widget-template>
-    <template #title>Failure Detection</template>
+    <template #title>{{ $t("Failure Detection") }}</template>
     <template #content>
       <div class="wrapper">
         <div v-if="isEnt" class="dh-balance-wrapper">
@@ -8,13 +8,13 @@
             href="/user_preferences/dh/"
             class="btn shadow-none action-btn icon-btn hours-btn"
             :style="{ marginRight: `${String(dhBadgeNum).length * 0.25}rem` }"
-            :title="dhBadgeNum + ' AI Detection Hours'"
+            :title="dhBadgeNum + ' '+$t('AI Detection Hours')"
           >
             <svg class="custom-svg-icon">
               <use href="#svg-hour-glass"></use>
             </svg>
             <span id="user-credits" class="badge badge-light">{{ dhBadgeNum }}</span>
-            <span class="sr-only">AI Detection Hours</span>
+            <span class="sr-only">{{ $t("AI Detection Hours") }}</span>
           </a>
         </div>
         <div class="header">
@@ -27,11 +27,11 @@
           <div v-if="printer.not_watching_reason" class="overlay-info">
             <muted-alert class="muted-alert">
               <span
-                >Not watching ({{ printer.not_watching_reason }}).
+                >{{$t("Not watching")}} ({{ printer.not_watching_reason }}).
                 <a
                   href="https://www.obico.io/docs/user-guides/detective-not-watching/"
                   target="_blank"
-                  >Learn all possible reasons
+                  >{{$t("Learn all possible reasons")}}
                   <small><i class="fas fa-external-link-alt"></i></small></a
               ></span>
             </muted-alert>
@@ -40,9 +40,9 @@
         <div class="controls">
           <div class="line">
             <label class="label" :for="'watching_enabled-toggle-' + printer.id">
-              Enable AI failure detection
+              {{$t("Enable AI failure detection")}}
               <div v-if="!enableFailureDetection" class="text-muted">
-                AI failure detection is disabled. You are on your own.
+                {{$t("AI failure detection is disabled. You are on your own.")}}
               </div>
             </label>
             <div class="switch">
@@ -65,9 +65,9 @@
           </div>
           <div class="line">
             <label class="label" :for="'pause_on_failure-toggle-' + printer.id">
-              Pause on detected failures
+              {{t("Pause on detected failures")}}
               <div v-if="!pauseOnFailure" class="text-muted">
-                You will still be alerted via notifications.
+                {{$t("You will still be alerted via notifications.")}}
               </div>
             </label>
             <div class="switch">
@@ -92,10 +92,10 @@
         <div v-if="printer.alertUnacknowledged()" class="failure-detected-message">
           <div class="warning-message">
             <i class="fas fa-exclamation-triangle"></i>
-            Failure Detected!
+            {{$t("Failure Detected!")}}
           </div>
           <b-button variant="outline-warning custom-button" @click="onNotAFailureClicked($event)"
-            >Not a Failure?</b-button
+            >{{ $t("Not a Failure?") }}</b-button
           >
         </div>
       </div>

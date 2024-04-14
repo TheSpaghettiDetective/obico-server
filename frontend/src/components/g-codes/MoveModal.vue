@@ -1,8 +1,9 @@
 <template>
   <b-modal
     id="b-modal-move"
-    title="Move item"
-    ok-title="Place Here"
+    :title="$t('Move item')"
+    :ok-title="$t('Place Here')"
+    :cancel-title="$t('Cancel')"
     :ok-disabled="isSameDir || patchLoading"
     scrollable
     @ok="handleOk"
@@ -14,12 +15,12 @@
           v-if="parentFolder !== null"
           href="#"
           class="btn shadow-none icon-btn d-inline"
-          title="Go Back"
+          :title="$t('Go Back')"
           @click.prevent="goBack"
         >
           <i class="fas fa-chevron-left"></i>
         </a>
-        <h5 class="modal-title">Move item</h5>
+        <h5 class="modal-title">{{ $t("Move item") }}</h5>
       </div>
     </template>
     <form @submit.prevent="handleSubmit">
@@ -235,7 +236,7 @@ export default {
             })
         }
       } catch (error) {
-        this.errorDialog(error, 'Failed to move item(s)')
+        this.errorDialog(error, `${this.$i18next.t('Failed to move item(s)')}`)
       }
 
       this.patchLoading = false

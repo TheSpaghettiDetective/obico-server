@@ -3,8 +3,8 @@
     :error-messages="errorMessages"
     :saving="saving"
     :notification-channel="notificationChannel"
-    config-variable-title="User Key"
-    config-variable-placeholder="Pushover User Key"
+    :config-variable-title="$t('User Key')"
+    :config-variable-placeholder="$t('Pushover User Key')"
     config-variable-name="user_key"
     @createNotificationChannel="$emit('createNotificationChannel', $event)"
     @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
@@ -13,13 +13,11 @@
   >
     <template #header>
       <small class="form-text text-muted">
-        If you have a Pushover account, you can
-        <a
-          href="https://support.pushover.net/i7-what-is-pushover-and-how-do-i-use-it"
-          target="_blank"
-          >get your User Key</a
-        >
-        and enter it here.
+        <i18next :translation="$t('If you have a Pushover account, you can {localizedDom} and enter it here.')">
+          <template #localizedDom>
+            <a href="https://support.pushover.net/i7-what-is-pushover-and-how-do-i-use-it" target="_blank">{{$t("get your User Key")}}</a>
+          </template>
+        </i18next>
       </small>
     </template>
   </notification-channel-template>

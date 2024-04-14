@@ -10,20 +10,20 @@
         ></b-form-radio-group>
       </b-form-group>
       <small class="text-muted">
-        Not sure? Look at
+        {{$t("Not sure? Look at")}}
         <a
           target="_blank"
           href="https://www.obico.io/docs/user-guides/how-does-credits-work#spaghetti-examples"
-          >some examples. <small><i class="fas fa-external-link-alt"></i></small
+          >{{ $t("some examples. ") }}<small><i class="fas fa-external-link-alt"></i></small
         ></a>
       </small>
       <div class="navigation-container my-4" style="display: flex">
         <b-button variant="outline-secondary" @click="$emit('prev')">
-          <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Previous
+          <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;{{$t("Previous")}}
         </b-button>
 
         <b-button variant="outline-secondary" @click="$emit('next')">
-          Next&nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+          {{$t("Next")}}&nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
         </b-button>
       </div>
     </div>
@@ -74,11 +74,11 @@ export default {
 
           if (credited_dhs > 0) {
             this.$swal.Prompt.fire({
-              title: 'You are awesome!',
-              html: '<p>The AI failure detection just got a little better because of your feedback!</p><p>You just earned 2 non-expirable AI Detection Hours - Yay!</p>',
-              confirmButtonText: "I'm done!",
+              title: `${this.$i18next.t('You are awesome!')}`,
+              html: `<p>${this.$i18next.t("The AI failure detection just got a little better because of your feedback!")}</p><p>${this.$i18next.t("You just earned 2 non-expirable AI Detection Hours - Yay!")}</p>`,
+              confirmButtonText: `${this.$i18next.t("I'm done!")}`,
               showCancelButton: true,
-              cancelButtonText: 'Change feedback',
+              cancelButtonText: `${this.$i18next.t('Change feedback')}`,
             }).then((result) => {
               if (result.isConfirmed) {
                 window.location.href = '/print_history/'

@@ -54,7 +54,8 @@ API request was processed successfully.
       "rolling_mean_long": 0,
       "prediction_num": 0,
       "prediction_num_lifetime": 0
-    }
+    },
+    "tagged_img_url": "https://app.obico.io/xxx"
   }
 }
 ```
@@ -66,6 +67,7 @@ API request was processed successfully.
     - `rolling_mean_long`: Long-term rolling mean for `p`. Rolling window span = 7200. This rolling mean is accumulated over the lifetime of the printer.
     - `prediction_num`: The number of predictions for the current print so far.
     - `prediction_num_lifetime`: The number of predictions for the life-time of the printer.
+- `tagged_img_url`: The URL for the image tagged with detections (green boxes).
 
 :::tip
 It's a good practice to use the temporal stats to smoothen out the noises in failure detection. Otherwise there may be excessive amount of false alarms.
@@ -96,14 +98,27 @@ API request was NOT processed successfully for other reasons, such as missing re
 }
 ```
 
+#### Status code: `401` {#status-code-401}
+
+Super auth_token is not valid. Contact Obico team member.
+
+#### Body {#body-3}
+
+```
+{
+  "error": "Invalid or Inactive Token",
+  "is_authenticated": "False"
+}
+```
+
 #### Status code: `429` {#status-code-429}
 
-API request was NOT processed successfully because of rate throttling.
+API request was NOT processed successfully because of rate throttling. Contact Obico team member to increase your rate limit.
 
 #### Body {#body-2}
 
 ```
 {
-  "error": "Detailed error message"
+  "error": "You are running too hot! Take it easy buddy..."
 }
 ```

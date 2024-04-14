@@ -8,8 +8,8 @@
               <!-- Mobile (web / app) -->
               <div v-if="useMobileLayout" class="mobile-settings-wrapper full-on-mobile">
                 <div v-if="$route.path === '/user_preferences/'" class="mobile-settings-categories">
-                  <h2 v-show="!onlyNotifications()" class="categories-title section-title">
-                    Account
+                  <h2 v-show="!onlyNotifications" class="categories-title section-title">
+                    {{$t("Account")}}
                   </h2>
                   <template v-for="(value, name) in sections">
                     <router-link
@@ -30,10 +30,10 @@
                     </router-link>
                   </template>
 
-                  <a v-if="!onlyNotifications()" href="#" @click.prevent="logout">
+                  <a v-if="!onlyNotifications" href="#" @click.prevent="logout">
                     <span>
                       <i :class="['fas fa-sign-out-alt', 'mr-2']" style="font-size: 1.125rem"></i>
-                      Logout
+                      {{$t('Logout')}}
                     </span>
                   </a>
                 </div>
@@ -107,14 +107,14 @@
                   <li class="nav-item">
                     <a class="nav-link" href="#" @click.prevent="logout">
                       <i :class="['fas fa-sign-out-alt', 'mr-2']"></i>
-                      Logout
+                      {{$t('Logout')}}
                     </a>
                   </li>
                 </template>
               </b-tabs>
             </div>
             <div v-else class="text-center">
-              <b-spinner class="mt-5" label="Loading..."></b-spinner>
+              <b-spinner class="mt-5" :label="$t('Loading...')"></b-spinner>
             </div>
           </b-col>
         </b-row>
@@ -127,9 +127,9 @@
 import axios from 'axios'
 import urls from '@config/server-urls'
 import PageLayout from '@src/components/PageLayout.vue'
-import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
+import { inMobileWebView } from '@src/lib/page-context'
 import sections from '@config/user-preferences/sections'
-import routes from '@config/user-preferences/routes'
+import routes from '@config/user-preferences/pref-routes'
 import { getNotificationSettingKey } from '@src/lib/utils'
 
 export default {
@@ -156,7 +156,6 @@ export default {
       sections,
       availableNotificationPlugins: null,
       configuredNotificationChannels: null,
-      onlyNotifications,
       user: null,
       saving: {},
       errorMessages: {},
@@ -205,6 +204,9 @@ export default {
         new URLSearchParams(window.location.search).get('themeable') === 'true'
       )
     },
+    onlyNotifications() {
+      return new URLSearchParams(window.location.search).get('onlyNotifications') === 'true'
+    },
   },
 
   created() {
@@ -228,10 +230,10 @@ export default {
     },
     logout() {
       this.$swal.Confirm.fire({
-        title: 'Confirmation',
-        html: '<p class="text-center">You a going to logout from your account</p>',
-        confirmButtonText: 'Logout',
-        cancelButtonText: 'Cancel',
+        title: `${this.$i18next.t('Confirmation')}`,
+        html: `<p class="text-center">${this.$i18next.t("You a going to logout from your account")}</p>`,
+        confirmButtonText: `${this.$i18next.t('Logout')}`,
+        cancelButtonText: `${this.$i18next.t('Cancel')}`,
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.replace('/accounts/logout/')
@@ -254,6 +256,15 @@ export default {
         for (const [key, val] of Object.entries(this.sections)) {
           if (val.isNotificationChannel) {
             this.sections[key].pluginInfo = plugins[val.channelName]
+          }
+          if (val.channelName && plugins[val.channelName] && plugins[val.channelName].env_vars) {
+            const env_vars = plugins[val.channelName].env_vars
+            const needHidden = Object.values(env_vars).some(envItem => {
+              return envItem.is_required && !envItem.is_set
+            })
+            if (needHidden) {
+              this.$set(this.sections, key, { ...this.sections[key], isHidden: true });
+            }
           }
         }
       })
@@ -307,7 +318,7 @@ export default {
             const key = getNotificationSettingKey(section, 'config')
             this.$set(this.errorMessages, key, errors)
           } else {
-            this.errorDialog(err, 'Can not update your preferences')
+            this.errorDialog(err, `${this.$i18next.t('Can not update your preferences')}`)
           }
         })
     },
@@ -365,7 +376,7 @@ export default {
               this.$set(this.errorMessages, key, errors)
             }
           } else {
-            this.errorDialog(err, 'Can not update your preferences')
+            this.errorDialog(err, `${this.$i18next.t('Can not update your preferences')}`)
           }
         })
     },
@@ -376,7 +387,7 @@ export default {
           this.$router.go()
         })
         .catch((err) => {
-          this.errorDialog(err, 'Can not update your preferences')
+          this.errorDialog(err, `${this.$i18next.t('Can not update your preferences')}`)
         })
     },
     clearErrorMessages(propName) {
@@ -422,7 +433,7 @@ export default {
               }
             }
           } else {
-            this.errorDialog(err, 'Can not update your preferences')
+            this.errorDialog(err, `${this.$i18next.t('Can not update your preferences')}`)
           }
         })
         .then(() => {

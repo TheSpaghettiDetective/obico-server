@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <h5>Serial Port:</h5>
+      <h5>{{ $t("Serial Port") }}:</h5>
     </div>
     <div>
       <b-form-select id="connect-port" v-model="selectedPort" class="form-control">
@@ -12,11 +12,11 @@
     </div>
     <br />
     <div>
-      <h5>Baudrate:</h5>
+      <h5>{{ $t("Baudrate") }}:</h5>
     </div>
     <div>
       <b-form-select id="connect-baudrate" v-model="selectedBaudrate" class="form-control">
-        <b-form-select-option value=""> Auto </b-form-select-option>
+        <b-form-select-option value="">{{ $t("Auto") }}</b-form-select-option>
         <b-form-select-option
           v-for="baudrate in connectionOptions.baudrates"
           :key="baudrate"

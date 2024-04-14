@@ -8,11 +8,11 @@ The AI failure detection in this project is based on a Deep Learning model. [See
 
 # Install and run the server
 
-*Note: Form more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/).*
+*Note: For more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/).*
 
 ## Prerequisites
 
-The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. A NVidia GPU is optional but can vastly reduce the power consumption and beef up the number of printers the server can handle.
+The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. An Nvidia GPU is optional but can vastly increase the power consumption and beef up the number of printers the server can handle.
 
 [Detailed hardware minimum specs](https://www.obico.io/docs/server-guides/hardware-requirements/).
 

@@ -1,7 +1,7 @@
 ---
 id: klipper-setup
 title: Set up Obico for Klipper
-description: For Klipper/Moonraker/Mainsail/Fluidd users
+description: For users using Klipper with Mainsail or Fluidd
 sidebar_label: Set up Obico for Klipper
 ---
 
@@ -9,8 +9,19 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::caution
- This guide is for the users who use **Moonraker with Klipper**. If you are using OctoPrint with Klipper, please follow the [Obico for OctoPrint guide](octoprint-plugin-setup.md) instead.
+ This guide is for the users who use Klipper with Moonraker and **Mainsail or Fluidd**. If you are using OctoPrint with Klipper, please follow the [Obico for OctoPrint guide](octoprint-plugin-setup.md) instead.
 :::
+
+:::tip
+This guide is for users who installed Klipper themselves. If you have a printer that came with Klipper pre-installed, follow the guide for your 3D printer: 
+- [Creality K1 Series](https://www.obico.io/blog/remote-access-creality-k1/)
+- [Elegoo Neptune 4 Series](https://obico.io/blog/elegoo-neptune-4-and-obico-ai-3d-printing-revolution/)
+- [Kingroon KLP1](https://obico.io/blog/kingroon-klipper-remote-access-and-ai/)
+- [Kingroon KP3S Pro V2](https://obico.io/blog/kingroon-klipper-remote-access-and-ai/)
+- [Qidi X Series](https://obico.io/blog/qidi-tech-x-series-klipper-remote-access-and-ai/)
+- [Creality Sonic Pad](https://www.obico.io/blog/sonic-pad-remote-access-ai/)
+- [Sovol SV08 Series](https://obico.io/blog/sovol-svo7-series-klipper-remote-access-ai/)
+:::tip 
 
 :::info
 This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
@@ -20,27 +31,40 @@ This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io)
 
 Before you start, make sure:
 
-- You have the Klipper and Moonraker set up correctly and connected to your printer. Also a user interface such as Mainsail/Fluidd is highly recommended.
+- You have set up Klipper and the Moonraker API correctly, and it is connected to your printer. A interface such as Mainsail/Fluidd is highly recommended.
 - A webcam is set up for your printer and connected to Mainsail/Fluidd/Moonraker.
 - There is sufficient lighting to illuminate the printing area of your printer. If your printer is in a lighted room, you are probably fine. If you'll print with light off, you will need to make sure the printing area is illuminated when your printer is printing. A LED strip or small LED lamp will do the trick.
 
 
 ## Step 1: Download Obico for Klipper and run `install.sh` {#step-1-download-obico-for-klipper-and-run-installsh}
 
-1. SSH to the Raspberry Pi your Klipper runs on.
-2. Run:
+1. Use SSH to connect to the Raspberry Pi your Klipper runs on.
+2. Run the following commands one by one:
 ```bash
     cd ~
     git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
     cd moonraker-obico
     ./install.sh
 ```
-3. Follow the installation steps. You may be asked to enter the password in order to run `sudo` commands.
-5. You will also be asked to enter the configurations necessary for the installation to complete, such as the location of your `moonraker.conf`, Moonraker's port and address, and the log directory.
-6. `install.sh` will now start the process to link your printer to the Obico server. You will be asked to enter:
-    - The Obico Server you want to link it to. The default is the [Obico Cloud](https://app.obico.io). You can also change it to using your own [self-hosted Obico Server](https://www.obico.io/docs/server-guides/) (ex: http://192.168.0.5:3334).
-    - A **6-digit verification code**. You will obtain this 6-digit verification code in the following steps.
-7. Leave the terminal open. We will come back to enter the 6-digit code once we obtain it from the Obico app.
+3. Follow the guided installation steps on your screen. You may be asked to enter your password in order to run `sudo` commands.
+5. When asked for additional information about configuration files, provide their location or the appropriate number. Default for Klipper may be:
+    1. `moonraker.conf` configuration file: `~/printer_data/config/moonraker.conf` or `~/moonraker.conf` (see [Moonraker docs][])
+    2. Moonraker network address: The IP or hostname of the Klipper machine
+    3. Moonraker network port: `7125` (HTTP) or `7130` (HTTPS) (see [\[server\]][])
+    4. Log file directory: `/logs` folder (root level of the disk) (see [moonraker.log])
+6. Next, the installation process will ask you to enter details required to link your printer to the Obico server. Provide:
+    - The Obico Server you want to link it to. The default is `https://app.obico.io` (the [Obico Cloud](https://app.obico.io)).
+      Alternatively, you can also [host your own Obico Server][]: enter the IP address or hostname of your own server (e.g. http://192.168.0.5:3334).
+    - A **6-digit verification code**. **Leave the terminal window open on this screen.**
+7. Follow the guide outlined in [Step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) to either link your Klipper machine and Obico automatically, **or** obtain the 6-digit manual verification code.
+    - If the automatic linking process is successful, the prompt in the terminal will automatically be skipped.
+    - You do not need the 6-digit code if automatic linking can be performed.
+
+[Moonraker docs]: https://moonraker.readthedocs.io/en/latest/configuration/
+[\[server\]]: https://moonraker.readthedocs.io/en/latest/configuration/#server
+[moonraker.log]: https://moonraker.readthedocs.io/en/latest/web_api/#download-moonrakerlog
+
+[host your own Obico Server]: https://www.obico.io/docs/server-guides/
 
 ## Step 2: Sign up for an Obico account. {#step-2-sign-up-for-an-obico-account}
 
@@ -101,7 +125,7 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**ðŸ
 
 :::tip
 
-If you are phone or computer is one the **the same local network** as your Klipper is, the Obico app can find your Klipper automatically. This is the easiest way to link printer to your Obico account.
+If your phone or computer is one the **the same local network** as your Klipper is, the Obico app can find your Klipper machine automatically. This is the easiest way to link your printer to your Obico account.
 
 :::
 
@@ -144,8 +168,6 @@ If you are phone or computer is one the **the same local network** as your Klipp
 
   </TabItem>
 </Tabs>
-
-<b />
 
 ## Step 4: Restart the Raspberry Pi.
 

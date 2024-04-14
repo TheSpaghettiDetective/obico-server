@@ -6,7 +6,7 @@
     <input
       type="text"
       class="dark"
-      placeholder="Search"
+      :placeholder="$t('Search')"
       :value="value"
       @input="$emit('input', $event.target.value)"
       @focus="$emit('focus')"

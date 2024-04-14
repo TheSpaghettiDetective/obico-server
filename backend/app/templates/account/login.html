@@ -17,9 +17,9 @@
         {% if socialaccount_providers %}
         <div class="social-login">
           <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
-            role="button"><span><i class="fab fa-facebook-f mr-1"></i> Sign In with Facebook</span> </a>
+            role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign In with Facebook" %}</span> </a>
           <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
-            role="button"><span><i class="fab fa-google mr-1"></i> Sign In with Google</span> </a>
+            role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign In with Google" %}</span> </a>
         </div>
         {% endif %}
 
@@ -51,7 +51,7 @@
           <div style="padding-top: 0.5rem;">
             <div class="custom-control custom-checkbox form-check-inline">
               <input type="checkbox" name="remember" class="custom-control-input" id="remember-checkbox">
-              <label class="custom-control-label" style="font-size: 16px;" for="remember-checkbox">Remember me</label>
+              <label class="custom-control-label" style="font-size: 16px;" for="remember-checkbox">{% trans "Remember me" %}</label>
             </div>
           </div>
           {% endwith %}
@@ -79,15 +79,15 @@
                       </div>
                       <div class="modal-body text-left">
                         <ul>
-                          <li>Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the mobile app, you can use the same to sign in here.</li>
-                          <li>"Sign in with Apple" is not available in the web app. If you want to use the web app, please sign up for a different account and <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/relink-printer/">re-link your printer</a>.</li>
-                          <li>Even if you previously signed up an account using Google or Facebook, you can still <a class="link" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> using the same email address.</li>
-                          <li class="text-warning">If you can't sign in the mobile app, re-install the mobile app and try it again.</li>
-                          <li><a class="link" href="mailto:support@obico.io">Contact us</a> if you have tried everything else.</li>
+                          <li>{% trans "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the mobile app, you can use the same to sign in here." %}</li>
+                          <li>{% blocktrans %}"Sign in with Apple" is not available in the web app. If you want to use the web app, please sign up for a different account and<a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/relink-printer/">re-link your printer"</a> {% endblocktrans %}.</li>
+                          <li>{% trans "Even if you previously signed up an account using Google or Facebook, you can still" %} <a class="link" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> {% trans "using the same email address." %}</li>
+                          <li class="text-warning">{% trans "If you can't sign in the mobile app, re-install the mobile app and try it again." %}</li>
+                          <li><a class="link" href="mailto:support@obico.io">{% trans "Contact us" %}</a> {% trans "if you have tried everything else." %}</li>
                         </ul>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Close" %}</button>
                       </div>
                     </div>
                   </div>
@@ -98,7 +98,7 @@
           <div>
             {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
             <div class="text-center pt-3 w-100">
-              <div class="font-weight-light text-muted">- OR -</div>
+              <div class="font-weight-light text-muted">- {% trans "OR" %} -</div>
               <a class="btn" href="{% url 'account_signup' %}?{{request.GET.urlencode}}">{% trans "SIGN UP" %}</a>
             </div>
             {% endif %}

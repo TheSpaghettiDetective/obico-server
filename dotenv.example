@@ -27,6 +27,9 @@
 # SITE_IS_PUBLIC=False
 # set it to True if the site configured in django admin is accessible from the internet
 
+# CSRF_TRUSTED_ORIGINS=
+# A list of trusted origins for unsafe requests (e.g. POST). For example: ["https://obico.mydomain.com", "https://*.example.com"]. Necessary if, for example, a Cloudflare tunnel is used for external access.
+
 # SOCIAL_LOGIN=False
 # Set it to True to allow social account login. You will need to set "Provider" in Django admin (https://django-allauth.readthedocs.io/en/latest/providers.html)
 

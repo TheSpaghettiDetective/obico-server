@@ -1,0 +1,45 @@
+{% extends "oauth2_provider/base.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-sm-10 col-md-8 col-lg-6 col-xl-4">
+            {% if not error %}
+                <form id="authorizationForm" method="post">
+                    <h3 class="block-center-heading my-3">{% trans "Authorize" %} {{ application.name }}?</h3>
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        {% if field.is_hidden %}
+                            {{ field }}
+                        {% endif %}
+                    {% endfor %}
+
+                    <p>{{ application.name }} {% trans "requires the following permissions" %}</p>
+                    <ul>
+                        <li>Query your printer status.</li>
+                        <li>Upload G-Code to your account.</li>
+                        <li>Access your {{ page_context.syndicate.brand_name }} printer page.</li>
+                    </ul>
+
+                    {{ form.errors }}
+                    {{ form.non_field_errors }}
+
+                    <div class="control-group my-5">
+                        <div class="controls">
+                            <input type="submit" class="btn btn-large" value="{% trans 'Cancel' %}"/>
+                            <input type="submit" class="btn btn-large btn-primary" name="allow" value="{% trans 'Authorize' %}"/>
+                        </div>
+                    </div>
+                </form>
+
+            {% else %}
+                <h2>Error: {{ error.error }}</h2>
+                <p>{{ error.description }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -10,16 +10,17 @@ import {
 } from '@src/lib/printer-local-comm'
 import urls from '@config/server-urls'
 import { repeatPrinterLocalGCode } from '../../lib/printer-local-comm'
+import i18n from "@src/i18n/i18n.js"
 
 export const confirmPrint = (gcode, printer) => {
   return new Promise((resolve, reject) => {
     Vue.swal
       .fire({
-        html: `<h5 style="text-align: center; line-height: 1.5;">Print "${gcode.filename}" on <b>${printer.name}</b>?</h5>`,
+        html: `<h5 style="text-align: center; line-height: 1.5;">${i18n.t("Print")} "${gcode.filename}" on <b>${printer.name}</b>?</h5>`,
         imageUrl: gcode.getBigThumbnailUrl && gcode.getBigThumbnailUrl(),
         showCancelButton: true,
-        confirmButtonText: 'Print!',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: `${i18n.t('Print!')}`,
+        cancelButtonText: `${i18n.t('Cancel')}`,
         reverseButtons: true,
       })
       .then((result) => {
@@ -119,9 +120,9 @@ export const showRedirectModal = (Swal, onClose, printerId) => {
     html: `
       <div class="text-center">
         <h5 class="py-3">
-          You'll be redirected to printers page in <strong>${Math.round(
+          ${i18n.t("You'll be redirected to printers page in")} <strong>${Math.round(
             REDIRECT_TIMER / 1000
-          )}</strong> seconds
+          )}</strong> ${i18n.t("seconds")}
         </h5>
       </div>
     `,

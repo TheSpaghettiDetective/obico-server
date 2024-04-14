@@ -209,7 +209,7 @@ def upload_print(request):
     if request.method == 'POST':
         _, file_extension = os.path.splitext(request.FILES['file'].name)
         video_path = f'{request.user.id}/{str(timezone.now().timestamp())}{file_extension}'
-        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER, long_term_storage=False)
+        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER, long_term_storage=True)
         preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
 
         return JsonResponse(dict(status='Ok'))
@@ -277,7 +277,7 @@ class RangeFileWrapper(object):
                 raise StopIteration()
             self.remaining -= len(data)
             return data
-       
+
 range_re = re.compile(r'bytes\s*=\s*(\d+)\s*-\s*(\d*)', re.I)
 def serve_jpg_file(request, file_path):
     url = HmacSignedUrl(request.get_full_path())
@@ -324,3 +324,7 @@ def health_check(request):
     User.objects.all()[:1]
     cache.printer_pic_get(0)
     return HttpResponse('Okay')
+
+def orca_slicer_authorized(request):
+    access_granted = 'true' if request.GET.get('error') != 'access_denied' else 'false'
+    return render(request, 'orca_slicer_authorized.html', {'access_granted': access_granted})

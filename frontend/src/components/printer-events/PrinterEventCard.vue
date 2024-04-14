@@ -33,7 +33,7 @@ export default {
 
   computed: {
     eventTitle() {
-      return this.printerEvent.event_title || 'Unknown event'
+      return this.printerEvent.event_title || `${this.$i18next.t('Unknown event')}`
     },
     tintClass() {
       switch (this.printerEvent.event_class) {

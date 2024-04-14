@@ -1,8 +1,9 @@
 <template>
   <b-modal
     id="b-modal-pick-dates"
-    title="Select Dates"
-    ok-title="Apply"
+    :title="$t('Select Dates')"
+    :ok-title="$t('Apply')"
+    :cancel-title="$t('Cancel')"
     centered
     @ok="handleOk"
     @hidden="resetModal"
@@ -11,30 +12,30 @@
     <form @submit.prevent="handleSubmit">
       <div class="my-2">
         <b-form-group
-          label="Date from"
+          :label="$t('Date from')"
           label-for="date_from"
-          description="If empty, will default to your registration date"
+          :description="$t('If empty, will default to your registration date')"
         >
           <b-form-input
             id="date_from"
             ref="dateFrom"
             v-model="dateFrom"
             type="date"
-            placeholder="Enter date"
+            :placeholder="$t('Enter date')"
           ></b-form-input>
         </b-form-group>
 
         <b-form-group
-          label="Date to"
+          :label="$t('Date to')"
           label-for="date_to"
-          description="If empty, will default to today"
+          :description="$t('If empty, will default to today')"
         >
           <b-form-input
             id="date_to"
             ref="dateTo"
             v-model="dateTo"
             type="date"
-            placeholder="Enter date"
+            :placeholder="$t('Enter date')"
           ></b-form-input>
         </b-form-group>
 
@@ -84,7 +85,7 @@ export default {
     },
     async handleSubmit() {
       if (!this.dateFrom && !this.dateTo) {
-        this.errorMessage = 'At least one date is needed'
+        this.errorMessage = `${this.$i18next.t('At least one date is needed')}`
         return
       }
 

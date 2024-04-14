@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import { isLocalStorageSupported } from '@static/js/utils'
+import i18n from '@src/i18n/i18n.js'
 
 const TRANSIENT_STATES = {
   'G-Code Downloading': {
@@ -80,8 +81,8 @@ export const showTimeoutError = (printer, localTransientState, newPrinterState) 
   Vue.swal
     .fire({
       icon: 'error',
-      title: 'Printer not responding',
-      html: `The printer doesn't seem to be responding. Is it powered on and connected to the Internet? Please <a href="mailto:support@obico.io">report the problem to us</a> if this error repeats multiple times.`,
+      title: `${i18n.t('Printer not responding')}`,
+      html: `${i18n.t("The printer doesn't seem to be responding. Is it powered on and connected to the Internet? Please")} <a href="mailto:support@obico.io">${i18n.t("report the problem to us")}</a> ${i18n.t("if this error repeats multiple times.")}`,
     })
     .then(() => {
       window.location.reload()

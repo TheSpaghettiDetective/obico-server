@@ -11,7 +11,7 @@
             v-show="!selectedPrintIds.size"
             class="label"
             @click="allPrintsSelected = !allPrintsSelected"
-            >Select all</span
+            >{{ $t("Select all") }}</span
           >
           <b-dropdown
             v-show="selectedPrintIds.size"
@@ -19,11 +19,11 @@
           >
             <template #button-content>
               {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }}
-              selected
+              {{$t("selected")}}
             </template>
             <b-dropdown-item>
               <div class="text-danger" @click="onDeleteBtnClick">
-                <i class="far fa-trash-alt"></i>Delete
+                <i class="far fa-trash-alt"></i>{{$t("Delete")}}
               </div>
             </b-dropdown-item>
           </b-dropdown>
@@ -33,7 +33,7 @@
     <template #topBarRight>
       <div class="action-panel">
         <!-- Sorting -->
-        <b-dropdown right no-caret toggle-class="action-btn icon-btn" title="Sort By">
+        <b-dropdown right no-caret toggle-class="action-btn icon-btn" :title="$t('Sort By')">
           <template #button-content>
             <i class="fas fa-sort-amount-down"></i>
           </template>
@@ -50,7 +50,7 @@
           no-caret
           toggle-class="action-btn icon-btn"
           menu-class="scrollable"
-          title="Filter"
+          :title="$t('Filter')"
         >
           <template #button-content>
             <i class="fas fa-filter"></i>
@@ -75,13 +75,13 @@
               {
                 key: 'sorting',
                 icon: 'fas fa-sort-amount-down',
-                title: `Sort`,
+                title: $t(`Sort`),
                 expandable: true,
               },
               {
                 key: 'filtering',
                 icon: 'fas fa-filter',
-                title: `Filter`,
+                title: $t(`Filter`),
                 expandable: true,
               },
             ]"
@@ -123,7 +123,7 @@
                   <i class="fas fa-hashtag"></i>
                 </div>
                 <div class="info">
-                  <div class="title">Prints done</div>
+                  <div class="title">{{ $t("Prints done") }}</div>
                   <div class="value">
                     {{ stats.total_print_count }} (<span class="text-success">{{
                       stats.total_succeeded_print_count
@@ -138,7 +138,7 @@
                   <i class="far fa-clock"></i>
                 </div>
                 <div class="info">
-                  <div class="title">Total print time</div>
+                  <div class="title">{{ $t("Total print time") }}</div>
                   <div class="value">{{ totalPrintTimeFormatted }}</div>
                 </div>
               </div>
@@ -153,7 +153,7 @@
                       :highlight="false"
                       :show-close-button="false"
                     >
-                      Filament used
+                      {{$t("Filament used")}}
                     </help-widget>
                   </div>
                   <div class="value">{{ totalFilamentUsedFormatted }}</div>
@@ -161,7 +161,7 @@
               </div>
               <div class="btn-wrapper">
                 <a class="btn btn-secondary" :href="`/stats/`">
-                  Full Stats
+                  {{$t("Full Stats")}}
                   <i class="fas fa-arrow-right"></i>
                 </a>
               </div>
@@ -184,7 +184,7 @@
               <loading-placeholder v-if="!noMoreData" />
             </mugen-scroll>
           </b-col>
-          <b-col v-else class="text-center my-5">No prints found</b-col>
+          <b-col v-else class="text-center my-5">{{ $t("No prints found") }}</b-col>
         </b-row>
       </b-container>
 
@@ -215,12 +215,12 @@ import { user } from '@src/lib/page-context'
 import HelpWidget from '@src/components/HelpWidget.vue'
 import { queryBuilder } from '@src/lib/time-period-filtering'
 import { humanizedFilamentUsage, humanizedDuration } from '@src/lib/formatters'
-
+import i18n from '@src/i18n/i18n.js'
 const PAGE_SIZE = 24
 
 export const SortingLocalStoragePrefix = 'printsSorting'
 export const SortingOptions = {
-  options: [{ title: 'Date', key: 'date' }],
+  options: [{ title: `${i18n.t('Date')}`, key: 'date' }],
   default: { sorting: 'date', direction: 'desc' },
 }
 
@@ -228,43 +228,43 @@ const DateParamFormat = 'YYYY-MM-DD'
 export const FilterLocalStoragePrefix = 'printsFiltering'
 export const FilterOptions = {
   timePeriod: {
-    title: 'Time Period',
+    title: `${i18n.t('Time Period')}`,
     buildQueryParam: queryBuilder,
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'this_week', title: 'This Week' },
-      { key: 'this_month', title: 'This Month' },
-      { key: 'this_year', title: 'This Year' },
-      { key: 'custom', title: 'Custom' },
+      { key: 'none', title: `${i18n.t('All') }`},
+      { key: 'this_week', title: `${i18n.t('This Week') }`},
+      { key: 'this_month', title: `${i18n.t('This Month') }`},
+      { key: 'this_year', title: `${i18n.t('This Year') }`},
+      { key: 'custom', title: `${i18n.t('Custom') }`},
     ],
     default: 'none',
   },
   printStatus: {
-    title: 'Print Status',
+    title: `${i18n.t('Print Status')}`,
     queryParam: 'filter',
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'finished', title: 'Finished' },
-      { key: 'cancelled', title: 'Cancelled' },
+      { key: 'none', title: `${i18n.t('All') }`},
+      { key: 'finished', title: `${i18n.t('Finished') }`},
+      { key: 'cancelled', title: `${i18n.t('Cancelled') }`},
     ],
     default: 'none',
   },
   feedbackNeeded: {
-    title: 'Feedback Needed',
+    title: `${i18n.t('Feedback Needed')}`,
     queryParam: 'feedback_needed',
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'need_alert_overwrite', title: 'Review Needed' },
-      { key: 'need_print_shot_feedback', title: 'Focused Feedback Needed' },
+      { key: 'none', title: `${i18n.t('All' )}`},
+      { key: 'need_alert_overwrite', title: `${i18n.t('Review Needed' )}`},
+      { key: 'need_print_shot_feedback', title: `${i18n.t('Focused Feedback Needed' )}`},
     ],
     default: 'none',
   },
   printers: {
-    title: 'Printers',
+    title: `${i18n.t('Printers')}`,
     queryParam: 'filter_by_printer_ids',
     multiple: true,
     values: [
-      { key: 'none', title: 'All', includesAll: true },
+      { key: 'none', title:`${i18n.t('All')}`, includesAll: true },
       // Other options are added on printers fetch
     ],
     default: 'none',
@@ -437,11 +437,11 @@ export default {
     onDeleteBtnClick() {
       const selectedPrintIds = Array.from(this.selectedPrintIds)
       this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
+        title: `${this.$i18next.t('Are you sure?')}`,
+        text: `${this.$i18next.t(`Delete {name} print(s)? This action can not be undone.`,{name:this.selectedPrintIds.size})}`,
         showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtonText: `${this.$i18next.t('Yes')}`,
+        cancelButtonText: `${this.$i18next.t('No')}`,
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
@@ -529,10 +529,10 @@ export default {
         const currentDateTo = this.getCurrentDateTo()
         const dateFromFormatted = currentDateFrom
           ? moment(currentDateFrom).format(dateFormat)
-          : 'Until'
+          : `${this.$i18next.t('Until')}`
         const dateToFormatted = currentDateTo
           ? moment(currentDateTo).format(dateFormat)
-          : 'and later'
+          : `${this.$i18next.t('and later')}`
 
         newTitle = `${dateFromFormatted}${
           currentDateFrom && currentDateTo ? ' - ' : ' '

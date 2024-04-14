@@ -23,12 +23,14 @@ import os
 import logging
 from ipware import get_client_ip
 from binascii import hexlify
+from ipware.utils import (
+    cleanup_ip, is_valid_ip, is_public_ip)
 
 from .utils import report_validationerror
-from .printer_discovery import (
-    DeviceInfo,
+from lib.printer_discovery import (
     pull_messages_for_device,
-    update_presence_for_device)
+    update_presence_for_device,)
+from lib.one_time_passcode import request_one_time_passcode
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
 from lib import cache
@@ -41,8 +43,7 @@ from lib.prediction import update_prediction_with_detections, is_failing, VISUAL
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
-
-from PIL import Image, ImageFile
+from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 LOGGER = logging.getLogger(__name__)
@@ -228,6 +229,11 @@ def pause_if_needed(printer, img_url):
 
 
 def cap_image_size(pic):
+    try:
+        im = Image.open(pic.file)
+    except UnidentifiedImageError:
+        raise ValidationError('Corrupted image.')
+
     im = Image.open(pic.file)
     if max(im.size) <= 1296:
         pic.file.seek(0)
@@ -257,19 +263,37 @@ class OctoPrinterDiscoveryView(APIView):
         if not client_ip:
             raise ImproperlyConfigured("cannot determine client_ip")
 
-        device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
+        otp_response = None
+        if 'one_time_passcode' in request.data: # For the agent that supports OTP
+            one_time_passcode = request.data.pop('one_time_passcode')
+            # When the user sends a one-time passcode, it is associated with the verification_code
+            (maybe_new_one_time_passcode, verification_code) = request_one_time_passcode(one_time_passcode)
+            otp_response = {
+                'one_time_passcode': maybe_new_one_time_passcode,
+                'one_time_passlink': f'https://app.obico.io/otp/?one_time_passcode={maybe_new_one_time_passcode}',
+                'verification_code': verification_code}
 
-        update_presence_for_device(
-            client_ip=client_ip,
-            device_id=device_info.device_id,
-            device_info=device_info,
-        )
+        messages = []
+        device_info = request.data
 
-        messages = pull_messages_for_device(
-            client_ip=client_ip,
-            device_id=device_info.device_id
-        )
-        return Response({'messages': [m.asdict() for m in messages]})
+        device_info['host_or_ip'] = cleanup_ip(device_info['host_or_ip'])
+        if is_valid_ip(device_info['host_or_ip']) and not is_public_ip(device_info['host_or_ip']):
+            update_presence_for_device(
+                client_ip=client_ip,
+                device_id=device_info['device_id'],
+                device_info=device_info,
+            )
+
+            messages = pull_messages_for_device(
+                client_ip=client_ip,
+                device_id=device_info['device_id'],
+            )
+
+        discovery_response = {'messages': [m.asdict() for m in messages]}
+        if otp_response:
+            discovery_response.update(otp_response)
+
+        return Response(discovery_response)
 
 
 class OneTimeVerificationCodeVerifyView(APIView):
@@ -304,7 +328,7 @@ class OneTimeVerificationCodeVerifyView(APIView):
             code.save()
             return Response(OneTimeVerificationCodeSerializer(code, many=False).data)
         else:
-            raise Http404("Requested resource does not exist")
+            return Response({'detail': "Requested resource does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class PrinterEventView(CreateAPIView):

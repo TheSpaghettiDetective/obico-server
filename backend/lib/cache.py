@@ -43,6 +43,10 @@ def disco_to_device_message_queue_key(
     return f'printer_discovery:{client_ip}:messages_to:{device_id}'
 
 
+def one_time_passcode_key(code) -> str:
+    return f'otp:{code}'
+
+
 def printer_key_prefix(printer_id):
     return 'printer:{}:'.format(printer_id)
 
@@ -300,6 +304,15 @@ def disco_pop_raw_device_messages(
             tordset_key, min='-inf', max=cur_time - expiration_secs)
         conn.zpopmin(tordset_key, message_count)
         return [raw_msg for (raw_msg, _) in conn.execute()[1]]
+
+
+def lookup_value_by_one_time_passcode(code):
+    return REDIS.get(one_time_passcode_key(code))
+
+
+def set_value_by_one_time_passcode(new_code, ttl, value):
+    REDIS.setex(one_time_passcode_key(new_code), ttl, value)
+
 
 def pic_post_over_limit(printer_id, limit_per_minute):
     key = pic_post_throttle_key(printer_id)

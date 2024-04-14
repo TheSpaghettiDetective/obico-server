@@ -15,7 +15,7 @@ export function currentThemeValue() {
 }
 
 export function initTheme() {
-  return init(currentThemeValue(), Vue.prototype.$brand)
+  return init(currentThemeValue(), Vue.prototype.$syndicate)
 }
 
 export function setTheme(newTheme) {
@@ -23,5 +23,5 @@ export function setTheme(newTheme) {
   if (isLocalStorageSupported()) {
     localStorage.setItem('colorTheme', theme.value)
   }
-  initTheme(Vue.prototype.$brand)
+  initTheme(Vue.prototype.$syndicate)
 }

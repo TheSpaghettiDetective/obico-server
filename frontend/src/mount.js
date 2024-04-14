@@ -11,10 +11,13 @@ import VuePluralize from 'vue-pluralize'
 import OnoffToggle from 'vue-onoff-toggle'
 import LoadScript from 'vue-plugin-load-script'
 import LoadingPlaceholder from '@src/components/LoadingPlaceholder.vue'
+import SyndicateAwareSVG from '@src/components/SyndicateAwareSVG.vue'
 import moment from 'moment'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import i18next from "@src/i18n/i18n.js";
+import I18NextVue from "i18next-vue";
 import {
   faStar,
   faFileCode,
@@ -33,11 +36,14 @@ import {
   faLayerGroup,
   faChevronDown,
   faRulerVertical,
+  faCheck
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
+import { syndicate,language } from '@src/lib/page-context'
+import { syndicateTextConstant } from '@src/config/syndicateText'
 
-const urlParams = new URLSearchParams(window.location.search)
-Vue.prototype.$brand = urlParams.get('theme')
+Vue.prototype.$syndicate = syndicate().provider
+Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().provider||'base'] || syndicateTextConstant.base
 
 export default (router, components) => {
   initTheme()
@@ -50,17 +56,17 @@ export default (router, components) => {
   Vue.use(VuePluralize)
   Vue.use(OnoffToggle)
   Vue.use(LoadScript)
-
+  Vue.use(I18NextVue, { i18next });
   Vue.mixin({
     methods: {
       errorDialog: function (errorObj, userMessage) {
         console.error('logError', errorObj)
         if (userMessage) {
           this.$swal.Reject.fire({
-            title: 'Error',
+            title: `${this.$i18next.t('Error')}`,
             html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
               ${userMessage}.
-              Get help from <a href="https://obico.io/discord-obico-klipper">Obico for Klipper support forum</a> or <a href="https://obico.io/discord">the Obico general support forum</a> if this error persists.
+              ${this.$i18next.t("Get help from")} <a href="https://obico.io/discord-obico-klipper">${this.$i18next.t("the {brandName} for Klipper support forum",{brandName:this.$syndicateText.brandName})}</a> ${this.$i18next.t("or")} <a href="https://obico.io/discord">${this.$i18next.t('the {brandName} general support forum',{brandName:this.$syndicateText.brandName})}</a> ${this.$i18next.t("if this error persists.")}
             </p>`,
             showConfirmButton: false,
             showCancelButton: true,
@@ -72,6 +78,7 @@ export default (router, components) => {
   })
 
   Vue.component('LoadingPlaceholder', LoadingPlaceholder)
+  Vue.component('SyndicateAwareSVG', SyndicateAwareSVG)
 
   library.add(
     faStar,
@@ -91,7 +98,8 @@ export default (router, components) => {
     faGear,
     faLayerGroup,
     faChevronDown,
-    faRulerVertical
+    faRulerVertical,
+    faCheck
   )
   Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 

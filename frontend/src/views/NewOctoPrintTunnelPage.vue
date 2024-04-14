@@ -12,7 +12,7 @@
               </div>
             </b-row>
             <b-row>
-              <h1 class="mx-auto">Welcome To Obico</h1>
+              <h1 class="mx-auto">{{$t("Welcome To")}} {{ $syndicateText.brandName }}</h1>
             </b-row>
             <b-row>
               <b-col>
@@ -22,63 +22,62 @@
             <b-row v-if="isEnt && trialDaysLeft > 0">
               <b-col>
                 <h3 v-if="trialDaysLeft >= 29" class="py-3">
-                  Your 30-Day
-                  <a
-                    class="link"
-                    target="_blank"
-                    href="https://www.obico.io/docs/user-guides/upgrade-to-pro/"
-                    >Pro Plan</a
-                  >
-                  Free Trial Has Started!
+                  <i18next :translation="$t('Your 30-Day {localizedDom} Free Trial Has Started!')">
+                    <template #localizedDom>
+                      <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">{{$t("Pro Plan")}}</a>
+                    </template>
+                  </i18next>
                 </h3>
                 <h3 v-else class="py-3">
-                  {{ trialDaysLeft }} Days Left on Your
-                  <a
-                    class="link"
-                    target="_blank"
-                    href="https://www.obico.io/docs/user-guides/upgrade-to-pro/"
-                    >Pro Plan </a
-                  >Free Trial!
+                  <i18next :translation="$t('{trialDaysLeft} Days Left on Your {localizedDom} Free Trial!')">
+                    <template #localizedDom>
+                      <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">{{$t("Pro Plan")}} </a>
+                    </template>
+                    <template #trialDaysLeft>
+                      {{trialDaysLeft}}
+                    </template>
+                  </i18next>
+
                 </h3>
                 <div class="pb-1">
                   <i class="feature-check fas fa-check-circle"></i
                   ><span class="feature-text"
-                    >Unlimited Secure Tunnel to your {{ platformDisplayName }}</span
+                    >{{ $t('Unlimited Secure Tunnel to your {platformDisplayName}',{platformDisplayName}) }}</span
                   >
                 </div>
                 <div class="pb-1">
                   <i class="feature-check fas fa-check-circle"></i
-                  ><span class="feature-text">Premium 25 FPS Webcam Streaming</span>
+                  ><span class="feature-text">{{$t("Premium 25 FPS Webcam Streaming")}}</span>
                 </div>
                 <div class="pb-1">
                   <i class="feature-check fas fa-check-circle"></i
-                  ><span class="feature-text">250 AI Failure Detection Hours</span>
+                  ><span class="feature-text">{{ $t("250 AI Failure Detection Hours") }}</span>
                 </div>
                 <div class="pb-1">
                   <i class="feature-check fas fa-check-circle"></i
-                  ><span class="feature-text">G-Code Remote Upload and Printing</span>
+                  ><span class="feature-text">{{ $t("G-Code Remote Upload and Printing") }}</span>
                 </div>
-                <div class="lead py-4">{{ platformDisplayName }} has not been linked to your Obico account.</div>
+                <div class="lead py-4">{{ $t("{platformDisplayName} has not been linked to your {brandName} account.",{platformDisplayName,brandName:$syndicateText.brandName}) }}</div>
                 <div class="d-flex flex-column align-center justify-content-center">
                   <div>
                     <a :href="wizardUrl" class="btn btn-primary btn-block mx-auto btn-lg"
-                      >Link {{ platformDisplayName }} Now</a
+                      >{{ $t("Link {platformDisplayName} Now",{platformDisplayName}) }}</a
                     >
                   </div>
                   <div>
                     <div class="text-muted mx-auto text-center font-weight-light">
-                      It's as easy as 1-2-3.
+                      {{$t("It's as easy as 1-2-3.")}}
                     </div>
                   </div>
                 </div>
               </b-col>
             </b-row>
             <div class="footer-note small">
-              Not ready to start yet?
-              <a href="mailto:support@obico.io?subject=Please%20pause%20my%20free%20trial"
-                >Email us</a
-              >
-              to pause your free trial.
+              <i18next :translation="$t('Not ready to start yet? {localizedDom} to pause your free trial.')">
+                <template #localizedDom>
+                  <a href="mailto:support@obico.io?subject=Please%20pause%20my%20free%20trial">{{$t("Email us")}}</a>
+                </template>
+              </i18next>
             </div>
           </b-container>
         </div>
@@ -90,38 +89,40 @@
           </div>
 
           <div v-if="authorized" class="authorization-successful">
-            <h4 class="title">Authorization Successful!</h4>
-            <p>You can close this page</p>
+            <h4 class="title">{{ $t("Authorization Successful!") }}</h4>
+            <p>{{ $t("You can close this page") }}</p>
           </div>
           <div v-else>
             <div>
-              <div class="lead text-center mt-3 mb-5">Tunnel Access Authorization</div>
+              <div class="lead text-center mt-3 mb-5">{{ $t("Tunnel Access Authorization") }}</div>
               <h4 class="my-4">
-                <span class="font-weight-bold">{{ appDisplayName }}</span> is requesting to access you
-                {{ platformDisplayName }} Tunnel.
+                <span class="font-weight-bold">{{appDisplayName}}</span>
+
+                {{ $t('is requesting to access you {platformDisplayName} Tunnel.',{platformDisplayName}) }}
               </h4>
               <p class="text-muted">
-                <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
-                  >{{ platformDisplayName }} Tunnel</a
-                >
-                is a secure way provided by
-                <a href="https://www.obico.io/" target="_blank">Obico</a> to remotely access your
-                {{ platformDisplayName }}. With the {{ platformDisplayName }} Tunnel, you can use {{ appDisplayName }} to access your
-                {{ platformDisplayName }} from anywhere.
+                <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">{{platformDisplayName}} {{$t("Tunnel")}}</a>
+                <i18next :translation="$t('is a secure way provided by {localizedDom} to remotely access your {platformDisplayName}. With the {platformDisplayName} Tunnel, you can use {appDisplayName} to access your {platformDisplayName} from anywhere.')">
+                    <template #localizedDom>
+                      <a href="https://www.obico.io/" target="_blank">{{$syndicateText.brandName}}</a>
+                    </template>
+                    <template #platformDisplayName>
+                      {{platformDisplayName}}
+                    </template>
+                    <template #appDisplayName>
+                      {{appDisplayName}}
+                    </template>
+                  </i18next>
               </p>
 
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is
-                  <a
-                    href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb"
-                    target="_blank"
-                    >capped at 300MB per month</a
-                  >. You can
-                  <a href="http://app.obico.io/ent_pub/pricing/" target="_blank"
-                    >upgrade to the Obico app Pro plan for 1 Starbucks a month</a
-                  >
-                  to enjoy unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <i18next :translation="$t('Tunnel usage of a free account is {localizedDom} to enjoy unlimited tunnel usage.')">
+                    <template #localizedDom>
+                      <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
+                    </template>
+                  </i18next>
                 </div>
               </b-alert>
               <b-alert
@@ -132,26 +133,25 @@
                 show
               >
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel
-                  data usage will be
-                  <a
-                    href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb"
-                    target="_blank"
-                    >capped at 300MB per month</a
-                  >. You can
-                  <a href="http://app.obico.io/ent_pub/pricing/" target="_blank"
-                    >upgrade to the Obico app Pro plan for 1 Starbucks a month</a
-                  >
-                  to continue enjoying unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <i18next :translation="$t('After the Free trial expires, tunnel data usage will be {localizedDom} to continue enjoying unlimited tunnel usage.')">
+                    <template #localizedDom>
+                      <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
+                    </template>
+                  </i18next>
+
                 </div>
               </b-alert>
 
               <div class="mt-5">
                 <p class="lead">
-                  Tunnel access by <span class="font-weight-bold">{{ appDisplayName }}</span> (make sure
-                  you trust it):
+                  <i18next :translation="$t('Tunnel access by {localizedDom} (make sure you trust it)')">
+                    <template #localizedDom>
+                      <span class="font-weight-bold">{{appDisplayName}}</span>
+                    </template>
+                  </i18next>
                 </p>
-                <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
+                <h5 v-if="printersToShow.length === 0">{{ $t("You have 0 active printers") }}</h5>
                 <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">
                   {{ printersToShow[0].name }}
                 </h5>
@@ -160,7 +160,7 @@
                   v-model="printerToAuthorize"
                   class="custom-select"
                 >
-                  <option :value="null" selected disabled>Please select a printer</option>
+                  <option :value="null" selected disabled>{{ $t("Please select a printer") }}</option>
                   <option v-for="printer in printersToShow" :key="printer.id" :value="printer.id">
                     {{ printer.name }}
                   </option>
@@ -173,34 +173,32 @@
                     @click="authorize"
                   >
                     <b-spinner v-if="performingAuthRequest" small label="Loading..."></b-spinner>
-                    <span v-else>Authorize</span>
+                    <span v-else>{{ $t("Authorize") }}</span>
                   </button>
                   <a
                     class="btn btn-outline-secondary ml-2"
                     style="flex: 1"
                     href="/user_preferences/authorized_apps"
-                    >Manage Apps</a
+                    >{{ $t("Manage Apps") }}</a
                   >
                 </div>
               </div>
             </div>
             <div class="mt-4">
-              <p class="text-muted small mb-1">Security notes:</p>
+              <p class="text-muted small mb-1">{{ $t("Security notes") }}:</p>
               <ul class="text-muted small pl-4">
                 <li>
-                  The app can only access the tunnel, not your Obico account info such as your email
-                  address.
+                  {{ $t("The app can only access the tunnel, not your {brandName} account info such as your email address.",{brandName:$syndicateText.brandName}) }}
                 </li>
                 <li>
-                  The access remains valid until explicitly revoked. You can revoke the access by
-                  going to Preferences -> Authorized Apps.
+                  {{ $t("The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.") }}
                 </li>
               </ul>
             </div>
           </div>
         </div>
         <div class="text-center pt-3 w-100">
-          <a class="btn btn-secondary" :href="logoutUrl">Log Out</a>
+          <a class="btn btn-secondary" :href="logoutUrl">{{ $t("Log Out") }}</a>
         </div>
       </b-col>
       <b-col v-else class="mt-5">
@@ -217,44 +215,48 @@
             </div>
             <div class="my-4">
               <div class="mx-auto text-center">
-                <h4>Free {{ platformDisplayName }} Tunnel</h4>
-                <div class="lead">Powered by Obico</div>
+                <h4>{{ $t("Free {platformDisplayName} Tunnel",{platformDisplayName}) }}</h4>
+                <div class="lead">{{ $t("Powered by {brandName}",{brandName:$syndicateText.brandName}) }}</div>
               </div>
             </div>
             <div class="account-details">
               <p>
-                With the Free {{ platformDisplayName }} Tunnel by Obico, you can now use {{ appDisplayName }} to
-                <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
-                  >securely control and monitor your printer from anywhere</a
-                >:
+                {{ $t("With the Free {platformDisplayName} Tunnel by {brandName}, you can now use {appDisplayName} to",{platformDisplayName,brandName:$syndicateText.brandName,appDisplayName}) }}
+                  <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"> {{$t("securely control and monitor your printer from anywhere")}}</a>
               </p>
               <ul class="text-muted">
-                <li>Unlimited realtime webcam at 0.1FPS.</li>
-                <li>300MB monthly tunnel data cap (excluding webcam streaming).</li>
-                <li>10 hours/mo AI failure detection.</li>
+                <li>{{ $t("Unlimited realtime webcam at 0.1FPS.") }}</li>
+                <li>{{ $t("300MB monthly tunnel data cap (excluding webcam streaming).") }}</li>
+                <li>{{ $t("10 hours/mo AI failure detection.") }}</li>
               </ul>
               <div>
-                🔥🔥🔥 Upgrade to Obico Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
-                  >from $4/mo</a
-                >) to get premium features:
+                🔥🔥🔥
+                <i18next :translation="$t('Upgrade to {brandName} Pro Account ({localizedDom}) to get premium features')">
+                    <template #localizedDom>
+                      <a href="https://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("from $4/mo")}}</a>
+                    </template>
+                    <template #brandName>
+                      {{$syndicateText.brandName}}
+                    </template>
+                  </i18next>
               </div>
               <ul>
-                <li>📷 Unlimited realtime webcam streaming.</li>
-                <li>📶 Unlimited tunnel data usage.</li>
-                <li>🤖 50 hours/mo AI failure detection.</li>
+                <li>📷{{ $t("Unlimited realtime webcam streaming.") }}</li>
+                <li>📶 {{ $t("Unlimited tunnel data usage.") }}</li>
+                <li>🤖 {{ $t("50 hours/mo AI failure detection.") }}</li>
                 <li>
                   <a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
-                    >And much more...</a
+                    >{{ $t("And much more...") }}</a
                   >
                 </li>
               </ul>
             </div>
             <div>
               <div class="my-5 w-100">
-                <a class="btn btn-primary btn-block" :href="loginUrl">SIGN IN </a>
+                <a class="btn btn-primary btn-block" :href="loginUrl">{{ $t("SIGN IN ") }}</a>
                 <div class="text-center pt-3 w-100">
-                  <div class="font-weight-light text-muted">- OR -</div>
-                  <a class="btn" :href="signupUrl">SIGN UP</a>
+                  <div class="font-weight-light text-muted">{{ $t("- OR -") }}</div>
+                  <a class="btn" :href="signupUrl">{{ $t("SIGN UP") }}</a>
                 </div>
               </div>
             </div>

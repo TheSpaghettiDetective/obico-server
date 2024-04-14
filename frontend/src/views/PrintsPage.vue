@@ -10,7 +10,7 @@
             v-show="!selectedPrintIds.size"
             class="label"
             @click="allPrintsSelected = !allPrintsSelected"
-            >Select all</span
+            >{{ $t("Select all") }}</span
           >
           <b-dropdown
             v-show="selectedPrintIds.size"
@@ -19,11 +19,11 @@
           >
             <template #button-content>
               {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }}
-              selected...
+              {{$t("selected...")}}
             </template>
             <b-dropdown-item>
               <div class="text-danger" @click="onDeleteBtnClick">
-                <i class="far fa-trash-alt"></i>Delete
+                <i class="far fa-trash-alt"></i>{{$t("Delete")}}
               </div>
             </b-dropdown-item>
           </b-dropdown>
@@ -33,7 +33,7 @@
     <template #topBarRight>
       <div class="action-panel">
         <!-- Sorting -->
-        <b-dropdown right no-caret toggle-class="action-btn icon-btn" title="Sort By">
+        <b-dropdown right no-caret toggle-class="action-btn icon-btn" :title="$t('Sort By')">
           <template #button-content>
             <i class="fas fa-sort-amount-down"></i>
           </template>
@@ -50,7 +50,7 @@
           no-caret
           toggle-class="action-btn icon-btn"
           menu-class="scrollable"
-          title="Filter"
+          :title="$t('Filter')"
         >
           <template #button-content>
             <i class="fas fa-filter"></i>
@@ -73,13 +73,13 @@
               {
                 key: 'sorting',
                 icon: 'fas fa-sort-amount-down',
-                title: `Sort`,
+                title: $t(`Sort`),
                 expandable: true,
               },
               {
                 key: 'filtering',
                 icon: 'fas fa-filter',
-                title: `Filter`,
+                title: $t(`Filter`),
                 expandable: true,
               },
             ]"
@@ -122,8 +122,8 @@
         </b-row>
 
         <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
-          <div v-if="noMoreData" class="text-center p-2">No more time-lapses.</div>
-          <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+          <div v-if="noMoreData" class="text-center p-2">{{ $t("No more time-lapses.") }}</div>
+          <b-spinner v-if="!noMoreData" :label="$t('Loading...')"></b-spinner>
         </mugen-scroll>
 
         <b-modal
@@ -162,34 +162,35 @@ import FilteringDropdown, {
   restoreFilterValues,
   getFilterParams,
 } from '@src/components/FilteringDropdown'
+import i18n from '@src/i18n/i18n.js'
 
 const PAGE_SIZE = 6
 
 const SortingLocalStoragePrefix = 'printsPageSorting'
 const SortingOptions = {
-  options: [{ title: 'Date', key: 'date' }],
+  options: [{ title: `${i18n.t('Date')}`, key: 'date' }],
   default: { sorting: 'date', direction: 'desc' },
 }
 
 const FilterLocalStoragePrefix = 'printsPageFiltering'
 const FilterOptions = {
   printStatus: {
-    title: 'Print Status',
+    title: `${i18n.t('Print Status')}`,
     queryParam: 'filter',
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'finished', title: 'Finished' },
-      { key: 'cancelled', title: 'Cancelled' },
+      { key: 'none', title: `${i18n.t('All')}` },
+      { key: 'finished', title: `${i18n.t('Finished')}` },
+      { key: 'cancelled', title: `${i18n.t('Cancelled')}` },
     ],
     default: 'none',
   },
   feedbackNeeded: {
-    title: 'Feedback Needed',
+    title: `${i18n.t('Feedback Needed')}`,
     queryParam: 'feedback_needed',
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'need_alert_overwrite', title: 'Review Needed' },
-      { key: 'need_print_shot_feedback', title: 'Focused Feedback Needed' },
+      { key: 'none', title: `${i18n.t('All')}` },
+      { key: 'need_alert_overwrite', title: `${i18n.t('Review Needed')}` },
+      { key: 'need_print_shot_feedback', title: `${i18n.t('Focused Feedback Needed')}` },
     ],
     default: 'none',
   },
@@ -295,17 +296,17 @@ export default {
     onDeleteBtnClick() {
       const selectedPrintIds = Array.from(this.selectedPrintIds)
       this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
+        title: `${this.$i18next.t('Are you sure?')}`,
+        text: `${this.$i18next.t(`Delete {brandName} print(s)? This action can not be undone.`,{brandName:this.$syndicateText.brandName})}`,
         showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtonText: `${this.$i18next.t('Yes')}`,
+        cancelButtonText: `${this.$i18next.t('No')}`,
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
             selectedPrintIds.forEach((printId) => this.onPrintDeleted(printId, false))
             this.$swal.Toast.fire({
-              title: `${selectedPrintIds.length} time-lapse(s) deleted!`,
+              title: `${this.$i18next.t(`{name} time-lapse(s) deleted!`,{name:selectedPrintIds.length})}`,
             })
             this.selectedPrintIds = new Set()
           })
@@ -318,7 +319,7 @@ export default {
       this.$delete(this.prints, i)
       if (toast) {
         this.$swal.Toast.fire({
-          title: `Time-lapse ${print.filename} deleted!`,
+          title: `${this.$i18next.t(`Time-lapse {name} deleted!`,{name:print.filename})}`,
         })
       }
     },

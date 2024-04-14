@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2 class="section-title">{{ notificationChannel.title }}</h2>
+    <h2 class="section-title">{{ $t(notificationChannel.title) }}</h2>
 
     <div v-if="envVarsToSet.length === 0">
       <slot name="header"></slot>
@@ -30,7 +30,7 @@
       <div v-if="channelCreated && showSettings">
         <notification-setting-switch
           setting-id="enabled"
-          setting-title="Enable notification"
+          :setting-title="$t('Enable notification')"
           :is-header="true"
           :error-messages="errorMessages"
           :saving="saving"
@@ -129,7 +129,7 @@
       <slot name="footer"></slot>
     </div>
     <div v-else>
-      <p class="text-warning">Please configure the following variables in the ".env" file:</p>
+      <p class="text-warning">{{ $t("Please configure the following variables in the '.env' file") }}:</p>
       <ul class="text-warning">
         <li v-for="variable in envVarsToSet" :key="variable">{{ variable }}</li>
       </ul>

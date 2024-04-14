@@ -18,22 +18,22 @@
           {{ discoveredPrinter.machine_type }}
         </div>
         <div v-if="discoveredPrinter.agent" class="text-muted small">
-          Platform: {{ discoveredPrinter.agent }}
+          {{$t("Platform")}}: {{ discoveredPrinter.agent }}
         </div>
         <div v-if="discoveredPrinter.host_or_ip" class="text-muted small">
-          IP address: {{ discoveredPrinter.host_or_ip }}
+          {{$t("IP address")}}: {{ discoveredPrinter.host_or_ip }}
         </div>
         <div v-if="discoveredPrinter.hostname" class="text-muted small">
-          Hostname: {{ discoveredPrinter.hostname }}
+          {{$t("Hostname")}}: {{ discoveredPrinter.hostname }}
         </div>
         <div v-if="discoveredPrinter.octopi_version" class="text-muted small">
-          OctoPi: {{ discoveredPrinter.octopi_version }}
+          {{$t("OctoPi")}}: {{ discoveredPrinter.octopi_version }}
         </div>
         <div
           v-if="!discoveredPrinter.octopi_version && discoveredPrinter.os"
           class="text-muted small"
         >
-          OS: {{ discoveredPrinter.os }}
+          {{$t("OS")}}: {{ discoveredPrinter.os }}
         </div>
       </div>
       <div class="col-sm-12 col-md-2 center px-3">
@@ -41,7 +41,7 @@
           class="btn btn-block btn-primary"
           @click="$emit('auto-link-printer', { ...discoveredPrinter })"
         >
-          Link
+          {{$t("Link")}}
         </button>
       </div>
     </div>

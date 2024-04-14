@@ -8,13 +8,13 @@
           href="/user_preferences/dh/"
           class="btn shadow-none action-btn icon-btn hours-btn"
           :style="{ marginRight: `${String(dhBadgeNum).length * 0.25}rem` }"
-          :title="dhBadgeNum + ' AI Detection Hours'"
+          :title="dhBadgeNum + ' ' + $t('AI Detection Hours')"
         >
           <svg class="custom-svg-icon">
             <use href="#svg-hour-glass"></use>
           </svg>
           <span id="user-credits" class="badge badge-light">{{ dhBadgeNum }}</span>
-          <span class="sr-only">AI Detection Hours</span>
+          <span class="sr-only">{{ $t("AI Detection Hours") }}</span>
         </a>
         <!-- Sorting -->
         <b-dropdown right no-caret toggle-class="action-btn icon-btn" title="Sort By">
@@ -101,7 +101,7 @@
                 <svg class="icon">
                   <use href="#svg-add-printer"></use>
                 </svg>
-                <div>Link New Printer</div>
+                <div>{{ $t("Link New Printer") }}</div>
               </a>
             </div>
           </div>
@@ -111,14 +111,13 @@
             <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
               <div class="warning">
                 <div>
-                  {{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }} have been
-                  archived.
+                  {{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }} {{ $t("have been archived.") }}
                 </div>
                 <div>
                   <a href="/ent/printers/archived/" class="warning-action"
-                    >Show Archived Printers</a
+                    >{{ $t("Show Archived Printers") }}</a
                   >
-                  <a class="warning-action" @click="handleNeverShowAgain">Never Show Again</a>
+                  <a class="warning-action" @click="handleNeverShowAgain">{{ $t("Never Show Again") }}</a>
                 </div>
               </div>
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -145,12 +144,13 @@ import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDro
 import FilteringDropdown, { restoreFilterValues } from '@src/components/FilteringDropdown'
 import { user, settings } from '@src/lib/page-context'
 import ActiveFilterNotice from '@src/components/ActiveFilterNotice'
+import i18n from '@src/i18n/i18n.js'
 
 const SortingLocalStoragePrefix = 'printersSorting'
 const SortingOptions = {
   options: [
-    { title: 'Name', key: 'name' },
-    { title: 'Created at', key: 'created_at' },
+    { title: `${i18n.t('Name')}`, key: 'name' },
+    { title: `${i18n.t('Created at')}`, key: 'created_at' },
   ],
   default: { sorting: 'created_at', direction: 'desc' },
 }
@@ -158,12 +158,12 @@ const SortingOptions = {
 const FilterLocalStoragePrefix = 'printersFiltering'
 const FilterOptions = {
   status: {
-    title: 'Print Status',
+    title: `${i18n.t('Print Status')}`,
     queryParam: 'status',
     values: [
-      { key: 'none', title: 'All Printers' },
-      { key: 'online', title: 'Online Printers' },
-      { key: 'active', title: 'Active Printers' },
+      { key: 'none', title: `${i18n.t('All Printers')}` },
+      { key: 'online', title: `${i18n.t('Online Printers')}` },
+      { key: 'active', title: `${i18n.t('Active Printers')}` },
     ],
     default: 'none',
   },
@@ -215,13 +215,13 @@ export default {
         {
           key: 'sorting',
           icon: 'fas fa-sort-amount-down',
-          title: `Sort`,
+          title: `${this.$i18next.t(`Sort`)}`,
           expandable: true,
         },
         {
           key: 'filtering',
           icon: 'fas fa-filter',
-          title: `Filter`,
+          title: `${this.$i18next.t(`Filter`)}`,
           expandable: true,
         },
       ]
@@ -230,7 +230,7 @@ export default {
         options.unshift({
           key: 'dh',
           svgIcon: 'svg-hour-glass',
-          title: `${this.dhBadgeNum} AI Detection Hours`,
+          title: `${this.$i18next.t(`{name} AI Detection Hours`,{name:this.dhBadgeNum})}`,
           href: '/user_preferences/dh/',
         })
       }
@@ -340,11 +340,11 @@ export default {
     },
     handleNeverShowAgain() {
       this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        html: `<p style="text-align: center">You can always view your archived printers in by navigating to the General tab within Preferences.</p>`,
+        title: `${this.$i18next.t('Are you sure?')}`,
+        html: `<p style="text-align: center">${this.$i18next.t("You can always view your archived printers in by navigating to the General tab within Preferences.")}</p>`,
         showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtonText: `${this.$i18next.t('Yes')}`,
+        cancelButtonText: `${this.$i18next.t('No')}`,
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           localStorage.setItem('shouldNeverShowArchived', JSON.stringify(true))

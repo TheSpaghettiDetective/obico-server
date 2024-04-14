@@ -22,6 +22,7 @@ x-web-defaults: &web-defaults
     ADMIN_IP_WHITELIST: '${ADMIN_IP_WHITELIST-}'
     SITE_USES_HTTPS: '${SITE_USES_HTTPS-False}'
     SITE_IS_PUBLIC: '${SITE_IS_PUBLIC-False}'
+    CSRF_TRUSTED_ORIGINS: '${CSRF_TRUSTED_ORIGINS-}'
     SOCIAL_LOGIN: '${SOCIAL_LOGIN-False}'
     REDIS_URL: '${REDIS_URL-redis://redis:6379}'
     DATABASE_URL: '${DATABASE_URL-sqlite:////app/db.sqlite3}'
@@ -38,6 +39,7 @@ x-web-defaults: &web-defaults
     SLACK_CLIENT_ID: '${SLACK_CLIENT_ID-}'
     SLACK_CLIENT_SECRET: '${SLACK_CLIENT_SECRET-}'
     DJANGO_SECRET_KEY: '${DJANGO_SECRET_KEY-}'
+    SYNDICATE: '${SYNDICATE-}'
     VERSION:
 
 services:

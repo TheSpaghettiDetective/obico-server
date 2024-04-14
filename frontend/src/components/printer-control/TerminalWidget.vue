@@ -1,6 +1,6 @@
 <template>
   <widget-template>
-    <template #title>Printer Terminal</template>
+    <template #title>{{ $t("Printer Terminal") }}</template>
     <template #content>
       <div class="terminal-widget">
         <printer-terminal

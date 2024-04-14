@@ -5,13 +5,21 @@ title: Configurations
 
 Following Klipper toolchain's convention, the configuration file for **Obico for Klipper** is typically located at `~/printer_data/config/moonraker-obico.cfg`
 
-:::caution
-You need to restart the service for any change to take effect:
+You can SSH to your printer or Raspberry Pi and use editor such as `nano` to make changes to the configuration file.
 
-`systemctl restart moonraker-obico`
+Alternatively, you can use the web interface to make changes if you are using Mainsail or Fluidd.
+
+![](/img/user-guides/helpdocs/open-moonraker-obico-cfg.png)
+
+:::caution
+You need to restart the printer or Raspberry Pi for any change to take effect.
 :::
 
-An example of the configuration file:
+The ways to restart the printer or Raspberry Pi are slightly different between Mainsail and Fluidd. But the button is usually located at the top-right corner of the screen.
+
+![](/img/user-guides/helpdocs/restart-printer-pi.png)
+
+## An example of the configuration file
 
 ```
 [server]

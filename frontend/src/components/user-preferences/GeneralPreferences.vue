@@ -1,8 +1,8 @@
 <template>
   <section class="personalization">
-    <h2 class="section-title">General</h2>
+    <h2 class="section-title">{{ $t("General") }}</h2>
     <div class="form-group row mt-3">
-      <label class="col-md-2 col-sm-3 col-form-label">Printers</label>
+      <label class="col-md-2 col-sm-3 col-form-label">{{ $t("Printers") }}</label>
       <div class="col-sm-9 col-md-10 col-form-label">
         <div class="custom-control custom-checkbox form-check-inline system-theme-control">
           <input
@@ -12,17 +12,16 @@
             class="custom-control-input"
           />
           <label class="custom-control-label" for="id_theme_system">
-            Land directly on the printer control page if I have only 1 printer
+            {{$t("Land directly on the printer control page if I have only 1 printer")}}
             <br />
             <span class="text-muted setting-description"
-              >This option will be ignored if you have multiple printers. In this case, you will
-              always land on the printer overview page.</span
+              >{{$t("This option will be ignored if you have multiple printers. In this case, you will always land on the printer overview page.")}}</span
             >
           </label>
         </div>
       </div>
       <a class="col-sm-9 col-md-10 col-form-label" href="/ent/printers/archived/"
-        >View Archived Printers</a
+        >{{ $t("View Archived Printers") }}</a
       >
     </div>
   </section>

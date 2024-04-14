@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 {% load user_dict from user_dict %}
 {% load bundle from vue %}
 {% load bundlechunk from vue %}
@@ -13,10 +14,10 @@
   {% block meta_viewport %}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   {% endblock meta_viewport %}
-  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. Obico is the easiest way to monitor and control your 3D printer from anywhere.">
+  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. {{ page_context.syndicate.brand_name }} is the easiest way to monitor and control your 3D printer from anywhere.">
   <meta name="author" content="">
 
-  <title>Obico</title>
+  <title>{{ page_context.syndicate.brand_name }}</title>
 
   <!-- Font Awesome -->
   <link
@@ -39,14 +40,23 @@
   {% block page_css %}{% endblock page_css %}
 
   <!-- favicons -->
-  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  {% with favicon_path='img/favicon.png' %}
+    {% if syndicate and syndicate.provider != 'base' %}
+      {% with favicon_path=syndicate.provider|add:'/img/favicon.png' %}
+        <link rel="icon" type="image/png" href="{% static favicon_path %}">
+      {% endwith %}
+    {% else %}
+      <link rel="icon" type="image/png" href="{% static favicon_path %}">
+    {% endif %}
+  {% endwith %}
+
   <meta name="theme-color" content="rgb(45 62 79)">
 
   {% block header_ext %}{% endblock header_ext %}
 
   {{ settings|json_script:"settings-json" }}
   {{ user|user_dict|json_script:"user-json" }}
-  {{ app_platform|json_script:"app-platform-json" }}
+  {{ page_context|json_script:"page-context-json" }}
 </head>
 
 <body>
@@ -69,10 +79,10 @@
       {% comment %} Do not render footer for printer control page {% endcomment %}
     {% elif request.path|slice:":10" == '/printers/' and request.path|slice:"-10:" == '/terminal/' %}
       {% comment %} Do not render footer for terminal page {% endcomment %}
-    {% elif not app_platform.platform %}
+    {% elif not page_context.app_platform %}
       <footer id="global-footer">
         <div class="container">
-          <p>&copy; Obico {% now "Y" %}. All Rights Reserved.</p>
+          <p>&copy; {{ page_context.syndicate.brand_name }} {% now "Y" %}. {% trans "All Rights Reserved" %}.</p>
         </div>
       </footer>
     {% endif %}

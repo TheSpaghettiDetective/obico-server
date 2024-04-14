@@ -7,9 +7,9 @@
             <loading-placeholder v-if="!printer" />
             <div v-else class="surface with-loading-animation full-on-mobile">
               <section class="settings">
-                <h2 class="section-title">Settings</h2>
+                <h2 class="section-title">{{ $t("Settings") }}</h2>
                 <div class="form-group mb-4 mt-4">
-                  <div class="form-label text-muted mb-2">Give your shiny new printer a name</div>
+                  <div class="form-label text-muted mb-2">{{ $t("Give your shiny new printer a name") }}</div>
                   <saving-animation :errors="errorMessages.name" :saving="saving.name">
                     <input
                       id="id_name"
@@ -26,7 +26,7 @@
                 <!-- Potential failure section -->
                 <div class="failure-notification">
                   <div class="form-group mt-4 mb-4">
-                    <div class="form-label text-muted">When a potential failure is detected:</div>
+                    <div class="form-label text-muted">{{ $t("When a potential failure is detected") }}:</div>
                     <saving-animation
                       :errors="errorMessages.action_on_failure_NONE"
                       :saving="saving.action_on_failure_NONE"
@@ -42,7 +42,7 @@
                           @change="updateSetting('action_on_failure')"
                         />
                         <label class="custom-control-label" for="id_action_on_failure_0"
-                          >Just notify me</label
+                          >{{ $t("Just notify me") }}</label
                         >
                       </div>
                     </saving-animation>
@@ -64,7 +64,7 @@
                           @change="updateSetting('action_on_failure')"
                         />
                         <label class="custom-control-label" for="id_action_on_failure_1"
-                          >Pause the printer and notify me</label
+                          >{{ $t("Pause the printer and notify me") }}</label
                         >
                       </div>
                     </saving-animation>
@@ -72,17 +72,16 @@
                 </div>
               </section>
               <section class="mt-5">
-                <h2 class="section-title">Failure Detection</h2>
+                <h2 class="section-title">{{ $t("Failure Detection") }}</h2>
                 <div class="card-body p-0 pt-3">
                   <p class="text-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    If you are not sure about the settings below, leave the default values to
-                    minimize surprises.
+                    {{$t("If you are not sure about the settings below, leave the default values to minimize surprises.")}}
                   </p>
 
                   <!-- Advanced settngs: when printer is paused -->
                   <div class="form-group mt-4">
-                    <div class="form-label text-muted">When print is paused,</div>
+                    <div class="form-label text-muted">{{ $t("When print is paused,") }}</div>
                     <saving-animation
                       :errors="errorMessages.tools_off_on_pause"
                       :saving="saving.tools_off_on_pause"
@@ -97,7 +96,7 @@
                           @change="updateSetting('tools_off_on_pause')"
                         />
                         <label class="custom-control-label" for="id_tools_off_on_pause">
-                          Turn off hotend heater(s)
+                          {{$t("Turn off hotend heater(s)")}}
                         </label>
                       </div>
                     </saving-animation>
@@ -115,7 +114,7 @@
                           @change="updateSetting('bed_off_on_pause')"
                         />
                         <label class="custom-control-label" for="id_bed_off_on_pause">
-                          Turn off bed heater
+                          {{$t("Turn off bed heater")}}
                         </label>
                       </div>
                     </saving-animation>
@@ -134,7 +133,7 @@
                             class="custom-control-input"
                           />
                           <label class="custom-control-label" for="retract-checkbox"
-                            >Retract filament by</label
+                            >{{ $t("Retract filament by") }}</label
                           >
                         </div>
                         <number-input
@@ -160,7 +159,7 @@
                             class="custom-control-input"
                           />
                           <label class="custom-control-label" for="lift-z-checkbox"
-                            >Lift extruder along Z axis by</label
+                            >{{ $t("Lift extruder along Z axis by") }}</label
                           >
                         </div>
                         <number-input
@@ -175,7 +174,7 @@
 
                   <!-- Advanced settngs: sensitivity slider -->
                   <div class="form-group sensitivity my-4">
-                    <div class="form-label text-muted">AI failure detection sensitivity</div>
+                    <div class="form-label text-muted">{{ $t("AI failure detection sensitivity") }}</div>
                     <saving-animation
                       :errors="errorMessages.detective_sensitivity"
                       :saving="saving.detective_sensitivity"
@@ -194,36 +193,34 @@
                     <div
                       v-if="sensitivityTooltipFormatter(printer.detective_sensitivity) === 'Low'"
                     >
-                      Low - I don't want a lot of false alarms. Only alert me when you are
-                      absolutely sure.
+                      {{$t("Low - I don't want a lot of false alarms. Only alert me when you are absolutely sure.")}}
                     </div>
                     <div
                       v-else-if="
                         sensitivityTooltipFormatter(printer.detective_sensitivity) === 'Medium'
                       "
                     >
-                      Medium - A few false alarms won't bother me. But some well-disguised spaghetti
-                      will be missed.
+                      {{$t("Medium - A few false alarms won't bother me. But some well-disguised spaghetti will be missed.")}}
                     </div>
                     <div v-else>
-                      High - Hit me with all the false alarms. I want to catch as many failures as
-                      possible.
+                      {{$t("High - Hit me with all the false alarms. I want to catch as many failures as possible.")}}
                     </div>
                   </div>
                 </div>
               </section>
               <section class="mt-5">
-                <h2 class="section-title">Time-lapse</h2>
+                <h2 class="section-title">{{ $t("Time-lapse") }}</h2>
                 <p
                   v-if="!(timelapseOnFinishEnabled && timelapseOnCancelEnabled)"
                   class="text-warning"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
-                  Focused Feedback won't be available when time-lapse recording is turned off. You
-                  won't be able to
-                  <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
-                    >help us get better while earning AI Detection Hours for yourself</a
-                  >.
+                  <i18next :translation="$t(`Focused Feedback won't be available when time-lapse recording is turned off. You won't be able to {localizedDom}`)">
+                    <template #localizedDom>
+                      <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">{{$t("help us get better while earning AI Detection Hours for yourself")}}</a>
+                    </template>
+                  </i18next>
+
                 </p>
                 <div class="form-group mt-4">
                   <saving-animation
@@ -240,7 +237,7 @@
                           class="custom-control-input"
                         />
                         <label class="custom-control-label" for="timelapseOnFinishEnabled"
-                          >Record time-lapse when a print finishes successfully.</label
+                          >{{ $t("Record time-lapse when a print finishes successfully.") }}</label
                         >
                       </div>
                     </div>
@@ -249,7 +246,7 @@
                       class="form-inline my-1 checkbox-with-input"
                     >
                       <div class="custom-control custom-checkbox">
-                        Skip if the print is finished in less than
+                        {{$t("Skip if the print is finished in less than")}}
                       </div>
                       <number-input
                         v-model="minTimelapseMinutesOnFinish"
@@ -273,7 +270,7 @@
                           class="custom-control-input"
                         />
                         <label class="custom-control-label" for="timelapseOnCancelEnabled"
-                          >Record time-lapse when a print is cancelled.</label
+                          >{{ $t("Record time-lapse when a print is cancelled.") }}</label
                         >
                       </div>
                     </div>
@@ -282,7 +279,7 @@
                       class="form-inline my-1 checkbox-with-input"
                     >
                       <div class="custom-control custom-checkbox">
-                        Skip if the print is cancelled in less than
+                        {{$t("Skip if the print is cancelled in less than")}}
                       </div>
                       <number-input
                         v-model="minTimelapseMinutesOnCancel"
@@ -295,40 +292,41 @@
                 </div>
               </section>
               <section class="danger mt-5">
-                <h2 class="section-title">Danger Zone</h2>
+                <h2 class="section-title">{{ $t("Danger Zone") }}</h2>
                 <div class="mt-4">
                   <a class="btn btn-outline-secondary" :href="printerWizardUrl">
-                    Re-Link Printer
+                    {{$t("Re-Link Printer")}}
                   </a>
                   <div class="text-muted mt-1">
-                    <small
-                      >If your printer is always showing as "offline", and you have gone through
-                      <a
-                        href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/"
-                        >all the trouble-shooting steps</a
-                      >, you can try to re-link printer as the last resort.</small
-                    >
+                    <small>
+                      <i18next :translation="$t(`If your printer is always showing as 'offline', and you have gone through {localizedDom}, you can try to re-link printer as the last resort.`)">
+                        <template #localizedDom>
+                          <a href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/">{{$t("all the trouble-shooting steps")}}</a>
+                        </template>
+                      </i18next>
+                    </small>
                   </div>
                 </div>
                 <div v-if="isEnt" class="mt-4">
                   <button class="btn btn-outline-warning" @click="archivePrinter">
-                    Archive Printer
+                    {{$t("Archive Printer")}}
                   </button>
                   <div class="text-muted mt-1">
-                    <small
-                      >Archived printers are not counted toward your subscription plan. You won't
-                      see them in the app either. Go to
-                      <a href="/ent/printers/archived/">this page</a> to find all archived printers
-                      and/or un-archive them.</small
-                    >
+                    <small>
+                      <i18next :translation="$t(`Archived printers are not counted toward your subscription plan. You won't see them in the app either. Go to {localizedDom} to find all archived printers and/or un-archive them.`)">
+                        <template #localizedDom>
+                          <a href="/ent/printers/archived/">{{ $t("this page") }}</a>
+                        </template>
+                      </i18next>
+                      </small>
                   </div>
                 </div>
                 <div class="mt-4">
                   <button class="btn btn-outline-danger" @click="deletePrinter">
-                    Delete Printer
+                    {{$t("Delete Printer")}}
                   </button>
                   <div class="text-muted mt-1">
-                    <small>Bye-bye printer.</small>
+                    <small>{{ $t("Bye-bye printer.") }}</small>
                   </div>
                 </div>
               </section>
@@ -559,7 +557,7 @@ export default {
           this.printer = normalizedPrinter(response.data, this.printer)
         })
         .catch((error) => {
-          this.errorDialog(error, 'Printer not found')
+          this.errorDialog(error, `${this.$i18next.t('Printer not found')}`)
         })
     },
 
@@ -602,7 +600,7 @@ export default {
     errorAlert() {
       this.$swal.Toast.fire({
         icon: 'error',
-        html: '<div>Can not update printer settings.</div><div>Get help from <a href="https://obico.io/discord">the Obico general support forum</a> or <a href="https://obico.io/discord">Obico for klipper support forum</a> if this error persists.</div>',
+        html: `<div>${this.$i18next.t("Can not update printer settings.")}</div><div>${this.$i18next.t("Get help from")} <a href="https://obico.io/discord">${this.$i18next.t("the {brandName} general support forum",{brandName:this.$syndicateText.brandName})}</a> ${this.$i18next.t("or")} <a href="https://obico.io/discord">${this.$i18next.t("{brandName} for klipper support forum",{brandName:this.$syndicateText.brandName})}</a> ${this.$i18next.t("if this error persists.")}</div>`,
       })
     },
 
@@ -637,11 +635,11 @@ export default {
 
     deletePrinter(printer) {
       this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        text: `Delete ${this.printer.name} printer? This action can not be undone.`,
+        title: `${this.$i18next.t('Are you sure?')}`,
+        text: `${this.$i18next.t(`Delete {name} printer? This action can not be undone.`,{name:this.printer.name})}`,
         showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtonText: `${this.$i18next.t('Yes')}`,
+        cancelButtonText: `${this.$i18next.t('No')}`,
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           axios.delete(urls.printer(this.printerId) + '?with_archived=true').then(() => {
@@ -656,9 +654,9 @@ export default {
         if (userAction.isConfirmed) {
           axios.post(urls.printerAction(this.printerId, '/archive/')).then(() => {
             this.$swal.Prompt.fire({
-              title: 'Printer archived',
-              html: `<p>${this.printer.name} is archived.</p><p>You can find it on <a href="/ent/printers/archived/">this page</a> and un-archive it.</p>`,
-              confirmButtonText: 'Go to the printer page',
+              title: `${this.$i18next.t('Printer archived')}`,
+              html: `<p>${this.$i18next.t("{name} is archived.",{name:this.printer.name})}</p><p>${this.$i18next.t("You can find it on")} <a href="/ent/printers/archived/">${this.$i18next.t("this page")}</a> ${this.$i18next.t("and un-archive it")}.</p>`,
+              confirmButtonText: `${this.$i18next.t('Go to the printer page')}`,
             }).then(() => {
               window.location.href = '/printers/'
             })

@@ -9,10 +9,9 @@
       <img class="pic-item" :src="require('@static/img/printer.png')" />
     </div>
     <div class="my-4">
-      <p>The Obico app needs to make sure you have access to selected printer.</p>
+      <p>{{$t("The {brandName} app needs to make sure you have access to selected printer.",{brandName:$syndicateText.brandName})}}</p>
       <p>
-        When you press "Link Now" button below, a new browser window will pop up to finish a
-        handshake with this printer.
+        {{$t("When you press 'Link Now' button below, a new browser window will pop up to finish a handshake with this printer.")}}
       </p>
     </div>
     <div>
@@ -23,13 +22,13 @@
             :disabled="linking"
             @click="autoLinkPrinter"
           >
-            <b-spinner v-if="linking" small></b-spinner>Link Now&nbsp;<i
+            <b-spinner v-if="linking" small></b-spinner>{{$t("Link Now")}}&nbsp;<i
               class="fas fa-external-link-alt"
             ></i>
           </button>
         </div>
         <div class="col-sm-6">
-          <button class="btn btn-block btn-secondary mt-2" @click="cancel">Cancel</button>
+          <button class="btn btn-block btn-secondary mt-2" @click="cancel">{{ $t("Cancel") }}</button>
         </div>
       </div>
     </div>
@@ -82,11 +81,11 @@ export default {
         this.cancel()
         this.$swal.Prompt.fire({
           icon: 'error',
-          title: 'Oops!',
-          html: '<p>Handshake failed because the pop-up was blcoked.</p><p>Please unblock the pop-up in your browser and try it again.</p>',
-          confirmButtonText: 'Okay!',
+          title: `${this.$i18next.t('Oops!')}`,
+          html: `<p>${this.$i18next.t("Handshake failed because the pop-up was blcoked.")}</p><p>${this.$i18next.t("Please unblock the pop-up in your browser and try it again.")}</p>`,
+          confirmButtonText: `${this.$i18next.t('Okay!')}`,
           showCancelButton: true,
-          cancelButtonText: 'Switch to Manual Setup',
+          cancelButtonText: `${this.$i18next.t('Switch to Manual Setup')}`,
         }).then((result) => {
           if (result.isDismissed && result.dismiss === 'cancel') {
             this.switchToManualLinking()
@@ -102,15 +101,15 @@ export default {
           this.cancel()
           this.$swal.Prompt.fire({
             icon: 'error',
-            title: 'Handshake failed!',
-            html: `<p>Please make sure:</p>
+            title: `${this.$i18next.t('Handshake failed!')}`,
+            html: `<p>${this.$i18next.t("Please make sure")}:</p>
               <ul>
-                <li>The OctoPrint you want to link is at ${this.discoveredPrinter.host_or_ip}:${this.discoveredPrinter.port}, and it's connected to the same local network as your computer/phone.</li>
-                <li>The version of plugin is 1.8.0 or above.</li>
+                <li>${this.$i18next.t("The OctoPrint you want to link is at {host}:{port}, and it's connected to the same local network as your computer/phone.",{host:this.discoveredPrinter.host_or_ip,port:this.discoveredPrinter.port})}</li>
+                <li>${this.$i18next.t("The version of plugin is 1.8.0 or above.")}</li>
               </ul>`,
-            confirmButtonText: 'Okay!',
+            confirmButtonText: `${this.$i18next.t('Okay!')}`,
             showCancelButton: true,
-            cancelButtonText: 'Switch to Manual Setup',
+            cancelButtonText: `${this.$i18next.t('Switch to Manual Setup')}`,
           }).then((result) => {
             if (result.isDismissed && result.dismiss === 'cancel') {
               this.switchToManualLinking()

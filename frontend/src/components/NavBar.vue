@@ -10,12 +10,7 @@
     >
       <b-container class="p-0">
         <b-navbar-brand href="/">
-          <div v-if="$brand">
-            <img :src="`/static/img/branding/${$brand}/logo-full.png`" width="100" alt="Logo" />
-          </div>
-          <svg v-else width="100" height="30">
-            <use href="#svg-logo-full" />
-          </svg>
+          <SyndicateAwareSVG href="#svg-logo-compact" width="100" height="30" />
         </b-navbar-brand>
 
         <b-navbar-toggle target="navbar-toggle-collapse">
@@ -28,40 +23,40 @@
               v-if="user"
               href="/printers/"
               :class="{ active: viewName.includes('printers') }"
-              >Printers</b-nav-item
+              >{{ $t("Printers") }}</b-nav-item
             >
             <b-nav-item
               v-if="user"
               href="/print_history/"
               :class="{ active: viewName.includes('print_history') }"
-              >Print History</b-nav-item
+              >{{ $t("Print History") }}</b-nav-item
             >
             <b-nav-item
               v-if="user"
               href="/g_code_folders/cloud/"
               :class="{ active: viewName.includes('g_code_folders') }"
-              >G-Codes</b-nav-item
+              >{{ $t("G-Codes") }}</b-nav-item
             >
             <b-nav-item
               v-if="isEnt && !user"
               href="/ent_pub/publictimelapses/"
               :class="{ active: viewName === 'publictimelapse_list' }"
               class="glowing"
-              >Spaghetti Gallery</b-nav-item
+              >{{ $t("Spaghetti Gallery") }}</b-nav-item
             >
             <b-nav-item
               v-if="isEnt"
               href="/ent_pub/pricing/"
               :class="{ active: viewName === 'pricing' }"
-              >Pricing</b-nav-item
+              >{{ $t("Pricing") }}</b-nav-item
             >
-            <b-nav-item href="https://www.obico.io/help/">Help</b-nav-item>
-            <b-nav-item href="https://obico.io/discord">Community</b-nav-item>
+            <b-nav-item href="https://www.obico.io/help/">{{ $t("Help") }}</b-nav-item>
+            <b-nav-item href="https://obico.io/discord">{{ $t("Community") }}</b-nav-item>
           </b-navbar-nav>
 
           <b-navbar-nav class="ml-auto">
-            <b-nav-item v-if="!user" href="/accounts/login/">SIGN IN</b-nav-item>
-            <b-nav-item v-if="!user && allowSignUp" href="/accounts/signup/">SIGN UP</b-nav-item>
+            <b-nav-item v-if="!user" href="/accounts/login/">{{ $t("SIGN IN") }}</b-nav-item>
+            <b-nav-item v-if="!user && allowSignUp" href="/accounts/signup/">{{ $t("SIGN UP") }}</b-nav-item>
             <b-nav-item-dropdown
               v-if="user"
               ref="accountDropdown"
@@ -70,11 +65,11 @@
               :text="user.first_name || user.email"
             >
               <b-dropdown-item href="/user_preferences/">
-                <i class="fas fa-cog mr-2"></i>Preferences
+                <i class="fas fa-cog mr-2"></i>{{$t("Preferences")}}
               </b-dropdown-item>
               <b-dropdown-divider></b-dropdown-divider>
               <b-dropdown-item href="/accounts/logout/">
-                <i class="fas fa-sign-out-alt mr-2"></i>Log out
+                <i class="fas fa-sign-out-alt mr-2"></i>{{$t("Log out")}}
               </b-dropdown-item>
             </b-nav-item-dropdown>
           </b-navbar-nav>

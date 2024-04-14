@@ -868,12 +868,6 @@ a.text-warning {
   color: var(--color-on-primary);
 }
 
-.vue-form-wizard .wizard-nav-pills>li.active>a .wizard-icon,
-.vue-form-wizard .wizard-nav-pills>li.active>a:focus .wizard-icon,
-.vue-form-wizard .wizard-nav-pills>li.active>a:hover .wizard-icon {
-  color: var(--color-on-primary);
-}
-
 .text-secondary {
   color: var(--color-text-secondary) !important;
 }
@@ -1057,4 +1051,7 @@ div[id^="b-modal-"] {
 .btn-primary.disabled, .btn-primary:disabled {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
+}
+.border-radius-lg {
+  border-radius: var(--border-radius-lg);
 }

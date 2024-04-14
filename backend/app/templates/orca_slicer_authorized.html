@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_context.syndicate.brand_name }}</title>
+</head>
+
+<body>
+    {% if access_granted == 'false' %}
+        <div>
+            <h3>Access denied</h3>
+            <p>Access to the Slicer was denied. You can close the window now.</p>
+        </div>
+    {% else %}
+    <div id="auth-div">
+        <p>Access Token: </p>
+        <p>Expires In: </p>
+        <p>Token Type: </p>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var hashParams = {};
+            window.location.hash.substr(1).split('&').forEach(function (item) {
+                var s = item.split('=');
+                hashParams[s[0]] = s[1];
+            });
+
+
+            if (hashParams['access_token']) {
+                if (navigator.userAgent.match(RegExp('BBL-Slicer', 'i'))) {
+                    window.wx.postMessage(JSON.stringify({
+                        command: 'login_token',
+                        data: {
+                            token: hashParams['access_token']
+                        }
+                    })
+                    );
+                }
+
+                var html = '<p>Access Token: ' + hashParams['access_token'] + '</p>';
+                html += '<p>Expires In: ' + hashParams['expires_in'] + '</p>';
+                html += '<p>Token Type: ' + hashParams['token_type'] + '</p>';
+                document.getElementById('auth-div').innerHTML = html;
+            }
+        });
+    </script>
+    {% endif %}
+</body>
+
+</html>

@@ -29,7 +29,7 @@
         </div>
         <div v-if="file.filesize || file.deleted" class="subtitle text-secondary truncated-wrapper">
           <div v-if="file.deleted" class="truncated">
-            <span class="text-danger">Deleted</span>
+            <span class="text-danger">{{$t("Deleted")}}</span>
           </div>
           <div v-else class="truncated">
             <span>{{ file.filesize }}</span>
@@ -69,8 +69,7 @@
         v-if="shouldShowDataNotice && fileDetailsToShow.length <= numberOfVisibleLines"
         class="mt-2 mb-1"
       >
-        Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual
-        if some fields are not accurate or missing.
+        {{$t("Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual if some fields are not accurate or missing.")}}
       </muted-alert>
 
       <!-- Hidden lines -->
@@ -96,8 +95,7 @@
           v-if="shouldShowDataNotice && fileDetailsToShow.length > numberOfVisibleLines"
           class="mt-2 mb-1"
         >
-          Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual
-          if some fields are not accurate or missing.
+          {{$t("Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual if some fields are not accurate or missing.")}}
         </muted-alert>
       </collapsable-details>
     </template>
@@ -179,7 +177,7 @@ export default {
         result.unshift({
           name: 'total_prints',
           faIcon: 'fas fa-hashtag',
-          title: 'Total prints',
+          title: `${this.$i18next.t('Total prints')}`,
           value: `
             ${this.file.totalPrints || 0}
             (<span class="text-success">${this.file.successPrints || 0}</span> /
@@ -191,7 +189,7 @@ export default {
         result.unshift({
           name: 'created_at',
           faIcon: 'fas fa-calendar-alt',
-          title: 'Uploaded',
+          title: `${this.$i18next.t('Uploaded')}`,
           value: this.file.created_at.fromNow(),
         })
       }

@@ -5,6 +5,7 @@ import ifvisible from 'ifvisible'
 import pako from 'pako'
 import { toArrayBuffer } from '@src/lib/utils'
 import { clearPrinterTransientState } from '@src/lib/printer-transient-state'
+import i18n from '@src/i18n/i18n.js'
 
 // PrinterCommManager is a singleton: https://www.sitepoint.com/javascript-design-patterns-singleton/
 class PrinterCommManager {
@@ -164,7 +165,7 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
             clearPrinterTransientState(self.printerId)
             Vue.swal.Toast.fire({
               icon: 'error',
-              title: 'Failed to contact printer. Is it powered on and connected to Internet?',
+              title: `${i18n.t('Failed to contact printer. Is it powered on and connected to Internet?')}`,
             })
           }
         }, 10 * 1000)

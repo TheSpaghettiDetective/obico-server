@@ -11,7 +11,10 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
+from rest_framework.views import APIView
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from django.utils import timezone
+from django.http import JsonResponse
 from django.conf import settings
 from django.http import HttpRequest
 from django.shortcuts import render
@@ -43,11 +46,12 @@ from lib import cache, gcode_metadata
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
 from lib.file_storage import save_file_obj, delete_file
-from .printer_discovery import (
+from lib.printer_discovery import (
     push_message_for_device,
     get_active_devices_for_client_ip,
     DeviceMessage,
 )
+from lib.one_time_passcode import check_one_time_passcode
 from notifications.handlers import handler
 
 LOGGER = logging.getLogger(__file__)
@@ -62,7 +66,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class UserViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = UserSerializer
 
     @action(detail=False, methods=['get', 'patch'])
@@ -90,7 +94,7 @@ class PrinterViewSet(
 ):
 
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = PrinterSerializer
 
     def get_queryset(self):
@@ -171,7 +175,7 @@ class PrintViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = PrintSerializer
 
     def get_queryset(self):
@@ -375,7 +379,7 @@ class PrintViewSet(
 
 class GCodeFolderViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     pagination_class = StandardResultsSetPagination
 
     def get_serializer_class(self):
@@ -432,7 +436,7 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
 class GCodeFileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     pagination_class = StandardResultsSetPagination
 
     def get_serializer_class(self):
@@ -564,7 +568,7 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
                                mixins.ListModelMixin,
                                viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = PrintShotFeedbackSerializer
 
     def get_queryset(self):
@@ -604,7 +608,7 @@ class OctoPrintTunnelViewSet(
     viewsets.GenericViewSet,
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = OctoPrintTunnelSerializer
 
     def get_queryset(self):
@@ -629,7 +633,7 @@ class OctoPrintTunnelViewSet(
 class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
                                   viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
 
     def list(self, request, *args, **kwargs):
         return Response({
@@ -645,7 +649,7 @@ class MobileDeviceViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = MobileDeviceSerializer
 
     def get_queryset(self):
@@ -675,7 +679,7 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
                                      mixins.RetrieveModelMixin,
                                      viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = OneTimeVerificationCodeSerializer
 
     def list(self, request, *args, **kwargs):
@@ -713,7 +717,7 @@ class SharedResourceViewSet(mixins.ListModelMixin,
                             mixins.CreateModelMixin,
                             mixins.DestroyModelMixin,
                             viewsets.GenericViewSet):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     permission_classes = (IsAuthenticated,)
     serializer_class = SharedResourceSerializer
 
@@ -738,6 +742,24 @@ class SharedResourceViewSet(mixins.ListModelMixin,
             .data)
 
 
+class OneTimePasscodeViewSet(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request):
+        verification_code = request.data.get('verification_code')
+        one_time_passcode = request.data.get('one_time_passcode')
+
+        verification_code_obj = get_object_or_404(OneTimeVerificationCode, user=request.user, code=verification_code)
+
+        if not check_one_time_passcode(one_time_passcode, verification_code_obj.code):
+            return JsonResponse({'detail': 'Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return JsonResponse({'detail': 'OK'}, status=status.HTTP_200_OK)
+
+
 class PrinterDiscoveryViewSet(viewsets.ViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -754,7 +776,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         devices = get_active_devices_for_client_ip(client_ip)
         if len(devices) > MAX_UNLINKED_PRINTERS_PER_IP:
             return Response([])
-        return Response([device.asdict() for device in devices])
+        return Response([device for device in devices])
 
     @report_validationerror
     def create(self, request):
@@ -797,7 +819,7 @@ class NotificationSettingsViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = NotificationSettingSerializer
 
     def get_queryset(self):
@@ -839,7 +861,7 @@ class PrinterEventViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = PrinterEventSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -870,3 +892,10 @@ class PrinterEventViewSet(
 
         serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
+
+class ApiVersionView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+
+    def get(self, request, format=None):
+        return Response({'version': '1.0.0'})

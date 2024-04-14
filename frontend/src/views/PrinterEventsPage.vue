@@ -38,7 +38,7 @@
           <div class="col-sm-12 col-md-10 col-lg-8">
             <div v-if="!loading && printerEvents.length === 0" class="text-center">
               <img :src="require('@static/img/vacation.gif')" class="w-25 my-4" />
-              <h5 class="text-primary">Nothing to look here. Enjoy your vacation!</h5>
+              <h5 class="text-primary">{{ $t("Nothing to look here. Enjoy your vacation!") }}</h5>
             </div>
             <div v-else>
               <printer-event-card
@@ -51,7 +51,7 @@
                 :should-handle="!loading"
                 class="text-center p-4"
               >
-                <div v-if="noMoreData" class="text-center p-2">No more notifications.</div>
+                <div v-if="noMoreData" class="text-center p-2">{{ $t("No more notifications.") }}</div>
                 <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
               </mugen-scroll>
             </div>

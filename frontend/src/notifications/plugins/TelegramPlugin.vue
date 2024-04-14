@@ -11,23 +11,24 @@
   >
     <template #header>
       <div class="form-text">
-        <p>Login to be notified by our Telegram bot.</p>
+        <p>{{ $t("Login to be notified by our Telegram bot.") }}</p>
         <div v-if="isInMobile" class="text-warning small">
           <p>
-            Telegram in the mobile app is very finicky. Please open a browser, and log into
-            <a href="https://app.obico.io">the Obico web app</a> using the same credential to set up
-            Telegram.
+            <i18next :translation="$t('Telegram in the mobile app is very finicky. Please open a browser, and log into {localizedDom} using the same credential to set up Telegram.')">
+              <template #localizedDom>
+                <a href="https://app.obico.io">{{$t("the {brandName} web app",{brandName:$syndicateText.brandName})}}</a>
+              </template>
+            </i18next>
+
           </p>
-          <p>Once set up, Telegram notification will work properly on your phone.</p>
+          <p>{{ $t("Once set up, Telegram notification will work properly on your phone.") }}</p>
         </div>
         <div v-else class="text-warning small">
           <p>
-            If you see "Bot domain invalid", please hard-refresh the browser a few times. I know
-            it's annoying. But Telegram API has a very high failure rate.
+            {{$t("If you see 'Bot domain invalid', please hard-refresh the browser a few times. I know it's annoying. But Telegram API has a very high failure rate.")}}
           </p>
           <p>
-            If you press the "Test Telegram Notification" button and see an error, please
-            hard-refresh the browser a few times and press the test button again.
+            {{$t("If you press the 'Test Telegram Notification' button and see an error, please hard-refresh the browser a few times and press the test button again.")}}
           </p>
         </div>
       </div>
@@ -42,10 +43,10 @@
         >
           <div class="col-12">
             <div class="btn btn-sm btn-primary float-left mr-2" @click="onTelegramLogout">
-              Unlink Telegram
+              {{$t("Unlink Telegram")}}
             </div>
             <div class="btn btn-sm btn-primary float-left" @click="onTelegramTest($event)">
-              Test Telegram Notification
+              {{$t("Test Telegram Notification")}}
             </div>
           </div>
         </div>
@@ -128,13 +129,13 @@ export default {
         .catch((err) => {
           event.target.classList.remove('disabled')
           this.$swal.Reject.fire({
-            title: 'Error',
+            title: `${this.$i18next.t('Error')}`,
             html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
-              Telegram test failed
+              ${this.$i18next.t("Telegram test failed")}
             </p>`,
             showConfirmButton: false,
             showCancelButton: true,
-            cancelButtonText: 'Close',
+            cancelButtonText: `${this.$i18next.t('Close')}`,
           })
         })
     },

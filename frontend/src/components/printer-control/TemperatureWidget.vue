@@ -1,6 +1,6 @@
 <template>
   <widget-template>
-    <template #title>Temperature Controls</template>
+    <template #title>{{ $t("Temperature Controls") }}</template>
     <template #content>
       <slot name="content">
         <div class="wrapper">
@@ -19,13 +19,13 @@
               class="custom-button"
               @click="onTemperaturePresetsClicked"
             >
-              Temperature Presets
+              {{$t("Temperature Presets")}}
             </b-button>
           </template>
           <template v-else>
             <div class="text-center mt-4">
               <b-spinner></b-spinner>
-              <p class="mt-2">Loading temperature...</p>
+              <p class="mt-2">{{ $t("Loading temperature...") }}</p>
             </div>
           </template>
         </div>
@@ -143,7 +143,7 @@ export default {
             printer: this.printer,
           },
           {
-            title: 'Temperature Presets',
+            title: `${this.$i18next.t('Temperature Presets')}`,
             confirmButtonText: 'Apply',
             showCancelButton: true,
             preConfirm: () => {

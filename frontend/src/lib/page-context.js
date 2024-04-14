@@ -1,5 +1,9 @@
+export const pageContext = () => {
+  return JSON.parse(document.querySelector('#page-context-json').text)
+}
+
 export const mobilePlatform = () => {
-  return JSON.parse(document.querySelector('#app-platform-json').text)['platform']
+  return pageContext()['app_platform']
 }
 
 export const inMobileWebView = () => {
@@ -14,10 +18,10 @@ export const settings = () => {
   return JSON.parse(document.querySelector('#settings-json').text)
 }
 
-export const onlyNotifications = () => {
-  return new URLSearchParams(window.location.search).get('onlyNotifications') === 'true'
+export const syndicate = () => {
+  return pageContext()['syndicate']
 }
 
-export const onlyName = () => {
-  return new URLSearchParams(window.location.search).get('onlyName') === 'true'
+export const language = () => {
+  return pageContext()['language']
 }

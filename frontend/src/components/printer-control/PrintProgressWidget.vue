@@ -1,6 +1,6 @@
 <template>
   <widget-template>
-    <template #title>{{ isPrinting ? 'Print Progress' : 'Last Print' }}</template>
+    <template #title>{{ isPrinting ? $t('Print Progress') : $t('Last Print') }}</template>
     <template #content>
       <div class="wrapper">
         <template v-if="print">
@@ -24,7 +24,7 @@
                 <div class="info-line no-border">
                   <div class="label">
                     <div class="icon"><i class="fas fa-info"></i></div>
-                    <div class="title">Status</div>
+                    <div class="title">{{ $t("Status") }}</div>
                   </div>
                   <div class="value">
                     <div
@@ -41,14 +41,14 @@
                 <div class="info-line">
                   <div class="label">
                     <div class="icon"><i class="far fa-clock"></i></div>
-                    <div class="title">Started</div>
+                    <div class="title">{{ $t("Started") }}</div>
                   </div>
                   <div class="value">{{ print.started_at.format('MMM D, YYYY h:mm a') }}</div>
                 </div>
                 <div class="info-line">
                   <div class="label">
                     <div class="icon"><i class="fas fa-clock"></i></div>
-                    <div class="title">Duration</div>
+                    <div class="title">{{ $t("Duration") }}</div>
                   </div>
                   <div v-if="!print.status.isActive" class="value">
                     {{ print.duration || '-' }}
@@ -73,7 +73,7 @@
                 <div class="info-line no-border">
                   <div class="label">
                     <div class="icon"><i class="fas fa-info"></i></div>
-                    <div class="title">Status</div>
+                    <div class="title">{{ $t("Status") }}</div>
                   </div>
                   <div class="value" :class="'text-' + printer.calculatedStateColor()">
                     {{ printer.calculatedState() }}
@@ -84,7 +84,7 @@
                     <div class="icon">
                       <font-awesome-icon :icon="['fas', 'layer-group']" />
                     </div>
-                    <div class="title">Layer</div>
+                    <div class="title">{{ $t("Layer") }}</div>
                   </div>
                   <div class="value">
                     {{ layerProgress }}
@@ -95,28 +95,28 @@
                     <div class="icon">
                       <i class="fas fa-stopwatch"></i>
                     </div>
-                    <div class="title">Remaining</div>
+                    <div class="title">{{ $t("Remaining") }}</div>
                   </div>
                   <div class="value">
                     <span v-if="secondsLeft">{{ humanizedDuration(secondsLeft) }}</span>
-                    <span v-else class="text-secondary">Calculating...</span>
+                    <span v-else class="text-secondary">{{ $t("Calculating...") }}</span>
                   </div>
                 </div>
                 <div class="info-line">
                   <div class="label">
                     <div class="icon"><i class="fas fa-flag-checkered"></i></div>
-                    <div class="title">Finishing at</div>
+                    <div class="title">{{ $t("Finishing at") }}</div>
                   </div>
                   <div class="value">
                     <span v-if="finishingAt">{{ finishingAt }}</span>
-                    <span v-else class="text-secondary">Calculating...</span>
+                    <span v-else class="text-secondary">{{ $t("Calculating...") }}</span>
                   </div>
                 </div>
                 <collapsable-details>
                   <div class="info-line">
                     <div class="label">
                       <div class="icon"><i class="fas fa-clock"></i></div>
-                      <div class="title">Started</div>
+                      <div class="title">{{ $t("Started") }}</div>
                     </div>
                     <div class="value">
                       {{ print.started_at.format(DATE_TIME_FORMAT) }}
@@ -125,7 +125,7 @@
                   <div class="info-line">
                     <div class="label">
                       <div class="icon"><i class="fas fa-stopwatch"></i></div>
-                      <div class="title">Elapsed</div>
+                      <div class="title">{{ $t("Elapsed") }}</div>
                     </div>
                     <div class="value">
                       <span v-if="timeElapsed">{{ timeElapsed }}</span>
@@ -137,7 +137,7 @@
                       <div class="icon">
                         <font-awesome-icon :icon="['fas', 'ruler-vertical']" />
                       </div>
-                      <div class="title">Z-height</div>
+                      <div class="title">{{ $t("Z-height") }}</div>
                     </div>
                     <div class="value">
                       {{ mmProgress }}
@@ -148,19 +148,19 @@
                       <div class="icon">
                         <i class="fas fa-stopwatch"></i>
                       </div>
-                      <div class="title">Total time</div>
+                      <div class="title">{{ $t("Total time") }}</div>
                     </div>
                     <div v-if="timeTotal" class="value">
                       {{ timeTotal }}
                     </div>
-                    <span v-else class="text-secondary">Calculating...</span>
+                    <span v-else class="text-secondary">{{ $t("Calculating...") }}</span>
                   </div>
                   <div class="info-line" v-if="print.filament_used">
                     <div class="label">
                       <div class="icon">
                         <font-awesome-icon :icon="['fas', 'ruler-vertical']" />
                       </div>
-                      <div class="title">Total filament</div>
+                      <div class="title">{{ $t("Total filament") }}</div>
                     </div>
                     <div class="value">
                       {{ humanizedFilamentUsage(print.filament_used) }}
@@ -176,7 +176,7 @@
                 class="custom-button"
                 :href="`/prints/${print.id}`"
               >
-                Open Print
+                {{$t("Open Print")}}
               </b-button>
               <b-button
                 v-if="file.url"
@@ -187,13 +187,13 @@
               >
                 <b-spinner v-if="isPrintStarting" small></b-spinner>
                 <i v-else class="fas fa-redo"></i>
-                Reprint
+                {{$t("Reprint")}}
               </b-button>
             </div>
           </div>
         </template>
         <template v-else>
-          <p class="empty-state-text">No prints found</p>
+          <p class="empty-state-text">{{ $t("No prints found") }}</p>
         </template>
       </div>
     </template>

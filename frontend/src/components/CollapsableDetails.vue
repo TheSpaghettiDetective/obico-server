@@ -11,8 +11,8 @@
       :class="expanded ? 'opened' : 'closed'"
       @click="expanded = !expanded"
     >
-      <span v-if="expanded">Show less</span>
-      <span v-else>Show more</span>
+      <span v-if="expanded">{{ $t("Show less") }}</span>
+      <span v-else>{{ $t("Show more") }}</span>
       <font-awesome-icon :icon="['fas', 'chevron-down']" :class="{ rotated: expanded }" />
     </button>
   </div>

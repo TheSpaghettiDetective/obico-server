@@ -23,7 +23,7 @@
         </div>
 
         <p v-if="!printersLoading && !printers.length" class="text-center text-secondary mt-3 mb-3">
-          No available printers
+          {{$t("No available printers")}}
         </p>
       </div>
 
@@ -33,8 +33,8 @@
         @click="onPrintClicked"
       >
         <b-spinner v-if="isSending" small class="mr-1" />
-        <div v-if="selectedPrinter" class="truncated">Print on {{ selectedPrinter.name }}</div>
-        <div v-else class="truncated">Print</div>
+        <div v-if="selectedPrinter" class="truncated">{{$t('Print on')}} {{ selectedPrinter.name }}</div>
+        <div v-else class="truncated">{{ $t("Print") }}</div>
       </button>
     </div>
   </div>
@@ -135,11 +135,11 @@ export default {
     selectPrinter(printer) {
       if (!printer.isPrintable()) {
         this.$swal.Reject.fire({
-          title: `${printer.name} isn't ready for print for one of the following reasons:`,
+          title: `${this.$i18next.t(`{name} isn't ready for print for one of the following reasons`,{name:printer.name})}:`,
           html: `<ul style="text-align: left">
-            <li>${printer.agentDisplayName()} is powered off or not connected to the Internet</li>
-            <li>Printer is not connected to ${printer.agentDisplayName()}</li>
-            <li>Printer is currently busy</li>
+            <li>${this.$i18next.t(`{name} is powered off or not connected to the Internet`,{name:printer.agentDisplayName()})}</li>
+            <li>${this.$i18next.t("Printer is not connected to {name}",{name:printer.agentDisplayName()})}</li>
+            <li>${this.$i18next.t("Printer is currently busy")}</li>
           </ul>`,
         })
         return
@@ -212,4 +212,5 @@ export default {
 
 .btn
   max-width: 100%
-</style>
+</style>import { _ } from 'core-js'
+

@@ -168,7 +168,7 @@ If your phone or computer is one the **the same local network** as your Klipper 
   </TabItem>
 </Tabs>
 
-## Step 4: Restart the Raspberry Pi.
+## Step 4: Restart the Raspberry Pi. {#restart-pi}
 
 Once the Raspberry Pi has booted up, you should be able to see your printer and the webcam stream in the Obico app.
 
@@ -188,5 +188,69 @@ The default settings for your printer in The Spaghetti Detective are the ones th
 
 - [Change notification settings](/docs/user-guides/notification-settings) (mobile app only). By default you receive push notifications when The Detective finds something fishy, and for the status of whatever your printer is printing. But you can choose to receive a lot more.
 - [Change printer settings](/docs/user-guides/detection-print-job-settings), such as if The Detective should pause your printer when a failure is detected.
+
+
+
+
+## Link Your Printer Manually With One-Time Passcode {#link-manually}
+
+If your printer is not recognized automatically, you can link your printer with a one-time passcode instead. 
+
+<Tabs
+  groupId="app"
+  defaultValue="mobile"
+  values={[
+    {label: '📱  Mobile App', value: 'mobile'},
+    {label: '🌐  Web App', value: 'web'},
+  ]}>
+  <TabItem value="mobile">
+
+:::tip
+  **If you are on Obico for Klipper version older than 1.6.0, switch to [Legacy Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a six-digit code.**
+:::
+
+1. Click "Switch to manual linking" button on the printer scanning page.
+
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/mobile-switch-to-manual-link-klipper.gif" /></div>
+
+
+2.  Go back to the terminal window you had open in Step 2. Note the one-time passcode shown on the terminal screen
+
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/obico-klipper-one-time-passcode.png" /></div>
+
+
+3. Type the one-time passcode into manual linking page of the Obico web app. You're printer will be securely linked to your Obico account. 
+
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/mobile-manual-link-to-klipper.gif" /></div>
+
+4. Go to **[step 4 of the setup guide](#restart-pi)** to  complete the installation.
+
+
+  </TabItem>
+  <TabItem value="web">
+
+
+1. Click "Switch to manual linking" button on the printer scanning page.
+
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/switch-to-manual-linking.png" /></div>
+
+
+2.  Go back to the terminal window you had open in Step 2. Copy the one-time passcode shown on the terminal screen
+   
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/obico-klipper-one-time-passcode.png" /></div>
+
+3. Paste the one-time passcode into manual linking page of the Obico web app. You're printer will be securely linked to your Obico account. 
+
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/manual-setup-one-time-passcode.gif" /></div>
+
+
+4. Go to **[step 4 of the setup guide](#restart-pi)** to  complete the installation.
+
+
+
+
+  </TabItem>
+</Tabs>
+
 
 

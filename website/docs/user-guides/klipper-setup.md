@@ -56,8 +56,8 @@ Before you start, make sure:
     - The Obico Server you want to link it to. The default is `https://app.obico.io` (the [Obico Cloud](https://app.obico.io)).
       Alternatively, you can also [host your own Obico Server][]: enter the IP address or hostname of your own server (e.g. http://192.168.0.5:3334).
     - A **6-digit verification code**. **Leave the terminal window open on this screen.**
-7. Follow the guide outlined in Step 3 to either link your Klipper machine and Obico automatically or by using the one-time passcode.
-    * You do not need the one-time passcode if automatic linking can be performed.
+7. Follow the guide outlined in Step 3 to either link your Klipper machine and Obico automatically or manually by using the one-time passcode.
+    * You do not need the one-time passcode if automatic linking is successful below.
 
 [Moonraker docs]: https://moonraker.readthedocs.io/en/latest/configuration/
 [\[server\]]: https://moonraker.readthedocs.io/en/latest/configuration/#server
@@ -188,3 +188,5 @@ The default settings for your printer in The Spaghetti Detective are the ones th
 
 - [Change notification settings](/docs/user-guides/notification-settings) (mobile app only). By default you receive push notifications when The Detective finds something fishy, and for the status of whatever your printer is printing. But you can choose to receive a lot more.
 - [Change printer settings](/docs/user-guides/detection-print-job-settings), such as if The Detective should pause your printer when a failure is detected.
+
+

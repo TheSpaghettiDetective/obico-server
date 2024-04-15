@@ -56,9 +56,8 @@ Before you start, make sure:
     - The Obico Server you want to link it to. The default is `https://app.obico.io` (the [Obico Cloud](https://app.obico.io)).
       Alternatively, you can also [host your own Obico Server][]: enter the IP address or hostname of your own server (e.g. http://192.168.0.5:3334).
     - A **6-digit verification code**. **Leave the terminal window open on this screen.**
-7. Follow the guide outlined in [Step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) to either link your Klipper machine and Obico automatically, **or** obtain the 6-digit manual verification code.
-    - If the automatic linking process is successful, the prompt in the terminal will automatically be skipped.
-    - You do not need the 6-digit code if automatic linking can be performed.
+7. Follow the guide outlined in Step 3 to either link your Klipper machine and Obico automatically or by using the one-time passcode.
+    * You do not need the one-time passcode if automatic linking can be performed.
 
 [Moonraker docs]: https://moonraker.readthedocs.io/en/latest/configuration/
 [\[server\]]: https://moonraker.readthedocs.io/en/latest/configuration/#server
@@ -138,13 +137,13 @@ If your phone or computer is one the **the same local network** as your Klipper 
   ]}>
   <TabItem value="mobile">
 
-1. Press "**Link Printer**" button on the welcome screen. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "**Link New Printer**".
-2. Choose "**Klipper**" on the next screen.
-3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Yes, Obico for Klipper is installed**" button.
+1. Press "Link Printer" button on the welcome screen. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "Link New Printer".
+2. Choose “Generic Klipper” on the next screen.
+3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "Yes, the Plugin is Installed" button.
 4. The app will start scanning for the Klipper printer connected to the same local network.
-5. If printer is found, simply click the "**Link**" button and the app will do the rest for you.
+5. If a printer is found, simply click the "Link" button and the app will do the rest for you.
   :::tip
-  **If, however, the app can't find your printer after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.**
+  **If, however, the app can't find your printer after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a one-time passcode.**
   :::
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-klipper-mobile.gif" /></div>
@@ -154,14 +153,14 @@ If your phone or computer is one the **the same local network** as your Klipper 
   <TabItem value="web">
 
 1. On the welcome page, click the "**Link Printer**" button.
-2. Click "Klipper" on the page that asks you to select a platform.
-1. Assuming you have followed the previous steps and run the `install.sh` script, simply press "Next".
+2. Click "Generic Klipper" on the page that asks you to select a platform
+3. Assuming you have followed the previous steps and run the `install.sh` script, simply press "Next".
 4. The app will start scanning for your Klipper connected to the same local network.
 5. If your Klipper printer is found, simply click the "**Link**" button and the app will do the rest for you.
   :::tip
-  **If, however, the app can't find your Klipper printer after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.**
+  **If, however, the app can't find your Klipper printer after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a one-time passcode.**
   :::
-6. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your Klipper printer. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.
+1. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your Klipper printer. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-klipper-web.gif" /></div>
 7. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".

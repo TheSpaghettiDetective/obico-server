@@ -4,6 +4,10 @@ description: For Klipper/Moonraker/Mainsail/Fluidd users
 sidebar_label: Manually Link Klipper
 ---
 
+:::caution
+  **If you are on Obico for Klipper version than 1.6.0 or newer, switch to [Updated Manual Setup Guide](https://https://www.obico.io/docs/user-guides/klipper-setup/Link-Your-Printer-Manually-With-One-Time-Passcode) to link your printer using a one-time passcode.**
+:::
+
 Follow this guide in one of these 2 rare cases:
 
 * You are trying to re-link your Klipper printer. There are only [a few reasons](/docs/user-guides/relink-printer/) why you need to re-link printer.

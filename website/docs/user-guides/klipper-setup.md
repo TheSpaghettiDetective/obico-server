@@ -194,6 +194,11 @@ The default settings for your printer in The Spaghetti Detective are the ones th
 
 ## Link Your Printer Manually With One-Time Passcode {#link-manually}
 
+:::tip
+Only follow this section if linking your printer automatically in [step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) did not work.  
+:::
+
+
 If your printer is not recognized automatically, you can link your printer with a one-time passcode instead. 
 
 <Tabs
@@ -229,6 +234,9 @@ If your printer is not recognized automatically, you can link your printer with 
   </TabItem>
   <TabItem value="web">
 
+:::tip
+  **If you are on Obico for Klipper version older than 1.6.0, switch to [Legacy Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a six-digit code.**
+:::
 
 1. Click "Switch to manual linking" button on the printer scanning page.
 

@@ -153,6 +153,7 @@
   "Learn all possible reasons": "了解所有可能的原因",
   "Enable AI failure detection": "启用AI故障检测",
   "AI failure detection is disabled. You are on your own.": "AI故障检测已禁用。你得自己来。",
+  "Pause on detected failures": "检测到故障时暂停",
   "You will still be alerted via notifications.": "你仍然会通过通知被提醒。",
   "Failure Detected!": "检测到故障！",
   "Not a Failure?": "不是故障？",

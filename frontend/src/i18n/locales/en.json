@@ -153,6 +153,7 @@
   "Learn all possible reasons": "Learn all possible reasons",
   "Enable AI failure detection": "Enable AI failure detection",
   "AI failure detection is disabled. You are on your own.": "AI failure detection is disabled. You are on your own.",
+  "Pause on detected failures": "Pause on detected failures",
   "You will still be alerted via notifications.": "You will still be alerted via notifications.",
   "Failure Detected!": "Failure Detected!",
   "Not a Failure?": "Not a Failure?",

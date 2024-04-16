@@ -91,9 +91,9 @@
               <div class="d-flex justify-content-between button-wrap">
                 <div class="back" @click="$router.back()">
                   <i class="fas fa-chevron-left"></i>
-                  <span class="default-font"> {{ $t("Back") }}</span>
+                  <span> {{ $t("Back") }}</span>
                 </div>
-                  <b-button variant="primary" @click="goForward" class="default-font">
+                  <b-button variant="primary" @click="goForward">
                     {{ $t("Next") }}
                   </b-button>
               </div>

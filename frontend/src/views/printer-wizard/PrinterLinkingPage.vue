@@ -138,15 +138,15 @@
                       </div>
                     </div>
                     <div class="row justify-content-center pb-3">
-                      <div v-if="oneTimePasscodeStatus === 'failed'" class="text-danger col-sm-12 d-flex flex-column align-items-center secondary-text-font secondary-text-color">
+                      <div v-if="oneTimePasscodeStatus === 'failed'" class="text-danger col-sm-12 d-flex flex-column align-items-center secondary-text-font text-secondary">
                         {{$t("Invalid code. Is it expired?")}}
                       </div>
-                      <div v-else class="col-sm-12 d-flex flex-column align-items-center secondary-text-font secondary-text-color">
+                      <div v-else class="col-sm-12 d-flex flex-column align-items-center secondary-text-font text-secondary">
                         {{$t("Enter the One-time Passcode")}}
                       </div>
                     </div>
                     <div class="mt-4">
-                      <muted-alert class="muted-alert secondary-text-font secondary-text-color">
+                      <muted-alert class="muted-alert secondary-text-font text-secondary">
                         <i18next class="" :translation="$t(`If you using Obico for OctoPrint older than 2.5.0, or Obico for Klipper older than 1.6.0, switch to {localizedDom}.`)">
                           <template #localizedDom>
                             <a class="link" @click="useLegacyVerificationCode = true">{{$t("6-digit verification code")}}</a>
@@ -196,7 +196,7 @@
               <div class="d-flex justify-content-between button-wrap">
                 <div class="back" @click="$router.back()">
                   <i class="fas fa-chevron-left"></i>
-                  <span class="default-font"> {{ $t("Back") }}</span>
+                  <span> {{ $t("Back") }}</span>
                 </div>
               </div>
               <div class="row">

@@ -44,7 +44,7 @@
                     </div>
                     <div class="text-wrap">
                       <h3 class="default-font">{{ $t("Pre-Installed Klipper Printer") }}</h3>
-                      <h4 class="secondary-text-font secondary-text-color">{{ $t("Creality K1, Sonic Pad, Sovol SV07, Kingroon KLP1, Elegoo Neptune 4, etc...") }}</h4>
+                      <h4 class="secondary-text-font text-secondary">{{ $t("Creality K1, Sonic Pad, Sovol SV07, Kingroon KLP1, Elegoo Neptune 4, etc...") }}</h4>
                     </div>
                   </div>
                   <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-generic')">
@@ -57,7 +57,7 @@
                     </div>
                     <div class="text-wrap">
                       <h3 class="default-font">{{ $t("Generic Klipper - Self Installed") }}</h3>
-                      <h4 class="secondary-text-font secondary-text-color">{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig") }}</h4>
+                      <h4 class="secondary-text-font text-secondary">{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig") }}</h4>
                     </div>
                   </div>
                   <div class="wizard-card-horizontal" @click="targetPlatformClicked('octoprint')">
@@ -67,7 +67,7 @@
 
                     <div class="text-wrap">
                       <h3 class="default-font">OctoPrint</h3>
-                      <h4 class="secondary-text-font secondary-text-color">{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</h4>
+                      <h4 class="secondary-text-font text-secondary">{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</h4>
                     </div>
                   </div>
               </div>

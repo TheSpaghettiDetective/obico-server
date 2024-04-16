@@ -17,7 +17,7 @@
                 </div>
               </b-row>
               <div class="row">
-                <h1 class="col-sm-12 text-center p-3 page-title-font">{{ $t("Which platform are you using?") }}</h1>
+                <h1 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Which platform are you using?") }}</h1>
               </div>
               <b-row class="center mt-3 mb-5 pb-5">
                 <div class="col-sm-12 col-lg-8"><PrinterProgress :step="0"></PrinterProgress></div>
@@ -43,8 +43,8 @@
                       <img :src="require('@static/img/klipper_logo.jpg')" />
                     </div>
                     <div class="text-wrap">
-                      <h3 class="default-font">{{ $t("Pre-Installed Klipper Printer") }}</h3>
-                      <h4 class="secondary-text-font text-secondary">{{ $t("Creality K1, Sonic Pad, Sovol SV07, Kingroon KLP1, Elegoo Neptune 4, etc...") }}</h4>
+                      <h3 class="wizard-default-font">{{ $t("Pre-Installed Klipper Printer") }}</h3>
+                      <h4 class="wizard-secondary-text-font text-secondary">{{ $t("Creality K1, Sonic Pad, Sovol SV07, Kingroon KLP1, Elegoo Neptune 4, etc...") }}</h4>
                     </div>
                   </div>
                   <div class="wizard-card-horizontal" @click="targetPlatformClicked('klipper-generic')">
@@ -56,8 +56,8 @@
                       </div>
                     </div>
                     <div class="text-wrap">
-                      <h3 class="default-font">{{ $t("Generic Klipper - Self Installed") }}</h3>
-                      <h4 class="secondary-text-font text-secondary">{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig") }}</h4>
+                      <h3 class="wizard-default-font">{{ $t("Generic Klipper - Self Installed") }}</h3>
+                      <h4 class="wizard-secondary-text-font text-secondary">{{ $t("If you installed Klipper yourself on a Raspberry Pi or other linux device. E.g., Voron, RatRig") }}</h4>
                     </div>
                   </div>
                   <div class="wizard-card-horizontal" @click="targetPlatformClicked('octoprint')">
@@ -66,8 +66,8 @@
                     </div>
 
                     <div class="text-wrap">
-                      <h3 class="default-font">OctoPrint</h3>
-                      <h4 class="secondary-text-font text-secondary">{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</h4>
+                      <h3 class="wizard-default-font">OctoPrint</h3>
+                      <h4 class="wizard-secondary-text-font text-secondary">{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</h4>
                     </div>
                   </div>
               </div>

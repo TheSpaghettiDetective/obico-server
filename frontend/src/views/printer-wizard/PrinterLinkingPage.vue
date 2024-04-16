@@ -6,7 +6,7 @@
           <b-col>
             <div class="form-container full-on-mobile border-radius-lg">
               <div class="row">
-                <h3 class="col-sm-12 text-center p-3 page-title-font">{{ $t("Plugin Setup") }}</h3>
+                <h3 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Plugin Setup") }}</h3>
               </div>
               <b-row class="center mt-3 mb-5">
                 <div class="col-sm-12 col-lg-8">
@@ -138,15 +138,15 @@
                       </div>
                     </div>
                     <div class="row justify-content-center pb-3">
-                      <div v-if="oneTimePasscodeStatus === 'failed'" class="text-danger col-sm-12 d-flex flex-column align-items-center secondary-text-font text-secondary">
+                      <div v-if="oneTimePasscodeStatus === 'failed'" class="text-danger col-sm-12 d-flex flex-column align-items-center wizard-secondary-text-font text-secondary">
                         {{$t("Invalid code. Is it expired?")}}
                       </div>
-                      <div v-else class="col-sm-12 d-flex flex-column align-items-center secondary-text-font text-secondary">
+                      <div v-else class="col-sm-12 d-flex flex-column align-items-center wizard-secondary-text-font text-secondary">
                         {{$t("Enter the One-time Passcode")}}
                       </div>
                     </div>
                     <div class="mt-4">
-                      <muted-alert class="muted-alert secondary-text-font text-secondary">
+                      <muted-alert class="muted-alert wizard-secondary-text-font text-secondary">
                         <i18next class="" :translation="$t(`If you using Obico for OctoPrint older than 2.5.0, or Obico for Klipper older than 1.6.0, switch to {localizedDom}.`)">
                           <template #localizedDom>
                             <a class="link" @click="useLegacyVerificationCode = true">{{$t("6-digit verification code")}}</a>
@@ -159,7 +159,7 @@
               </b-row>
               <b-row v-if="!discoveryEnabled && !useLegacyVerificationCode" class="mt-3 mb-5">
                 <div class="col-md-4 p-4 method-block">
-                    <h4 class="text-center font-weight-bold page-title-font">{{ $t("Touch Screen") }}</h4>
+                    <h4 class="text-center font-weight-bold wizard-page-title-font">{{ $t("Touch Screen") }}</h4>
                     <div class="image-block">
                       <img src="@static/img/printer-wizard/klipperScreenMenu.png" style="max-width: 80%;" alt="">
                     </div>
@@ -170,7 +170,7 @@
                     </ol>
                 </div>
                 <div class="col-md-4 p-4 method-block">
-                    <h4 class="text-center font-weight-bold page-title-font">{{ $t("LCD Screen ") }}</h4>
+                    <h4 class="text-center font-weight-bold wizard-page-title-font">{{ $t("LCD Screen ") }}</h4>
                     <div class="image-block">
                       <img src="@static/img/printer-wizard/lcdScreenLarge.png" style="max-width: 80%;" alt="">
                     </div>
@@ -181,7 +181,7 @@
                     </ol>
                 </div>
                 <div class="col-md-4 p-4 method-block">
-                    <h4 class="text-center font-weight-bold page-title-font">{{ $t("Install Via SSH") }}</h4>
+                    <h4 class="text-center font-weight-bold wizard-page-title-font">{{ $t("Install Via SSH") }}</h4>
                     <div class="image-block">
                       <img src="@static/img/printer-wizard/commandLinePrompt.png" style="max-width: 80%;" alt="">
                     </div>
@@ -200,7 +200,7 @@
                 </div>
               </div>
               <div class="row">
-                <div class="helper col-sm-12 default-font">
+                <div class="helper col-sm-12 wizard-default-font">
                   <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
                     <template #localizedDom>
                       <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>

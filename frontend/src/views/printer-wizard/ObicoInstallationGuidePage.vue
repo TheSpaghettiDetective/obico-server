@@ -6,7 +6,7 @@
           <b-col>
             <div class="form-container full-on-mobile border-radius-lg">
               <div class="row">
-                <h3 class="col-sm-12 text-center p-3">{{ $t("Plugin Setup") }}</h3>
+                <h1 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Plugin Setup") }}</h1>
               </div>
               <b-row class="center mt-3 mb-5 pb-5">
                 <div class="col-sm-12 col-lg-8">
@@ -17,10 +17,10 @@
                 <div v-if="targetKlipperPreInstall" class="kilpper-pre-install-wrap">
                   <img src="@static/img/printer-wizard/commandLinePrompt.png" alt="">
                   <div class="text-wrap">
-                    <h4>{{ $t("If you haven’t installed Obico Klipper, You need to find the right guide for your printer to install it.") }}</h4>
+                    <h4 class="wizard-subtitle-font">{{ $t("If you haven’t installed Obico Klipper, You need to find the right guide for your printer to install it.") }}</h4 class="wizard-subtitle-font">
                     <div class="find-printer-link"><a href="https://www.obico.io/docs/user-guides/klipper-setup/" target="_blank">{{ $t("Find the Guide for Your Printer") }}</a><i class="fas fa-light fa-arrow-up"></i></div>
-                    <h4>{{ $t("The basic steps involve:") }}</h4>
-                    <ol>
+                    <h4 class="wizard-subtitle-font">{{ $t("The basic steps involve:") }}</h4>
+                    <ol class="secondary-font">
                       <li>{{ $t('SSH to the device your Klipper runs on.') }}</li>
                       <li>{{ $t('Enter the terminal commands for your printer.') }}</li>
                       <li>{{ $t('Follow the installation steps.') }}</li>
@@ -97,7 +97,7 @@
                     {{ $t("Next") }}
                   </b-button>
               </div>
-              <div class="center mt-5">
+              <div class="text-center mt-5 wizard-default-font">
                 <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
                   <template #localizedDom>
                     <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>

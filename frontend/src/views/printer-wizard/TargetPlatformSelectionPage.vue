@@ -17,7 +17,7 @@
                 </div>
               </b-row>
               <div class="row">
-                <h1 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Which platform are you using?") }}</h1>
+                <h1 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Device Selection") }}</h1>
               </div>
               <b-row class="center mt-3 mb-5 pb-5">
                 <div class="col-sm-12 col-lg-8"><PrinterProgress :step="0"></PrinterProgress></div>

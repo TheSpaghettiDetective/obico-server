@@ -6,7 +6,7 @@
           <b-col>
             <div class="form-container full-on-mobile border-radius-lg">
               <div class="row">
-                <h3 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Plugin Setup") }}</h3>
+                <h3 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Link Printer") }}</h3>
               </div>
               <b-row class="center mt-3 mb-5">
                 <div class="col-sm-12 col-lg-8">
@@ -52,14 +52,14 @@
                       </div>
                       <div class="d-flex flex-column align-items-center">
                         <div class="mt-5 mb-3">
-                        {{ $t(`Can’t find the printer you want to link? Switch to manual linking instead.`) }}
+                        {{ $t(`Can’t find the printer you want to link? Switch to Manual Linking instead.`) }}
                         </div>
                         <button
                           class="btn btn-outline-secondary"
                           type="button"
                           @click="discoveryEnabled = false"
                         >
-                          {{ $t("Switch to manual linking") }}
+                          {{ $t("Switch to Manual Linking") }}
                         </button>
                       </div>
                     </div>

@@ -3,20 +3,20 @@
       <div class="circle" :class="{active:step===0, done:step>0}">
         <font-awesome-icon icon="fa-check" />
         <p>
-          Device Selection
+          {{ $t("Device Selection") }}
         </p>
       </div>
       <div class="line" :class="{active:step>=1}"></div>
       <div class="circle" :class="{active:step===1, done:step>1}">
         <font-awesome-icon :icon="['fas', 'check']" />
         <p>
-          Plugin Setup
+          {{ $t("Install Obico") }}
         </p></div>
       <div class="line" :class="{active:step===2}"></div>
       <div class="circle" :class="{active:step===2,done:step===3}">
         <font-awesome-icon :icon="['fas', 'check']" />
         <p>
-          Link Printer
+          {{ $t("Link Printer") }}
         </p></div>
     </div>
 </template>
@@ -66,7 +66,7 @@ export default {
         height:4px;
         border-radius:2px;
         background-color: var(--color-primary);
-        
+
       }
     }
     &.done{

@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 :::
 
 :::tip
-This guide is for users who installed Klipper themselves. If you have a printer that came with Klipper pre-installed, follow the guide for your 3D printer: 
+This guide is for users who installed Klipper themselves. If you have a printer that came with Klipper pre-installed, follow the guide for your 3D printer:
 - [Creality K1 Series](https://www.obico.io/blog/remote-access-creality-k1/)
 - [Elegoo Neptune 4 Series](https://obico.io/blog/elegoo-neptune-4-and-obico-ai-3d-printing-revolution/)
 - [Kingroon KLP1](https://obico.io/blog/kingroon-klipper-remote-access-and-ai/)
@@ -21,7 +21,7 @@ This guide is for users who installed Klipper themselves. If you have a printer 
 - [Qidi X Series](https://obico.io/blog/qidi-tech-x-series-klipper-remote-access-and-ai/)
 - [Creality Sonic Pad](https://www.obico.io/blog/sonic-pad-remote-access-ai/)
 - [Sovol SV08 Series](https://obico.io/blog/sovol-svo7-series-klipper-remote-access-ai/)
-:::tip 
+:::tip
 
 :::info
 This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
@@ -195,11 +195,11 @@ The default settings for your printer in The Spaghetti Detective are the ones th
 ## Link Your Printer Manually With One-Time Passcode {#link-manually}
 
 :::tip
-Only follow this section if linking your printer automatically in [step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) did not work.  
+Only follow this section if linking your printer automatically in [step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) did not work.
 :::
 
 
-If your printer is not recognized automatically, you can link your printer with a one-time passcode instead. 
+If your printer is not recognized automatically, you can link your printer with a one-time passcode instead.
 
 <Tabs
   groupId="app"
@@ -214,7 +214,7 @@ If your printer is not recognized automatically, you can link your printer with 
   **If you are on Obico for Klipper version older than 1.6.0, switch to [Legacy Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a six-digit code.**
 :::
 
-1. Click "Switch to manual linking" button on the printer scanning page.
+1. Click "Switch to Manual Linking" button on the printer scanning page.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/mobile-switch-to-manual-link-klipper.gif" /></div>
 
@@ -224,7 +224,7 @@ If your printer is not recognized automatically, you can link your printer with 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/obico-klipper-one-time-passcode.png" /></div>
 
 
-3. Type the one-time passcode into manual linking page of the Obico web app. You're printer will be securely linked to your Obico account. 
+3. Type the one-time passcode into manual linking page of the Obico web app. You're printer will be securely linked to your Obico account.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/mobile-manual-link-to-klipper.gif" /></div>
 
@@ -238,16 +238,16 @@ If your printer is not recognized automatically, you can link your printer with 
   **If you are on Obico for Klipper version older than 1.6.0, switch to [Legacy Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a six-digit code.**
 :::
 
-1. Click "Switch to manual linking" button on the printer scanning page.
+1. Click "Switch to Manual Linking" button on the printer scanning page.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/switch-to-manual-linking.png" /></div>
 
 
 2.  Go back to the terminal window you had open in Step 2. Copy the one-time passcode shown on the terminal screen
-   
+
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/obico-klipper-one-time-passcode.png" /></div>
 
-3. Paste the one-time passcode into manual linking page of the Obico web app. You're printer will be securely linked to your Obico account. 
+3. Paste the one-time passcode into manual linking page of the Obico web app. You're printer will be securely linked to your Obico account.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/manual-setup-one-time-passcode.gif" /></div>
 

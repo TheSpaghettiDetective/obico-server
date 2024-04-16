@@ -32,7 +32,7 @@ This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io)
 
 ## Step 1: Download Obico for Klipper and run `install.sh` {#step-1-download-obico-for-klipper-and-run-installsh}
 
-1. SSH to the Raspberry Pi your Klipper runs on.
+1. SSH to the Raspberry Pi (or other SBC) your Klipper runs on.
 2. Run:
 ```bash
     cd ~

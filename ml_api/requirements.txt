@@ -4,4 +4,4 @@ redis==3.0.1
 newrelic==4.12.0.113
 sentry_sdk[flask]==1.5.10
 requests==2.21.0
-gunicorn==19.9.0
+gunicorn==22.0.0

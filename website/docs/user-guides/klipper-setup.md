@@ -162,10 +162,9 @@ If your phone or computer is one the **the same local network** as your Klipper 
   If, however, the app can't find your Klipper printer after 1 minute of scanning, you need to follow the **[Manual Setup Guide](#link-manually)** to link your printer using a one-time passcode.
 :::
 
-1. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your Klipper printer. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-klipper-web.gif" /></div>
-7. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
+1. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 
   </TabItem>
 </Tabs>

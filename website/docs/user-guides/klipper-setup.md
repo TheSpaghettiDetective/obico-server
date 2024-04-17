@@ -142,12 +142,12 @@ If your phone or computer is one the **the same local network** as your Klipper 
 3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "Yes, the Plugin is Installed" button.
 4. The app will start scanning for the Klipper printer connected to the same local network.
 5. If a printer is found, simply click the "Link" button and the app will do the rest for you.
-  :::tip
-  **If, however, the app can't find your printer after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a one-time passcode.**
-  :::
+:::tip
+  If, however, the app can't find your Klipper printer after 1 minute of scanning, you need to follow the **[Manual Setup Guide](#link-manually)** to link your printer using a one-time passcode.
+:::
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-klipper-mobile.gif" /></div>
-6. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
+1. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 
   </TabItem>
   <TabItem value="web">
@@ -157,9 +157,11 @@ If your phone or computer is one the **the same local network** as your Klipper 
 3. Assuming you have followed the previous steps and run the `install.sh` script, simply press "Next".
 4. The app will start scanning for your Klipper connected to the same local network.
 5. If your Klipper printer is found, simply click the "**Link**" button and the app will do the rest for you.
-  :::tip
-  **If, however, the app can't find your Klipper printer after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a one-time passcode.**
-  :::
+
+:::tip
+  If, however, the app can't find your Klipper printer after 1 minute of scanning, you need to follow the **[Manual Setup Guide](#link-manually)** to link your printer using a one-time passcode.
+:::
+
 1. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your Klipper printer. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-klipper-web.gif" /></div>
@@ -211,7 +213,7 @@ If your printer is not recognized automatically, you can link your printer with 
   <TabItem value="mobile">
 
 :::tip
-  **If you are on Obico for Klipper version older than 1.6.0, switch to [Legacy Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a six-digit code.**
+  If you are on Obico for Klipper version older than 1.6.0, switch to **[Legacy Manual Setup Guide](https://obico.io/docs/user-guides/klipper-setup-manual-link)** to link your printer using a six-digit code.
 :::
 
 1. Click "Switch to Manual Linking" button on the printer scanning page.
@@ -235,7 +237,7 @@ If your printer is not recognized automatically, you can link your printer with 
   <TabItem value="web">
 
 :::tip
-  **If you are on Obico for Klipper version older than 1.6.0, switch to [Legacy Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a six-digit code.**
+  If you are on Obico for Klipper version older than 1.6.0, switch to **[Legacy Manual Setup Guide](https://obico.io/docs/user-guides/klipper-setup-manual-link)** to link your printer using a six-digit code.
 :::
 
 1. Click "Switch to Manual Linking" button on the printer scanning page.

@@ -37,7 +37,7 @@
         class="custom-control-input"
       />
       <label class="custom-control-label" style="font-size: 16px" for="consented-checkbox">
-        {{ $t("I grant the {brandName} app team members the permission to review the time-lapse video of the print shown on this page.", { brandName: $t('brandName') }) }}
+        {{ $t("I grant the {brandName} app team members the permission to review the time-lapse video of the print shown on this page.", {brandName:$syndicateText.brandName}) }}
 
         <a
           target="_blank"

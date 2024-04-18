@@ -82,22 +82,22 @@
 
                   </div>
                 </div>
-              </div>
-              <div class="d-flex justify-content-between button-wrap">
-                <div class="back" @click="$router.back()">
-                  <i class="fas fa-chevron-left"></i>
-                  <span> {{ $t("Back") }}</span>
+                <div class="d-flex justify-content-between button-wrap">
+                  <div class="back" @click="$router.back()">
+                    <i class="fas fa-chevron-left"></i>
+                    <span> {{ $t("Back") }}</span>
+                  </div>
+                    <b-button variant="primary" @click="goForward">
+                      {{ $t("Next") }}
+                    </b-button>
                 </div>
-                  <b-button variant="primary" @click="goForward">
-                    {{ $t("Next") }}
-                  </b-button>
-              </div>
-              <div class="text-center mt-5 wizard-default-font">
-                <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
-                  <template #localizedDom>
-                    <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
-                  </template>
-                </i18next>
+                <div class="text-center mt-5 wizard-default-font">
+                  <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
+                    <template #localizedDom>
+                      <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
+                    </template>
+                  </i18next>
+                </div>
               </div>
             </div>
           </b-col>

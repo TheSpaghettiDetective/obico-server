@@ -82,7 +82,7 @@
 
                   </div>
                 </div>
-                <div class="d-flex justify-content-between button-wrap">
+                <div class="d-flex justify-content-between align-items-center button-wrap">
                   <div class="back" @click="$router.back()">
                     <i class="fas fa-chevron-left"></i>
                     <span> {{ $t("Back") }}</span>

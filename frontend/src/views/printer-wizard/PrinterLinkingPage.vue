@@ -199,14 +199,12 @@
                   <span> {{ $t("Back") }}</span>
                 </div>
               </div>
-              <div class="row">
-                <div class="helper col-sm-12 wizard-default-font">
-                  <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
-                    <template #localizedDom>
-                      <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
-                    </template>
-                  </i18next>
-                </div>
+              <div class="text-center mt-5 wizard-default-font">
+                <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
+                  <template #localizedDom>
+                    <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
+                  </template>
+                </i18next>
               </div>
             </div>
           </b-col>
@@ -544,6 +542,8 @@ pre
   .image-block
     display: flex
     justify-content: center
-.back
-  cursor: pointer
+.button-wrap
+  margin-top:80px
+  .back
+    cursor: pointer
 </style>

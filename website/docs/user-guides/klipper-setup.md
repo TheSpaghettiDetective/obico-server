@@ -138,10 +138,10 @@ If your phone or computer is one the **the same local network** as your Klipper 
   <TabItem value="mobile">
 
 1. Press "Link Printer" button on the welcome screen. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "Link New Printer".
-2. Choose “Generic Klipper” on the next screen.
-3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "Yes, the Plugin is Installed" button.
+2. Choose **“Generic Klipper”** on the next screen.
+3. Assuming you have followed the previous steps and installed the plugin, you can simply click the **"Yes, the Plugin is Installed"** button.
 4. The app will start scanning for the Klipper printer connected to the same local network.
-5. If a printer is found, simply click the "Link" button and the app will do the rest for you.
+5. If a printer is found, simply click the **"Link"** button and the app will do the rest for you.
 :::tip
   If, however, the app can't find your Klipper printer after 1 minute of scanning, you need to follow the **[Manual Setup Guide](#link-manually)** to link your printer using a one-time passcode.
 :::
@@ -153,8 +153,8 @@ If your phone or computer is one the **the same local network** as your Klipper 
   <TabItem value="web">
 
 1. On the welcome page, click the "**Link Printer**" button.
-2. Click "Generic Klipper" on the page that asks you to select a platform
-3. Assuming you have followed the previous steps and run the `install.sh` script, simply press "Next".
+2. Click **"Generic Klipper"** on the page that asks you to select a platform
+3. Assuming you have followed the previous steps and run the `install.sh` script, simply press **"Next"**.
 4. The app will start scanning for your Klipper connected to the same local network.
 5. If your Klipper printer is found, simply click the "**Link**" button and the app will do the rest for you.
 
@@ -239,7 +239,7 @@ If your printer is not recognized automatically, you can link your printer with 
   If you are on Obico for Klipper version older than 1.6.0, switch to **[Legacy Manual Setup Guide](https://obico.io/docs/user-guides/klipper-setup-manual-link)** to link your printer using a six-digit code.
 :::
 
-1. Click "Switch to Manual Linking" button on the printer scanning page.
+1. Click **"Switch to Manual Linking"** button on the printer scanning page.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/switch-to-manual-linking.png" /></div>
 

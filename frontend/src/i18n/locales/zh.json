@@ -544,7 +544,7 @@
   "Receive text (SMS) in case of print failures.": "在打印失败时接收文本（短信）。",
   "Change Printer Settings": "更改打印机设置",
   "You can always change it later.": "您可以稍后再更改。",
-  "Install Obico for Klipper": "为 Klipper 安装 Obico",
+  "Install Obico for Klipper": "安装 Obico for Klipper",
   "Find the Guide for Your Printer to install Obico for Klipper.": "查找打印机指南以安装 Obico for Klipper。",
   "SSH to your device.": "通过 SSH 连接到您的设备。",
   "Enter the installation commands.": "输入安装命令。",

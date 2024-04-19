@@ -11,7 +11,6 @@ import BlogPostPaginator from '@theme/BlogPostPaginator';
 import BlogSidebar from '../BlogSidebar';
 import TOC from '@theme/TOC';
 import { ThemeClassNames } from '@docusaurus/theme-common';
-import { DiscussionEmbed } from 'disqus-react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 import './styles.css';
@@ -47,18 +46,6 @@ function BlogPostPage(props) {
               {(nextItem || prevItem) && (
                 <BlogPostPaginator nextItem={nextItem} prevItem={prevItem} />
               )}
-
-              <DiscussionEmbed
-                shortname='tsd-1'
-                className={styles.discussion}
-                config={
-                  {
-                    url: `https://www.obico.io${metadata.permalink}`,
-                    identifier: metadata.permalink,
-                    title: title,
-                  }
-                }
-              />
             </main>
             <aside className="col col--3">
               <BlogSidebar sidebar={sidebar} tags={tags} />

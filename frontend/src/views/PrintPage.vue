@@ -128,7 +128,7 @@
           <b-col lg="7">
             <div class="print-info">
               <!-- First Layer Report Card -->
-              <div v-show="firstLayerInspection.id" class="card-container">
+              <!-- <div v-show="firstLayerInspection.id" class="card-container">
                 <b-row class="m-0">
                   <b-col cols="12" sm="7" md="7" lg="12" xl="7"   class="first-layer-info-column">
                     <div>
@@ -174,7 +174,7 @@
                   </b-col>
                 </b-row>
 
-              </div>
+              </div> -->
               <div class="time-lapse">
                 <div v-if="print.video_archived_at" class="card-container">
                   <h2 class="title">{{ $t("Time-Lapse video deleted") }}</h2>

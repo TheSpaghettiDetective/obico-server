@@ -7,5 +7,8 @@ export const syndicateTextConstant = {
   },
   mintion:{
     brandName: 'Mintion',
-  }
+  },
+  kingroon:{
+    brandName: 'Kingroon',
+  },
 };

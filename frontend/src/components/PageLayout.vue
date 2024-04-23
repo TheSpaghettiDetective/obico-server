@@ -6,7 +6,8 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <SyndicateAwareSVG href="#svg-logo-compact" width="100" height="30" />
+        <img v-if="$syndicate==='kingroon'" :src="require('@static/kingroon/img/logo-kingroon.png')" alt="" style="width:70px;height:60px">
+        <SyndicateAwareSVG v-else href="#svg-logo-compact" width="100" height="30" />
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">

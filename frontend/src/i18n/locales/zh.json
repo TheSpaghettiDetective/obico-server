@@ -695,7 +695,6 @@
   "Failed to fetch printer information": "获取打印机信息失败",
   "Start time": "开始时间",
   "End time": "结束时间",
-  "Open Detailed Report": "打开详细报告",
   "Time-Lapse video deleted": "时间延迟视频已删除",
   "If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please {localizedDom}": "如果您是Pro订阅者并且不希望您的时间延迟视频被删除，请{localizedDom}",
   "FOCUSED FEEDBACK": "专注反馈",

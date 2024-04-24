@@ -19,6 +19,8 @@ class PrinterAuthentication(TokenAuthentication):
 
 def TokenAuthMiddlewareStack(inner): return AuthMiddlewareStack(inner)
 
+class BearerAuthentication(TokenAuthentication):
+    keyword = 'Bearer'
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
 

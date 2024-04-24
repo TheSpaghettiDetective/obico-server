@@ -29,7 +29,7 @@ from django.db.models.functions import TruncDay
 from django.db.models import Sum, Max, Count, fields, Case, Value, When
 
 from .utils import report_validationerror
-from .authentication import CsrfExemptSessionAuthentication
+from .authentication import CsrfExemptSessionAuthentication, BearerAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder)
@@ -62,7 +62,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class UserViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = UserSerializer
 
     @action(detail=False, methods=['get', 'patch'])
@@ -90,7 +90,7 @@ class PrinterViewSet(
 ):
 
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = PrinterSerializer
 
     def get_queryset(self):
@@ -171,7 +171,7 @@ class PrintViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = PrintSerializer
 
     def get_queryset(self):
@@ -375,7 +375,7 @@ class PrintViewSet(
 
 class GCodeFolderViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     pagination_class = StandardResultsSetPagination
 
     def get_serializer_class(self):
@@ -432,7 +432,7 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
 class GCodeFileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     pagination_class = StandardResultsSetPagination
 
     def get_serializer_class(self):
@@ -564,7 +564,7 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
                                mixins.ListModelMixin,
                                viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = PrintShotFeedbackSerializer
 
     def get_queryset(self):
@@ -604,7 +604,7 @@ class OctoPrintTunnelViewSet(
     viewsets.GenericViewSet,
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = OctoPrintTunnelSerializer
 
     def get_queryset(self):
@@ -629,7 +629,7 @@ class OctoPrintTunnelViewSet(
 class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
                                   viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
 
     def list(self, request, *args, **kwargs):
         return Response({
@@ -645,7 +645,7 @@ class MobileDeviceViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = MobileDeviceSerializer
 
     def get_queryset(self):
@@ -675,7 +675,7 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
                                      mixins.RetrieveModelMixin,
                                      viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = OneTimeVerificationCodeSerializer
 
     def list(self, request, *args, **kwargs):
@@ -713,7 +713,7 @@ class SharedResourceViewSet(mixins.ListModelMixin,
                             mixins.CreateModelMixin,
                             mixins.DestroyModelMixin,
                             viewsets.GenericViewSet):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = SharedResourceSerializer
 
@@ -739,7 +739,7 @@ class SharedResourceViewSet(mixins.ListModelMixin,
 
 
 class PrinterDiscoveryViewSet(viewsets.ViewSet):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):
@@ -797,7 +797,7 @@ class NotificationSettingsViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = NotificationSettingSerializer
 
     def get_queryset(self):
@@ -839,7 +839,7 @@ class PrinterEventViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,BearerAuthentication,)
     serializer_class = PrinterEventSerializer
     pagination_class = StandardResultsSetPagination
 

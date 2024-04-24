@@ -270,7 +270,7 @@ class OctoPrinterDiscoveryView(APIView):
             (maybe_new_one_time_passcode, verification_code) = request_one_time_passcode(one_time_passcode)
             otp_response = {
                 'one_time_passcode': maybe_new_one_time_passcode,
-                'one_time_passlink': f'https://app.obico.io/otp/?one_time_passcode={maybe_new_one_time_passcode}',
+                'one_time_passlink': f'https://obico.onelink.me/fxEU/3ajxjqzd?deep_link_value=https://app.obico.io/printers/wizard/link/?one_time_passcode={maybe_new_one_time_passcode}',
                 'verification_code': verification_code}
 
         messages = []

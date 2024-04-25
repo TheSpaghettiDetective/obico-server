@@ -314,8 +314,14 @@ class OctoPrintConsumer(WebsocketConsumer):
 
 
 class JanusWebConsumer(WebsocketConsumer):
-
     def get_printer(self):
+        try:
+            pt = OctoprintTunnelV2Helper.get_octoprinttunnel(self.scope)
+            if pt:
+                return pt.printer
+        except TunnelAuthenticationError:
+            pass  
+
         if 'token' in self.scope['url_route']['kwargs']:
             return Printer.objects.get(
                 auth_token=self.scope['url_route']['kwargs']['token'],
@@ -362,7 +368,7 @@ class JanusWebConsumer(WebsocketConsumer):
         self.send(text_data=msg.get('msg'))
 
 
-class JanusSharedWebConsumer(JanusWebConsumer):
+class JanusSharedWebConsumer(JanusWebConsumer): 
 
     def get_printer(self):
         return SharedResource.objects.select_related('printer').get(

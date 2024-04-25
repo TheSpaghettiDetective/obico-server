@@ -137,3 +137,24 @@ def check_x_api(get_response):
         return response
 
     return middleware
+
+
+def syndicate_header(get_response):
+    def middleware(request):
+
+        # HTTP_X_OBICO_SYNDICATE can only be sent for the initial request.
+        # The subsequent requests initiated within the page won't have it automatically set.
+        # Save it to a cookie so that it can be sent in subsequent requests.
+        syndicate_header = request.META.get('HTTP_X_OBICO_SYNDICATE', None)
+        if not syndicate_header:
+            syndicate_header = request.COOKIES.get('syndicate_header', None)
+            if syndicate_header:
+                request.META['HTTP_X_OBICO_SYNDICATE'] = syndicate_header
+
+        response = get_response(request)
+        if syndicate_header:
+            response.set_cookie('syndicate_header', syndicate_header)
+
+        return response
+
+    return middleware

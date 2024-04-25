@@ -102,6 +102,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
     'hijack.middleware.HijackUserMiddleware',
     'app.middleware.check_x_api',
+    'app.middleware.syndicate_header',
 ]
 
 if DEBUG:

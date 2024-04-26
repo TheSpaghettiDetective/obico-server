@@ -316,10 +316,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 
 class JanusWebConsumer(WebsocketConsumer):
     def get_printer(self):
-        query_dict = QueryDict(self.scope['query_string'])
-        basic_auth = query_dict.get('basic_auth')
-        logging.error("___"+basic_auth)
-        pt = OctoprintTunnelV2Helper.get_tunnel_by_auth(basic_auth)
+        pt = OctoprintTunnelV2Helper.get_tunnel_by_auth(self.scope)
         if pt:
             return pt.printer 
 

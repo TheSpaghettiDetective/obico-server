@@ -183,9 +183,14 @@ class OctoprintTunnelV2Helper(object):
         return cls.get_subdomain_code(s_or_r)
 
     @classmethod
-    def get_tunnel_by_auth(cls, raw_token
+    def get_tunnel_by_auth(cls, scope
     ) -> OctoPrintTunnel:
-        if len(raw_token) == 0 :
+        basic_auth = OctoprintTunnelV2Helper.get_authorization_header(scope)
+        try:
+            scheme, raw_token = basic_auth.split()
+        except ValueError:
+            scheme, raw_token = None, None
+        if not scheme or scheme.lower() != 'basic':
             return
         try:
             username, password = base64.b64decode(
@@ -195,7 +200,7 @@ class OctoprintTunnelV2Helper(object):
             if check_password(password, tunnel.basicauth_password):
                 return tunnel 
         except (binascii.Error, ValueError):
-                return
+            return
         return None
         
 

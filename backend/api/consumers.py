@@ -23,6 +23,7 @@ from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
 from lib.view_helpers import touch_user_last_active
 from .serializers import *
 from .serializers import PublicPrinterSerializer, PrinterSerializer
+from django.http import QueryDict
 
 LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
@@ -315,12 +316,12 @@ class OctoPrintConsumer(WebsocketConsumer):
 
 class JanusWebConsumer(WebsocketConsumer):
     def get_printer(self):
-        try:
-            pt = OctoprintTunnelV2Helper.get_octoprinttunnel(self.scope)
-            if pt:
-                return pt.printer
-        except TunnelAuthenticationError:
-            pass  
+        query_dict = QueryDict(self.scope['query_string'])
+        basic_auth = query_dict.get('basic_auth')
+        logging.error("___"+basic_auth)
+        pt = OctoprintTunnelV2Helper.get_tunnel_by_auth(basic_auth)
+        if pt:
+            return pt.printer 
 
         if 'token' in self.scope['url_route']['kwargs']:
             return Printer.objects.get(

@@ -23,7 +23,6 @@ from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
 from lib.view_helpers import touch_user_last_active
 from .serializers import *
 from .serializers import PublicPrinterSerializer, PrinterSerializer
-from django.http import QueryDict
 
 LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
@@ -316,14 +315,14 @@ class OctoPrintConsumer(WebsocketConsumer):
 
 class JanusWebConsumer(WebsocketConsumer):
     def get_printer(self):
-        pt = OctoprintTunnelV2Helper.get_tunnel_by_auth(self.scope)
-        if pt:
-            return pt.printer 
-
         if 'token' in self.scope['url_route']['kwargs']:
             return Printer.objects.get(
                 auth_token=self.scope['url_route']['kwargs']['token'],
             )
+
+        pt = OctoprintTunnelV2Helper.get_octoprinttunnel(self.scope)
+        if pt:
+            return pt.printer
 
         if not self.scope['user'].is_authenticated:
             raise Printer.DoesNotExist('session is not authenticated')
@@ -366,7 +365,7 @@ class JanusWebConsumer(WebsocketConsumer):
         self.send(text_data=msg.get('msg'))
 
 
-class JanusSharedWebConsumer(JanusWebConsumer): 
+class JanusSharedWebConsumer(JanusWebConsumer):
 
     def get_printer(self):
         return SharedResource.objects.select_related('printer').get(

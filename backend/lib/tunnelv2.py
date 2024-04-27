@@ -181,28 +181,3 @@ class OctoprintTunnelV2Helper(object):
         if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
             return cls.get_port(s_or_r) in settings.OCTOPRINT_TUNNEL_PORT_RANGE
         return cls.get_subdomain_code(s_or_r)
-
-    @classmethod
-    def get_tunnel_by_auth(cls, scope
-    ) -> OctoPrintTunnel:
-        basic_auth = OctoprintTunnelV2Helper.get_authorization_header(scope)
-        try:
-            scheme, raw_token = basic_auth.split()
-        except ValueError:
-            scheme, raw_token = None, None
-        if not scheme or scheme.lower() != 'basic':
-            return
-        try:
-            username, password = base64.b64decode(
-                raw_token).decode().split(':')
-            qs = OctoPrintTunnel.objects.filter(basicauth_username = username)
-            tunnel = qs.first()
-            if check_password(password, tunnel.basicauth_password):
-                return tunnel 
-        except (binascii.Error, ValueError):
-            return
-        return None
-        
-
-        
-        

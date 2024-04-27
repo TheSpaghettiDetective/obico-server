@@ -320,8 +320,9 @@ class JanusWebConsumer(WebsocketConsumer):
                 auth_token=self.scope['url_route']['kwargs']['token'],
             )
 
+        # Mobileraker wants to use tunnel credential to connect janus websocket
         pt = OctoprintTunnelV2Helper.get_octoprinttunnel(self.scope)
-        if pt:
+        if pt and str(pt.printer_id) == self.scope['url_route']['kwargs']['printer_id']:
             return pt.printer
 
         if not self.scope['user'].is_authenticated:

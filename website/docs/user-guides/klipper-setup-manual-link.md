@@ -5,7 +5,7 @@ sidebar_label: Manually Link Klipper
 ---
 
 :::caution
-  **If you are on Obico for Klipper version than 1.6.0 or newer, switch to [Updated Manual Setup Guide](https://https://www.obico.io/docs/user-guides/klipper-setup/Link-Your-Printer-Manually-With-One-Time-Passcode) to link your printer using a one-time passcode.**
+  **If you are on Obico for Klipper version than 1.6.0 or newer, switch to [Updated Manual Setup Guide](https://www.obico.io/docs/user-guides/klipper-setup/#link-manually) to link your printer using a one-time passcode.**
 :::
 
 Follow this guide in one of these 2 rare cases:

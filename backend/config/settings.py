@@ -453,7 +453,7 @@ GOOGLE_APPLICATION_CREDENTIALS = os.environ.get(
     'GOOGLE_APPLICATION_CREDENTIALS')
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
+MEDIA_ROOT = os.environ.get('MEDIA_ROOT', os.path.join(STATIC_ROOT, 'media'))
 INTERNAL_MEDIA_HOST = os.environ.get('INTERNAL_MEDIA_HOST')
 
 PICS_CONTAINER = os.environ.get('PICS_CONTAINER', 'tsd-pics')

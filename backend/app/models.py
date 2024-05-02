@@ -977,3 +977,9 @@ class NotificationSetting(models.Model):
 
     class Meta:
         unique_together = ('user', 'name')
+
+
+class Syndicate(models.Model):
+  name = models.CharField(max_length=255)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)

@@ -10,7 +10,7 @@ from django.template.base import Template
 from django.template.loader import get_template
 from django.core.mail import EmailMessage
 
-from allauth.account.admin import EmailAddress  # type: ignore
+from allauth.account.models import EmailAddress
 from lib import site as site
 
 from notifications.handlers import handler

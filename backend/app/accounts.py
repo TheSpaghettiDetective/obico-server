@@ -1,5 +1,38 @@
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from allauth.account.adapter import DefaultAccountAdapter
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied
+from app.models import User
+from django.contrib.auth.hashers import make_password
+import secrets
+
+
+class SiteSpecificBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        if username is None:
+            username = kwargs.get('email')
+        UserModel = get_user_model()
+        if request is not None:
+            site = get_current_site(request)
+            try:
+                user = UserModel.objects.get(email=username, site=site)
+                if user.check_password(password):
+                    return user
+            except UserModel.DoesNotExist:
+                return None
+        return None
+
+
+class SiteSpecificAccountAdapter(DefaultAccountAdapter):
+    def save_user(self, request, user, form, commit=True):
+        user.site = get_current_site(request)
+        return super().save_user(request, user, form, commit)
+
+    def populate_username(self, request, user):
+        user.username = f'{user.email}_{user.site.id}'
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -8,35 +41,30 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if sociallogin.is_existing:
             return
 
+        site_id = get_current_site(request).id
         # some social logins don't have an email address, e.g. facebook accounts
         # with mobile numbers only, but allauth takes care of this case so just
         # ignore it
         email = sociallogin.account.extra_data.get('email', '').strip().lower()
         if not email:
-            return
+            raise PermissionDenied('Email not exist in social login data.')
 
-        # verify we have a verified email address
-        # https://github.com/pennersr/django-allauth/issues/418
-        # google provider might not have working sociallogin.email_addresses (buggy allauth version?)
-        # so we are checking extra_data first
-        email_verified: bool = sociallogin.account.extra_data.get('email_verified', False)
-        if email_verified is not True:
-            for _email in sociallogin.email_addresses:
-                if _email.email.lower() == email and _email.verified:
-                    email_verified = True
-                    break
+        user = User.objects.filter(emailaddress__email__iexact=email, site_id=site_id).first()
+        if not user:
+            user = User.objects.get_or_create(
+                email=email,
+                site_id=site_id,
+                defaults={
+                    'password': make_password(secrets.token_hex(16)),
+                    'username': f'{email}_{site_id}',
+                    'is_active': True,
+                })[0]
+            EmailAddress.objects.get_or_create(
+                user=user,
+                email=email,
+                defaults={
+                    'primary': True,
+                }
+            )
 
-        if not email_verified:
-            return
-
-        # check if given email address already exists.
-        # Note: __iexact is used to ignore cases
-        try:
-            email_address = EmailAddress.objects.get(email__iexact=email)  # FIXME verified=True?
-        # if it does not, let allauth take care of this new social account
-        except EmailAddress.DoesNotExist:
-            return
-
-        # if it does, connect this new social login to the existing user
-        user = email_address.user
         sociallogin.connect(request, user)

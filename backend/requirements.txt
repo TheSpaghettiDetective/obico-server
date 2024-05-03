@@ -85,7 +85,7 @@ ipdb==0.13.13
 ipython==8.17.2 ; python_version >= '3.11'
 jedi==0.19.1 ; python_version >= '3.6'
 jsonfield==3.1.0
-jwcrypto==1.5.1 ; python_version >= '3.6'
+jwcrypto==1.5.6 ; python_version >= '3.6'
 kombu==5.3.2 ; python_version >= '3.8'
 matplotlib-inline==0.1.6 ; python_version >= '3.5'
 msgpack==1.0.7 ; python_version >= '3.8'

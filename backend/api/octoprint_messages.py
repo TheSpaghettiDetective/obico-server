@@ -65,14 +65,15 @@ def settings_dict(printer_settings):
     settings = dict()
     if webcams is not None:
          settings.update(dict(webcams=json.dumps(webcams)))
-    settings.update(dict(temp_profiles=json.dumps(octoprint_settings.get('temperature', {}).get('profiles', []))))
+    settings.update(dict(temp_profiles=json.dumps(printer_settings.get('temperature', {}).get('profiles', []))))
     settings.update(dict(printer_metadata=json.dumps(printer_settings.get('printer_metadata', {}))))
     settings.update(
         tsd_plugin_version=printer_settings.get('tsd_plugin_version', ''),
         octoprint_version=printer_settings.get('octoprint_version', ''),
     )
     settings.update(dict(platform_uname=json.dumps(printer_settings.get('platform_uname', []))))
-    settings.update(dict(installed_plugins=json.dumps(octoprint_settings.get('installed_plugins', []))))
+    settings.update(dict(installed_plugins=json.dumps(printer_settings.get('installed_plugins', []))))
+
 
     return settings
 

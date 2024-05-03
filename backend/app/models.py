@@ -192,8 +192,18 @@ class Printer(SafeDeleteModel):
     def settings(self):
         p_settings = cache.printer_settings_get(self.id)
 
-        for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'): # `webcam_rotate90` for backward compatibility with old plugins
-            p_settings[key] = p_settings.get(key, 'False') == 'True'
+        webcam_settings = self.DEFAULT_WEBCAM_SETTINGS
+
+        if p_settings.get('webcams') is not None:
+            p_settings['webcams'] = json.loads(p_settings.get('webcams'))
+
+            ## Backward compatibility with mobile app 2.2 or earlier
+
+            if len(p_settings['webcams']) > 0:
+                webcam_settings = p_settings['webcams'][0]
+
+        for key in ('flipV', 'flipH', 'rotate90', 'rotation', 'streamRatio'):
+            p_settings['webcam_' + key] = webcam_settings.get(key)
 
         if 'webcam_rotation' in p_settings:
             rotation_int = int(p_settings['webcam_rotation'])
@@ -203,6 +213,8 @@ class Printer(SafeDeleteModel):
             p_settings['webcam_rotation'] = int(270 if p_settings['webcam_rotate90'] else 0)
 
         p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '16:9') == '16:9'
+
+        ## End of backward compatibility with mobile app 2.2 or earlier
 
         if p_settings.get('temp_profiles'):
             p_settings['temp_profiles'] = json.loads(p_settings.get('temp_profiles'))

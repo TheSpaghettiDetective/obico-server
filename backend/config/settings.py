@@ -287,7 +287,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 
     # `allauth` specific authentication methods, such as login by e-mail
+    # 'app.customBackendAuth.CustomAuthenticationBackend' // Still checking wether i can actually override the entire authentication backend and keep using allauth
     'allauth.account.auth_backends.AuthenticationBackend',
+
     'oauth2_provider.backends.OAuth2Backend',
 )
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None

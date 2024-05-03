@@ -22,6 +22,7 @@ from django.utils.html import mark_safe
 from django.contrib.auth.hashers import make_password
 from django.db.models import F, Q
 from django.db.models.constraints import UniqueConstraint
+from django.contrib.sites.models import Site
 
 
 
@@ -79,7 +80,8 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'))
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, default=1)
     consented_at = models.DateTimeField(null=True, blank=True)
     last_active_at = models.DateTimeField(null=True, blank=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)
@@ -90,6 +92,9 @@ class User(AbstractUser):
     tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
     notification_enabled = models.BooleanField(null=False, blank=False, default=True)
     unseen_printer_events = models.IntegerField(null=False, blank=False, default=0)
+
+    class Meta:
+        unique_together = [['email', 'site']]
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

@@ -282,7 +282,7 @@ RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 # Allauth
 
 AUTHENTICATION_BACKENDS = (
-    'app.customBackendAuth.CustomAuthenticationBackend',
+    'app.accounts.SiteSpecificBackend',
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
 

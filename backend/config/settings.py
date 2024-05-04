@@ -85,6 +85,7 @@ if get_bool('SOCIAL_LOGIN', False):
     ]
 
 MIDDLEWARE = [
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
@@ -303,7 +304,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if SITE_USES_HTTPS else 'http'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_ALLOW_SIGN_UP = get_bool('ACCOUNT_ALLOW_SIGN_UP', False)
-ACCOUNT_ADAPTER = 'app.accounts.SiteSpecificAccountAdapter'
+# ACCOUNT_ADAPTER = 'app.accounts.SiteSpecificAccountAdapter'
 AUTH_USER_MODEL = 'app.User'
 SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
 SOCIALACCOUNT_PROVIDERS = {

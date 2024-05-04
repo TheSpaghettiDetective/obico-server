@@ -269,9 +269,7 @@ export default {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
           if (this.webcams.length === 0 && this.printer?.settings?.webcams.length > 0) {
-            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             const webcams = this.printer?.settings?.webcams
-            this.printerComm.setWebRTC(this.webrtc)
             for (const webcam of webcams) {
               const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
               webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
@@ -393,46 +391,49 @@ export default {
     },
 
     resizeStream() {
-      const streamInner = this.$refs.streamInner
-      if (!streamInner) return
-      const streamContainer = streamInner.parentElement
+      const streamInners = this.$refs.streamInner
+      if (!streamInners) return
 
-      const style = window.getComputedStyle(streamContainer)
-      const position = style.getPropertyValue('position')
-      if (position !== 'fixed') {
-        streamInner.style.width = '100%'
-        streamInner.style.height = 'auto'
-        return
+      for (const streamInner of streamInners) {
+        const streamContainer = streamInner.parentElement
+
+        const style = window.getComputedStyle(streamContainer)
+        const position = style.getPropertyValue('position')
+        if (position !== 'fixed') {
+          streamInner.style.width = '100%'
+          streamInner.style.height = 'auto'
+          return
+        }
+
+        const streamContainerRect = streamContainer.getBoundingClientRect()
+        const streamContainerWidth = streamContainerRect.width
+        const streamContainerHeight = streamContainerRect.height
+
+        const isVertical = this.videoRotationDeg % 180 !== 0
+        const isRatio169 = this.printer.settings.ratio169
+        const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
+
+        // 1. calc width as 100% of parent
+        let innerWidth = streamContainerWidth
+
+        // 2. calc height based on width, ratio and rotation
+        let innerHeight = innerWidth * multiplier
+
+        // 3. if height is bigger than parent height, calc height as 100% of parent
+        if (innerHeight > streamContainerHeight) {
+          innerHeight = streamContainerHeight
+          innerWidth = innerHeight / multiplier
+        }
+
+        // hack to make StreamBox fit container
+        if (isVertical) {
+          innerWidth = Math.max(innerWidth, innerHeight)
+          innerHeight = Math.max(innerWidth, innerHeight)
+        }
+
+        streamInner.style.width = innerWidth + 'px'
+        streamInner.style.height = innerHeight + 'px'
       }
-
-      const streamContainerRect = streamContainer.getBoundingClientRect()
-      const streamContainerWidth = streamContainerRect.width
-      const streamContainerHeight = streamContainerRect.height
-
-      const isVertical = this.videoRotationDeg % 180 !== 0
-      const isRatio169 = this.printer.settings.ratio169
-      const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
-
-      // 1. calc width as 100% of parent
-      let innerWidth = streamContainerWidth
-
-      // 2. calc height based on width, ratio and rotation
-      let innerHeight = innerWidth * multiplier
-
-      // 3. if height is bigger than parent height, calc height as 100% of parent
-      if (innerHeight > streamContainerHeight) {
-        innerHeight = streamContainerHeight
-        innerWidth = innerHeight / multiplier
-      }
-
-      // hack to make StreamBox fit container
-      if (isVertical) {
-        innerWidth = Math.max(innerWidth, innerHeight)
-        innerHeight = Math.max(innerWidth, innerHeight)
-      }
-
-      streamInner.style.width = innerWidth + 'px'
-      streamInner.style.height = innerHeight + 'px'
     },
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({

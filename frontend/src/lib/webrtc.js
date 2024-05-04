@@ -54,7 +54,6 @@ export default function WebRTCConnection(streamMode, streamIdToTest) {
     connect(wsUri, token) {
       self.initialized = true
       if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token)
-      self.mjpegWebRTCConn.connect(wsUri, token)
       if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.connect(wsUri, token)
     },
     disconnect() {

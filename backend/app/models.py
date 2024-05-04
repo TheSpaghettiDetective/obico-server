@@ -82,6 +82,7 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'))
     site = models.ForeignKey(Site, on_delete=models.CASCADE, default=1)
+    username = models.CharField(max_length=150, blank=True, null=True)
     consented_at = models.DateTimeField(null=True, blank=True)
     last_active_at = models.DateTimeField(null=True, blank=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)

@@ -78,6 +78,14 @@ class OctoPrintPicView(APIView):
     def post(self, request):
         printer = request.auth
 
+        is_primary_camera = request.POST.get('is_primary_camera', 'true').lower() == 'true' # if not specified, it's from a legacy agent and hence is primary camera
+        is_nozzle_camera = request.POST.get('is_nozzle_camera', 'false').lower() == 'true'
+        camera_name = request.POST.get('camera_name', '') # If camera_name is not provided, it's from a legacy agent.
+
+        # TODO: Think about the use cases when non-primary camera sends a pic. For now, we are ignoring it.
+        if not is_primary_camera:
+            return Response({'result': 'ok'})
+
         if settings.PIC_POST_LIMIT_PER_MINUTE and cache.pic_post_over_limit(printer.id, settings.PIC_POST_LIMIT_PER_MINUTE):
             return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
 

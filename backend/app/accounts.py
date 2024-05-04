@@ -44,20 +44,6 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if not email:
             return
 
-        # verify we have a verified email address
-        # https://github.com/pennersr/django-allauth/issues/418
-        # google provider might not have working sociallogin.email_addresses (buggy allauth version?)
-        # so we are checking extra_data first
-        email_verified: bool = sociallogin.account.extra_data.get('email_verified', False)
-        if email_verified is not True:
-            for _email in sociallogin.email_addresses:
-                if _email.email.lower() == email and _email.verified:
-                    email_verified = True
-                    break
-
-        if not email_verified:
-            return
-
         # check if given email address already exists.
         # Note: __iexact is used to ignore cases
         try:

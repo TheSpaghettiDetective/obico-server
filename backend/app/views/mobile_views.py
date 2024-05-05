@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied
 from requests import RequestException
 from allauth.socialaccount.providers.base import ProviderException
 
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from site_specific_allauth_google_provider.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.apple.views import AppleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.views import (
@@ -69,7 +69,6 @@ def oauth_callback(request, *args, **kwargs):
         try:
             if is_google:
                 callback_url = adapter.get_callback_url(request, app)
-                scope = provider.get_scope(request)
                 client = OAuth2Client(
                     request,
                     app.client_id,
@@ -77,7 +76,6 @@ def oauth_callback(request, *args, **kwargs):
                     adapter.access_token_method,
                     adapter.access_token_url,
                     callback_url,
-                    scope,
                     scope_delimiter=adapter.scope_delimiter,
                     headers=adapter.headers,
                     basic_auth=adapter.basic_auth)

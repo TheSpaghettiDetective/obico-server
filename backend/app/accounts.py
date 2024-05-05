@@ -32,6 +32,9 @@ class SiteSpecificAccountAdapter(DefaultAccountAdapter):
         user.username = f'{user.email}_{user.site.id}'
         return super().save_user(request, user, form, commit)
 
+    def populate_username(self, request, user):
+        user.username = f'{user.email}_{user.site.id}'
+
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):

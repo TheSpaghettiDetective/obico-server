@@ -35,7 +35,6 @@ class SiteSpecificAccountAdapter(DefaultAccountAdapter):
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):
-        import pdb; pdb.set_trace()
         # Ignore existing social accounts, just do this stuff for new ones
         if sociallogin.is_existing:
             return

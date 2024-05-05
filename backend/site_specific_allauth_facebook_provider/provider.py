@@ -189,7 +189,7 @@ class FacebookProvider(OAuth2Provider):
         return nonce
 
     def extract_uid(self, data):
-        return data["id"]
+        return f'{data["id"]}_{site_id}'
 
     def extract_common_fields(self, data):
         return dict(

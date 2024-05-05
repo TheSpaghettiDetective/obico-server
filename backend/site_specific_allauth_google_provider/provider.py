@@ -75,9 +75,10 @@ class GoogleProvider(OAuth2Provider):
         return ret
 
     def extract_uid(self, data):
+        site_id = self.request.site.id
         if "sub" in data:
-            return data["sub"]
-        return data["id"]
+             return f'{data["sub"]}_{site_id}'
+        return f'{data["id"]}_{site_id}'
 
     def extract_common_fields(self, data):
         return dict(

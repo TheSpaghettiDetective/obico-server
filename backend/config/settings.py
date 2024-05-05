@@ -79,9 +79,9 @@ INSTALLED_APPS = [
 
 if get_bool('SOCIAL_LOGIN', False):
     INSTALLED_APPS += [
-        'allauth.socialaccount.providers.facebook',
-        'allauth.socialaccount.providers.google',
         'allauth.socialaccount.providers.apple',
+        'site_specific_allauth_google_provider',
+        'site_specific_allauth_facebook_provider',
     ]
 
 MIDDLEWARE = [
@@ -97,6 +97,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'app.middleware.octoprint_tunnelv2',
     'app.middleware.check_admin_ip_whitelist',
     'allauth.account.middleware.AccountMiddleware',

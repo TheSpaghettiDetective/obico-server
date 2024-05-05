@@ -1,5 +1,5 @@
 from typing import Dict
-from allauth.account.admin import EmailAddress
+from allauth.account.models import EmailAddress
 from datetime import datetime, timedelta
 import logging
 import os

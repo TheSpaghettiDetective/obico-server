@@ -4,6 +4,11 @@ from allauth.account.adapter import DefaultAccountAdapter
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied
+from app.models import User
+from django.contrib.auth.hashers import make_password
+import secrets
+
 
 class SiteSpecificBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
@@ -22,9 +27,6 @@ class SiteSpecificBackend(ModelBackend):
 
 
 class SiteSpecificAccountAdapter(DefaultAccountAdapter):
-    def is_unique_email(self, email):
-        return not self.user_model.objects.filter(email=email, site=self.request.site).exists()
-
     def save_user(self, request, user, form, commit=True):
         user.site = get_current_site(request)
         user.username = f'{user.email}_{user.site.id}'
@@ -33,25 +35,35 @@ class SiteSpecificAccountAdapter(DefaultAccountAdapter):
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):
+        import pdb; pdb.set_trace()
         # Ignore existing social accounts, just do this stuff for new ones
         if sociallogin.is_existing:
             return
 
+        site_id = get_current_site(request).id
         # some social logins don't have an email address, e.g. facebook accounts
         # with mobile numbers only, but allauth takes care of this case so just
         # ignore it
         email = sociallogin.account.extra_data.get('email', '').strip().lower()
         if not email:
-            return
+            raise PermissionDenied('Email not exist in social login data.')
 
-        # check if given email address already exists.
-        # Note: __iexact is used to ignore cases
-        try:
-            email_address = EmailAddress.objects.get(email__iexact=email)  # FIXME verified=True?
-        # if it does not, let allauth take care of this new social account
-        except EmailAddress.DoesNotExist:
-            return
+        user = User.objects.filter(emailaddress__email__iexact=email, site_id=site_id).first()
+        if not user:
+            user = User.objects.get_or_create(
+                email=email,
+                site_id=site_id,
+                defaults={
+                    'password': make_password(secrets.token_hex(16)),
+                    'username': f'{email}_{site_id}',
+                    'is_active': True,
+                })[0]
+            EmailAddress.objects.get_or_create(
+                user=user,
+                email=email,
+                defaults={
+                    'primary': True,
+                }
+            )
 
-        # if it does, connect this new social login to the existing user
-        user = email_address.user
         sociallogin.connect(request, user)

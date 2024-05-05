@@ -29,7 +29,6 @@ class SiteSpecificBackend(ModelBackend):
 class SiteSpecificAccountAdapter(DefaultAccountAdapter):
     def save_user(self, request, user, form, commit=True):
         user.site = get_current_site(request)
-        user.username = f'{user.email}_{user.site.id}'
         return super().save_user(request, user, form, commit)
 
     def populate_username(self, request, user):

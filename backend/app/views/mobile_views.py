@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied
 from requests import RequestException
 from allauth.socialaccount.providers.base import ProviderException
 
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from site_specific_allauth_google_provider.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.apple.views import AppleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.views import (

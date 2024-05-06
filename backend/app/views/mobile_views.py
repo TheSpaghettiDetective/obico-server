@@ -69,7 +69,6 @@ def oauth_callback(request, *args, **kwargs):
         try:
             if is_google:
                 callback_url = adapter.get_callback_url(request, app)
-                scope = provider.get_scope(request)
                 client = OAuth2Client(
                     request,
                     app.client_id,

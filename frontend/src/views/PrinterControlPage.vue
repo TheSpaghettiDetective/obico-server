@@ -111,19 +111,26 @@
             </div>
           </div>
         </div>
-        <div v-for="webcam of webcams" :key="webcam.name" class="stream-container">
-          <div ref="streamInner" class="stream-inner">
-            <streaming-box
-              :printer="printer"
-              :webrtc="webcam.webrtc"
-              :autoplay="user.is_pro"
-              @onRotateRightClicked="
-                (val) => {
-                  customRotationDeg = val
-                }
-              "
-            />
+        <div class="stream-container">
+          <div v-if="webcams.length > 1" class="webcam-selector">
+            <select id="webcam-select" v-model="selectedWebcamIndex" class="custom-select">
+              <option v-for="(webcam, index) in webcams" :key="index" :value="index">
+                {{ webcam.name || '_default_' }}
+              </option>
+            </select>
           </div>
+        <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" v-show="index === selectedWebcamIndex">
+          <streaming-box
+            :printer="printer"
+            :webrtc="webcam.webrtc"
+            :autoplay="user.is_pro"
+            @onRotateRightClicked="
+              (val) => {
+                customRotationDeg = val
+              }
+            "
+          />
+        </div>
         </div>
       </div>
     </template>
@@ -212,6 +219,7 @@ export default {
       printerId: null,
       printer: null,
       webcams: [],
+      selectedWebcamIndex: 0,
       currentBitrate: null,
       lastPrint: null,
       lastPrintFetchCounter: 0,
@@ -231,6 +239,9 @@ export default {
     videoRotationDeg() {
       const rotation = +(this.printer?.settings?.webcam_rotation ?? 0) + this.customRotationDeg
       return rotation % 360
+    },
+    selectedWebcam() {
+      return this.webcams[this.selectedWebcamIndex];
     },
   },
 
@@ -277,6 +288,9 @@ export default {
               // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
             }
             this.webcams = webcams
+            if (this.webcams.length > 0) {
+              this.selectedWebcamName = this.webcams[0].name;
+            }
           }
         },
       }

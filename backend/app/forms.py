@@ -31,6 +31,9 @@ class SocialAccountAwareLoginForm(LoginForm):
                         if has_social_accounts:
                             self.no_password_yet = True
             raise err
+    error_messages = {
+    'email_password_mismatch': "Invalid username or password.",
+    }
 
 
 class RecaptchaSignupForm(SignupForm):

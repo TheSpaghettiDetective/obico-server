@@ -286,45 +286,49 @@ export default {
       return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
     },
   },
+  watch: {
+    webrtc: {
+      handler: 'initWebRTC',
+    },
+  },
   created() {
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
       this.mjpgSrc = `data:image/jpg;base64,${jpg}`
       this.onCanPlay()
     })
-
-    if (this.webrtc) {
-      this.webrtc.setCallbacks({
-        onStreamAvailable: this.onStreamAvailable,
-        onRemoteStream: this.onWebRTCRemoteStream,
-        onDefaultStreamCleanup: () => (this.isVideoVisible = false),
-        onSlowLink: this.onSlowLink,
-        onTrackMuted: () => (this.trackMuted = true),
-        onTrackUnmuted: () => (this.trackMuted = false),
-        onBitrateUpdated: (bitrate) => {
-          this.currentBitrate = bitrate.value
-        },
-        onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
-      })
-
-      if (!this.autoplay) {
-        this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
-      }
-
-      ifvisible.on('blur', () => {
-        if (this.webrtc) {
-          this.webrtc.stopStream()
-        }
-      })
-
-      ifvisible.on('focus', () => {
-        if (this.webrtc && this.autoplay) {
-          this.webrtc.startStream()
-        }
-      })
+    if (!this.autoplay) {
+      this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
     }
+    this.initWebRTC()
+    ifvisible.on('blur', () => {
+      if (this.webrtc) {
+        this.webrtc.stopStream()
+      }
+    })
+    ifvisible.on('focus', () => {
+      if (this.webrtc && this.autoplay) {
+        this.webrtc.startStream()
+      }
+    })
   },
 
   methods: {
+    initWebRTC() {
+      if (this.webrtc) {
+        this.webrtc.setCallbacks({
+          onStreamAvailable: this.onStreamAvailable,
+          onRemoteStream: this.onWebRTCRemoteStream,
+          onDefaultStreamCleanup: () => (this.isVideoVisible = false),
+          onSlowLink: this.onSlowLink,
+          onTrackMuted: () => (this.trackMuted = true),
+          onTrackUnmuted: () => (this.trackMuted = false),
+          onBitrateUpdated: (bitrate) => {
+            this.currentBitrate = bitrate.value
+          },
+          onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
+        })
+      }
+    },
     onRotateRightClicked() {
       this.customRotationDeg = this.customRotationDeg + 90
       setLocalPref('webcamRotationDeg', this.customRotationDeg % 360)
@@ -453,7 +457,6 @@ export default {
         showCloseButton: true,
       })
     },
-    /** End of video warning handling */
   },
 }
 </script>
@@ -664,12 +667,15 @@ export default {
 
 .extra-controls
   position: absolute
+  display: flex
+  flex-direction: row
   right: 0
   bottom: 0
   padding: .5rem
   .video-control-btn
     width: 2rem
     height: 2rem
+    margin: 0.1rem
     border-radius: 999px
     background-color: var(--color-overlay)
     color: var(--color-text-secondary)

@@ -112,18 +112,25 @@
           </div>
         </div>
         <div class="stream-container">
-          <div ref="streamInner" class="stream-inner">
-            <streaming-box
-              :printer="printer"
-              :webrtc="webrtc"
-              :autoplay="user.is_pro"
-              @onRotateRightClicked="
-                (val) => {
-                  customRotationDeg = val
-                }
-              "
-            />
+          <div v-if="webcams.length > 1" class="webcam-selector">
+            <select id="webcam-select" v-model="selectedWebcamIndex" class="custom-select">
+              <option v-for="(webcam, index) in webcams" :key="index" :value="index">
+                {{ webcam.name || '_default_' }}
+              </option>
+            </select>
           </div>
+        <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" v-show="index === selectedWebcamIndex">
+          <streaming-box
+            :printer="printer"
+            :webrtc="webcam.webrtc"
+            :autoplay="user.is_pro"
+            @onRotateRightClicked="
+              (val) => {
+                customRotationDeg = val
+              }
+            "
+          />
+        </div>
         </div>
       </div>
     </template>
@@ -211,7 +218,8 @@ export default {
       user: null,
       printerId: null,
       printer: null,
-      webrtc: null,
+      webcams: [],
+      selectedWebcamIndex: 0,
       currentBitrate: null,
       lastPrint: null,
       lastPrintFetchCounter: 0,
@@ -231,6 +239,9 @@ export default {
     videoRotationDeg() {
       const rotation = +(this.printer?.settings?.webcam_rotation ?? 0) + this.customRotationDeg
       return rotation % 360
+    },
+    selectedWebcam() {
+      return this.webcams[this.selectedWebcamIndex];
     },
   },
 
@@ -262,17 +273,24 @@ export default {
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.fetchLastPrint()
 
-    this.webrtc = WebRTCConnection()
-
     this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printerId,
       urls.printerWebSocket(this.printerId),
       {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
-          if (this.webrtc && !this.webrtc.initialized) {
-            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-            this.printerComm.setWebRTC(this.webrtc)
+          if (this.webcams.length === 0 && this.printer?.settings?.webcams.length > 0) {
+            const webcams = this.printer?.settings?.webcams
+            for (const webcam of webcams) {
+              webcam.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              this.webcams.push(webcam)
+              // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
+              webcam.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+              // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
+            }
+            if (this.webcams.length > 0) {
+              this.selectedWebcamIndex = this.webcams.findIndex(webcam => webcam.is_primary_camera === true);
+            }
           }
         },
       }
@@ -387,46 +405,49 @@ export default {
     },
 
     resizeStream() {
-      const streamInner = this.$refs.streamInner
-      if (!streamInner) return
-      const streamContainer = streamInner.parentElement
+      const streamInners = this.$refs.streamInner
+      if (!streamInners) return
 
-      const style = window.getComputedStyle(streamContainer)
-      const position = style.getPropertyValue('position')
-      if (position !== 'fixed') {
-        streamInner.style.width = '100%'
-        streamInner.style.height = 'auto'
-        return
+      for (const streamInner of streamInners) {
+        const streamContainer = streamInner.parentElement
+
+        const style = window.getComputedStyle(streamContainer)
+        const position = style.getPropertyValue('position')
+        if (position !== 'fixed') {
+          streamInner.style.width = '100%'
+          streamInner.style.height = 'auto'
+          return
+        }
+
+        const streamContainerRect = streamContainer.getBoundingClientRect()
+        const streamContainerWidth = streamContainerRect.width
+        const streamContainerHeight = streamContainerRect.height
+
+        const isVertical = this.videoRotationDeg % 180 !== 0
+        const isRatio169 = this.printer.settings.ratio169
+        const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
+
+        // 1. calc width as 100% of parent
+        let innerWidth = streamContainerWidth
+
+        // 2. calc height based on width, ratio and rotation
+        let innerHeight = innerWidth * multiplier
+
+        // 3. if height is bigger than parent height, calc height as 100% of parent
+        if (innerHeight > streamContainerHeight) {
+          innerHeight = streamContainerHeight
+          innerWidth = innerHeight / multiplier
+        }
+
+        // hack to make StreamBox fit container
+        if (isVertical) {
+          innerWidth = Math.max(innerWidth, innerHeight)
+          innerHeight = Math.max(innerWidth, innerHeight)
+        }
+
+        streamInner.style.width = innerWidth + 'px'
+        streamInner.style.height = innerHeight + 'px'
       }
-
-      const streamContainerRect = streamContainer.getBoundingClientRect()
-      const streamContainerWidth = streamContainerRect.width
-      const streamContainerHeight = streamContainerRect.height
-
-      const isVertical = this.videoRotationDeg % 180 !== 0
-      const isRatio169 = this.printer.settings.ratio169
-      const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
-
-      // 1. calc width as 100% of parent
-      let innerWidth = streamContainerWidth
-
-      // 2. calc height based on width, ratio and rotation
-      let innerHeight = innerWidth * multiplier
-
-      // 3. if height is bigger than parent height, calc height as 100% of parent
-      if (innerHeight > streamContainerHeight) {
-        innerHeight = streamContainerHeight
-        innerWidth = innerHeight / multiplier
-      }
-
-      // hack to make StreamBox fit container
-      if (isVertical) {
-        innerWidth = Math.max(innerWidth, innerHeight)
-        innerHeight = Math.max(innerWidth, innerHeight)
-      }
-
-      streamInner.style.width = innerWidth + 'px'
-      streamInner.style.height = innerHeight + 'px'
     },
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({

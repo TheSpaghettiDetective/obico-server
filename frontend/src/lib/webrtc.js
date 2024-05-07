@@ -26,12 +26,23 @@ function iceServers(authToken) {
   ]
 }
 
-export default function WebRTCConnection() {
+export default function WebRTCConnection(streamMode, streamIdToTest) {
+  let h264Webrtc, mjpegWebrtc
+  if (streamMode === undefined && streamIdToTest === undefined) {
+    // The agent is an old version that doesn't support dynamic streaming
+    h264Webrtc = H264WebRTCConnection([0, 1])
+    mjpegWebrtc = MJpegWebRTCConnection(2)
+  } else if (streamMode.includes('h264')) {
+    h264Webrtc = H264WebRTCConnection([streamIdToTest])
+  } else if (streamMode.includes('mjpeg')) {
+    mjpegWebrtc = MJpegWebRTCConnection(streamIdToTest)
+  }
+
   let self = {
     callbacks: {},
     initialized: false,
-    mainWebRTCConn: MainWebRTCConnection(),
-    mjpegWebRTCConn: MJpegtWebRTCConnection(),
+    h264WebRTCConn: h264Webrtc,
+    mjpegWebRTCConn: mjpegWebrtc,
 
     openForShareToken(shareToken) {
       self.connect(printerSharedWebRTCUrl(shareToken), shareToken)
@@ -42,30 +53,34 @@ export default function WebRTCConnection() {
     },
     connect(wsUri, token) {
       self.initialized = true
-      self.mainWebRTCConn.connect(wsUri, token)
-      self.mjpegWebRTCConn.connect(wsUri, token)
+      if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token)
+      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.connect(wsUri, token)
+    },
+    disconnect() {
+      if (self.h264WebRTCConn) self.h264WebRTCConn.janus.destroy()
+      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.janus.destroy()
     },
     stopStream() {
-      self.mainWebRTCConn.stopStream()
-      self.mjpegWebRTCConn.stopStream()
+      if (self.h264WebRTCConn) self.h264WebRTCConn.stopStream()
+      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.stopStream()
     },
     sendData(data) {
-      self.mainWebRTCConn.sendData(data) // Data channel in the default stream is used to pass data from client to agent
+      if (self.h264WebRTCConn) self.h264WebRTCConn.sendData(data) // Data channel in the default stream is used to pass data from client to agent
     },
     startStream() {
-      self.mainWebRTCConn.startStream()
-      self.mjpegWebRTCConn.startStream()
+      if (self.h264WebRTCConn) self.h264WebRTCConn.startStream()
+      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.startStream()
     },
     setCallbacks(callbacks) {
-      self.callbacks = { ...self.callbacks, ...callbacks }
-      self.mainWebRTCConn.callbacks = self.callbacks
-      self.mjpegWebRTCConn.callbacks = self.callbacks
+        self.callbacks = { ...self.callbacks, ...callbacks }
+        if (self.h264WebRTCConn) self.h264WebRTCConn.callbacks = self.callbacks
+        if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.callbacks = self.callbacks
     },
   }
   return self
 }
 
-function MJpegtWebRTCConnection() {
+function MJpegWebRTCConnection(streamIdToTest) {
   let self = {
     callbacks: {},
     streamId: undefined,
@@ -85,13 +100,13 @@ function MJpegtWebRTCConnection() {
     },
 
     connectJanusWebSocket(wsUri, token) {
-      var janus = new Janus({
+      self.janus = new Janus({
         server:
           window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
         iceServers: iceServers(token),
         ipv6: true,
         success: () => {
-          janus.attach({
+          self.janus.attach({
             plugin: 'janus.plugin.streaming',
             opaqueId: 'streamingtest-' + Janus.randomString(12),
             success: function (pluginHandle) {
@@ -102,7 +117,7 @@ function MJpegtWebRTCConnection() {
                   pluginHandle.getId() +
                   ')'
               )
-              const body = { request: 'info', id: 2 } // id=2 is for mjpeg stream. This stream may not exist in the agent.
+              const body = { request: 'info', id: streamIdToTest } // id=2 is for mjpeg stream. This stream may not exist in the agent.
               Janus.debug('Sending message (' + JSON.stringify(body) + ')')
               pluginHandle.send({
                 message: body,
@@ -120,7 +135,7 @@ function MJpegtWebRTCConnection() {
                       self.callbacks.onStreamAvailable(self)
                     }
                   } else {
-                    janus.destroy()
+                    self.janus.destroy()
                   }
                 },
               })
@@ -144,7 +159,7 @@ function MJpegtWebRTCConnection() {
         },
         error(e) {
           Janus.error('  -- Error -- ', e)
-          janus.destroy()
+          self.janus.destroy()
         },
         destroyed() {
           self.streaming = undefined
@@ -209,7 +224,7 @@ function MJpegtWebRTCConnection() {
   return self
 }
 
-function MainWebRTCConnection() {
+function H264WebRTCConnection(streamIdsToTest) {
   let self = {
     callbacks: {},
     streamId: undefined,
@@ -229,13 +244,13 @@ function MainWebRTCConnection() {
     },
 
     connectJanusWebSocket(wsUri, token) {
-      var janus = new Janus({
+      self.janus = new Janus({
         server:
           window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
         iceServers: iceServers(token),
         ipv6: true,
         success: () => {
-          janus.attach({
+          self.janus.attach({
             plugin: 'janus.plugin.streaming',
             opaqueId: 'streamingtest-' + Janus.randomString(12),
             success: function (pluginHandle) {
@@ -243,7 +258,7 @@ function MainWebRTCConnection() {
 
               // Old plugin versions use stream_id=0, which is no longer valid in Janus 1.x so plugin 2.2.x switched to stream_id=1
               // Both ides are tried. The invalid one will return a failure and ignored.
-              ;[0, 1].forEach((streamIdToTest) => {
+              streamIdsToTest.forEach((streamIdToTest) => {
                 const body = { request: 'info', id: streamIdToTest }
                 Janus.debug('Sending message (' + JSON.stringify(body) + ')')
                 pluginHandle.send({
@@ -268,7 +283,7 @@ function MainWebRTCConnection() {
             },
             error: function (error) {
               Janus.error('  -- Error attaching plugin... ', error)
-              janus.destroy()
+              self.janus.destroy()
             },
             onmessage: function (msg, jsep) {
               self.onMessage(msg, jsep)
@@ -310,7 +325,7 @@ function MainWebRTCConnection() {
         },
         error(e) {
           Janus.error('  -- Error -- ', e)
-          janus.destroy()
+          self.janus.destroy()
         },
         destroyed() {
           self.streaming = undefined

@@ -34,7 +34,7 @@ class SocialAccountAwareLoginForm(LoginForm):
                             self.no_password_yet = True
             raise err
     error_messages = {
-        'email_password_mismatch': _("Invalid username or password."),
+        'email_password_mismatch': _("Invalid email or password."),
     }
 
 

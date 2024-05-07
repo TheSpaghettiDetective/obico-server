@@ -54,7 +54,7 @@ def process_printer_status(printer: Printer, msg: Dict) -> None:
 
 
 def settings_dict(printer_settings):
-    # Backward compatibility: octoprint_data is for old agent versions, ie, OctoPrint-Obico 2.5.0 or earlier, or moonraker-obico 1.7.0 or earlier
+    # Backward compatibility: printer_settings.get('webcam') is for old agent versions, ie, OctoPrint-Obico 2.5.0 or earlier, or moonraker-obico 1.7.0 or earlier
     if printer_settings.get('webcam'):
         webcam_settings = Printer.DEFAULT_WEBCAM_SETTINGS
         webcam_settings.update(printer_settings.get('webcam'))

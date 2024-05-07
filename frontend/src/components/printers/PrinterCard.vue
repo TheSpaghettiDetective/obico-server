@@ -38,7 +38,7 @@
           </b-dropdown>
         </div>
       </div>
-      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
+      <streaming-box v-if="webrtc" :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -280,7 +280,7 @@ export default {
         time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
-      webrtc: WebRTCConnection(),
+      webrtc: null,
     }
   },
   computed: {
@@ -363,6 +363,13 @@ export default {
       {
         onPrinterUpdateReceived: (data) => {
           this.$emit('PrinterUpdated', this.updatedPrinter(data))
+
+          if (!this.webrtc && (data?.settings?.webcams || []).length > 0) {
+            const webcam = data.settings?.webcams?.find(webcam => webcam.is_primary_camera === true);
+            this.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+            // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
+          }
         },
         onStatusReceived: (printerStatus) => {
           // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
@@ -372,9 +379,6 @@ export default {
       }
     )
     this.printerComm.connect()
-
-    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-    this.printerComm.setWebRTC(this.webrtc)
   },
 
   methods: {

@@ -289,7 +289,6 @@ export default {
   watch: {
     webrtc: {
       handler: 'initWebRTC',
-      immediate: true,
     },
   },
   created() {
@@ -300,6 +299,7 @@ export default {
     if (!this.autoplay) {
       this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
     }
+    this.initWebRTC()
     ifvisible.on('blur', () => {
       if (this.webrtc) {
         this.webrtc.stopStream()

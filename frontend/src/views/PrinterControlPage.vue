@@ -282,12 +282,12 @@ export default {
           if (this.webcams.length === 0 && this.printer?.settings?.webcams.length > 0) {
             const webcams = this.printer?.settings?.webcams
             for (const webcam of webcams) {
-              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
-              webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-              webcam.webrtc = webrtc
+              webcam.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              this.webcams.push(webcam)
+              // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
+              webcam.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
               // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
             }
-            this.webcams = webcams
             if (this.webcams.length > 0) {
               this.selectedWebcamIndex = this.webcams.findIndex(webcam => webcam.is_primary_camera === true);
             }

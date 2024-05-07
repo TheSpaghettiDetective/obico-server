@@ -38,7 +38,7 @@
           </b-dropdown>
         </div>
       </div>
-      <streaming-box v-if="webrtc" :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
+      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"

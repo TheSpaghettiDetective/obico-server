@@ -286,7 +286,12 @@ export default {
       return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
     },
   },
-
+  watch: {
+    webrtc: {
+      handler: 'initWebRTC',
+      immediate: true,
+    },
+  },
   created() {
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
       this.mjpgSrc = `data:image/jpg;base64,${jpg}`
@@ -295,7 +300,6 @@ export default {
     if (!this.autoplay) {
       this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
     }
-    this.initWebRTC()
     ifvisible.on('blur', () => {
       if (this.webrtc) {
         this.webrtc.stopStream()

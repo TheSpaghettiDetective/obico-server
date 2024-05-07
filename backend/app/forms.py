@@ -11,6 +11,8 @@ from pushbullet import Pushbullet, PushbulletError
 
 from .widgets import CustomRadioSelectWidget
 from .models import *
+from django.utils.translation import gettext_lazy as _
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +34,7 @@ class SocialAccountAwareLoginForm(LoginForm):
                             self.no_password_yet = True
             raise err
     error_messages = {
-    'email_password_mismatch': "Invalid username or password.",
+        'email_password_mismatch': _("Invalid username or password."),
     }
 
 

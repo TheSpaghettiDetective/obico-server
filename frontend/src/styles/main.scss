@@ -1055,3 +1055,15 @@ div[id^="b-modal-"] {
 .border-radius-lg {
   border-radius: var(--border-radius-lg);
 }
+.kingroon-page {
+  background: #212224;
+}
+#kingroon-footer {
+  padding: 23px 0;
+  text-align: center;
+  background-color: #131920 !important;
+  color: var(--color-text-primary);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}

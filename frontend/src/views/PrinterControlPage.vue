@@ -289,7 +289,7 @@ export default {
             }
             this.webcams = webcams
             if (this.webcams.length > 0) {
-              this.selectedWebcamName = this.webcams[0].name;
+              this.selectedWebcamIndex = this.webcams.findIndex(webcam => webcam.is_primary_camera === true);
             }
           }
         },

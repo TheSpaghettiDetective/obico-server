@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
 import json
-
+from django.utils.translation import gettext_lazy as _
 from allauth.account.views import LoginView, SignupView
 
 from lib.url_signing import HmacSignedUrl
@@ -57,7 +57,7 @@ class SocialAccountAwareSignupView(SignupView):
             email = form.cleaned_data['email']
             site = get_current_site(self.request)
             if User.objects.filter(email=email, site=site).exists():
-                form.add_error('email', ' A user is already registered with this email address.')
+                form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
             return super().form_valid(form)
 

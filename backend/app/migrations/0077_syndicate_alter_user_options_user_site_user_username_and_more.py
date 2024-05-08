@@ -50,5 +50,13 @@ class Migration(migrations.Migration):
             name='user',
             unique_together={('email', 'site')},
         ),
-        migrations.RunPython(update_username),
+        migrations.RunPython(update_username, migrations.RunPython.noop),
+        migrations.RunSQL(
+            """
+            UPDATE django_site
+            SET name = 'localhost:3334', domain = 'localhost:3334'
+            WHERE domain = 'example.com';
+            """,
+            ""
+        ),
     ]

@@ -3,6 +3,12 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
+def update_username(apps, schema_editor):
+    User = apps.get_model('app', 'User')
+    for user in User.objects.all():
+        user.username = f'{user.email}_1'
+        user.save()
+
 
 class Migration(migrations.Migration):
 
@@ -44,12 +50,5 @@ class Migration(migrations.Migration):
             name='user',
             unique_together={('email', 'site')},
         ),
-        migrations.RunSQL(
-            """
-            UPDATE app_user
-            SET username = CONCAT(email, '_1')
-            WHERE username IS NULL OR username = '';
-            """,
-            ""
-        ),
+        migrations.RunPython(update_username),
     ]

@@ -37,6 +37,13 @@ def dh_is_unlimited(dh):
     return dh >= UNLIMITED_DH
 
 
+class Syndicate(models.Model):
+    site = models.OneToOneField(Site, on_delete=models.CASCADE, primary_key=True)
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 
@@ -97,11 +104,19 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+    DEFAULT_SYNDICATE = Syndicate(name='base')
 
     objects = UserManager()
 
     def sms_eligible(self):
         return self.phone_number and self.phone_country_code
+
+    @property
+    def syndicate(self):
+        if hasattr(self.site, 'syndicate'):
+            return self.site.syndicate
+        else:
+            return User.DEFAULT_SYNDICATE
 
     @property
     def is_primary_email_verified(self):
@@ -1001,10 +1016,3 @@ class NotificationSetting(models.Model):
 
     class Meta:
         unique_together = ('user', 'name')
-
-
-class Syndicate(models.Model):
-    site = models.OneToOneField(Site, on_delete=models.CASCADE, primary_key=True)
-    name = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)

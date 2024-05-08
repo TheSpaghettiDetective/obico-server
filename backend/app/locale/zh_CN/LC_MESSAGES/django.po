@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-08 16:58+0800\n"
+"POT-Creation-Date: 2024-05-08 19:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,13 @@ msgstr "权限"
 msgid "Important dates"
 msgstr "重要日期"
 
-#: app/models.py:82
+#: app/forms.py:37
+#, fuzzy
+#| msgid "Wrong email or password."
+msgid "Invalid email or password."
+msgstr "错误的电子邮件或密码。"
+
+#: app/models.py:83
 msgid "email address"
 msgstr "电子邮箱地址"
 

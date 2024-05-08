@@ -257,7 +257,6 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # This allows us to interact with the popup window during autodiscovery handshake
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'unsafe-none'
 
-SITE_ID = 1
 SITE_USES_HTTPS = get_bool('SITE_USES_HTTPS', False)
 SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)
 
@@ -284,17 +283,14 @@ RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 # Allauth
 
 AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'app.accounts.SiteSpecificBackend',
     'oauth2_provider.backends.OAuth2Backend',
 )
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = False
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
@@ -302,7 +298,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if SITE_USES_HTTPS else 'http'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_ALLOW_SIGN_UP = get_bool('ACCOUNT_ALLOW_SIGN_UP', False)
-
+ACCOUNT_ADAPTER = 'app.accounts.SiteSpecificAccountAdapter'
 AUTH_USER_MODEL = 'app.User'
 SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
 SOCIALACCOUNT_PROVIDERS = {

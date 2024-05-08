@@ -1,5 +1,5 @@
 from typing import Dict
-from allauth.account.admin import EmailAddress
+from allauth.account.models import EmailAddress
 from datetime import datetime, timedelta
 import logging
 import os
@@ -22,8 +22,7 @@ from django.utils.html import mark_safe
 from django.contrib.auth.hashers import make_password
 from django.db.models import F, Q
 from django.db.models.constraints import UniqueConstraint
-
-
+from django.contrib.sites.models import Site
 
 from config.celery import celery_app
 from lib import cache, channels
@@ -36,6 +35,13 @@ UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
 
 def dh_is_unlimited(dh):
     return dh >= UNLIMITED_DH
+
+
+class Syndicate(models.Model):
+    site = models.OneToOneField(Site, on_delete=models.CASCADE, primary_key=True)
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class UserManager(BaseUserManager):
@@ -79,7 +85,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'))
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, default=1)
+    username = models.CharField(max_length=150, blank=True, null=True)
     consented_at = models.DateTimeField(null=True, blank=True)
     last_active_at = models.DateTimeField(null=True, blank=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)
@@ -91,13 +99,24 @@ class User(AbstractUser):
     notification_enabled = models.BooleanField(null=False, blank=False, default=True)
     unseen_printer_events = models.IntegerField(null=False, blank=False, default=0)
 
+    class Meta:
+        unique_together = [['email', 'site']]
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+    DEFAULT_SYNDICATE = Syndicate(name='base')
 
     objects = UserManager()
 
     def sms_eligible(self):
         return self.phone_number and self.phone_country_code
+
+    @property
+    def syndicate(self):
+        if hasattr(self.site, 'syndicate'):
+            return self.site.syndicate
+        else:
+            return User.DEFAULT_SYNDICATE
 
     @property
     def is_primary_email_verified(self):
@@ -997,9 +1016,3 @@ class NotificationSetting(models.Model):
 
     class Meta:
         unique_together = ('user', 'name')
-
-
-class Syndicate(models.Model):
-  name = models.CharField(max_length=255)
-  created_at = models.DateTimeField(auto_now_add=True)
-  updated_at = models.DateTimeField(auto_now=True)

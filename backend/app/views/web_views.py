@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
 import json
-
+from django.utils.translation import gettext_lazy as _
 from allauth.account.views import LoginView, SignupView
 
 from lib.url_signing import HmacSignedUrl
@@ -31,6 +31,7 @@ from lib import channels
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
+from django.contrib.sites.shortcuts import get_current_site
 
 
 def index(request):
@@ -52,6 +53,13 @@ class SocialAccountAwareSignupView(SignupView):
         if settings.ACCOUNT_ALLOW_SIGN_UP:
             return super().dispatch(request, *args, **kwargs)
         return redirect('/accounts/login/')
+    def form_valid(self, form):
+            email = form.cleaned_data['email']
+            site = get_current_site(self.request)
+            if User.objects.filter(email=email, site=site).exists():
+                form.add_error('email', _('A user is already registered with this email address.'))
+                return self.form_invalid(form)
+            return super().form_valid(form)
 
 @login_required
 def printers(request, template_name='printers.html'):

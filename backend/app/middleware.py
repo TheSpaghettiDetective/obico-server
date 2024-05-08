@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import SuspiciousOperation, MiddlewareNotUsed, PermissionDenied
 from django.contrib.sessions.backends.base import UpdateError
 

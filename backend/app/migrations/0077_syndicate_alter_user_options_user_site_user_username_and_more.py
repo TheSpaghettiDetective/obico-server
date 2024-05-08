@@ -44,4 +44,12 @@ class Migration(migrations.Migration):
             name='user',
             unique_together={('email', 'site')},
         ),
+        migrations.RunSQL(
+            """
+            UPDATE app_user
+            SET username = CONCAT(email, '_1')
+            WHERE username IS NULL OR username = '';
+            """,
+            ""
+        ),
     ]

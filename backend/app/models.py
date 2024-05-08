@@ -24,8 +24,6 @@ from django.db.models import F, Q
 from django.db.models.constraints import UniqueConstraint
 from django.contrib.sites.models import Site
 
-
-
 from config.celery import celery_app
 from lib import cache, channels
 from lib.utils import dict_or_none, get_rotated_pic_url
@@ -1006,6 +1004,7 @@ class NotificationSetting(models.Model):
 
 
 class Syndicate(models.Model):
-  name = models.CharField(max_length=255)
-  created_at = models.DateTimeField(auto_now_add=True)
-  updated_at = models.DateTimeField(auto_now=True)
+    site = models.OneToOneField(Site, on_delete=models.CASCADE, primary_key=True)
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

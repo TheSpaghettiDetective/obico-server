@@ -56,9 +56,8 @@ class SocialAccountAwareSignupView(SignupView):
     def form_valid(self, form):
             email = form.cleaned_data['email']
             site = get_current_site(self.request)
-            
             if User.objects.filter(email=email, site=site).exists():
-                form.add_error('email', 'This email is already in use.')
+                form.add_error('email', ' A user is already registered with this email address.')
                 return self.form_invalid(form)
             return super().form_valid(form)
 

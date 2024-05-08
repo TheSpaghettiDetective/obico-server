@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-01 19:16+0800\n"
+"POT-Creation-Date: 2024-05-08 19:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,11 @@ msgstr ""
 msgid "Important dates"
 msgstr ""
 
-#: app/models.py:82
+#: app/forms.py:37
+msgid "Invalid email or password."
+msgstr ""
+
+#: app/models.py:83
 msgid "email address"
 msgstr ""
 
@@ -168,11 +172,11 @@ msgid ""
 msgstr ""
 
 #: app/templates/account/login.html:7 app/templates/account/login.html:15
-#: app/templates/account/login.html:61 app/templates/account/signup.html:87
+#: app/templates/account/login.html:61 app/templates/account/signup.html:88
 #: app/templates/mobile/account/login.html:10
 #: app/templates/mobile/account/login.html:18
 #: app/templates/mobile/account/login.html:69
-#: app/templates/mobile/account/signup.html:91
+#: app/templates/mobile/account/signup.html:94
 #: app/templates/non_vue_layout.html:49
 msgid "SIGN IN"
 msgstr ""
@@ -267,16 +271,17 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: app/templates/account/login.html:101 app/templates/account/signup.html:85
+#: app/templates/account/login.html:101 app/templates/account/signup.html:86
+#: app/templates/mobile/account/signup.html:93
 msgid "OR"
 msgstr ""
 
 #: app/templates/account/login.html:102 app/templates/account/signup.html:16
-#: app/templates/account/signup.html:83
+#: app/templates/account/signup.html:84
 #: app/templates/mobile/account/login.html:108
 #: app/templates/mobile/account/signup.html:11
 #: app/templates/mobile/account/signup.html:19
-#: app/templates/mobile/account/signup.html:88
+#: app/templates/mobile/account/signup.html:91
 #: app/templates/socialaccount/signup.html:9
 #: app/templates/socialaccount/signup.html:20
 msgid "SIGN UP"
@@ -379,7 +384,8 @@ msgstr ""
 msgid "Signup"
 msgstr ""
 
-#: app/templates/account/signup.html:21
+#: app/templates/account/signup.html:22
+#: app/templates/mobile/account/signup.html:25
 #, python-format
 msgid ""
 "By signing up, I agree to\n"
@@ -390,23 +396,23 @@ msgid ""
 "              Policy</a>"
 msgstr ""
 
-#: app/templates/account/signup.html:31
-#: app/templates/mobile/account/signup.html:34
+#: app/templates/account/signup.html:32
+#: app/templates/mobile/account/signup.html:37
 msgid "Sign up with Facebook"
 msgstr ""
 
-#: app/templates/account/signup.html:33
-#: app/templates/mobile/account/signup.html:36
+#: app/templates/account/signup.html:34
+#: app/templates/mobile/account/signup.html:39
 msgid "Sign up with Google"
 msgstr ""
 
-#: app/templates/account/signup.html:54
-#: app/templates/mobile/account/signup.html:59
+#: app/templates/account/signup.html:55
+#: app/templates/mobile/account/signup.html:62
 msgid "We'll never share your email with anyone else."
 msgstr ""
 
-#: app/templates/account/signup.html:66
-#: app/templates/mobile/account/signup.html:71
+#: app/templates/account/signup.html:67
+#: app/templates/mobile/account/signup.html:74
 msgid "At least 6 characters. And be secure, please."
 msgstr ""
 
@@ -467,18 +473,12 @@ msgid ""
 "mail address</a>."
 msgstr ""
 
-#: app/templates/email/test_email.html:5
-msgid ""
-"It worked! You have successfully sent email from your self-hosted Obico "
-"Server."
-msgstr ""
-
-#: app/templates/layout.html:89
+#: app/templates/layout.html:87
 msgid "All Rights Reserved"
 msgstr ""
 
 #: app/templates/mobile/account/login.html:29
-#: app/templates/mobile/account/signup.html:41
+#: app/templates/mobile/account/signup.html:44
 msgid "Sign in with Apple"
 msgstr ""
 
@@ -495,17 +495,6 @@ msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the web app, you can use the same to sign in "
 "here."
-msgstr ""
-
-#: app/templates/mobile/account/signup.html:24
-#, python-format
-msgid ""
-"By signing up, I agree to\n"
-"              the %(brand_name)s app's <a class=\"link\" href=\"https://www."
-"obico.io/terms.html\">Terms of\n"
-"              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
-"privacy.html\">Privacy\n"
-"              Policy</a>"
 msgstr ""
 
 #: app/templates/new_octoprinttunnel_succeeded.html:7
@@ -572,14 +561,11 @@ msgstr ""
 #: app/templates/printer_acted.html:31
 #, python-format
 msgid ""
-"\n"
-"        You are trying to %(action)s a print but %(printer_name)s is not "
-"printing... maybe you clicked a link in an\n"
-"        outdated email?\n"
-"        "
+" You are trying to %(action)s a print but %(printer_name)s is not "
+"printing... maybe you clicked a link in an outdated email? "
 msgstr ""
 
-#: app/templates/printer_acted.html:42
+#: app/templates/printer_acted.html:39
 msgid "Go to webcam view"
 msgstr ""
 

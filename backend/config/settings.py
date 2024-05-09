@@ -97,7 +97,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.sites.middleware.CurrentSiteMiddleware',
+    'app.middleware.TopDomainMatchingCurrentSiteMiddleware',
     'app.middleware.octoprint_tunnelv2',
     'app.middleware.check_admin_ip_whitelist',
     'allauth.account.middleware.AccountMiddleware',

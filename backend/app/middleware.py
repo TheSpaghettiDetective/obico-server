@@ -1,14 +1,15 @@
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation, MiddlewareNotUsed, PermissionDenied
 from django.contrib.sessions.backends.base import UpdateError
-
 from whitenoise.middleware import WhiteNoiseMiddleware
 import time
 from django.utils.cache import patch_vary_headers
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.utils.http import http_date
 from django.urls import reverse, NoReverseMatch
-
+from django.contrib.sites.middleware import CurrentSiteMiddleware
+from django.contrib.sites.models import Site
+from django.http.request import split_domain_port
 from ipware import get_client_ip
 
 from .views import tunnelv2_views
@@ -157,3 +158,32 @@ def syndicate_header(get_response):
         return response
 
     return middleware
+
+
+SITE_CACHE = {}
+DEFAULT_SITE = None
+
+class TopDomainMatchingCurrentSiteMiddleware(CurrentSiteMiddleware):
+
+    def _get_site_by_top_level_domain(self, host):
+        # Fallback to looking up site after stripping port from the host.
+        domain, port = split_domain_port(host)
+        domain_parts = domain.split('.')
+        top_level_domain = '.'.join(domain_parts[-3:]) if len(domain_parts) >= 3 else domain
+        if top_level_domain not in SITE_CACHE:
+            SITE_CACHE[top_level_domain] = Site.objects.get(domain__iexact=top_level_domain)
+        return SITE_CACHE[top_level_domain]
+
+    def process_request(self, request):
+        try:
+            super().process_request(request)
+        except Site.DoesNotExist:
+            host = request.get_host()
+            try:
+                site = self._get_site_by_top_level_domain(host)
+            except Site.DoesNotExist:
+                if DEFAULT_SITE is None:
+                    DEFAULT_SITE = Site.objects.get(id=1)
+                site = DEFAULT_SITE
+
+            request.site = site

@@ -18,7 +18,7 @@ class SiteSpecificBackend(ModelBackend):
         if request is not None:
             syndicate = get_current_site(request).syndicates.first()
             try:
-                user = UserModel.objects.get(email=username, syndicate=syndicate)
+                user = UserModel.objects.get(email=username.lower(), syndicate=syndicate)
                 if user.check_password(password):
                     return user
             except UserModel.DoesNotExist:

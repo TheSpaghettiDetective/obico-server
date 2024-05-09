@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0077_syndicate_alter_user_options_user_site_user_username_and_more'),
+        ('app', '0077_alter_user_options_user_username_alter_user_email_and_more'),
     ]
 
     # HACK: This migration removes the unique constraint on account_emailaddress.email. Surprisingly it worked.

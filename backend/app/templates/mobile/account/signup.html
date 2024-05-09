@@ -12,6 +12,11 @@
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
+
+{% trans 'Email address' as email_placeholder %}
+{% trans 'Password' as password_placeholder %}
+{% trans 'Password. Again' as password_again_placeholder %}
+
 <div class="container">
   <div class="row justify-content-center logreg">
     <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
@@ -51,7 +56,7 @@
           {% csrf_token %}
           {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
           <div class="form-group">
-            {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder="{% trans 'Email address' %}" %}
+            {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder=email_placeholder %}
             {% if form.email.errors %}
             <small id="emailHelp" class="text-danger">
               {% for error in form.email.errors %}
@@ -63,7 +68,7 @@
             {% endif %}
           </div>
           <div class="form-group">
-            {% render_field form.password1 class="form-control" aria-describedby="password1Help" placeholder="{% trans 'Password' %}" %}
+            {% render_field form.password1 class="form-control" aria-describedby="password1Help" placeholder=password_placeholder %}
             {% if form.password1.errors %}
             <small id="password1Help" class="text-danger">
               {% for error in form.password1.errors %}
@@ -75,7 +80,7 @@
             {% endif %}
           </div>
           <div class="form-group">
-            {% render_field form.password2 class="form-control" aria-describedby="password2Help" placeholder="{% trans 'Password. Again' %}" %}
+            {% render_field form.password2 class="form-control" aria-describedby="password2Help" placeholder=password_again_placeholder %}
             {% if form.password2.errors %}
             <small id="password2Help" class="text-danger">
               {% for error in form.password2.errors %}

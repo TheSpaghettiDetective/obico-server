@@ -11,6 +11,9 @@
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
+{% trans 'Email address' as email_placeholder %}
+{% trans 'Password' as password_placeholder %}
+
 <div class="container">
   <div class="row justify-content-center logreg">
     <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
@@ -51,10 +54,10 @@
           {% csrf_token %}
           {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
           <div class="input-group mb-2">
-            {% render_field form.login class="form-control" placeholder="Email address" %}
+            {% render_field form.login class="form-control" placeholder=email_placeholder %}
           </div>
           <div class="input-group">
-            {% render_field form.password class="form-control" placeholder="Password" %}
+            {% render_field form.password class="form-control" placeholder=password_placeholder %}
           </div>
           <div style="padding-top: 0.5rem;">
             <div class="custom-control custom-checkbox form-check-inline">

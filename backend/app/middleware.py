@@ -166,6 +166,7 @@ DEFAULT_SITE = None
 class TopDomainMatchingCurrentSiteMiddleware(CurrentSiteMiddleware):
 
     def _get_site_by_top_level_domain(self, host):
+        global SITE_CACHE
         # Fallback to looking up site after stripping port from the host.
         domain, port = split_domain_port(host)
         domain_parts = domain.split('.')
@@ -175,6 +176,7 @@ class TopDomainMatchingCurrentSiteMiddleware(CurrentSiteMiddleware):
         return SITE_CACHE[top_level_domain]
 
     def process_request(self, request):
+        global DEFAULT_SITE
         try:
             super().process_request(request)
         except Site.DoesNotExist:

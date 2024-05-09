@@ -182,6 +182,7 @@ class TopDomainMatchingCurrentSiteMiddleware(CurrentSiteMiddleware):
             try:
                 site = self._get_site_by_top_level_domain(host)
             except Site.DoesNotExist:
+                # For situations when site is not found by domain, such as load balancer health checks.
                 if DEFAULT_SITE is None:
                     DEFAULT_SITE = Site.objects.get(id=1)
                 site = DEFAULT_SITE

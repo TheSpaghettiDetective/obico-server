@@ -19,10 +19,16 @@
 
         {% if socialaccount_providers %}
         <div class="social-login">
-          <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
-            role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign In with Facebook" %}</span> </a>
-          <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
-            role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign In with Google" %}</span> </a>
+          {% for provider in socialaccount_providers %}
+            {% if provider.id == "facebook" %}
+            <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn btn-block"
+              role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign In with Facebook" %}</span> </a>
+            {% endif %}
+            {% if provider.id == "google" %}
+            <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn btn-block"
+              role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign In with Google" %}</span> </a>
+            {% endif %}
+          {% endfor %}
         </div>
         {% endif %}
 

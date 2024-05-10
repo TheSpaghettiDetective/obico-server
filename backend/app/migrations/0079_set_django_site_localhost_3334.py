@@ -21,5 +21,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(change_site_domain),
+        migrations.RunPython(change_site_domain, migrations.RunPython.noop),
     ]

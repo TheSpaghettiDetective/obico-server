@@ -43,6 +43,18 @@ class Syndicate(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+@receiver(post_save, sender=Site)
+def add_site_to_default_syndicate(sender, instance, created, **kwargs):
+    if created:
+        try:
+            syndicate = Syndicate.objects.order_by('id').first()
+            if syndicate:
+                syndicate.sites.add(instance)
+        except Syndicate.DoesNotExist:
+            pass
+
+post_save.connect(add_site_to_default_syndicate, sender=Site)
+
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""

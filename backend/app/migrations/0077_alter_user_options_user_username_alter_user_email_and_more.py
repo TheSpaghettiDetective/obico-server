@@ -13,8 +13,7 @@ def create_syndicate(apps, schema_editor):
     Syndicate = apps.get_model('app', 'Syndicate')
     Site = apps.get_model('sites', 'Site')
     syndicate = Syndicate.objects.create(id=1, name='base')
-    site = Site.objects.all().order_by('id').first()
-    syndicate.sites.add(site)
+    syndicate.sites.add(*Site.objects.all())
 
 class Migration(migrations.Migration):
 

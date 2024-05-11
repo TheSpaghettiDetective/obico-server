@@ -220,7 +220,7 @@ export default {
       videoLoading: false,
       printerStockImgSrc: '#svg-3d-printer',
       mjpgSrc: null,
-      customRotationDeg: getLocalPref('webcamRotationDeg', 0),
+      customRotationDeg: getLocalPref('webcamRotationDeg', 0, this.printer.id),
     }
   },
 

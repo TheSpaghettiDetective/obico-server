@@ -47,11 +47,13 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        gap:10px;
     }
     .social-btn{
         font-weight: 100;
         color:white;
         font-size: 0.9rem;
+        flex:1;
     }
 
     a{

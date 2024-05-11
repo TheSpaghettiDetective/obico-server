@@ -17,7 +17,4 @@ export const setLocalPref = (prefId, value, printerId = null) => {
     const storageKey = printerId === null ? prefId : `${prefId}_${printerId}`;
     localStorage.setItem(storageKey, value);
   }
-  else{   
-    localStorage.setItem(prefId, value)
-    }
 }

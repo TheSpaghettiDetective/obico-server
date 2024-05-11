@@ -8,6 +8,7 @@ import requests
 from django.conf import settings
 from django.template.base import Template
 from django.template.loader import get_template
+from django.template.exceptions import TemplateDoesNotExist
 from django.core.mail import EmailMessage
 
 from allauth.account.models import EmailAddress
@@ -144,8 +145,20 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             attachments: Optional[List] = None) -> None:
 
         attachments = attachments or []
-        tpl = get_template(template_path)
 
+        tpl = None
+        layout_template_path='email/Layout.html',
+        if user.syndicate_name and user.syndicate_name != 'base':
+            layout_template_path=f'{user.syndicate_name}/email/Layout.html'
+            try:
+                tpl = get_template(f'{user.syndicate_name}/{template_path}')
+            except TemplateDoesNotExist:
+                pass # Fall back to default template
+
+        if not tpl:
+            tpl = get_template(template_path)
+
+        ctx['layout_template_path'] = layout_template_path
         ctx['user'] = user
         unsub_url = site.build_full_url(
             f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}'

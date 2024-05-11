@@ -115,6 +115,7 @@ class Handler(object):
         return UserContext(
             id=user.id,
             email=user.email,
+            syndicate_name=user.syndicate.name if user.syndicate else '',
             first_name=user.first_name,
             last_name=user.last_name,
             dh_balance=user.dh_balance,

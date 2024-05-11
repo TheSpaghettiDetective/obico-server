@@ -24,14 +24,13 @@ from allauth.account.views import LoginView, SignupView
 
 from lib.url_signing import HmacSignedUrl
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
-
 from app.models import (User, Printer, SharedResource, GCodeFile, NotificationSetting)
 from app.forms import SocialAccountAwareLoginForm
 from lib import channels
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
-from django.contrib.sites.shortcuts import get_current_site
+from lib.syndicate import syndicate_from_request
 
 
 def index(request):
@@ -55,7 +54,7 @@ class SocialAccountAwareSignupView(SignupView):
         return redirect('/accounts/login/')
     def form_valid(self, form):
             email = form.cleaned_data['email']
-            syndicate = get_current_site(self.request).syndicates.first()
+            syndicate = syndicate_from_request(self.request)
             if User.objects.filter(email=email, syndicate=syndicate).exists():
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)

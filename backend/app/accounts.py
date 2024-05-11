@@ -1,13 +1,14 @@
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.account.adapter import DefaultAccountAdapter
-from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from app.models import User
 from django.contrib.auth.hashers import make_password
 import secrets
+
+from lib.syndicate import syndicate_from_request
 
 
 class SiteSpecificBackend(ModelBackend):
@@ -16,7 +17,7 @@ class SiteSpecificBackend(ModelBackend):
             username = kwargs.get('email')
         UserModel = get_user_model()
         if request is not None:
-            syndicate = get_current_site(request).syndicates.first()
+            syndicate = syndicate_from_request(request)
             try:
                 user = UserModel.objects.get(email__iexact=username, syndicate=syndicate)
                 if user.check_password(password):
@@ -28,7 +29,7 @@ class SiteSpecificBackend(ModelBackend):
 
 class SiteSpecificAccountAdapter(DefaultAccountAdapter):
     def save_user(self, request, user, form, commit=True):
-        user.syndicate = get_current_site(request).syndicates.first()
+        user.syndicate = syndicate_from_request(request)
         return super().save_user(request, user, form, commit)
 
     def populate_username(self, request, user):
@@ -41,7 +42,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if sociallogin.is_existing:
             return
 
-        syndicate_id = get_current_site(request).syndicates.first().id
+        syndicate_id = syndicate_from_request(request).id
         # some social logins don't have an email address, e.g. facebook accounts
         # with mobile numbers only, but allauth takes care of this case so just
         # ignore it

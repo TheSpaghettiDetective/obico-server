@@ -3,16 +3,16 @@
 {% block email_content %}
 
 <p>Hi {{ user.first_name|default:"" }},</p>
-<p>Obi The Owl has detected a possible failure on your printer <b>{{ printer.name }}</b>.</p>
+<p>The Kingroon app has detected a potential issue with your Kingroon KLP1 printer.</p>
 
 {% if print_paused %}
 <p>
-  <strong>The print is paused.</strong> <span style="color:#888796;">Don't want your print to be paused next time? <a
-      href="https://app.obico.io/printers/{{ printer.id }}/">Change the settings.</a></span>
+  <strong>The print has been paused to prevent further complications. </strong> <span style="color:#888796;">If you prefer not to have your print paused in the future, you can <a
+      href="https://app.kingroon.com/printers/{{ printer.id }}/">adjust your settings accordingly.</a></span>
 </p>
 {% elif printer.pause_on_failure and is_warning %}
 <p>
-  Printer was NOT paused because Obi wasn't very sure if it was a real failure.
+  The printer wasn't paused because the app couldn't confirm if it was an actual failure.
 </p>
 {% endif %}
 {% if img_url %}
@@ -28,7 +28,7 @@
 <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
   style="margin:0 auto; padding-top:16px; width: 100%; ">
   <tr>
-    <td class="mobile-cta-button-row" bgcolor="#01A299" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+    <td class="mobile-cta-button-row" bgcolor="#ED7100" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
       align="center">
       <a class="mobile-cta-font" href="{{ cancel_link }}" target="_blank"
         style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
@@ -42,7 +42,7 @@
 <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
   style="margin:0 auto; padding-top:16px; width: 100%; ">
   <tr>
-    <td class="mobile-cta-button-row" bgcolor="#01A299" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+    <td class="mobile-cta-button-row" bgcolor="#ED7100" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
       align="center">
       <a class="mobile-cta-font" href="{{ resume_link }}" target="_blank"
         style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
@@ -55,7 +55,7 @@
 <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
   style="margin:0 auto; padding-top:16px; width: 100%; ">
   <tr>
-    <td class="mobile-cta-button-row" bgcolor="#01A299" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+    <td class="mobile-cta-button-row" bgcolor="#ED7100" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
       align="center">
       <a class="mobile-cta-font" href="{{ resume_link }}?mute_alert=true" target="_blank"
         style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
@@ -68,11 +68,11 @@
 <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
   style="margin:0 auto; padding-top:16px; width: 100%; ">
   <tr>
-    <td class="mobile-cta-button-row" bgcolor="#01A299" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+    <td class="mobile-cta-button-row" bgcolor="#ED7100" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
       align="center">
       <a class="mobile-cta-font" href="{{ view_link }}" target="_blank"
         style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
-        Go to the Obico app to take a closer look.
+        Go to the Kingroon app to take a closer look.
       </a>
     </td>
   </tr>
@@ -85,10 +85,8 @@
       style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
       <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">Why did I receive this email?</span></span></h2>
       <ul>
-        <li>The Obico app detected in your webcam image some features that are characteristic
-          in failed prints (such as the shapes of spaghetti).</li>
-        <li>Your print <strong>may</strong> have failed. It could also have been a false alarm since our
-          algorithm is not yet perfect.</li>
+        <li>The Kingroon app noticed features in your webcam images that may indicate print failure (like the characteristic spaghetti-like shapes). 
+          Although your print might have failed, it's also possible that this is a false alarm since the detection algorithm isn't perfect yet.</li>
       </ul>
     </td>
   </tr>
@@ -97,23 +95,21 @@
       style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
       <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What can I do now?</span></span></h2>
       <ul>
-        <li>If it's clear from the image included above that your print is really failing, you can click the "Yes it
-          failed. Cancel the print!" button above. You may be asked to sign into the Obico web app.</li>
-        {% if print_paused %}
-        <li>If it's clear from the image that your print is actually ok, that is, this email was a false alarm, you can
-          click the "it is a false alarm. Resume the print!" button. If you are sure that current print won't fail, you
-          can suppress alerts for the
-          rest of current print by clicking "Resume the print, and don't alert me for the rest of this print." </li>
+        <li> If the attached image shows that your print is indeed failing, click the "Yes, it failed. Cancel the print!" button above. 
+          You might need to sign in to the Kingroon web app. </li>
+          {% if print_paused %}
+          <li>If the image shows that your print is actually fine and this was a false alarm, click the "False alarm. Resume the print!" button. 
+          If you're confident that the print will proceed smoothly, you can suppress further alerts for the current print by selecting 
+          "Resume the print, and don't alert me for the rest of this print."
+        </li>
         {% endif %}
-        <li>If the picture attached to this email can't clearly tell you if your print actually failed, you can click
-          "Go to the Obico app to take a closer look" to go to the real time webcam view. From there you can
-          see the webcam in real time,
-          and decide if you want to cancel the print.</li>
-        {% if print_paused %}
-        <li>You can also resume the print in OctoPrint or Mainsail/Fluidd. Just remember
-          that the Obico app has turned off the heaters for your safety. Remember to turn them back on before
-          resuming the print.</li>
-        {% endif %}
+        <li>If the image isn't clear, click "Go to the Kingroon app for a closer look" to access the real-time webcam feed. 
+          From there, you can decide if you need to cancel the print.</li>
+          {% if print_paused %}
+        <li>You can also resume the print through Mainsail or Fluidd. Please note that the Kingroon app has turned
+           off the heaters for safety, so be sure to turn them back on before resuming.</li>
+           {% endif %}
+          <li>We're here to support you in your 3D printing journey!</li>
       </ul>
     </td>
   </tr>

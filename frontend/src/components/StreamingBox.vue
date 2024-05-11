@@ -330,9 +330,9 @@ export default {
       }
     },
     onRotateRightClicked() {
-      this.customRotationDeg = this.customRotationDeg + 90
-      setLocalPref('webcamRotationDeg', this.customRotationDeg % 360)
-      this.$emit('onRotateRightClicked', this.customRotationDeg)
+      this.customRotationDeg = this.customRotationDeg + 90;
+      setLocalPref('webcamRotationDeg', this.customRotationDeg % 360, this.printer.id);
+      this.$emit('onRotateRightClicked', this.customRotationDeg);
     },
     onCanPlay() {
       this.videoLoading = false

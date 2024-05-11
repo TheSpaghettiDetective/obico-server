@@ -11,8 +11,15 @@ export const getLocalPref = (prefId, defaultValue) => {
   }
 }
 
-export const setLocalPref = (prefId, value) => {
+export const setLocalPref = (prefId, value, printerId = null) => {
   if (isLocalStorageSupported()) {
+    if(printerId)
+      {
+    const storageKey = `${prefId}_${printerId}`;
+    localStorage.setItem(storageKey, value);
+  }
+  else{   
     localStorage.setItem(prefId, value)
+    }
   }
 }

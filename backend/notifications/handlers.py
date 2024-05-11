@@ -14,7 +14,7 @@ from django.conf import settings
 from .plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext, FailureAlertContext,
-    UserContext, PrintContext, PrinterContext, TestMessageContext,
+    UserContext, PrintContext, PrinterContext, TestMessageContext, SyndicateContext,
     Feature,
 )
 from app.models import Print, Printer, NotificationSetting, User
@@ -110,12 +110,20 @@ class Handler(object):
         )
 
         return ctx
-
+    # TODO CHANGE in here to change the context for the EMAIL
     def get_user_context(self, user: User) -> UserContext:
+        syndicateContext =  SyndicateContext(
+            name = user.syndicate.name,
+            website= user.syndicate.website,
+            address= user.syndicate.address_in_emails,
+            privacy_link= user.syndicate.privacy_link,
+            terms_of_use_link= user.syndicate.terms_of_use_link,
+        )
         return UserContext(
             id=user.id,
             email=user.email,
-            first_name=user.first_name,
+            syndicate=syndicateContext,
+            first_name= user.first_name,
             last_name=user.last_name,
             dh_balance=user.dh_balance,
             is_pro=user.is_pro,

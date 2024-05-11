@@ -82,7 +82,7 @@
           <tr>
             <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
             font-size:14px; font-weight:400; color:#161338; line-height:22px;">
-
+              {% if user.syndicate.name == "base" %}
               <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed; padding: 18px 0px;">
                 <tbody><tr>
                   <td style="font-size:6px;line-height:10px;padding:0px 0px 0px 0px" valign="top" align="center">
@@ -93,7 +93,20 @@
                   </td>
                 </tr>
               </tbody></table>
+              {% else %}
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed; padding: 18px 0px;">
+                <tbody><tr>
+                  <td style="font-size:6px;line-height:10px;padding:0px 0px 0px 0px" valign="top" align="center">
+                      <a target=_blank href="{{ user.syndicate.website }}">
+                        <img border="0" style="display:block; max-width:60% !important; width:auto; height:32px !important;"
+                        alt="" width="360" src="https://www.obico.io/wwwimg/logo-full.png">
+                      </a>
+                  </td>
+                </tr>
+              </tbody></table>
+              {% endif %}
               {% block email_content %}{% endblock email_content %}
+              {% if user.syndicate.name == "base" %}
               <table style="padding: 24px 0px;">
                   <tr>
                       <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
@@ -107,14 +120,37 @@
                   <td height="8px" valign="top">&nbsp;</td>
                 </tr>
               </table>
+              {% else %}
+              <table style="padding: 24px 0px;">
+                <tr>
+                    <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
+                    font-size:14px; font-weight:400; color:#888796; line-height:18px;">Syndicate slogan,</td>
+                </tr>
+                <tr>
+                    <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
+                    font-size:14px; font-weight:400; color:#888796; line-height:18px;">- The {{user.syndicate.name}} team</td>
+                </tr>
+                <tr>
+                  <td height="8px" valign="top">&nbsp;</td>
+                </tr>
+              </table>
+              {% endif %}
               <table style="color:#888796; overflow:auto; text-align:center;
               margin:0 auto; padding: 16px; height:48px; width:100%"
                 cellpadding="0" cellspacing="0">
+                {% if user.syndicate.name == "base" %}
                 <tr>
                   <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:10px; font-weight:400; color:#888796; line-height:22px;">
                     Obico - 1790 Willow Lake Ln, San jose, CA 95131 - <a href="https://www.obico.io/terms.html">Term of Use</a> - <a href="https://www.obico.io/privacy.html">Privacy</a>
                   </td>
                 </tr>
+                {% else %}
+                <tr>
+                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:10px; font-weight:400; color:#888796; line-height:22px;">
+                    {{user.syndicate.name}} - {{user.syndicate.address}} - <a href="{{ user.syndicate.terms_of_use_link }}">Term of Use</a> - <a href="{{ user.syndicate.privacy_link }}">Privacy</a>
+                  </td>
+                </tr>
+                {% endif %}
 		            {% if unsub_url %}
                 <tr>
                   <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:12px; font-weight:400; color:#888796; line-height:22px;">

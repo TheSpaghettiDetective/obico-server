@@ -42,6 +42,10 @@ class Syndicate(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    website = models.CharField(max_length=255)
+    address_in_emails = models.CharField(max_length=255)
+    terms_of_use_link = models.CharField(max_length=255)
+    privacy_link = models.CharField(max_length=255)
 
 @receiver(post_save, sender=Site)
 def add_site_to_default_syndicate(sender, instance, created, **kwargs):

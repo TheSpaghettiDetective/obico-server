@@ -36,11 +36,19 @@ class Feature(enum.Enum):
     notify_on_print_pause =  'notify_on_print_pause',
     notify_on_print_resume = 'notify_on_print_resume',
 
+@dataclasses.dataclass(frozen=True)
+class SyndicateContext:
+    name: str
+    website: str
+    address: str
+    privacy_link: str
+    terms_of_use_link: str
 
 @dataclasses.dataclass(frozen=True)
 class UserContext:
     id: int
     email: str
+    syndicate: SyndicateContext
     first_name: str
     last_name: str
     unsub_token: str

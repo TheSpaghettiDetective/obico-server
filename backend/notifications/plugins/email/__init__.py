@@ -190,23 +190,27 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             emails = EmailAddress.objects.filter(user_id=user.id)
 
         for email in emails:
-            self._send_email(email=email.email, subject=subject, message=message, attachments=attachments, headers=headers)
+            self._send_email(email=email.email, subject=subject, message=message, attachments=attachments, headers=headers, user=user)
 
     @backoff.on_exception(
         backoff.expo,
         (smtplib.SMTPServerDisconnected, smtplib.SMTPSenderRefused, smtplib.SMTPResponseException, ),
         max_tries=3
     )
-    def _send_email(self, email: str, subject: str, message: str, headers: Dict, attachments: Optional[List]) -> None:
+    def _send_email(self, email: str, subject: str, message: str, headers: Dict, attachments: Optional[List], user: UserContext) -> None:
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
-
+        from_email = settings.DEFAULT_FROM_EMAIL
+        if user.syndicate_name and user.syndicate_name != 'base':
+            if user.syndicate_name == 'kingroon':
+                from_email = 'Kingroon <support@thespaghettidetective.com>'
+        
         msg = EmailMessage(
             subject,
             message,
             to=(email,),
-            from_email=settings.DEFAULT_FROM_EMAIL,
+            from_email=from_email,
             attachments=attachments or [],
             headers=headers,
         )

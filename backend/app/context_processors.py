@@ -3,7 +3,7 @@ import logging
 from django.utils import translation
 from django.conf import settings
 
-from lib.syndicate import syndicate_from_request
+from lib.syndicate import syndicate_from_request, settings_for_syndicate
 
 
 RE_TSD_APP_PLATFORM = re.compile(r'TSDApp-(?P<platform>\w+)')
@@ -15,15 +15,16 @@ def additional_context_export(request):
         m = RE_TSD_APP_PLATFORM.match(request.headers.get('user-agent', ''))
         platform = m.groupdict()['platform'] if m else ''
 
-    syndicate = syndicate_from_request(request).name
-
-    brand_name = "Obico" if syndicate == "base" else syndicate.capitalize()
+    syndicate_name = syndicate_from_request(request).name
+    syndicate_settings = settings_for_syndicate(syndicate_name)
+    syndicate_settings['name'] = syndicate_name
 
     language = translation.get_language_from_request(request).split('-')[0] # ISO 639-1 standard is language_code-country_code
+
     return {
         'page_context': {
             'app_platform': platform,
-            'syndicate': {"provider": syndicate, "brand_name": brand_name},
+            'syndicate': syndicate_settings,
             'language': language,
         }
     }

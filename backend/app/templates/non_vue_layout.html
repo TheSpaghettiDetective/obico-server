@@ -8,8 +8,8 @@
       <div class="container">
         <a class="navbar-brand" href="/">
           <svg width="100" height="30">
-            {% if page_context.syndicate.provider %}
-              <use href="#{{ page_context.syndicate.provider }}-svg-logo-full" />
+            {% if page_context.syndicate.name %}
+              <use href="#{{ page_context.syndicate.name }}-svg-logo-full" />
             {% else %}
               <use href="#svg-logo-full" />
             {% endif %}

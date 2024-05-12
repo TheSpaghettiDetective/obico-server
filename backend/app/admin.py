@@ -49,9 +49,14 @@ class UserAdmin(DjangoUserAdmin):
             'fields': ('email', 'password1', 'password2', 'syndicate'),
         }),
     )
-
+    
     ordering = ('email',)
     actions = [send_test_email]
+    
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ('syndicate',)
+        return self.readonly_fields
 
 
 class PrinterAdmin(admin.ModelAdmin):

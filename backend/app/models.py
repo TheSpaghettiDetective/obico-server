@@ -42,6 +42,9 @@ class Syndicate(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f'{self.name}'
 
 @receiver(post_save, sender=Site)
 def add_site_to_default_syndicate(sender, instance, created, **kwargs):

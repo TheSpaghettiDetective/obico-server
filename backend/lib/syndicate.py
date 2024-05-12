@@ -1,6 +1,6 @@
 from django.contrib.sites.shortcuts import get_current_site
 from app.models import Syndicate
-
+from config.settings import SYNDICATES
 
 def syndicate_from_request(request):
     # 1. user's account syndicate has the highest priority. But I wouldn't be surprised if we later find edge cases that invalidate this rule.
@@ -14,3 +14,7 @@ def syndicate_from_request(request):
 
     # 3. site syndicate is the default.
     return get_current_site(request).syndicates.first()
+
+
+def settings_for_syndicate(syndicate_name):
+    return SYNDICATES[syndicate_name]

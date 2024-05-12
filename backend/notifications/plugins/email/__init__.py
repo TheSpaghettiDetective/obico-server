@@ -4,16 +4,15 @@ import logging
 import backoff  # type: ignore
 import os
 import requests
-
 from django.conf import settings
 from django.template.base import Template
 from django.template.loader import get_template
 from django.template.exceptions import TemplateDoesNotExist
 from django.core.mail import EmailMessage
-
 from allauth.account.models import EmailAddress
-from lib import site as site
 
+from lib import site as site
+from lib import syndicate
 from notifications.handlers import handler
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -201,11 +200,9 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
-        from_email = settings.DEFAULT_FROM_EMAIL
-        if user.syndicate_name and user.syndicate_name != 'base':
-            if user.syndicate_name == 'kingroon':
-                from_email = 'Kingroon <support@thespaghettidetective.com>'
-        
+
+        from_email = syndicate.settings_for_syndicate(user.syndicate_name).get('DEFAULT_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
+
         msg = EmailMessage(
             subject,
             message,

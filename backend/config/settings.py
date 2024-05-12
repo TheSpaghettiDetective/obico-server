@@ -494,3 +494,10 @@ CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('CSRF_TRUSTED_ORIGINS') or '[]'
 # This line prevents warning messages after 3.2
 # https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+SYNDICATES = {
+  'base': {
+    'display_name': 'Obico',
+    'support_email': DEFAULT_FROM_EMAIL,
+  },
+}

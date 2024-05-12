@@ -498,6 +498,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 SYNDICATES = {
   'base': {
     'display_name': 'Obico',
-    'support_email': DEFAULT_FROM_EMAIL,
+    'DEFAULT_FROM_EMAIL': DEFAULT_FROM_EMAIL,
   },
 }

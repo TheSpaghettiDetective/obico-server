@@ -146,7 +146,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         attachments = attachments or []
 
         tpl = None
-        layout_template_path='email/Layout.html',
+        layout_template_path='email/Layout.html'
         if user.syndicate_name and user.syndicate_name != 'base':
             layout_template_path=f'{user.syndicate_name}/email/Layout.html'
             try:

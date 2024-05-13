@@ -337,6 +337,7 @@ const AXIS = {
   y: 'y',
   z: 'z',
   xy: ['x', 'y'],
+  xyz: ['x', 'y', 'z'],
 }
 
 const DIRECTIONS = {
@@ -563,8 +564,7 @@ export default {
       })
     },
     homeAll() {
-      this.xyzControl(this.axis.z, this.directions.home)
-      this.xyzControl(this.axis.xy, this.directions.home)
+      this.xyzControl(this.axis.xyz, this.directions.home)
     },
     disableSteppers() {
       const octoPayload = { func: 'commands', target: '_printer', args: ['M18'] }

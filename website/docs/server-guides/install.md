@@ -65,6 +65,12 @@ Open [http://localhost:3334](http://localhost:3334) on the same computer. If you
 
 ![](/img/server-guides/login-page.png)
 
+:::info
+
+The login here is not linked to your Obico account. You can log in using the Django admin credentials (in the configuration section) or with any subsequent accounts you create in the admin panel. As accounts here are local to this installation, you can use the same email address as your Obico account without any conflicts.
+
+:::
+
 ## 4. Configure the server {#4-configure-the-server}
 
 Your Obico Server will [need some basic configurations](configure.md) to work correctly with OctoPrint or Klipper, or to send emails and other notifications.

@@ -14,6 +14,14 @@ This guide will show you how to link Obico on your [BigTreeTech Pi 2](https://bi
 
 Link your printer to get access to webcam streaming, print status and failure notifications, 3D printer monitoring/control and more all from your phone.
 
+:::note
+If you prefer the video format over a text-based guide, we have also prepared this video tutorial.
+:::
+
+<div className="videoWrapper">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/sUIAhyZEFFY?si=xEf1HppyU_ExXYYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+
 
 ## Step 1: Sign up for an Obico account {#step-1-sign-up-for-an-obico-account}
 

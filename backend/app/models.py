@@ -42,7 +42,7 @@ class Syndicate(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f'{self.name}'
 
@@ -227,7 +227,7 @@ class Printer(SafeDeleteModel):
     def settings(self):
         p_settings = cache.printer_settings_get(self.id)
 
-        webcam_settings = self.DEFAULT_WEBCAM_SETTINGS
+        webcam_settings = self.DEFAULT_WEBCAM_SETTINGS.copy()
 
         if p_settings.get('webcams') is not None:
             p_settings['webcams'] = json.loads(p_settings.get('webcams'))

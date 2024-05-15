@@ -279,7 +279,7 @@ export default {
       {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
-          if (this.webcams.length === 0 && this.printer?.settings?.webcams.length > 0) {
+          if (this.webcams.length === 0 && (this.printer?.settings?.webcams || []).length > 0) {
             const webcams = this.printer?.settings?.webcams
             for (const webcam of webcams) {
               webcam.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)

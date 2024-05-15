@@ -11,7 +11,7 @@ import secrets
 from lib.syndicate import syndicate_from_request
 
 
-class SiteSpecificBackend(ModelBackend):
+class SyndicateSpecificBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is None:
             username = kwargs.get('email')
@@ -27,7 +27,7 @@ class SiteSpecificBackend(ModelBackend):
         return None
 
 
-class SiteSpecificAccountAdapter(DefaultAccountAdapter):
+class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
     def save_user(self, request, user, form, commit=True):
         user.syndicate = syndicate_from_request(request)
         return super().save_user(request, user, form, commit)

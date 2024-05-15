@@ -59,7 +59,7 @@
   {{ page_context|json_script:"page-context-json" }}
 </head>
 
-<body>
+<body data-tenant="{{ page_context.syndicate.display_name }}">
   {% csrf_token %}
   {% block top_page_js %}{% endblock top_page_js %}
 

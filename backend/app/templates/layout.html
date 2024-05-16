@@ -41,8 +41,8 @@
 
   <!-- favicons -->
   {% with favicon_path='img/favicon.png' %}
-    {% if syndicate and syndicate.name != 'base' %}
-      {% with favicon_path=syndicate.name|add:'/img/favicon.png' %}
+    {% if page_context.syndicate and page_context.syndicate.name != 'base' %}
+      {% with favicon_path=page_context.syndicate.name|add:'/img/favicon.png' %}
         <link rel="icon" type="image/png" href="{% static favicon_path %}">
       {% endwith %}
     {% else %}
@@ -59,7 +59,7 @@
   {{ page_context|json_script:"page-context-json" }}
 </head>
 
-<body>
+<body data-tenant="{{ page_context.syndicate.name }}">
   {% csrf_token %}
   {% block top_page_js %}{% endblock top_page_js %}
 

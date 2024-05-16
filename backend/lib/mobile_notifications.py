@@ -32,7 +32,7 @@ for key_file in key_files:
 
 
 def send_failure_alert(_print, rotated_jpg_url, is_warning, print_paused):
-    for mobile_device in MobileDevice.objects.filter(user=_print.printer.user):
+    for mobile_device in MobileDevice.objects.prefetch_related('user__syndicate').filter(user=_print.printer.user):
         data = dict(
             type='failureAlert',
             title=f'{"🟠 Print is fishy." if is_warning else "🔴 Failure is detected."} Printer {"" if print_paused else "not"} paused.',
@@ -57,7 +57,7 @@ def send_print_event(_print, printer_event, rotated_jpg_url):
     if event_type == 'FilamentChange':
         title = '🟠 Filament'
 
-    for mobile_device in MobileDevice.objects.filter(user_id=_print.user_id):
+    for mobile_device in MobileDevice.objects.prefetch_related('user__syndicate').filter(user_id=_print.user_id):
         data = dict(
             type='printEvent',
             eventType=event_type,
@@ -81,7 +81,7 @@ def send_heater_event(printer, event, heater_name, actual_temperature):
         HeaterEventType.COOLED_DOWN.value: 'Cooled down'
     }[event]
 
-    for mobile_device in MobileDevice.objects.filter(user=printer.user):
+    for mobile_device in MobileDevice.objects.prefetch_related('user__syndicate').filter(user=printer.user):
         data = dict(
             type='heaterEvent',
             eventType=event,
@@ -101,7 +101,7 @@ def send_print_progress(_print, op_data):
 
     pushed_platforms = set()
 
-    for mobile_device in MobileDevice.objects.select_related('user_syndicate').filter(user=_print.user):
+    for mobile_device in MobileDevice.objects.prefetch_related('user__syndicate').filter(user=_print.user):
         if cache.print_status_mobile_push_get(_print.id, mobile_device.platform):
             continue
         pushed_platforms.add(mobile_device.platform)

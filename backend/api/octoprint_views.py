@@ -77,6 +77,7 @@ class OctoPrintPicView(APIView):
 
     def post(self, request):
         printer = request.auth
+        user = request.user
 
         is_primary_camera = request.POST.get('is_primary_camera', 'true').lower() == 'true' # if not specified, it's from a legacy agent and hence is primary camera
         is_nozzle_camera = request.POST.get('is_nozzle_camera', 'false').lower() == 'true'
@@ -100,14 +101,14 @@ class OctoPrintPicView(APIView):
         if (not printer.current_print) or request.POST.get('viewing_boost'):
             # Not need for failure detection if not printing, or the pic was send for viewing boost.
             pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg'
-            internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
+            internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, user.syndicate.name, long_term_storage=False)
             cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
             send_status_to_web(printer.id)
             return Response({'result': 'ok'})
 
         pic_id = str(timezone.now().timestamp())
         pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
+        internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, user.syndicate.name, long_term_storage=False)
 
         img_url_updated = self.detect_if_needed(printer, pic, pic_id, internal_url)
         if not img_url_updated:
@@ -150,14 +151,14 @@ class OctoPrintPicView(APIView):
         tagged_img.seek(0)
 
         pic_path = f'tagged/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        _, external_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, long_term_storage=False)
+        _, external_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
         cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
 
         prediction_json = serializers.serialize("json", [prediction, ])
         p_out = io.BytesIO()
         p_out.write(prediction_json.encode('UTF-8'))
         p_out.seek(0)
-        save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, long_term_storage=False)
+        save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
 
         if is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR):
             # The prediction is high enough to match the "escalated" level and hence print needs to be paused
@@ -357,9 +358,10 @@ class PrinterEventView(CreateAPIView):
             rotated_jpg_url = save_pic(
                         f'snapshots/{printer.id}/{str(timezone.now().timestamp())}_rotated.jpg',
                         pic,
+                        request.user.syndicate.name,
                         rotated=True,
                         printer_settings=printer.settings,
-                        to_long_term_storage=False
+                        to_long_term_storage=False,
             )
 
         print_event = PrinterEvent.create(

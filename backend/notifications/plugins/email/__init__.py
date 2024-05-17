@@ -11,7 +11,6 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.core.mail import EmailMessage
 from allauth.account.models import EmailAddress
 
-from lib import site as site
 from lib import syndicate
 from notifications.handlers import handler
 from notifications.plugin import (
@@ -21,6 +20,7 @@ from notifications.plugin import (
     notification_types,
     UserContext,
 )
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -89,9 +89,9 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             printer=context.printer,
             print_paused=context.print_paused,
             is_warning=context.is_warning,
-            view_link=site.build_full_url('/printers/'),
-            cancel_link=site.build_full_url('/prints/{}/cancel/'.format(context.print.id)),
-            resume_link=site.build_full_url('/prints/{}/resume/'.format(context.print.id)),
+            view_link=syndicate.build_full_url_for_syndicate('/printers/', context.user.syndicate_name),
+            cancel_link=syndicate.build_full_url_for_syndicate('/prints/{}/cancel/'.format(context.print.id), context.user.syndicate_name),
+            resume_link=syndicate.build_full_url_for_syndicate('/prints/{}/resume/'.format(context.print.id), context.user.syndicate_name),
         )
 
         subject = 'Your print {} on {} {}.'.format(
@@ -117,8 +117,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         email_ctx.update(
             printer=context.printer,
             print=context.print,
-            timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
-            user_pref_url=site.build_full_url('/user_preferences/notification_email/'),
+            timelapse_link=syndicate.build_full_url_for_syndicate(f'/prints/{context.print.id}/', context.user.syndicate_name),
+            user_pref_url=syndicate.build_full_url_for_syndicate('/user_preferences/notification_email/', context.user.syndicate_name),
         )
 
         if context.print.ended_at and context.print.started_at:
@@ -159,9 +159,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         ctx['layout_template_path'] = layout_template_path
         ctx['user'] = user
-        unsub_url = site.build_full_url(
-            f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}'
-        )
+        unsub_url = syndicate.build_full_url_for_syndicate(
+            f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}', user.syndicate_name)
         ctx['unsub_url'] = unsub_url
 
         headers = {

@@ -525,10 +525,10 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             if num_bytes > file_size_limit:
                 return Response({'error': 'File size too large'}, status=413)
 
-            self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET))
+            self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET), request.user.syndicate.name)
 
             request.FILES['file'].seek(0)
-            _, ext_url = save_file_obj(self.path_in_storage(gcode_file), request.FILES['file'], settings.GCODE_CONTAINER)
+            _, ext_url = save_file_obj(self.path_in_storage(gcode_file), request.FILES['file'], settings.GCODE_CONTAINER, request.user.syndicate.name)
             gcode_file.url = ext_url
             gcode_file.num_bytes = num_bytes
             gcode_file.save()
@@ -546,7 +546,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
         gcode_file.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def set_metadata(self, gcode_file, metadata, thumbnails):
+    def set_metadata(self, gcode_file, metadata, thumbnails, syndicate_name):
         gcode_file.metadata_json = json.dumps(metadata)
         for key in ['estimated_time', 'filament_total']:
             setattr(gcode_file, key, metadata.get(key))
@@ -556,7 +556,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             thumb_num += 1
             if thumb_num > 3:
                 continue
-            _, ext_url = save_file_obj(f'gcode_thumbnails/{gcode_file.user.id}/{gcode_file.id}/{thumb_num}.png', thumb, settings.TIMELAPSE_CONTAINER)
+            _, ext_url = save_file_obj(f'gcode_thumbnails/{gcode_file.user.id}/{gcode_file.id}/{thumb_num}.png', thumb, settings.TIMELAPSE_CONTAINER, syndicate_name)
             setattr(gcode_file, f'thumbnail{thumb_num}_url', ext_url)
 
     def path_in_storage(self, gcode_file):

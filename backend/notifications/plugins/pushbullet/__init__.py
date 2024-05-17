@@ -5,7 +5,7 @@ from django.conf import settings
 from rest_framework.serializers import ValidationError
 
 from pushbullet import Pushbullet, PushbulletError, PushError  # type: ignore
-from lib import site as site
+from lib import syndicate
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -61,7 +61,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
         if not access_token:
             return
 
-        link = site.build_full_url('/')
+        link = syndicate.build_full_url_for_syndicate('/', context.user.syndicate_name),
         title = self.get_failure_alert_title(context=context, link=link)
         text = self.get_failure_alert_text(context=context, link=link)
         if not title or not text:
@@ -85,7 +85,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
         if not text or not title:
             return
 
-        link = site.build_full_url('/')
+        link = syndicate.build_full_url_for_syndicate('/', context.user.syndicate_name),
 
         self.call_pushbullet(
             access_token=access_token,
@@ -97,7 +97,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
 
     def send_test_message(self, context: TestMessageContext) -> None:
         access_token = self.get_access_token_from_config(context.config)
-        link = site.build_full_url('/')
+        link = syndicate.build_full_url_for_syndicate('/', context.user.syndicate_name),
         self.call_pushbullet(
             access_token=access_token,
             title='Test Notification',

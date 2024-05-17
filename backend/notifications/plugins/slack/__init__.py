@@ -4,7 +4,7 @@ import requests  # type: ignore
 import os
 from rest_framework.serializers import ValidationError
 
-from lib import site as site
+from lib import syndicate
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -61,7 +61,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
         if not title or not text:
             return
 
-        text += f"\n<{site.build_full_url('/printers/')}|Check it out.>"
+        text += f"\n<{syndicate.build_full_url_for_syndicate('printers', context.user.syndicate_name)}|Check it out.>"
 
         self.call_slack(
             access_token=access_token,

@@ -78,17 +78,17 @@ def last_pic_of_print(_print, path_prefix):
     return print_pics[-1]
 
 
-def copy_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
+def copy_pic(input_path, dest_jpg_path, syndicate_name, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
     if not input_path:
         return None
 
     img_bytes = io.BytesIO()
     retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
     img_bytes.seek(0)
-    return save_pic(dest_jpg_path, img_bytes, rotated=rotated, printer_settings=printer_settings, to_container=to_container, to_long_term_storage=to_long_term_storage)
+    return save_pic(dest_jpg_path, img_bytes, syndicate_name, rotated=rotated, printer_settings=printer_settings, to_container=to_container, to_long_term_storage=to_long_term_storage)
 
 
-def save_pic(dest_jpg_path, img_bytes, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
+def save_pic(dest_jpg_path, img_bytes, syndicate_name, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
     bytes_to_save = img_bytes
 
     if rotated:
@@ -104,7 +104,7 @@ def save_pic(dest_jpg_path, img_bytes, rotated=False, printer_settings=None, to_
         tmp_img.save(bytes_to_save, "JPEG")
         bytes_to_save.seek(0)
 
-    _, dest_jpg_url = save_file_obj(dest_jpg_path, bytes_to_save, to_container, long_term_storage=to_long_term_storage)
+    _, dest_jpg_url = save_file_obj(dest_jpg_path, bytes_to_save, to_container, syndicate_name, long_term_storage=to_long_term_storage)
     return dest_jpg_url
 
 
@@ -125,6 +125,7 @@ def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
     return copy_pic(
                 jpg_path.group(1),
                 f'snapshots/{printer.id}/{file_prefix}_rotated.jpg',
+                syndicate_name=printer.user.syndicate.name,
                 rotated=not 'latest_rotated' in jpg_url,
                 printer_settings=printer.settings,
                 to_long_term_storage=False

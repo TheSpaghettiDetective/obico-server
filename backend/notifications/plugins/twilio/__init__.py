@@ -12,7 +12,7 @@ from notifications.plugin import (
     TestMessageContext,
     Feature,
 )
-from lib import site as site
+from lib import syndicate
 
 LOGGER = logging.getLogger(__file__)
 
@@ -64,7 +64,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
             return
 
         to_number = self.get_number_from_config(context.config)
-        link = site.build_full_url('/printers/')
+        link = syndicate.build_full_url_for_syndicate('/printers/', context.user.syndicate_name)
         text = self.get_failure_alert_text(context=context, link=link)
         if not text or not to_number:
             return

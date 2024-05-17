@@ -3,11 +3,11 @@ import os
 from os import path
 from shutil import copyfileobj, rmtree
 
-from lib import site
+from lib import syndicate
 from lib.url_signing import new_signed_url
 
 
-def save_file_obj(dest_path, file_obj, container, content_type):
+def save_file_obj(dest_path, file_obj, container, syndicate_name, content_type):
     fqp = path.join(settings.MEDIA_ROOT, container, dest_path)
     if not path.exists(path.dirname(fqp)):
         os.makedirs(path.dirname(fqp))
@@ -17,7 +17,7 @@ def save_file_obj(dest_path, file_obj, container, content_type):
 
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
     internal_url = new_signed_url(settings.INTERNAL_MEDIA_HOST + uri)
-    external_url = new_signed_url(site.build_full_url(uri))
+    external_url = new_signed_url(syndicate.build_full_url_for_syndicate(uri, syndicate_name))
     return internal_url, external_url
 
 def list_dir(dir_path, container):

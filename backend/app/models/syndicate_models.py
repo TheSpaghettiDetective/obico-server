@@ -6,6 +6,9 @@ from django.contrib.auth.models import AbstractUser, UserManager as BaseUserMana
 from django.contrib.sites.models import Site
 from django.utils.translation import gettext_lazy as _
 import uuid
+from django.utils import timezone
+
+from django.conf import settings
 
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH

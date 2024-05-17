@@ -10,6 +10,8 @@ import secrets
 
 from lib.syndicate import syndicate_from_request
 
+from django.utils.encoding import force_str
+
 
 class SyndicateSpecificBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
@@ -34,6 +36,37 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
 
     def populate_username(self, request, user):
         user.username = f'{user.email}_{user.syndicate.id}'
+
+    def get_from_email(self):
+        syndicate = syndicate_from_request(self.request)
+        from_email = "Verify Email <support@obico.io>"
+        if syndicate and syndicate.name != 'base':
+            from_email = f"Verify Email <{syndicate.name}support@obico.io>"   
+        return from_email
+
+    def format_email_subject(self, subject):
+        return force_str(subject)
+    
+    def send_confirmation_mail(self, request, emailconfirmation, signup):
+        activate_url = self.get_email_confirmation_url(request, emailconfirmation)
+        support_email = "support@obico.io"
+        syndicate_name = "Obico"
+        syndicate = syndicate_from_request(request)
+        if syndicate and syndicate.name != 'base':
+            support_email = syndicate.name + support_email
+            syndicate_name = syndicate.name.capitalize()
+        ctx = {
+            "user": emailconfirmation.email_address.user,
+            "activate_url": activate_url,
+            "key": emailconfirmation.key,
+            "support_email": support_email,
+            "syndicate_name": syndicate_name,
+        }
+        if signup:
+            email_template = "account/email/email_confirmation_signup"
+        else:
+            email_template = "account/email/email_confirmation"
+        self.send_mail(email_template, emailconfirmation.email_address.email, ctx)
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):

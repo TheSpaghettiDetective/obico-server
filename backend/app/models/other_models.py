@@ -892,3 +892,10 @@ class NotificationSetting(models.Model):
 
     class Meta:
         unique_together = ('user', 'name')
+
+
+@receiver(post_save, sender=User)
+def init_email_notification_setting(sender, instance, created, **kwargs):
+    if created:
+        NotificationSetting.objects.get_or_create(user=instance, name='email')
+

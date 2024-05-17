@@ -7,9 +7,9 @@ from django.contrib.sites.models import Site
 from django.utils.translation import gettext_lazy as _
 import uuid
 from django.utils import timezone
-
 from django.conf import settings
 
+from lib import cache
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
 
@@ -134,10 +134,3 @@ def update_consented_at(sender, instance, created, **kwargs):
     if created:
         instance.consented_at = timezone.now()
         instance.save()
-
-
-@receiver(post_save, sender=User)
-def init_email_notification_setting(sender, instance, created, **kwargs):
-    if created:
-        NotificationSetting.objects.get_or_create(user=instance, name='email')
-

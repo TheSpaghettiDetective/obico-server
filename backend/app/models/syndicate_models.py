@@ -1,10 +1,18 @@
 from django.db import models
+from allauth.account.models import EmailAddress
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 from django.contrib.sites.models import Site
 from django.utils.translation import gettext_lazy as _
 import uuid
+
+
+UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
+
+def dh_is_unlimited(dh):
+    return dh >= UNLIMITED_DH
+
 
 class Syndicate(models.Model):
     sites = models.ManyToManyField(Site, related_name='syndicates')

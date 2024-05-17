@@ -1,5 +1,4 @@
 from typing import Dict
-from allauth.account.models import EmailAddress
 from datetime import datetime, timedelta
 import logging
 import os
@@ -29,11 +28,6 @@ from .syndicate_models import Syndicate, User
 
 LOGGER = logging.getLogger(__name__)
 
-UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
-
-
-def dh_is_unlimited(dh):
-    return dh >= UNLIMITED_DH
 
 class PrinterManager(SafeDeleteManager):
     def get_queryset(self):

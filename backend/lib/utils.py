@@ -120,8 +120,8 @@ def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
     if not need_rotation and not force_snapshot:
         return jpg_url
 
-    jpg_path = re.search('(prod-yumi-pics|tsd-pics)/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
-    
+    jpg_path = re.search(f'{settings.PICS_CONTAINER}/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
+
     file_prefix = str(timezone.now().timestamp()) if force_snapshot else 'latest'
     return copy_pic(
                 jpg_path.group(1),

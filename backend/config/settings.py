@@ -495,13 +495,9 @@ CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('CSRF_TRUSTED_ORIGINS') or '[]'
 # https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-# DEFAULT_SUPPORT_EMAIL = os.environ.get('DEFAULT_SUPPORT_EMAIL')
-DEFAULT_SUPPORT_EMAIL = re.search(r'<(.*?)>', DEFAULT_FROM_EMAIL).group(1) if re.search(r'<(.*?)>', DEFAULT_FROM_EMAIL) else None
-
 SYNDICATES = {
   'base': {
     'display_name': 'Obico',
     'from_email': DEFAULT_FROM_EMAIL,
-    'support_email': DEFAULT_SUPPORT_EMAIL,
   },
 }

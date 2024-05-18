@@ -45,18 +45,16 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
 
     def format_email_subject(self, subject):
         return force_str(subject)
-    
+
     def send_confirmation_mail(self, request, emailconfirmation, signup):
         activate_url = self.get_email_confirmation_url(request, emailconfirmation)
         syndicate = syndicate_from_request(request)
-        support_email = settings_for_syndicate(syndicate.name).get('support_email', settings.DEFAULT_SUPPORT_EMAIL)
         syndicate_name = settings_for_syndicate(syndicate.name).get('display_name', "Obico")
-        
+
         ctx = {
             "user": emailconfirmation.email_address.user,
             "activate_url": activate_url,
             "key": emailconfirmation.key,
-            "support_email": support_email,
             "syndicate_name": syndicate_name,
         }
         if signup:
@@ -64,7 +62,7 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
         else:
             email_template = "account/email/email_confirmation"
         self.send_mail(email_template, emailconfirmation.email_address.email, ctx)
-    
+
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):
         # Ignore existing social accounts, just do this stuff for new ones

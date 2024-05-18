@@ -121,6 +121,10 @@ def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
         return jpg_url
 
     jpg_path = re.search('tsd-pics/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
+    
+    if jpg_path is None:
+        return None
+    
     file_prefix = str(timezone.now().timestamp()) if force_snapshot else 'latest'
     return copy_pic(
                 jpg_path.group(1),

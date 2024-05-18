@@ -2,28 +2,35 @@ import get from 'lodash/get'
 import find from 'lodash/find'
 
 import Janus from '@src/lib/janus'
+import { syndicate } from '@src/lib/page-context'
 
 let printerWebRTCUrl = (printerId) => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = (token) => `/ws/share_token/janus/${token}/`
 
 function iceServers(authToken) {
-  const turnServer = window.location.hostname.replace('app', 'turn')
-
-  return [
+  const turnServer = syndicate()?.turn_server
+  const servers = [
     {
       urls: ['stun:stun.l.google.com:19302'],
-    },
-    {
-      urls: `turn:${turnServer}:80?transport=udp`,
-      credential: authToken,
-      username: authToken,
-    },
-    {
-      urls: `turn:${turnServer}:80?transport=tcp`,
-      credential: authToken,
-      username: authToken,
-    },
+    }
   ]
+
+  if (turnServer) {
+    servers.push(
+      {
+        urls: `turn:${turnServer}:80?transport=udp`,
+        credential: authToken,
+        username: authToken,
+      },
+      {
+        urls: `turn:${turnServer}:80?transport=tcp`,
+        credential: authToken,
+        username: authToken,
+      }
+    );
+  }
+
+  return servers
 }
 
 export default function WebRTCConnection(streamMode, streamIdToTest) {

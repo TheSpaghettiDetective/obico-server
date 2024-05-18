@@ -8,9 +8,10 @@ from app.models import User
 from django.contrib.auth.hashers import make_password
 import secrets
 
-from lib.syndicate import syndicate_from_request
+from lib.syndicate import syndicate_from_request, settings_for_syndicate
 
 from django.utils.encoding import force_str
+from django.conf import settings
 
 
 class SyndicateSpecificBackend(ModelBackend):
@@ -39,9 +40,7 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
 
     def get_from_email(self):
         syndicate = syndicate_from_request(self.request)
-        from_email = "Verify Email <support@obico.io>"
-        if syndicate and syndicate.name != 'base':
-            from_email = f"Verify Email <{syndicate.name}support@obico.io>"   
+        from_email = settings_for_syndicate(syndicate.name).get('from_email', settings.DEFAULT_FROM_EMAIL)
         return from_email
 
     def format_email_subject(self, subject):
@@ -49,12 +48,10 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
     
     def send_confirmation_mail(self, request, emailconfirmation, signup):
         activate_url = self.get_email_confirmation_url(request, emailconfirmation)
-        support_email = "support@obico.io"
-        syndicate_name = "Obico"
         syndicate = syndicate_from_request(request)
-        if syndicate and syndicate.name != 'base':
-            support_email = syndicate.name + support_email
-            syndicate_name = syndicate.name.capitalize()
+        support_email = settings_for_syndicate(syndicate.name).get('support_email', settings.DEFAULT_SUPPORT_EMAIL)
+        syndicate_name = settings_for_syndicate(syndicate.name).get('display_name', "Obico")
+        
         ctx = {
             "user": emailconfirmation.email_address.user,
             "activate_url": activate_url,
@@ -67,8 +64,7 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
         else:
             email_template = "account/email/email_confirmation"
         self.send_mail(email_template, emailconfirmation.email_address.email, ctx)
-
-
+    
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):
         # Ignore existing social accounts, just do this stuff for new ones

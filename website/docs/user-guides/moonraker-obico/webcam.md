@@ -135,6 +135,12 @@ rotation = 90
 ```
 
 :::caution
+If the webcam section doesn't have a name, i.e., just `[webcam]`, **Obico for Klipper** will randomly select a webcam configured in Mainsail/Fluidd and use its settings. This may not be what you want if you have more than one webcams configured in Mainsail/Fluidd.
+
+We highly recommend a matching name for your webcam configuration.
+:::
+
+:::caution
 The "URL Stream" or "URL Snapshot" in Mainsail/Fluidd doesn't require the hostname part (such as `http://127.0.0.1`). But **Obico for Klipper**  does require that.
 
 If the hostname part is not included in Mainsail/Fluidd webcam configuration, **Obico for Klipper**  will automatically use `http://127.0.0.1`. If this is not what you want, you will have to specify the `stream_url` and `snapshot_url` in `moonraker-obico.cfg` with the full URLs.

@@ -105,7 +105,7 @@ module.exports = {
       type: 'category',
       label: 'Obico for Klipper',
       link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
-      items: ['user-guides/klipper-setup-manual-link','user-guides/moonraker-obico/config', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
+      items: ['user-guides/klipper-setup-manual-link','user-guides/moonraker-obico/config','user-guides/moonraker-obico/webcam', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
     },
     'user-guides/contact-us-for-support',
   ],

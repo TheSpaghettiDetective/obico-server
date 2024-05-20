@@ -19,8 +19,9 @@ from app.models import User
 from django.contrib.auth import login as auth_login
 from oauth2_provider.models import AccessToken
 from oauth2_provider.signals import app_authorized
-
+from lib.syndicate import syndicate_from_request
 import logging
+import os
 
 LOGGER = logging.getLogger()
 
@@ -30,12 +31,19 @@ class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
         super().__init__(*args, **kwargs)
 
         path = settings.WELL_KNOWN_PATH
+        
         if path:
             self.add_files(path, prefix="/.well-known")
-
+      
     def get_response(self, request):
         if OctoprintTunnelV2Helper.is_tunnel_request(request):
             return None
+
+        syndicate = syndicate_from_request(request)
+        if syndicate and syndicate.name != 'base':
+            self.files.clear() # to avoid duplicates - still not sure it's effect but can't test it locally
+            path = os.path.join(settings.STATIC_ROOT, f'well-known-{syndicate.name}/')
+            self.add_files(path, prefix="/.well-known")
 
         return super().get_response(request)
 

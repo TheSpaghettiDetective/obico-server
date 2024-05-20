@@ -90,6 +90,7 @@ kombu==5.3.2 ; python_version >= '3.8'
 matplotlib-inline==0.1.6 ; python_version >= '3.5'
 msgpack==1.0.7 ; python_version >= '3.8'
 multidict==6.0.4 ; python_version >= '3.7'
+mysqlclient==2.2.4
 newrelic==9.1.1
 nplusone==1.0.0
 numpy==1.26.3

@@ -98,7 +98,9 @@ class OctoPrintPicView(APIView):
         pic = request.FILES['pic']
         pic = cap_image_size(pic)
 
-        if (not printer.current_print) or request.POST.get('viewing_boost'):
+        viewing_boost = request.POST.get('viewing_boost')
+        viewing_boost = True if (viewing_boost is not None and viewing_boost.lower() == 'true') else False
+        if (not printer.current_print) or viewing_boost:
             # Not need for failure detection if not printing, or the pic was send for viewing boost.
             pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg'
             internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, user.syndicate.name, long_term_storage=False)

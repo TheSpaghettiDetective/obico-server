@@ -26,6 +26,9 @@ from allauth.socialaccount.helpers import (
 )
 
 from .web_views import SocialAccountAwareLoginView
+from lib.syndicate import syndicate_from_request
+from app.models import User
+from django.utils.translation import gettext_lazy as _
 
 class MobileLoginView(SocialAccountAwareLoginView):
     template_name = 'mobile/account/login.html'
@@ -41,6 +44,14 @@ class MobileSignupView(SignupView):
 
     def get_success_url(self):
         return '/mobile/auth/fetch/'
+    
+    def form_valid(self, form):
+            email = form.cleaned_data['email']
+            syndicate = syndicate_from_request(self.request)
+            if User.objects.filter(email=email, syndicate=syndicate).exists():
+                form.add_error('email', _('A user is already registered with this email address.'))
+                return self.form_invalid(form)
+            return super().form_valid(form)
 
 
 @login_required

@@ -9,7 +9,7 @@ django = "==4.0.*"
 gunicorn = "*"
 dj-database-url = "*"
 psycopg2-binary = "*"
-django-allauth = "*"
+django-allauth = "==0.62.1"
 django-widget-tweaks = "*"
 djangorestframework = "*"
 django-extensions = "*"
@@ -56,6 +56,8 @@ django-debug-toolbar = "*"
 inotify-simple = "*"
 Twisted = {extras = ["tls", "http2"], version = "*" }
 django-oauth-toolkit = "==2.3.0"
+requests-toolbelt = "==1.0.0"
+prompt-toolkit = "==3.0.43"
 
 [dev-packages]
 

@@ -26,7 +26,6 @@ from allauth.socialaccount.helpers import (
 )
 
 from .web_views import SocialAccountAwareLoginView
-from .web_views import SocialAccountAwareSignupView
 
 class MobileLoginView(SocialAccountAwareLoginView):
     template_name = 'mobile/account/login.html'
@@ -34,8 +33,11 @@ class MobileLoginView(SocialAccountAwareLoginView):
     def get_success_url(self):
         return '/mobile/auth/fetch/'
 
-class MobileSignupView(SocialAccountAwareSignupView):
+class MobileSignupView(SignupView):
     template_name = 'mobile/account/signup.html'
+
+    def get_form_class(self):
+        return SignupForm
 
     def get_success_url(self):
         return '/mobile/auth/fetch/'

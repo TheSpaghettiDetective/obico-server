@@ -27,7 +27,7 @@ class SocialAccountAwareLoginForm(LoginForm):
             if err.message == self.error_messages['email_password_mismatch']:
                 email = self.user_credentials().get('email', None)
                 if email is not None:
-                    user = User.objects.filter(email=email).first()
+                    user = User.objects.filter(email__iexact=email).first()
                     if user is not None and not user.has_usable_password():
                         has_social_accounts = user.socialaccount_set.exists()
                         if has_social_accounts:

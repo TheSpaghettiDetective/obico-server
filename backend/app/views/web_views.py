@@ -55,10 +55,10 @@ class SocialAccountAwareSignupView(SignupView):
     def form_valid(self, form):
             email = form.cleaned_data['email']
             syndicate = syndicate_from_request(self.request)
-            if User.objects.filter(email=email, syndicate=syndicate).exists():
+            if User.objects.filter(emailaddress__email__iexact=email, syndicate=syndicate).exists():
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
-            return super().form_valid(form)
+            return super(SocialAccountAwareSignupView, self).form_valid(form)
 
 @login_required
 def printers(request, template_name='printers.html'):

@@ -44,11 +44,11 @@ class MobileSignupView(SignupView):
 
     def get_success_url(self):
         return '/mobile/auth/fetch/'
-    
+
     def form_valid(self, form):
             email = form.cleaned_data['email']
             syndicate = syndicate_from_request(self.request)
-            if User.objects.filter(email=email, syndicate=syndicate).exists():
+            if User.objects.filter(emailaddress__email__iexact=email, syndicate=syndicate).exists():
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
             return super().form_valid(form)

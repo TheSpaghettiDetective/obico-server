@@ -292,28 +292,29 @@ def will_record_timelapse(_print):
 
 def send_timelapse_detection_done_email(_print):
     syndicate = _print.user.syndicate
-    if syndicate and syndicate.name == 'base':
-        if not settings.EMAIL_HOST:
-            LOGGER.warn("Email settings are missing. Ignored send requests")
-            return
+    if syndicate and syndicate.name != 'base':
+        return
+    if not settings.EMAIL_HOST:
+        LOGGER.warn("Email settings are missing. Ignored send requests")
+        return
 
-        subject = 'We are done detecting failures on the time-lapse you uploaded.'
-        from_email = settings.DEFAULT_FROM_EMAIL
+    subject = 'We are done detecting failures on the time-lapse you uploaded.'
+    from_email = settings.DEFAULT_FROM_EMAIL
 
-        ctx = {
-            'print': _print,
-            'unsub_url': 'https://app.obico.io/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
-            'prints_link': syndicate.build_full_url_for_syndicate('/prints/', _print.printer.user.syndicate.name),
-        }
-        emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
-        message = get_template('email/upload_print_processed.html').render(ctx)
-        msg = EmailMessage(subject, message,
-                        to=emails,
-                        from_email=from_email,
-                        headers={'List-Unsubscribe': '<{}>, <mailto:support@obico.io?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
-                        )
-        msg.content_subtype = 'html'
-        msg.send()
+    ctx = {
+        'print': _print,
+        'unsub_url': 'https://app.obico.io/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
+        'prints_link': syndicate.build_full_url_for_syndicate('/prints/', _print.printer.user.syndicate.name),
+    }
+    emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
+    message = get_template('email/upload_print_processed.html').render(ctx)
+    msg = EmailMessage(subject, message,
+                    to=emails,
+                    from_email=from_email,
+                    headers={'List-Unsubscribe': '<{}>, <mailto:support@obico.io?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
+                    )
+    msg.content_subtype = 'html'
+    msg.send()
 
 
 def select_print_shots_for_feedback(_print):

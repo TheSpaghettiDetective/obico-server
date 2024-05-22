@@ -899,3 +899,19 @@ def init_email_notification_setting(sender, instance, created, **kwargs):
     if created:
         NotificationSetting.objects.get_or_create(user=instance, name='email')
 
+
+class FirstLayerInspection(models.Model):
+    print = models.ForeignKey(Print, on_delete=models.SET_NULL, null=True)
+    score = models.FloatField(null=False)
+    video_url = models.CharField(max_length=2000, null=True)
+    tagged_video_url = models.CharField(max_length=2000, null=True)
+    data_json_url = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class FirstLayerInspectionImage(models.Model):
+    first_layer_inspection = models.ForeignKey(FirstLayerInspection, on_delete=models.CASCADE, null=False)
+    image_url = models.TextField(null=False, blank=False)
+    labels = models.TextField(null=False, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

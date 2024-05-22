@@ -40,7 +40,6 @@ router.register(
 router.register(r'tunnels', viewsets.OctoPrintTunnelViewSet, 'OctoPrintTunnel')
 router.register(r'notification_settings', viewsets.NotificationSettingsViewSet, 'NotificationSettings')
 router.register(r'printer_events', viewsets.PrinterEventViewSet, 'PrinterEvent')
-
 router.register(r'octo/g_code_files', octoprint_views.GCodeFileView, 'AgentGCodeFile')
 
 urlpatterns = [

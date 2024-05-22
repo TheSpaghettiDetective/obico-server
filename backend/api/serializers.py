@@ -11,7 +11,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting, PrinterEvent, GCodeFolder
+    NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspection, FirstLayerInspectionImage,
 )
 
 from notifications.handlers import handler
@@ -321,3 +321,17 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
 class VerifyCodeInputSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=64, required=True)
 
+
+class FirstLayerInspectionImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FirstLayerInspectionImage
+        fields = '__all__'
+
+
+class FirstLayerInspectionSerializer(serializers.ModelSerializer):
+    images = FirstLayerInspectionImageSerializer(many=True, read_only=True, source='firstlayerinspectionimage_set')
+
+    class Meta:
+        model = FirstLayerInspection
+        fields = '__all__'

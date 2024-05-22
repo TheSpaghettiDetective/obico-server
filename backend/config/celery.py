@@ -14,9 +14,9 @@ celery_app.conf.broker_transport_options = {'visibility_timeout': 3600*12}
 celery_app.conf.broker_connection_retry_on_startup = True
 celery_app.conf.task_routes = {
     'app.tasks.process_print_events': {'queue': 'realtime'},
-    'app_ent.tasks.credit_dh_for_contribution': {'queue': 'realtime'},
-    'app_ent.tasks.process_print_events_ent': {'queue': 'realtime'},
-    'app_ent.tasks.setup_free_trial': {'queue': 'realtime'},
+    'app_ent.base_tasks.credit_dh_for_contribution': {'queue': 'realtime'},
+    'app_ent.base_tasks.process_print_events_ent': {'queue': 'realtime'},
+    'app_ent.base_tasks.setup_free_trial': {'queue': 'realtime'},
     'notifications.tasks.send_printer_notifications': {'queue': 'realtime'},
     'notifications.tasks.send_failure_alerts': {'queue': 'realtime'},
 }

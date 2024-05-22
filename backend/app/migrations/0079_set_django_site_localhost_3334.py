@@ -7,9 +7,7 @@ from django.db.utils import IntegrityError
 def change_site_domain(apps, schema_editor):
     Site = apps.get_model('sites', 'Site')
     try:
-        site = Site.objects.get(domain='example.com')
-        site.domain = 'localhost:3334'
-        site.save()
+        site, created = Site.objects.get_or_create(domain='localhost:3334', defaults={'name': 'localhost:3334'})
     except (Site.DoesNotExist, IntegrityError):
         pass
 

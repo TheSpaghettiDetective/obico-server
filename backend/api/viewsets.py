@@ -587,7 +587,7 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
         if should_credit:
             _print = unanswered_print_shots.first().print
-            celery_app.send_task('app_ent.base_tasks.credit_dh_for_contribution',
+            celery_app.send_task('app_ent.tasks.base_tasks.credit_dh_for_contribution',
                                  args=[request.user.id, 2, f'Credit | Focused Feedback - "{_print.filename[:100]}"', f'ff:p:{_print.id}']
                                  )
 

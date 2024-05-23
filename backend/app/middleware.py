@@ -25,14 +25,6 @@ import logging
 LOGGER = logging.getLogger()
 
 class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        path = settings.WELL_KNOWN_PATH
-        if path:
-            self.add_files(path, prefix="/.well-known")
-
     def get_response(self, request):
         if OctoprintTunnelV2Helper.is_tunnel_request(request):
             return None

@@ -291,6 +291,9 @@ def will_record_timelapse(_print):
     return True
 
 def send_timelapse_detection_done_email(_print):
+    syndicate = _print.user.syndicate
+    if syndicate and syndicate.name != 'base':
+        return
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
@@ -306,10 +309,10 @@ def send_timelapse_detection_done_email(_print):
     emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
     message = get_template('email/upload_print_processed.html').render(ctx)
     msg = EmailMessage(subject, message,
-                       to=emails,
-                       from_email=from_email,
-                       headers={'List-Unsubscribe': '<{}>, <mailto:support@obico.io?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
-                       )
+                    to=emails,
+                    from_email=from_email,
+                    headers={'List-Unsubscribe': '<{}>, <mailto:support@obico.io?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
+                    )
     msg.content_subtype = 'html'
     msg.send()
 

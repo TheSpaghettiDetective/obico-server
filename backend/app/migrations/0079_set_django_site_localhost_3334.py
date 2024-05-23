@@ -6,8 +6,11 @@ from django.db.utils import IntegrityError
 @transaction.atomic
 def change_site_domain(apps, schema_editor):
     Site = apps.get_model('sites', 'Site')
+    Syndicate = apps.get_model('app', 'Syndicate')
     try:
         site, created = Site.objects.get_or_create(domain='localhost:3334', defaults={'name': 'localhost:3334'})
+        syndicate = Syndicate.objects.get(id=1)
+        syndicate.sites.add(site)
     except (Site.DoesNotExist, IntegrityError):
         pass
 

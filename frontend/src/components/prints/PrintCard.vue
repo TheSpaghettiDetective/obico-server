@@ -177,7 +177,7 @@
                 >
                 <span v-else> {{$t("With Focused Feedback, you can tell us exactly where we got it wrong. This is the most effective way to help us improve.")}}
                   <a
-                    :href="this.getDocLink('/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback')"
+                    :href="getDocLink('/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback')"
                     >{{ $t("You will earn 2 AI Detection Hours once you finish the Focused Feedback") }}</a
                   >.
                 </span>
@@ -185,7 +185,7 @@
 
               <small v-else>
                 {{$t("Every time you give us feedback,")}}
-                <a :href="this.getDocLink('/user-guides/how-does-credits-work/')"
+                <a :href="getDocLink('/user-guides/how-does-credits-work/')"
                   >{{ $t("you help us get better at detecting failures") }}</a
                 >.
               </small>
@@ -386,9 +386,6 @@ export default {
         showCloseButton: true,
       })
     },
-    getDocLink(path){
-      return this.$syndicateText.docRoot + path;
-    }
   },
 }
 </script>

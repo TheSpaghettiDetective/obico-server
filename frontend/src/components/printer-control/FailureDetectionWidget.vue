@@ -29,7 +29,7 @@
               <span
                 >{{$t("Not watching")}} ({{ printer.not_watching_reason }}).
                 <a
-                  :href="this.getDocLink('/user-guides/detective-not-watching/')"
+                  :href="getDocLink('/user-guides/detective-not-watching/')"
                   target="_blank"
                   >{{$t("Learn all possible reasons")}}
                   <small><i class="fas fa-external-link-alt"></i></small></a
@@ -178,9 +178,6 @@ export default {
     onNotAFailureClicked(event) {
       this.$emit('notAFailureClicked', event, false)
     },
-    getDocLink(path) {
-      return this.$syndicateText.docRoot + path;
-    }
   },
 }
 </script>

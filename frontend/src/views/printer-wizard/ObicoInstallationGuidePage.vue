@@ -14,12 +14,12 @@
                 </div>
               </b-row>
               <div>
-                <div v-if="targetKlipperPreInstall" class="kilpper-pre-install-wrap">
+                <div v-if="targetKlipperPreInstall" class="klipper-pre-install-wrap">
                   <img src="@static/img/printer-wizard/commandLinePrompt.png" alt="">
                   <div class="text-wrap">
                     <h3>{{ $t("Install Obico for Klipper") }}</h3>
                     <ol class="secondary-font">
-                      <li><a href="https://www.obico.io/docs/user-guides/klipper-setup/" target="_blank">{{ $t("Find the Guide for Your Printer to install Obico for Klipper.") }}</a></li>
+                      <li><a :href="getDocLink('/user-guides/klipper-setup/')" target="_blank">{{ $t("Find the Guide for Your Printer to install Obico for Klipper.") }}</a></li>
                       <li>{{ $t('SSH to your device.') }}</li>
                       <li>{{ $t('Enter the installation commands.') }}</li>
                       <li>{{ $t('Alternatively, you can use KIAUH to install Obico.') }}</li>
@@ -94,12 +94,11 @@
                 <div class="text-center mt-5 wizard-default-font">
                   <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
                     <template #localizedDom>
-                      <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
+                      <a target="_blank" :href="targetKlipper? getDocLink('/user-guides/klipper-setup/'):getDocLink('/user-guides/octoprint-plugin-setup/')">{{$t("step-by-step set up guide")}}.</a>
                     </template>
                   </i18next>
                 </div>
               </div>
-            </div>
           </b-col>
         </b-row>
       </b-container>
@@ -150,7 +149,7 @@ export default {
 
 <style lang="scss" scoped>
 .form-container {
-  .kilpper-pre-install-wrap {
+  .klipper-pre-install-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;

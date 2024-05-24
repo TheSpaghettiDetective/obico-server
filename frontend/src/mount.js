@@ -74,6 +74,9 @@ export default (router, components) => {
           })
         }
       },
+      getDocLink(path) {
+          return this.$syndicateText.docRoot + path;
+      }
     },
   })
 

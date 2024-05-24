@@ -499,6 +499,6 @@ SYNDICATES = {
   'base': {
     'display_name': 'Obico',
     'from_email': DEFAULT_FROM_EMAIL,
-    'docRoot': 'https://obico.io/docs/',
+    'docRoot': 'https://www.obico.io/docs/',
   },
 }

@@ -16,7 +16,7 @@
           <p>
             <i18next :translation="$t('Telegram in the mobile app is very finicky. Please open a browser, and log into {localizedDom} using the same credential to set up Telegram.')">
               <template #localizedDom>
-                <a :href="getDomain()">{{$t("the {brandName} web app",{brandName:$syndicateText.brandName})}}</a>
+                <a :href="getAppRoot()">{{$t("the {brandName} web app",{brandName:$syndicateText.brandName})}}</a>
               </template>
             </i18next>
 

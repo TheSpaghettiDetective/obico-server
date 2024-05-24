@@ -74,10 +74,10 @@ export default (router, components) => {
           })
         }
       },
-      getDocLink(path) {
+      getDocRoot(path) {
         return this.$syndicateText.docRoot + path;
       },
-      getDomain(path) {
+      getAppRoot(path) {
         if(path)
           return this.$syndicateText.domain + path;
         else

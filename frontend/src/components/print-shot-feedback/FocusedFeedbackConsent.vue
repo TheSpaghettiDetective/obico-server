@@ -14,7 +14,7 @@
           <strong class="text-light">{{$t("2 non-expirable AI Detection Hours")}}</strong>
         </template>
         <template #localizedDom2>
-          <a target="_blank" :href="getDocLink('/user-guides/how-does-credits-work/')">{{$t('Learn more')}}. <small><i class="fas fa-external-link-alt"></i></small ></a>
+          <a target="_blank" :href="getDocRoot('/user-guides/how-does-credits-work/')">{{$t('Learn more')}}. <small><i class="fas fa-external-link-alt"></i></small ></a>
         </template>
       </i18next>
     </p>
@@ -41,7 +41,7 @@
 
         <a
           target="_blank"
-          :href="getDocLink('/user-guides/how-does-credits-work#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse')"
+          :href="getDocRoot('/user-guides/how-does-credits-work#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse')"
           >{{$t("Why is this necessary? ")}}<small><i class="fas fa-external-link-alt"></i></small
         ></a>
       </label>

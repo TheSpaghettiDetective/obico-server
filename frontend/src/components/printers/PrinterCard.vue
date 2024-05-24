@@ -65,7 +65,7 @@
           <h5 class="text-warning">{{ $t("Failure Detection is Off") }}</h5>
           <small v-if="printer.not_watching_reason"
             >{{ printer.not_watching_reason }}.
-            <a :href="getDocLink('/user-guides/detective-not-watching/')" target="_blank"
+            <a :href="getDocRoot('/user-guides/detective-not-watching/')" target="_blank"
               >{{ $t("Learn more. ") }}<small><i class="fas fa-external-link-alt"></i></small></a
           ></small>
           <div></div>

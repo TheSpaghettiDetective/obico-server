@@ -89,7 +89,7 @@
         :class="webcamRatioClass"
         :style="{ transform: `rotate(${videoRotationDeg}deg)` }"
       >
-        <div class="webcam_fixed_ratio_inner">
+        <!-- <div class="webcam_fixed_ratio_inner">
           <img
             v-if="taggedSrc !== printerStockImgSrc"
             class="tagged-jpg"
@@ -104,7 +104,7 @@
           >
             <use :href="printerStockImgSrc" />
           </svg>
-        </div>
+        </div> -->
         <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
           <img class="tagged-jpg" :src="mjpgSrc" />
         </div>
@@ -473,6 +473,7 @@ export default {
     padding-bottom: 100%
 
     .webcam_fixed_ratio
+      display: flex
       position: absolute
       top: 0
       bottom: 0
@@ -480,10 +481,8 @@ export default {
       right: 0
 
       .webcam_fixed_ratio_inner
-        width: 100%
-        height: 100%
         &.ontop
-          position: absolute
+          position: relative
           top: 0
 
   .webcam_rotate_0, .webcam_rotate_180

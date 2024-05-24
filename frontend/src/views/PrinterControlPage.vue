@@ -112,25 +112,31 @@
           </div>
         </div>
         <div class="stream-container">
-          <div v-if="webcams.length > 1" class="webcam-selector">
-            <select id="webcam-select" v-model="selectedWebcamIndex" class="custom-select">
-              <option v-for="(webcam, index) in webcams" :key="index" :value="index">
-                {{ webcam.name || '_default_' }}
-              </option>
-            </select>
+          <div class="header-container">
+            <div class="title">{{ $t('Webcam') }}</div>
+            <div class="webcam-options">
+              <b-dropdown v-model="selectedWebcamIndex" class="webcam-dropdown" block size="sm" variant="link" toggle-class="text-decoration-none" no-caret>
+                <template #button-content>
+                  <i class="fa fa-camera" aria-hidden="true"></i>
+                  {{ isAllWebcamSelected ? 'All' : selectedWebcam.name || 'Primary' }}
+                  <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                </template>
+                <b-dropdown-text class="small text-secondary">{{ $t("WEBCAM SELECTION") }}</b-dropdown-text>
+                <b-dropdown-item v-for="(webcam, index) in webcams" :key="index" href="#" @click="chooseWebcam(index)">{{ webcam.name || 'Primary' }}</b-dropdown-item>
+                <b-dropdown-item @click="chooseWebcam('all')">{{ $t('All') }}</b-dropdown-item>
+              </b-dropdown>
+            </div>
           </div>
-        <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" v-show="index === selectedWebcamIndex">
-          <streaming-box
-            :printer="printer"
-            :webrtc="webcam.webrtc"
-            :autoplay="user.is_pro"
-            @onRotateRightClicked="
-              (val) => {
-                customRotationDeg = val
-              }
-            "
-          />
-        </div>
+          <div class="webcam-main" :class="{ 'justify-center' : isAllWebcamSelected, 'webcam-more-than-two' : isAllWebcamSelected && webcams.length > 2 }">
+            <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" :class="isAllWebcamSelected ? (isAtleastOnePrinterPortrait ? 'two-webcam-portrait' : 'two-webcam-landscape') : (videoRotationDeg === 90 || videoRotationDeg === 270 ? 'single-webcam-portrait' : '')" v-show="isAllWebcamSelected ? true : (index === selectedWebcamIndex)">
+              <streaming-box
+                :printer="printer"
+                :webrtc="webcam.webrtc"
+                :autoplay="user.is_pro"
+                @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -225,6 +231,9 @@ export default {
       lastPrintFetchCounter: 0,
       widgetsConfig: null,
       customRotationDeg: getLocalPref('webcamRotationDeg', 0),
+      isAllWebcamSelected: false,
+      customRotationData: [],
+      isAtleastOnePrinterPortrait: false,
     }
   },
 
@@ -284,6 +293,7 @@ export default {
             for (const webcam of webcams) {
               webcam.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
               this.webcams.push(webcam)
+              this.calculateAtLeastOneFeedPortrait()
               // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
               webcam.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
               // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
@@ -304,6 +314,42 @@ export default {
   },
 
   methods: {
+    calculateAtLeastOneFeedPortrait() {
+      let isPortrait = false
+      this.webcams.forEach(webcam => {
+        const id = webcam.stream_id
+        const customRotationData = this.customRotationData.find(custom => custom.streamId == id) || null
+
+        const customRotation = customRotationData ? Number(customRotationData.customRotation) : 0
+        const rotation = +(webcam.rotation ?? 0) + customRotation
+        const degree = rotation % 360
+        
+        if (degree === 90 || degree === 270) {
+          isPortrait = true
+        }
+      })
+      
+      this.isAtleastOnePrinterPortrait = isPortrait
+    },
+    handleRotateRightClicked(val, streamId) {
+      const customRotationIndex = this.customRotationData.findIndex(custom => custom.streamId === streamId)
+      if (customRotationIndex === -1) {
+        this.customRotationData.push({ streamId: streamId, customRotation: val })
+      } else {
+        this.customRotationData[customRotationIndex].customRotation = val
+      }
+       
+      this.customRotationDeg = val
+      this.calculateAtLeastOneFeedPortrait()
+    },
+    chooseWebcam(value) {
+      if (value == 'all') {
+        this.isAllWebcamSelected = true
+      } else {
+        this.selectedWebcamIndex = value
+        this.isAllWebcamSelected = false
+      }
+    },
     onMenuOptionClicked(menuOptionKey) {
       if (menuOptionKey === 'share') {
         this.onSharePrinter()
@@ -550,12 +596,22 @@ export default {
   background-color: #000
   border-radius: var(--border-radius-md)
   overflow: hidden
-
-  .stream-inner
-    position: absolute
-    top: 50%
-    left: 50%
-    transform: translate(-50%, -50%)
+  .webcam-main
+    @media (min-width: 1024px)
+      height: calc(100vh - 50px - var(--gap-between-blocks)*2 - 33px)
+    
+    @media (min-width: 1024px)
+      display: grid
+      align-items: center
+    
+  .header-container
+    display: flex
+    justify-content: space-between
+    background-color: var(--color-surface-secondary)
+    .title
+      color: var(--color-text-secondary)
+      padding: 6px 12px
+      font-size: 14px
 
 @media (max-width: 1024px)
   .page-container
@@ -577,10 +633,6 @@ export default {
     width: 100%
     margin-bottom: 15px
     flex: 0
-
-    .stream-inner
-      position: static
-      transform: none
 
 .page-container
   @media (max-width: 510px)
@@ -609,4 +661,24 @@ export default {
       display: block
       text-align: center
       margin-bottom: 1rem
+
+.two-webcam-landscape
+  @media (min-width: 1024px)
+    width: 50vh !important
+.two-webcam-portrait
+  @media (min-width: 1024px)
+    width: 40vh !important
+.single-webcam-portrait
+  @media (min-width: 1024px)
+    width: 80% !important
+    position: relative
+    left: 10%
+
+.justify-center
+  @media (min-width: 1024px)
+    justify-content: center
+
+.webcam-more-than-two
+  display: flex !important
+  gap: 10px
 </style>

@@ -79,9 +79,9 @@ export default (router, components) => {
       },
       getAppRoot(path) {
         if(path)
-          return this.$syndicateText.domain + path;
+          return this.$syndicateText.appRoot + path;
         else
-        return this.$syndicateText.domain;
+        return this.$syndicateText.appRoot;
       }
     },
   })

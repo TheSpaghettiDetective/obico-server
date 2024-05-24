@@ -281,7 +281,7 @@
                                     <span v-else>
                                       {{$t("With Focused Feedback, you can tell us exactly where we got it wrong. This is the most effective way to help us improve.")}}
                                       <a
-                                        :href="getDocRoot('/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback')"
+                                        :href="getDocUrl('/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback')"
                                         target="_blank"
                                       >
                                         {{$t("You will earn 2 AI Detection Hours once you finish the Focused Feedback")}}
@@ -291,7 +291,7 @@
                                   <small v-else>
                                     {{$t("Every time you give us feedback,")}}
                                     <a
-                                      :href="getDocRoot('/user-guides/how-does-credits-work/')"
+                                      :href="getDocUrl('/user-guides/how-does-credits-work/')"
                                       target="_blank"
                                     >
                                       {{$t("you help us get better at detecting failures")}}

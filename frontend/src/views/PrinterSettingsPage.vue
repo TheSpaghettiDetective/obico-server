@@ -217,7 +217,7 @@
                   <i class="fas fa-exclamation-triangle"></i>
                   <i18next :translation="$t(`Focused Feedback won't be available when time-lapse recording is turned off. You won't be able to {localizedDom}`)">
                     <template #localizedDom>
-                      <a :href="getDocRoot('/user-guides/how-does-credits-work/')">{{$t("help us get better while earning AI Detection Hours for yourself")}}</a>
+                      <a :href="getDocUrl('/user-guides/how-does-credits-work/')">{{$t("help us get better while earning AI Detection Hours for yourself")}}</a>
                     </template>
                   </i18next>
 
@@ -301,7 +301,7 @@
                     <small>
                       <i18next :translation="$t(`If your printer is always showing as 'offline', and you have gone through {localizedDom}, you can try to re-link printer as the last resort.`)">
                         <template #localizedDom>
-                          <a :href="getDocRoot('/user-guides/troubleshoot-server-connection-issues/')">{{$t("all the trouble-shooting steps")}}</a>
+                          <a :href="getDocUrl('/user-guides/troubleshoot-server-connection-issues/')">{{$t("all the trouble-shooting steps")}}</a>
                         </template>
                       </i18next>
                     </small>

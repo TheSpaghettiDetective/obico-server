@@ -19,7 +19,7 @@
                   <div class="text-wrap">
                     <h3>{{ $t("Install Obico for Klipper") }}</h3>
                     <ol class="secondary-font">
-                      <li><a :href="getDocRoot('/user-guides/klipper-setup/')" target="_blank">{{ $t("Find the Guide for Your Printer to install Obico for Klipper.") }}</a></li>
+                      <li><a :href="getDocUrl('/user-guides/klipper-setup/')" target="_blank">{{ $t("Find the Guide for Your Printer to install Obico for Klipper.") }}</a></li>
                       <li>{{ $t('SSH to your device.') }}</li>
                       <li>{{ $t('Enter the installation commands.') }}</li>
                       <li>{{ $t('Alternatively, you can use KIAUH to install Obico.') }}</li>
@@ -94,7 +94,7 @@
                 <div class="text-center mt-5 wizard-default-font">
                   <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
                     <template #localizedDom>
-                      <a target="_blank" :href="targetKlipper? getDocRoot('/user-guides/klipper-setup/'):getDocRoot('/user-guides/octoprint-plugin-setup/')">{{$t("step-by-step set up guide")}}.</a>
+                      <a target="_blank" :href="targetKlipper? getDocUrl('/user-guides/klipper-setup/'):getDocUrl('/user-guides/octoprint-plugin-setup/')">{{$t("step-by-step set up guide")}}.</a>
                     </template>
                   </i18next>
                 </div>

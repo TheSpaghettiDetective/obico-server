@@ -24,14 +24,14 @@
                 <h3 v-if="trialDaysLeft >= 29" class="py-3">
                   <i18next :translation="$t('Your 30-Day {localizedDom} Free Trial Has Started!')">
                     <template #localizedDom>
-                      <a class="link" target="_blank" :href="getDocRoot('/user-guides/upgrade-to-pro/')">{{$t("Pro Plan")}}</a>
+                      <a class="link" target="_blank" :href="getDocUrl('/user-guides/upgrade-to-pro/')">{{$t("Pro Plan")}}</a>
                     </template>
                   </i18next>
                 </h3>
                 <h3 v-else class="py-3">
                   <i18next :translation="$t('{trialDaysLeft} Days Left on Your {localizedDom} Free Trial!')">
                     <template #localizedDom>
-                      <a class="link" target="_blank" :href="getDocRoot('/user-guides/upgrade-to-pro/')">{{$t("Pro Plan")}} </a>
+                      <a class="link" target="_blank" :href="getDocUrl('/user-guides/upgrade-to-pro/')">{{$t("Pro Plan")}} </a>
                     </template>
                     <template #trialDaysLeft>
                       {{trialDaysLeft}}
@@ -101,7 +101,7 @@
                 {{ $t('is requesting to access you {platformDisplayName} Tunnel.',{platformDisplayName}) }}
               </h4>
               <p class="text-muted">
-                <a :href="getDocRoot('/user-guides/octoprint-tunneling/')" target="_blank">{{platformDisplayName}} {{$t("Tunnel")}}</a>
+                <a :href="getDocUrl('/user-guides/octoprint-tunneling/')" target="_blank">{{platformDisplayName}} {{$t("Tunnel")}}</a>
                 <i18next :translation="$t('is a secure way provided by {localizedDom} to remotely access your {platformDisplayName}. With the {platformDisplayName} Tunnel, you can use {appDisplayName} to access your {platformDisplayName} from anywhere.')">
                     <template #localizedDom>
                       <a href="https://www.obico.io/" target="_blank">{{$syndicateText.brandName}}</a>
@@ -120,7 +120,7 @@
                   <i class="fas fa-exclamation-triangle"></i>
                   <i18next :translation="$t('Tunnel usage of a free account is {localizedDom} to enjoy unlimited tunnel usage.')">
                     <template #localizedDom>
-                      <a :href="getDocRoot('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a :href="getAppRoot('/ent_pub/pricing/')" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
+                      <a :href="getDocUrl('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a :href="getAppUrl('/ent_pub/pricing/')" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
                     </template>
                   </i18next>
                 </div>
@@ -136,7 +136,7 @@
                   <i class="fas fa-exclamation-triangle"></i>
                   <i18next :translation="$t('After the Free trial expires, tunnel data usage will be {localizedDom} to continue enjoying unlimited tunnel usage.')">
                     <template #localizedDom>
-                      <a :href="getDocRoot('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a :href="getAppRoot('/ent_pub/pricing/')" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
+                      <a :href="getDocUrl('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a :href="getAppUrl('/ent_pub/pricing/')" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
                     </template>
                   </i18next>
 
@@ -222,7 +222,7 @@
             <div class="account-details">
               <p>
                 {{ $t("With the Free {platformDisplayName} Tunnel by {brandName}, you can now use {appDisplayName} to",{platformDisplayName,brandName:$syndicateText.brandName,appDisplayName}) }}
-                  <a :href="getDocRoot('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank"> {{$t("securely control and monitor your printer from anywhere")}}</a>
+                  <a :href="getDocUrl('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank"> {{$t("securely control and monitor your printer from anywhere")}}</a>
               </p>
               <ul class="text-muted">
                 <li>{{ $t("Unlimited realtime webcam at 0.1FPS.") }}</li>
@@ -233,7 +233,7 @@
                 🔥🔥🔥
                 <i18next :translation="$t('Upgrade to {brandName} Pro Account ({localizedDom}) to get premium features')">
                     <template #localizedDom>
-                      <a :href="getAppRoot('/ent_pub/pricing/')" target="_blank">{{$t("from $4/mo")}}</a>
+                      <a :href="getAppUrl('/ent_pub/pricing/')" target="_blank">{{$t("from $4/mo")}}</a>
                     </template>
                     <template #brandName>
                       {{$syndicateText.brandName}}
@@ -245,7 +245,7 @@
                 <li>📶 {{ $t("Unlimited tunnel data usage.") }}</li>
                 <li>🤖 {{ $t("50 hours/mo AI failure detection.") }}</li>
                 <li>
-                  <a :href="getAppRoot('/ent_pub/pricing/')" target="_blank"
+                  <a :href="getAppUrl('/ent_pub/pricing/')" target="_blank"
                     >{{ $t("And much more...") }}</a
                   >
                 </li>

@@ -115,7 +115,7 @@
             {{$t("{brandName} for {name} is Offline.",{brandName:$syndicateText.brandName,name:printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'})}}
             <a
               target="_blank"
-              :href="getDocRoot('/user-guides/troubleshoot-server-connection-issues/')"
+              :href="getDocUrl('/user-guides/troubleshoot-server-connection-issues/')"
               >{{ $t("Why?") }}</a
             >
           </p>
@@ -293,7 +293,7 @@ export default {
         }
       } else {
         this.$swal.Confirm.fire({
-          html: `If you haven't changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="${getDocRoot('/user-guides/detection-print-job-settings#when-print-is-paused')}">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>`,
+          html: `If you haven't changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="${getDocUrl('/user-guides/detection-print-job-settings#when-print-is-paused')}">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>`,
         }).then((result) => {
           if (result.value) {
             this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT)

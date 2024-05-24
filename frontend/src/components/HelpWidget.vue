@@ -147,7 +147,7 @@
               <div>
                 <i18next :translation="$t('Learn more about {localizedDom}')">
                   <template #localizedDom>
-                    <a :href="getDocRoot('/user-guides/webcam-streaming-for-human-eyes/')" target="_blank">{{$t("the differences between the Premium Streaming and the Basic Streaming")}} <i class="fas fa-external-link-alt"></i></a>
+                    <a :href="getDocUrl('/user-guides/webcam-streaming-for-human-eyes/')" target="_blank">{{$t("the differences between the Premium Streaming and the Basic Streaming")}} <i class="fas fa-external-link-alt"></i></a>
                   </template>
                 </i18next>
 
@@ -161,7 +161,7 @@
                 <li>{{ $t("Unused AI Detection Hours roll over month to month.") }}</li>
                 <li>
                   {{$t("You can")}}
-                  <a :href="getDocRoot('/user-guides/how-does-credits-work/')"
+                  <a :href="getDocUrl('/user-guides/how-does-credits-work/')"
                     >{{ $t("earn free AI Detection Hours by helping her improve") }}</a
                   >.
                 </li>
@@ -172,7 +172,7 @@
               <p>
                 {{$t("Learn more about")}}
                 <a
-                  :href="getDocRoot('/user-guides/how-does-detective-hour-work/')"
+                  :href="getDocUrl('/user-guides/how-does-detective-hour-work/')"
                   target="_blank"
                   >{{ $t("how the AI Detection Hour works ") }}<i class="fas fa-external-link-alt"></i
                 ></a>
@@ -187,7 +187,7 @@
                 <li>{{ $t("AI Detection Hours expire when subscription ends.") }}</li>
                 <li>
                   {{$t("You can")}}
-                  <a :href="getDocRoot('/user-guides/how-does-credits-work/')"
+                  <a :href="getDocUrl('/user-guides/how-does-credits-work/')"
                     >{{ $t("earn more AI Detection Hours by helping her improve") }}</a
                   >.
                 </li>
@@ -198,7 +198,7 @@
               <p>
                 {{$t("Learn more about")}}
                 <a
-                  :href="getDocRoot('/user-guides/how-does-detective-hour-work/')"
+                  :href="getDocUrl('/user-guides/how-does-detective-hour-work/')"
                   target="_blank"
                   >{{ $t("how the AI Detection Hour works ") }}<i class="fas fa-external-link-alt"></i
                 ></a>
@@ -217,7 +217,7 @@
               <p>
                 {{$t("Learn more about")}}
                 <a
-                  :href="getDocRoot('/user-guides/webcam-streaming-for-human-eyes/')"
+                  :href="getDocUrl('/user-guides/webcam-streaming-for-human-eyes/')"
                   target="_blank"
                   >{{$t("the differences between the Premium Streaming and the Basic Streaming")}}
                   <i class="fas fa-external-link-alt"></i
@@ -233,7 +233,7 @@
               </p>
               <p>
                 {{$t("Learn more about")}}
-                <a :href="getDocRoot('/user-guides/octoprint-tunneling/')" target="_blank"
+                <a :href="getDocUrl('/user-guides/octoprint-tunneling/')" target="_blank"
                   >{{ $t("OctoPrint/Klipper tunnel ") }}<i class="fas fa-external-link-alt"></i
                 ></a>
               </p>
@@ -244,7 +244,7 @@
               <div>{{ $t("Securely tunnel to your OctoPrint/Klipper from anywhere. Unlimited.") }}</div>
               <p>
                 {{$t("Learn more about")}}
-                <a :href="getDocRoot('/user-guides/octoprint-tunneling/')" target="_blank"
+                <a :href="getDocUrl('/user-guides/octoprint-tunneling/')" target="_blank"
                   >{{ $t("OctoPrint/Klipper tunnel ") }}<i class="fas fa-external-link-alt"></i
                 ></a>
               </p>
@@ -328,7 +328,7 @@
             <!-- thumbnail-setup-guide -->
             <template v-if="id === 'thumbnail-setup-guide'">
               <p>
-                <a :href="getDocRoot('/user-guides/enable-gcode-thumbnails/')" target="_blank"
+                <a :href="getDocUrl('/user-guides/enable-gcode-thumbnails/')" target="_blank"
                   >{{$t("Learn how to configure G-Code preview generation in your slicer")}}
                   <i class="fas fa-external-link-alt"></i
                 ></a>

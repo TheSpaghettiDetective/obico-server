@@ -115,7 +115,7 @@
             {{$t("{brandName} for {name} is Offline.",{brandName:$syndicateText.brandName,name:printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'})}}
             <a
               target="_blank"
-              href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/"
+              :href="this.getDocLink('/user-guides/troubleshoot-server-connection-issues/')"
               >{{ $t("Why?") }}</a
             >
           </p>
@@ -293,7 +293,7 @@ export default {
         }
       } else {
         this.$swal.Confirm.fire({
-          html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
+          html: `If you haven't changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="${this.getDocLink('/user-guides/detection-print-job-settings#when-print-is-paused')}">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>`,
         }).then((result) => {
           if (result.value) {
             this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT)
@@ -312,6 +312,9 @@ export default {
         }
       })
     },
+    getDocLink(path) {
+      return this.$syndicateText.docRoot + path;
+    }
   },
 }
 </script>

@@ -13,7 +13,7 @@
         {{$t("Not sure? Look at")}}
         <a
           target="_blank"
-          href="https://www.obico.io/docs/user-guides/how-does-credits-work#spaghetti-examples"
+          :href="this.getDocLink('/user-guides/how-does-credits-work#spaghetti-examples')"
           >{{ $t("some examples. ") }}<small><i class="fas fa-external-link-alt"></i></small
         ></a>
       </small>
@@ -91,6 +91,9 @@ export default {
           }
         })
     },
+    getDocLink(path) {
+      return this.$syndicateText.docRoot + path;
+    }
   },
 }
 </script>

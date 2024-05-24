@@ -10,7 +10,7 @@
         <div class="text-muted">
           <i18next :translation="$t('Monthly data usage ({localizedDom})')">
             <template #localizedDom>
-              <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">{{$t("Resets in {daysUntilReset} days",{daysUntilReset})}}</a>
+              <a :href="this.getDocLink('/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users')" target="_blank">{{$t("Resets in {daysUntilReset} days",{daysUntilReset})}}</a>
             </template>
           </i18next>
         </div>
@@ -113,7 +113,7 @@ export default {
             ${this.$i18next.t("It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the {brandName} app server.",{brandName:this.$syndicateText.brandName})}
           </div>
           <div class="p-1">
-            <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">
+            <a target="_blank" href="${this.getDocLink('/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users')}">
             ${this.$i18next.t("Learn more about OctoPrint/Klipper tunnel's security and page load speed.")}
             <i class="fas fa-external-link-alt"></i>
           </a>
@@ -157,6 +157,9 @@ export default {
     iframeUrl() {
       return `/octoprint/${this.printerId}/`
     },
+    getDocLink(path){
+      return this.$syndicateText.docRoot + path;
+    }
   },
 }
 </script>

@@ -22,11 +22,19 @@
           <div class="custom-control custom-checkbox form-check-inline">
             <input type="checkbox" class="custom-control-input" id="tos-checkbox" checked>
             <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox">
+            
+            {% if page_context.syndicate.name == 'base' %}
+            {% blocktrans with brand_name=page_context.syndicate.display_name %}
+            By signing up, I agree to the {{ brand_name }} app's 
+            <a class="link" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" href="https://www.obico.io/privacy.html">PrivacyPolicy</a>
+            {% endblocktrans %}
+            {% else %}
+            {% blocktrans with brand_name=page_context.syndicate.display_name privacy_link=page_context.syndicate.privacy_link tos_link=page_context.syndicate.tos_link %}
+            By signing up, I agree to the {{ brand_name }} app's 
+            <a class="link" href="{{ tos_link }}">Terms of Use</a> and <a class="link" href="{{ privacy_link }}">PrivacyPolicy</a>
+            {% endblocktrans %}
+            {% endif %}
 
-            {% blocktrans with page_context.syndicate.display_name as brand_name %}By signing up, I agree to
-            the {{ brand_name }} app's <a class="link" href="https://www.obico.io/terms.html">Terms of
-              Use</a> and <a class="link" href="https://www.obico.io/privacy.html">Privacy
-              Policy</a>{% endblocktrans %}
             </label>
           </div>
         </div>

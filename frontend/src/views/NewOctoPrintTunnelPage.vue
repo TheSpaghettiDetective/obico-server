@@ -120,7 +120,7 @@
                   <i class="fas fa-exclamation-triangle"></i>
                   <i18next :translation="$t('Tunnel usage of a free account is {localizedDom} to enjoy unlimited tunnel usage.')">
                     <template #localizedDom>
-                      <a :href="getDocLink('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
+                      <a :href="getDocLink('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a :href="getDomain('/ent_pub/pricing/')" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
                     </template>
                   </i18next>
                 </div>
@@ -136,7 +136,7 @@
                   <i class="fas fa-exclamation-triangle"></i>
                   <i18next :translation="$t('After the Free trial expires, tunnel data usage will be {localizedDom} to continue enjoying unlimited tunnel usage.')">
                     <template #localizedDom>
-                      <a :href="getDocLink('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
+                      <a :href="getDocLink('/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb')" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a :href="getDomain('/ent_pub/pricing/')" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
                     </template>
                   </i18next>
 
@@ -233,7 +233,7 @@
                 🔥🔥🔥
                 <i18next :translation="$t('Upgrade to {brandName} Pro Account ({localizedDom}) to get premium features')">
                     <template #localizedDom>
-                      <a href="https://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("from $4/mo")}}</a>
+                      <a :href="getDomain('/ent_pub/pricing/')" target="_blank">{{$t("from $4/mo")}}</a>
                     </template>
                     <template #brandName>
                       {{$syndicateText.brandName}}
@@ -245,7 +245,7 @@
                 <li>📶 {{ $t("Unlimited tunnel data usage.") }}</li>
                 <li>🤖 {{ $t("50 hours/mo AI failure detection.") }}</li>
                 <li>
-                  <a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
+                  <a :href="getDomain('/ent_pub/pricing/')" target="_blank"
                     >{{ $t("And much more...") }}</a
                   >
                 </li>

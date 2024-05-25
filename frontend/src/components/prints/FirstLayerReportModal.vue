@@ -112,7 +112,7 @@
         <b-col lg="5" class="heatmap-column">
           <b-card no-body>
             <b-tabs pills card>
-              <b-tab title="Tagged Video">
+              <b-tab :title="$t('AI Time-Lapse')">
                 <b-card-text>
                   <div class="first-layer-modal-video-wrapper">
                     <video-box
@@ -129,7 +129,7 @@
                   </div>
                 </b-card-text>
               </b-tab>
-              <b-tab title="Video">
+              <b-tab :title="$t('Original Time-Lapse')">
                 <b-card-text>
                   <div class="first-layer-modal-video-wrapper">
                     <video-box

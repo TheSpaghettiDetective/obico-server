@@ -22,6 +22,8 @@ import GCodeFilePage from '@src/views/GCodeFilePage.vue'
 import UserPreferencesPage from '@src/views/UserPreferencesPage.vue'
 import PrinterEventsPage from '@src/views/PrinterEventsPage.vue'
 import PrinterTerminalPage from '@src/views/PrinterTerminalPage.vue'
+import FirstLayerInspectionImagePage from '@src/views/FirstLayerInspectionImagePage.vue'
+
 
 const router = new VueRouter({
   mode: 'history',

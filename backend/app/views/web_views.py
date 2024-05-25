@@ -230,18 +230,15 @@ def print_shot_feedback(request, pk):
     return render(request, 'print_shot_feedback.html', {'object': _print})
 
 
-### GCode File page ###
-
 @login_required
 def g_code_folders(request, template_dir=None):
     return render(request, get_template_path('g_code_folders', template_dir))
+
 
 @login_required
 def g_code_files(request, template_dir=None):
     return render(request, get_template_path('g_code_files', template_dir))
 
-
-## Notifications page
 
 @login_required
 def printer_events(request):
@@ -249,6 +246,11 @@ def printer_events(request):
     user.unseen_printer_events = 0
     user.save()
     return render(request, 'printer_events.html')
+
+
+@login_required
+def first_layer_inspection_images(request):
+    return render(request, 'first_layer_inspection_images.html')
 
 
 ### Misc ####

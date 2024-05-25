@@ -149,120 +149,11 @@
             </b-tabs>
           </b-card>
           
-          <!-- <b-card no-body class="mb-3 text-center">
-            <b-card-body>
-              <div ref="imageContainer" class="image-container">
-                <b-img
-                  :src="
-                    isHeatmapVisible
-                      ? first_layer_info.heatmap_img_url
-                      : first_layer_info.gcode_img_url
-                  "
-                  alt="First Layer Map"
-                />
-
-                <button class="toggle-heatmap" @click="toggleHeatmap">
-                  <i
-                    :class="`fa ${isHeatmapVisible ? 'fa-eye' : 'fa-eye-slash'}`"
-                    aria-hidden="true"
-                  ></i>
-                </button>
-
-                <div v-if="isHeatmapVisible">
-                  <div
-                    v-for="(point, index) in first_layer_info.points"
-                    :key="index"
-                    class="pin"
-                    :style="{ left: `${point.x_percent}%`, top: `${point.y_percent}%` }"
-                    @click="isHeatmapVisible ? imageClicked(point) : null"
-                    @mouseover="isHeatmapVisible ? showThumbnail(point, $event) : null"
-                    @mouseleave="isHeatmapVisible ? hideThumbnail() : null"
-                  ></div>
-                </div>
-
-                <div v-if="activeThumbnail" :style="thumbnailStyle" class="thumbnail">
-                  <img :src="activeThumbnail" />
-                </div>
-
-                <b-modal
-                  id="carousal-modal"
-                  size="lg"
-                  hide-footer
-                  hide-header
-                  content-class="b-carousel"
-                  class="b-carousel"
-                  @show="onCarouselModalShow"
-                >
-                  <button @click="closeCarousel" class="close-carousel">×</button>
-                  <div class="carousel-tabs">
-                    <b-tabs
-                      v-model="activeTab"
-                      nav-class="mb-2 border-0"
-                      active-nav-item-class="carousel-active-tab"
-                    >
-                      <b-tab
-                        title="AI Detected Image"
-                        active
-                        title-link-class="carousel-tab"
-                        @click="handleTabClicked"
-                      >
-                        <vue-slick-carousel
-                          v-if="carouselItems.length"
-                          ref="slickTagged"
-                          v-bind="settings"
-                          class="custom-slick-carousel"
-                          @afterChange="afterCarouselImageChanged"
-                          @beforeChange="beforeCarouselImageChanged"
-                        >
-                          <img
-                            v-for="(item, index) in carouselItems"
-                            :key="`tagged-${index}`"
-                            width="auto"
-                            height="350px"
-                            :class="{ 'fade-in': showCarouselAnimation }"
-                            :src="item.tagged_img_url"
-                            :alt="`Tagged Screenshot ${index + 1}`"
-                          />
-                        </vue-slick-carousel>
-                      </b-tab>
-
-                      <b-tab title="Original Image" title-link-class="carousel-tab" @click="handleTabClicked">
-                        <vue-slick-carousel
-                          v-if="carouselItems.length"
-                          ref="slickOriginal"
-                          v-bind="settings"
-                          class="custom-slick-carousel"
-                          @afterChange="afterCarouselImageChanged"
-                          @beforeChange="beforeCarouselImageChanged"
-                        >
-                          <img
-                            v-for="(item, index) in carouselItems"
-                            :key="`original-${index}`"
-                            width="auto"
-                            height="350px"
-                            :class="{ 'fade-in': showCarouselAnimation }"
-                            :src="item.raw_img_url"
-                            :alt="`Original Screenshot ${index + 1}`"
-                          />
-                        </vue-slick-carousel>
-                      </b-tab>
-                    </b-tabs>
-                  </div>
-                </b-modal>
-              </div>
-            </b-card-body>
-          </b-card> -->
-          <!-- <div class="map-info">
-            {{$t("Click pins on the g-node map to see snapshots of certain areas of the print.")}}
-          </div> -->
         </b-col>
       </b-row>
       <b-row class="buttons-row">
         <!-- Notes Block End -->
         <b-col cols="12" lg="7">
-          <!-- <b-button class="mb-3" style="width: 100%"
-            >{{ $t("View First Layer Timelapse") }}</b-button
-          > -->
           <b-button class="feedback-button" style="width: 100%"
             >{{ $t("Give Feedback About This Report") }}</b-button
           >
@@ -293,7 +184,6 @@ export default {
       showCarouselAnimation: true,
       first_layer_info: {},
       carouselItems: [],
-      isHeatmapVisible: true,
       settings: {
         dots: true,
         infinite: true,
@@ -315,10 +205,6 @@ export default {
     }
   },
   props: {
-    firstLayerInfo: {
-      type: Object,
-      required: true,
-    },
     firstLayerInspection: {
       type: Object,
       required: true,
@@ -369,103 +255,6 @@ export default {
   },
   methods: {
     downloadFile,
-    onCarouselModalShow() {
-      this.showCarouselAnimation = true
-    },
-    handleTabClicked() {
-      this.showCarouselAnimation = true
-    },
-    beforeCarouselImageChanged(index) {
-      this.showCarouselAnimation = false
-    },
-    /**
-     * Handler for when image is changed in Carousal
-     * @param {Number} changedIndex
-     */
-    afterCarouselImageChanged(changedIndex) {
-      this.updateCarouselInitialState(changedIndex)
-    },
-    /**
-     * Updates Carousel Initial State
-     * @param {Number} imageIndex
-     */
-    updateCarouselInitialState(imageIndex) {
-      this.settings = { ...this.settings, initialSlide: imageIndex }
-    },
-    closeCarousel() {
-      this.$bvModal.hide('carousal-modal')
-    },
-    showThumbnail(point, event) {
-      this.activeThumbnail = point.tagged_img_url
-      const rect = this.$refs.imageContainer.getBoundingClientRect()
-      const pinSize = 12
-      const thumbnailHeight = 150
-
-      const pinX = (point.x_percent / 100) * rect.width
-      const pinY = (point.y_percent / 100) * rect.height
-
-      const leftPos = pinX - thumbnailHeight / 2
-      let topPos = pinY - thumbnailHeight - pinSize
-
-      if (topPos < 0) {
-        topPos = pinY + pinSize
-      }
-
-      this.thumbnailStyle.left = `${leftPos}px`
-      this.thumbnailStyle.top = `${topPos}px`
-    },
-    hideThumbnail() {
-      this.activeThumbnail = null
-    },
-    prepareFirstLayerInfo() {
-      this.first_layer_info = this.firstLayerInfo
-      const bedWidth = this.first_layer_info.width
-      const bedHeight = this.first_layer_info.height
-      const points = this.first_layer_info.points || []
-
-      this.first_layer_info.points = points.map((point) => {
-        return {
-          ...point,
-          x_percent: (point.x / bedWidth) * 100,
-          y_percent: 100 - (point.y / bedHeight) * 100, // Invert Y axis because the origin of the points is at the bottom left
-        }
-      })
-      this.carouselItems = this.first_layer_info.points.map((point) => ({
-        raw_img_url: point.raw_img_url,
-        tagged_img_url: point.tagged_img_url,
-      }))
-    },
-    imageClicked(clickedPoint) {
-      const initialSlideIndex = this.carouselItems.findIndex(
-        (item) => item.tagged_img_url === clickedPoint.tagged_img_url
-      )
-
-      this.updateCarouselInitialState(initialSlideIndex)
-      this.carouselKey++
-      // Open Carousel Modal
-      this.$bvModal.show('carousal-modal')
-    },
-
-    toggleHeatmap() {
-      this.isHeatmapVisible = !this.isHeatmapVisible
-    },
-    findNearestPoint(clickX, clickY) {
-      let nearestPoint = null
-      let smallestDistance = Infinity
-
-      this.first_layer_info['points'].forEach((point) => {
-        const distance = this.calculateDistance(clickX, clickY, point.x, point.y)
-        if (distance < smallestDistance) {
-          smallestDistance = distance
-          nearestPoint = point
-        }
-      })
-
-      return nearestPoint
-    },
-    calculateDistance(x1, y1, x2, y2) {
-      return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
-    },
   },
 }
 </script>
@@ -518,29 +307,9 @@ export default {
   .value
     font-weight: bold
 
-.b-carousel
-  padding-bottom: 0.5rem
-  .close-button
-    padding-top: 6px
-    padding-left: 7px
-    button
-      color: var(--color-text-primary)
-      background: transparent
-      border: none
-      font-size: 22px
-
-.carousel-tabs
-  display: flex
-  justify-content: center
-  height: 480px
-  margin-top: 1.25em
 .report-title
   padding-left: 15px
 
-.map-info
-  color: var(--color-text-secondary)
-  font-weight: 600
-  text-align: center
 .feedback-button
   color: var(--color-primary)
   background-color: transparent
@@ -666,62 +435,7 @@ $border-color: #dee2e6
     max-width: 490px
   .card-body
     padding: 10%
-  .image-container
-    position: relative
-    display: block
-    width: 100%
-
-    > img
-      border: 1px solid #cac8c8
-      width: 100%
-      height: auto
-      object-fit: contain
-      display: block
-
-    .pin
-      position: absolute
-      width: 12px
-      height: 12px
-      background-color: #4c9be7
-      border-radius: 50%
-      transform: translate(-50%, -50%)
-      cursor: pointer
-
-      &:after
-        content: ''
-        position: absolute
-        bottom: -10px
-        left: 50%
-        width: 3px
-        height: 10px
-        background-color: #4c9be7
-        transform: translateX(-50%)
-
-    .thumbnail
-      width: 150px
-      height: 150px
-      position: absolute
-      z-index: 2000
-      img
-        width: 100%
-        height: 100%
-        object-fit: cover
-        border-radius: var(--border-radius-sm)
-
-
-    .toggle-heatmap
-      position: absolute
-      top: 2%
-      right: 4%
-      background: none
-      border: none
-      cursor: pointer
-      z-index: 1
-      .fa-eye
-        color: #2d2e30
-      .fa-eye-slash
-        color: #2d2e30
-
+    
 .border-right
   border-right: 1px solid $border-color
 
@@ -732,17 +446,10 @@ $border-color: #dee2e6
   &:hover
     background-color: rgba(#007bff, 0.1)
 
-.custom-slick-carousel
-  width: 600px
 
 
 
 @media (max-width: 768px)
-  .custom-slick-carousel
-    max-width: 80vw
-    max-height: 30vh
-    img
-      border-radius: var(--border-radius-md)
   .file-block-title
     grid-template-columns: 7% 65% 28%
 
@@ -774,9 +481,6 @@ $border-color: #dee2e6
     opacity: 1;
   }
 }
-.fade-in {
-  animation: fadeIn 1.2s ease-in-out;
-}
 .carousel-active-tab {
   border: none !important;
   background-color: var(--color-background) !important;
@@ -786,41 +490,6 @@ $border-color: #dee2e6
     background-color: var(--color-hover);
   }
 }
-.custom-slick-carousel li {
-  margin: auto 10px;
-}
-.custom-slick-carousel .slick-dots {
-  top: 24em;
-}
-.custom-slick-carousel .slick-dots li {
-  margin: auto 10px !important;
-}
-.custom-slick-carousel .slick-dots li button {
-  border: 2px solid var(--color-primary) !important;
-  background: transparent !important;
-}
-.custom-slick-carousel .slick-dots li.slick-active button {
-  background: var(--color-primary) !important;
-}
-.custom-slick-carousel .slick-dots li button:before {
-  content: none !important;
-}
-.custom-slick-carousel .slick-prev {
-  z-index: 1 !important;
-}
-.custom-slick-carousel .slick-next {
-  z-index: 1 !important;
-}
-.custom-slick-carousel .slick-prev:before {
-  font-size: 44px !important;
-  color: var(--color-primary) !important;
-  margin-left: -4px !important;
-}
-.custom-slick-carousel .slick-next:before {
-  font-size: 44px !important;
-  color: var(--color-primary) !important;
-  margin-left: -20px !important;
-}
 div#carousal-modal {
   animation: swal2-show .3s !important;
   transition: none !important;
@@ -828,57 +497,10 @@ div#carousal-modal {
 .modal-dialog.modal-lg {
   transition: none !important
 }
-.b-carousel {
-  background-color: var(--color-surface-primary) !important;
-  border-radius: var(--border-radius-lg) !important;
-  background: var(--color-surface-secondary) !important;
-  @media (min-width: 676px) and (max-width: 991px) {
-    width: 667px !important;
-    margin-left: -16%;
-  }
-  @media (min-width: 576px) and (max-width: 675px) {
-    width: 600px !important;
-    margin-left: -10%;
-  }
-  @media (min-width: 991px) {
-    width: 706px !important;
-    left: 3em
-  }
-  .close-carousel {
-    display: flex;
-    position: absolute;
-    top: 0;
-    right: 0;
-    justify-content: center;
-    width: 1.2em;
-    height: 1.2em;
-    padding: 0;
-    transition: color .1s ease-out;
-    border: none;
-    border-radius: 0;
-    outline: initial;
-    background: 0 0;
-    color: #ccc !important;
-    font-family: serif;
-    font-size: 2.5em;
-    line-height: 1.2;
-    cursor: pointer;
-    overflow: hidden;
-    font-weight: 100;
-    &:hover {
-      color: #f27474 !important
-    }
-  }
-}
 div#carousal-modal___BV_modal_outer_ {
   z-index: 1100 !important;
 }
-@media (max-width: 768px) {
-  .custom-slick-carousel .slick-prev:before, .custom-slick-carousel .slick-next:before {
-    position: relative !important;
-    top: 1em !important
-  }
-}
+
 button.btn.feedback-button.btn-secondary {
   border: 1px solid var(--color-primary) !important
 }

@@ -419,7 +419,6 @@ export default {
     return {
       image: '',
       gradeResult: {},
-      firstLayerInfo: {},
       firstLayerInspection: {},
       isFirstLayerReportModalOpen: false,
       PrintStatus,
@@ -711,7 +710,6 @@ export default {
         FirstLayerReportModal,
         {
           printer: this.printer,
-          firstLayerInfo: this.firstLayerInfo,
           firstLayerInspection: this.firstLayerInspection,
           gradeResult: this.gradeResult,
           print: this.print,

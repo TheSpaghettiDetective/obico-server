@@ -35,11 +35,11 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer
+    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer, FirstLayerInspectionImageSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache, gcode_metadata
@@ -887,6 +887,27 @@ class PrinterEventViewSet(
 
         serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
+
+
+class FirstLayerInspectionImageViewSet(
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    serializer_class = FirstLayerInspectionImageSerializer
+
+    def get_queryset(self):
+        queryset = FirstLayerInspectionImage.objects.filter(first_layer_inspection__print__user=self.request.user)
+        print_id = self.request.GET.get('print_id', None)
+
+        if print_id:
+            queryset = queryset.filter(first_layer_inspection__print_id=print_id)
+
+        return queryset
+
 
 class ApiVersionView(APIView):
     permission_classes = (IsAuthenticated,)

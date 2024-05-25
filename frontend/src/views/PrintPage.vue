@@ -128,7 +128,7 @@
           <b-col lg="7">
             <div class="print-info">
               <!-- First Layer Report Card -->
-              <!-- <div v-show="firstLayerInspection.id" class="card-container">
+              <div v-show="firstLayerInspection.id" class="card-container">
                 <b-row class="m-0">
                   <b-col cols="12" sm="7" md="7" lg="12" xl="7"   class="first-layer-info-column">
                     <div>
@@ -160,21 +160,24 @@
                       >
                     </b-row>
                   </b-col>
-                  <b-col cols="12" sm="5" md="5" lg="12" xl="5" class="heatmap-image-column">
-                    <div class="heatmap-image-container">
-                      <transition name="fade" mode="out-in">
-                        <b-img
-                          v-if="image"
-                          :src="image"
-                          alt="First Layer Map"
-                          class="heatmap-image"
-                        />
-                      </transition>
+                  <b-col cols="12" sm="5" md="5" lg="12" xl="5" class="first-layer-report-block-video-container">
+                    <div class="first-layer-video-wrapper">
+                      <video-box
+                        :video-url="firstLayerInspection.tagged_video_url"
+                        :fluid="false"
+                        :fullscreen-btn="false"
+                        :download-btn="true"
+                        :default-full-screen-toggle="true"
+                        @timeupdate="onTimeUpdate"
+                        @download="
+                          () => downloadFile(firstLayerInspection.tagged_video_url, `${print.id}_tagged_inspection.mp4`)
+                        "
+                      />
                     </div>
                   </b-col>
                 </b-row>
+              </div>
 
-              </div> -->
               <div class="time-lapse">
                 <div v-if="print.video_archived_at" class="card-container">
                   <h2 class="title">{{ $t("Time-Lapse video deleted") }}</h2>
@@ -542,6 +545,10 @@ export default {
       try {
         const printResponse = await axios.get(urls.print(this.currentPrintId))
         this.print = normalizedPrint(printResponse.data)
+        
+        if (printResponse.data.firstlayerinspection_set.length) {
+          this.prepareFirstLayerReport(printResponse.data.firstlayerinspection_set[0])
+        }
 
         if (this.print.prediction_json_url) {
           axios.get(this.print.prediction_json_url).then((response) => {
@@ -578,47 +585,10 @@ export default {
       } catch (error) {
         console.log(error)
       }
-
-      if (this.isEnt) {
-        return fetch(urls.firstLayerInspection(this.currentPrintId))
-          .then((response) => {
-            if (!response.ok) {
-              console.log('first layer inspection failure is ignored because it may not exist');
-              return []
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data.length) {
-              const inspectionData = data[0];
-              this.firstLayerInspection = inspectionData;
-              this.gradeResult = calculateGrade(inspectionData.score);
-              return inspectionData.data_json_url;
-            }
-            return null;
-          })
-          .then((dataJsonUrl) => {
-            if (dataJsonUrl) {
-              this.isLoading = true
-              fetch(dataJsonUrl)
-                .then((response) => {
-                  if (!response.ok) {
-                    console.log('first layer info failure is ignored because it may not exist');
-                    return {}
-                  }
-                  return response.json();
-                })
-                .then((data) => {
-                  this.firstLayerInfo = data
-                  this.image = data.heatmap_img_url
-                })
-                .catch((err) => console.log('Could not fetch data'))
-              }
-          })
-          .finally(() => {
-            this.isLoading = false
-          })
-      }
+    },
+    prepareFirstLayerReport(firstLayerInspectionData) {
+      this.firstLayerInspection = firstLayerInspectionData;
+      this.gradeResult = calculateGrade(firstLayerInspectionData.score);
     },
     switchToPrint(print) {
       this.currentPrint = print
@@ -772,12 +742,14 @@ export default {
 .open-detailed-report-button
   width: 100%
 
-.heatmap-image-column
+.first-layer-report-block-video-container
   display: flex
   justify-content: flex-end
   padding-right: 0
   @media (max-width: 768px)
     padding: 0
+    margin-top: 1em
+    justify-content: center
   @media (max-width: 1198px) and (min-width: 991px)
     margin-top: 1em
     padding: 0

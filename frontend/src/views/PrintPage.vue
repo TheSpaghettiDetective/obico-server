@@ -161,15 +161,19 @@
                     </b-row>
                   </b-col>
                   <b-col cols="12" sm="5" md="5" lg="12" xl="5" class="first-layer-report-block-video-container">
-                    <div class="first-layer-video-wrapper">
+                    <div class="first-layer-video-wrapper" :class="{
+                              'is-fullscreen original':
+                                !!fullscreenUrl && fullscreenUrl === firstLayerInspection.tagged_video_url,
+                            }">
                       <video-box
                         :video-url="firstLayerInspection.tagged_video_url"
-                        :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0] : null"
+                        :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0].image_url : null"
                         :fluid="false"
-                        :fullscreen-btn="false"
+                        :fullscreen-btn="fullscreenUrl === null"
+                        :exit-fullscreen-btn="fullscreenUrl !== null"
                         :download-btn="true"
-                        :default-full-screen-toggle="true"
-                        @timeupdate="onTimeUpdate"
+                        @fullscreen="() => enterFullscreen(firstLayerInspection.tagged_video_url)"
+                        @exitFullscreen="exitFullscreen"
                         @download="
                           () => downloadFile(firstLayerInspection.tagged_video_url, `${print.id}_tagged_video_inspection.mp4`)
                         "
@@ -953,6 +957,12 @@ export default {
 .detective-placeholder
   border-radius: var(--border-radius-md)
   overflow: hidden
+
+.first-layer-video-wrapper.is-fullscreen
+  flex: 1
+  order: 1
+  ::v-deep .video-js
+    height: 100vh !important
 
 .is-fullscreen
   position: fixed

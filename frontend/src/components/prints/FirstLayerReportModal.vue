@@ -278,6 +278,7 @@ import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import PageLayout from '@src/components/PageLayout'
 import VideoBox from '@src/components/VideoBox'
+import { downloadFile } from '@src/lib/utils'
 
 export default {
   name: 'FirstLayerReportModal',
@@ -367,6 +368,7 @@ export default {
     },
   },
   methods: {
+    downloadFile,
     onCarouselModalShow() {
       this.showCarouselAnimation = true
     },
@@ -747,6 +749,20 @@ $border-color: #dee2e6
   @media (max-width: 1198px)
     .file-block-title
       grid-template-columns: 7% 65% 28%
+
+.is-fullscreen
+  position: fixed
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+  z-index: 9999
+  background-color: var(--color-background)
+  display: flex
+  flex: 1
+  order: 1
+  ::v-deep .video-js
+    height: 100vh !important
 </style>
 
 <style>

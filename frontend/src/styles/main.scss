@@ -1082,6 +1082,7 @@ div[id^="b-modal-"] {
   display: flex;
   .card-img-top {
     display: flex;
+    justify-content: center;
     border-radius: var(--border-radius-md);
   }
   .buttons-container {
@@ -1112,6 +1113,7 @@ div[id^="b-modal-"] {
   display: flex;
   .card-img-top {
     display: flex;
+    justify-content: center;
     border-radius: var(--border-radius-md);
   }
   .buttons-container {

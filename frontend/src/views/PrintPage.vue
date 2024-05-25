@@ -707,6 +707,7 @@ export default {
         {
           printer: this.printer,
           firstLayerInfo: this.firstLayerInfo,
+          firstLayerInspection: this.firstLayerInspection,
           gradeResult: this.gradeResult,
           print: this.print,
           showOpenButton: this.canOpenFile

@@ -1105,3 +1105,27 @@ div[id^="b-modal-"] {
     }
   }
 }
+.first-layer-modal-video-wrapper {
+  display: flex;
+  .card-img-top {
+    display: flex;
+    border-radius: var(--border-radius-md);
+  }
+  .buttons-container {
+    border-radius: var(--border-radius-md);
+    background-color: unset !important;
+  }
+  .action-btn {
+    font-size: 1rem !important;
+  }
+  .vjs-tech {
+    position: relative !important;
+  }
+  .video-js {
+    border-radius: var(--border-radius-md);
+    height: 510px;
+    @media (max-width: 991px) {
+      height: 400px;
+    }
+  }
+}

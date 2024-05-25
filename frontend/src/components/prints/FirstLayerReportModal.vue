@@ -110,8 +110,21 @@
         </b-col>
         <!-- Map Section -->
         <b-col lg="5" class="heatmap-column">
-          <b-card no-body class="mb-3 text-center card-map">
+          <div class="first-layer-modal-video-wrapper">
+                <video-box
+                  :video-url="firstLayerInspection.tagged_video_url"
+                  :fluid="false"
+                  :fullscreen-btn="false"
+                  :download-btn="true"
+                  :default-full-screen-toggle="true"
+                  @download="
+                    () => downloadFile(firstLayerInspection.tagged_video_url, `${print.id}_tagged_inspection.mp4`)
+                  "
+                />
+              </div>
+          <!-- <b-card no-body class="mb-3 text-center">
             <b-card-body>
+
               <div ref="imageContainer" class="image-container">
                 <b-img
                   :src="
@@ -145,7 +158,6 @@
                   <img :src="activeThumbnail" />
                 </div>
 
-                <!-- Carousal Modal Start -->
                 <b-modal
                   id="carousal-modal"
                   size="lg"
@@ -211,21 +223,21 @@
                     </b-tabs>
                   </div>
                 </b-modal>
-                <!-- Carousal Modal End -->
+
               </div>
             </b-card-body>
-          </b-card>
-          <div class="map-info">
+          </b-card> -->
+          <!-- <div class="map-info">
             {{$t("Click pins on the g-node map to see snapshots of certain areas of the print.")}}
-          </div>
+          </div> -->
         </b-col>
       </b-row>
       <b-row class="buttons-row">
         <!-- Notes Block End -->
         <b-col cols="12" lg="7">
-          <b-button class="mb-3" style="width: 100%"
+          <!-- <b-button class="mb-3" style="width: 100%"
             >{{ $t("View First Layer Timelapse") }}</b-button
-          >
+          > -->
           <b-button class="feedback-button" style="width: 100%"
             >{{ $t("Give Feedback About This Report") }}</b-button
           >
@@ -240,12 +252,14 @@ import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import PageLayout from '@src/components/PageLayout'
+import VideoBox from '@src/components/VideoBox'
 
 export default {
   name: 'FirstLayerReportModal',
   components: {
     VueSlickCarousel,
     PageLayout,
+    VideoBox
   },
 
   data: function () {
@@ -276,6 +290,10 @@ export default {
   },
   props: {
     firstLayerInfo: {
+      type: Object,
+      required: true,
+    },
+    firstLayerInspection: {
       type: Object,
       required: true,
     },

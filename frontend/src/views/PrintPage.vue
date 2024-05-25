@@ -164,13 +164,14 @@
                     <div class="first-layer-video-wrapper">
                       <video-box
                         :video-url="firstLayerInspection.tagged_video_url"
+                        :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0] : null"
                         :fluid="false"
                         :fullscreen-btn="false"
                         :download-btn="true"
                         :default-full-screen-toggle="true"
                         @timeupdate="onTimeUpdate"
                         @download="
-                          () => downloadFile(firstLayerInspection.tagged_video_url, `${print.id}_tagged_inspection.mp4`)
+                          () => downloadFile(firstLayerInspection.tagged_video_url, `${print.id}_tagged_video_inspection.mp4`)
                         "
                       />
                     </div>

@@ -110,21 +110,47 @@
         </b-col>
         <!-- Map Section -->
         <b-col lg="5" class="heatmap-column">
-          <div class="first-layer-modal-video-wrapper">
-                <video-box
-                  :video-url="firstLayerInspection.tagged_video_url"
-                  :fluid="false"
-                  :fullscreen-btn="false"
-                  :download-btn="true"
-                  :default-full-screen-toggle="true"
-                  @download="
-                    () => downloadFile(firstLayerInspection.tagged_video_url, `${print.id}_tagged_inspection.mp4`)
-                  "
-                />
-              </div>
+          <b-card no-body>
+            <b-tabs pills card>
+              <b-tab title="Tagged Video">
+                <b-card-text>
+                  <div class="first-layer-modal-video-wrapper">
+                    <video-box
+                      :video-url="firstLayerInspection.tagged_video_url"
+                      :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0] : null"
+                      :fluid="false"
+                      :fullscreen-btn="false"
+                      :download-btn="true"
+                      :default-full-screen-toggle="true"
+                      @download="
+                        () => downloadFile(firstLayerInspection.tagged_video_url, `${print.id}_tagged_video_inspection.mp4`)
+                      "
+                    />
+                  </div>
+                </b-card-text>
+              </b-tab>
+              <b-tab title="Video">
+                <b-card-text>
+                  <div class="first-layer-modal-video-wrapper">
+                    <video-box
+                      :video-url="firstLayerInspection.video_url"
+                      :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0] : null"
+                      :fluid="false"
+                      :fullscreen-btn="false"
+                      :download-btn="true"
+                      :default-full-screen-toggle="true"
+                      @download="
+                        () => downloadFile(firstLayerInspection.video_url, `${print.id}_video_inspection.mp4`)
+                      "
+                    />
+                  </div>
+                </b-card-text>
+              </b-tab>
+            </b-tabs>
+          </b-card>
+          
           <!-- <b-card no-body class="mb-3 text-center">
             <b-card-body>
-
               <div ref="imageContainer" class="image-container">
                 <b-img
                   :src="
@@ -223,7 +249,6 @@
                     </b-tabs>
                   </div>
                 </b-modal>
-
               </div>
             </b-card-body>
           </b-card> -->
@@ -451,6 +476,9 @@ export default {
   display: flex
   flex-direction: column
   align-items: center
+  .card
+    background-color: var(--color-background)
+    border-radius: var(--border-radius-lg)
 .file-header
   display: flex
   align-items: center

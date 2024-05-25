@@ -130,7 +130,7 @@
               <!-- First Layer Report Card -->
               <div v-show="firstLayerInspection.id" class="card-container">
                 <b-row class="m-0">
-                  <b-col cols="12" sm="7" md="7" lg="12" xl="7"   class="first-layer-info-column">
+                  <b-col cols="12" sm="6" md="6" lg="12" xl="6"   class="first-layer-info-column">
                     <div>
                       <b-row class="mb-4">
                         <span class="ml-3">{{ $t("First Layer Report") }}</span>
@@ -160,7 +160,7 @@
                       >
                     </b-row>
                   </b-col>
-                  <b-col cols="12" sm="5" md="5" lg="12" xl="5" class="first-layer-report-block-video-container">
+                  <b-col cols="12" sm="6" md="6" lg="12" xl="6" class="first-layer-report-block-video-container">
                     <div class="first-layer-video-wrapper" :class="{
                               'is-fullscreen original':
                                 !!fullscreenUrl && fullscreenUrl === firstLayerInspection.tagged_video_url,
@@ -750,9 +750,12 @@ export default {
   display: flex
   justify-content: flex-end
   padding-right: 0
-  @media (max-width: 768px)
+  @media (max-width: 576px)
     padding: 0
     margin-top: 1em
+    justify-content: center
+  @media (max-width: 577px) and (max-width: 767px)
+    padding: 0 0 0 5px
     justify-content: center
   @media (max-width: 1198px) and (min-width: 991px)
     margin-top: 1em

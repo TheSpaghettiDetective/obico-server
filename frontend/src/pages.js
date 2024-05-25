@@ -90,6 +90,7 @@ const components = {
   UserPreferencesPage,
   PrinterEventsPage,
   PrinterTerminalPage,
+  FirstLayerInspectionImagePage,
 }
 
 export { router, components }

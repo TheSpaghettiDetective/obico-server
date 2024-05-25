@@ -154,9 +154,8 @@
       <b-row class="buttons-row">
         <!-- Notes Block End -->
         <b-col cols="12" lg="7">
-          <b-button class="feedback-button" style="width: 100%"
-            >{{ $t("Give Feedback About This Report") }}</b-button
-          >
+            <a :href="`/first_layer_inspection_images/?print_id=${print.id}`" class="feedback-button">{{ $t("Give Feedback About This Report") }}</a
+            >
         </b-col>
       </b-row>
     </div>
@@ -311,6 +310,11 @@ export default {
   padding-left: 15px
 
 .feedback-button
+  border: 1px solid var(--color-primary)
+  display: block
+  text-align: center
+  border-radius: 17px
+  padding: 8px
   color: var(--color-primary)
   background-color: transparent
   &:hover

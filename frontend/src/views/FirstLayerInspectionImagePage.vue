@@ -8,10 +8,10 @@
 </template>
 
 <script>
+import PageLayout from '@src/components/PageLayout.vue'
 
 export default {
   name: 'FirstLayerInspectionImagePage',
-
   components: {
     PageLayout,
   },

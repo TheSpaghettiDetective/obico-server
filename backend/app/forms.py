@@ -81,7 +81,7 @@ class CustomResetPasswordForm(ResetPasswordForm):
         email = get_adapter().clean_email(email)
         syndicate = get_current_site(self.request).syndicates.first()
         self.users = filter_users_by_email_and_syndicate(email, syndicate)
-        if not self.users and not settings.PREVENT_ENUMERATION:
+        if not self.users:
             raise get_adapter().validation_error("unknown_email")
         return self.cleaned_data["email"]
 

@@ -31,7 +31,7 @@ from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
 from lib.syndicate import syndicate_from_request
-from app.forms import CustomResetPasswordForm
+from app.forms import SyndicateSpecificResetPasswordForm
 
 
 
@@ -62,9 +62,9 @@ class SocialAccountAwareSignupView(SignupView):
                 return self.form_invalid(form)
             return super(SocialAccountAwareSignupView, self).form_valid(form)
 
-class CustomPasswordResetView(PasswordResetView):
-    form_class = CustomResetPasswordForm
-    
+class SyndicateSpecificPasswordResetView(PasswordResetView):
+    form_class = SyndicateSpecificResetPasswordForm
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request

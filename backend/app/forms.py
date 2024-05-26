@@ -13,6 +13,11 @@ from .widgets import CustomRadioSelectWidget
 from .models import *
 from django.utils.translation import gettext_lazy as _
 
+from allauth.account.forms import ResetPasswordForm
+from allauth.account.adapter import get_adapter
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth import get_user_model
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -65,3 +70,27 @@ class RecaptchaSignupForm(SignupForm):
             LOGGER.error('Cannot validate reCAPTCHA for user={}'.format(self.cleaned_data.get('email')))
 
         return self.cleaned_data
+
+class SyndicateSpecificResetPasswordForm(ResetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        email = get_adapter().clean_email(email)
+        syndicate = get_current_site(self.request).syndicates.first()
+        self.users = filter_users_by_email_and_syndicate(email, syndicate)
+        if not self.users and not settings.PREVENT_ENUMERATION:
+            raise get_adapter().validation_error("unknown_email")
+        return self.cleaned_data["email"]
+
+def filter_users_by_email_and_syndicate(email, syndicate):
+
+    User = get_user_model()
+    users = User.objects.filter(
+        emailaddress__email__iexact=email,
+        syndicate=syndicate
+    )
+
+    return list(users)

@@ -112,7 +112,7 @@
           <video
             ref="video"
             class="remote-video"
-            :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
+            :class="{ flipH: webcam?.flipH || false, flipV: webcam?.flipV || false }"
             width="960"
             :height="webcamVideoHeight"
             :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
@@ -141,7 +141,6 @@
 <script>
 import get from 'lodash/get'
 import ifvisible from 'ifvisible'
-import { getLocalPref, setLocalPref } from '@src/lib/pref'
 
 import Janus from '@src/lib/janus'
 import { toArrayBuffer } from '@src/lib/utils'
@@ -199,6 +198,10 @@ export default {
       type: Object,
       default: null,
     },
+    webcam: {
+      type: Object,
+      default: null,
+    },
     autoplay: {
       type: Boolean,
       required: true,
@@ -220,7 +223,8 @@ export default {
       videoLoading: false,
       printerStockImgSrc: '#svg-3d-printer',
       mjpgSrc: null,
-      customRotationDeg: getLocalPref('webcamRotationDeg', 0, this.printer.id),
+      localStorageRotationKey: `webcamRotationDeg_${this.printer.id}_${this.webcam?.stream_id || 0}`,
+      customRotationDeg: 0,
     }
   },
 
@@ -235,7 +239,7 @@ export default {
       return this.mjpgSrc && this.stickyStreamingSrc !== 'IMAGE'
     },
     videoRotationDeg() {
-      const rotation = +(this.printer.settings.webcam_rotation ?? 0) + this.customRotationDeg
+      const rotation = +(this.webcam?.rotation || 0) + this.customRotationDeg
       return rotation % 360
     },
     webcamRotateClass() {
@@ -292,6 +296,7 @@ export default {
     },
   },
   created() {
+    this.customRotationDeg = localStorage.getItem(this.localStorageRotationKey) ? Number(localStorage.getItem(this.localStorageRotationKey)) : 0
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
       this.mjpgSrc = `data:image/jpg;base64,${jpg}`
       this.onCanPlay()
@@ -331,7 +336,7 @@ export default {
     },
     onRotateRightClicked() {
       this.customRotationDeg = this.customRotationDeg + 90;
-      setLocalPref('webcamRotationDeg', this.customRotationDeg % 360, this.printer.id);
+      localStorage.setItem(this.localStorageRotationKey, this.customRotationDeg % 360)
       this.$emit('onRotateRightClicked', this.customRotationDeg);
     },
     onCanPlay() {

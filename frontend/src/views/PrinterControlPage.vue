@@ -133,6 +133,7 @@
                 :printer="printer"
                 :webrtc="webcam.webrtc"
                 :autoplay="user.is_pro"
+                :webcam="webcam"
                 @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
               />
             </div>
@@ -161,7 +162,6 @@ import FailureDetectionWidget from '@src/components/printer-control/FailureDetec
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ReorderModal from '@src/components/ReorderModal'
-import { getLocalPref } from '@src/lib/pref'
 import SharePrinter from '@src/components/printers/SharePrinter.vue'
 import TerminalWidget from '../components/printer-control/TerminalWidget.vue'
 
@@ -230,7 +230,7 @@ export default {
       lastPrint: null,
       lastPrintFetchCounter: 0,
       widgetsConfig: null,
-      customRotationDeg: getLocalPref('webcamRotationDeg', 0),
+      customRotationDeg: 0,
       isAllWebcamSelected: false,
       customRotationData: [],
       isAtleastOnePrinterPortrait: false,
@@ -278,6 +278,7 @@ export default {
   },
 
   created() {
+    this.customRotationDeg = localStorage.getItem(`webcamRotationDeg_${this.printer?.id}_${this.webcams.length ? this.webcams[0].stream_id : 0}`) || 0
     this.user = user()
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.fetchLastPrint()

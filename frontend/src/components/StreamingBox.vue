@@ -89,7 +89,6 @@
         :class="webcamRatioClass"
         :style="{ transform: imageTransformStyle }"
       >
-        <!-- <div class="webcam_fixed_ratio_inner">
           <img
             v-if="taggedSrc !== printerStockImgSrc"
             class="tagged-jpg"
@@ -104,7 +103,6 @@
           >
             <use :href="printerStockImgSrc" />
           </svg>
-        </div> -->
         <div v-show="showMJpeg" class="image_test webcam_fixed_ratio_inner ontop">
           <img class="tagged-jpg" :src="mjpgSrc" />
         </div>
@@ -233,7 +231,7 @@ export default {
       if (this.webcam?.flipH) style += ' scaleX(-1)'
       if (this.webcam?.flipV) style += ' scaleY(-1)'
       style += `rotate(${this.videoRotationDeg}deg)`
-      
+
       return style
     },
     taggedImgAvailable() {

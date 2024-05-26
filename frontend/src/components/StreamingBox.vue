@@ -271,7 +271,10 @@ export default {
       }
     },
     taggedSrc() {
-      return get(this.printer, 'pic.img_url', this.printerStockImgSrc)
+      if (this.webcam?.is_primary_camera) {
+        return  get(this.printer, 'pic.img_url', this.printerStockImgSrc)
+      }
+      return this.printerStockImgSrc
     },
 
     // streaming timeline

@@ -92,6 +92,6 @@ def filter_users_by_email_and_syndicate(email, syndicate):
     users = User.objects.filter(
         emailaddress__email__iexact=email,
         syndicate=syndicate
-    ).distinct()
+    )
 
     return list(users)

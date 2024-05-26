@@ -90,19 +90,12 @@
         :style="{ transform: imageTransformStyle }"
       >
           <img
-            v-if="taggedSrc !== printerStockImgSrc"
+            v-if="taggedSrc"
             class="tagged-jpg"
             :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
             :src="taggedSrc"
             :alt="printer.name + ' current image'"
           />
-          <svg
-            v-else
-            class="poster-placeholder"
-            :style="{ transform: `rotate(-${videoRotationDeg}deg)` }"
-          >
-            <use :href="printerStockImgSrc" />
-          </svg>
         <div v-show="showMJpeg" class="image_test webcam_fixed_ratio_inner ontop">
           <img class="tagged-jpg" :src="mjpgSrc" />
         </div>
@@ -112,7 +105,7 @@
             class="remote-video"
             width="960"
             :height="webcamVideoHeight"
-            :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
+            :poster="taggedSrc"
             autoplay
             muted
             playsinline
@@ -125,7 +118,7 @@
 
     <div class="extra-controls">
       <div
-        v-if="showVideo || showVideo || taggedSrc !== printerStockImgSrc"
+        v-if="showVideo || showVideo || taggedSrc"
         class="video-control-btn"
         @click="onRotateRightClicked"
       >
@@ -218,7 +211,6 @@ export default {
       slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
-      printerStockImgSrc: '#svg-3d-printer',
       mjpgSrc: null,
       localStorageRotationKey: `webcamRotationDeg_${this.printer.id}_${this.webcam?.stream_id || 0}`,
       customRotationDeg: 0,
@@ -233,9 +225,6 @@ export default {
       style += `rotate(${this.videoRotationDeg}deg)`
 
       return style
-    },
-    taggedImgAvailable() {
-      return this.taggedSrc !== this.printerStockImgSrc
     },
     showVideo() {
       return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
@@ -272,9 +261,9 @@ export default {
     },
     taggedSrc() {
       if (this.webcam?.is_primary_camera) {
-        return  get(this.printer, 'pic.img_url', this.printerStockImgSrc)
+        return  get(this.printer, 'pic.img_url', null)
       }
-      return this.printerStockImgSrc
+      return null
     },
 
     // streaming timeline

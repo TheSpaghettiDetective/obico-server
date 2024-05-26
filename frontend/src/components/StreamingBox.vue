@@ -87,7 +87,7 @@
       <div
         class="webcam_fixed_ratio"
         :class="webcamRatioClass"
-        :style="{ transform: `rotate(${videoRotationDeg}deg)` }"
+        :style="{ transform: imageTransformStyle }"
       >
         <!-- <div class="webcam_fixed_ratio_inner">
           <img
@@ -105,14 +105,13 @@
             <use :href="printerStockImgSrc" />
           </svg>
         </div> -->
-        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
+        <div v-show="showMJpeg" class="image_test webcam_fixed_ratio_inner ontop">
           <img class="tagged-jpg" :src="mjpgSrc" />
         </div>
-        <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop">
+        <div v-show="showVideo" class="video_test webcam_fixed_ratio_inner ontop">
           <video
             ref="video"
             class="remote-video"
-            :class="{ flipH: webcam?.flipH || false, flipV: webcam?.flipV || false }"
             width="960"
             :height="webcamVideoHeight"
             :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
@@ -229,6 +228,14 @@ export default {
   },
 
   computed: {
+    imageTransformStyle() {
+      let style = ''
+      if (this.webcam?.flipH) style += ' scaleX(-1)'
+      if (this.webcam?.flipV) style += ' scaleY(-1)'
+      style += `rotate(${this.videoRotationDeg}deg)`
+      
+      return style
+    },
     taggedImgAvailable() {
       return this.taggedSrc !== this.printerStockImgSrc
     },

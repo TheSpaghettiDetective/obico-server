@@ -20,7 +20,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
 import json
 from django.utils.translation import gettext_lazy as _
-from allauth.account.views import LoginView, SignupView
+from allauth.account.views import LoginView, SignupView, PasswordResetView
 
 from lib.url_signing import HmacSignedUrl
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
@@ -31,6 +31,8 @@ from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
 from lib.syndicate import syndicate_from_request
+from app.forms import CustomResetPasswordForm
+
 
 
 def index(request):
@@ -59,6 +61,14 @@ class SocialAccountAwareSignupView(SignupView):
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
             return super(SocialAccountAwareSignupView, self).form_valid(form)
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = CustomResetPasswordForm
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
 @login_required
 def printers(request, template_name='printers.html'):

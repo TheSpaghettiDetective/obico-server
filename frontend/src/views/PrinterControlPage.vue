@@ -114,7 +114,7 @@
         <div class="stream-container">
           <div class="header-container">
             <div class="title">{{ $t('Webcam') }}</div>
-            <div class="webcam-options">
+            <div>
               <b-dropdown v-model="selectedWebcamIndex" class="webcam-dropdown" block size="sm" variant="link" toggle-class="text-decoration-none" no-caret>
                 <template #button-content>
                   <i class="fa fa-camera" aria-hidden="true"></i>
@@ -162,6 +162,7 @@ import FailureDetectionWidget from '@src/components/printer-control/FailureDetec
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ReorderModal from '@src/components/ReorderModal'
+import { getLocalPref } from '@src/lib/pref'
 import SharePrinter from '@src/components/printers/SharePrinter.vue'
 import TerminalWidget from '../components/printer-control/TerminalWidget.vue'
 
@@ -233,7 +234,6 @@ export default {
       customRotationDeg: 0,
       isAllWebcamSelected: false,
       customRotationData: [],
-      isAtleastOnePrinterPortrait: false,
     }
   },
 
@@ -251,6 +251,23 @@ export default {
     },
     selectedWebcam() {
       return this.webcams[this.selectedWebcamIndex];
+    },
+    isAtleastOnePrinterPortrait() {
+      let isPortrait = false
+      this.webcams.forEach(webcam => {
+        const id = webcam.stream_id
+        const customRotationData = this.customRotationData.find(custom => custom.streamId == id) || null
+
+        const customRotation = customRotationData ? Number(customRotationData.customRotation) : 0
+        const rotation = +(webcam.rotation ?? 0) + customRotation
+        const degree = rotation % 360
+        
+        if (degree === 90 || degree === 270) {
+          isPortrait = true
+        }
+      })
+      
+      return isPortrait
     },
   },
 
@@ -278,7 +295,7 @@ export default {
   },
 
   created() {
-    this.customRotationDeg = localStorage.getItem(`webcamRotationDeg_${this.printer?.id}_${this.webcams.length ? this.webcams[0].stream_id : 0}`) || 0
+    this.customRotationDeg = getLocalPref('webcamRotationDeg', 0, `${this.printer?.id}_${this.webcams.length ? this.webcams[0].stream_id : 0}`)
     this.user = user()
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.fetchLastPrint()
@@ -294,7 +311,6 @@ export default {
             for (const webcam of webcams) {
               webcam.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
               this.webcams.push(webcam)
-              this.calculateAtLeastOneFeedPortrait()
               // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
               webcam.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
               // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
@@ -315,23 +331,6 @@ export default {
   },
 
   methods: {
-    calculateAtLeastOneFeedPortrait() {
-      let isPortrait = false
-      this.webcams.forEach(webcam => {
-        const id = webcam.stream_id
-        const customRotationData = this.customRotationData.find(custom => custom.streamId == id) || null
-
-        const customRotation = customRotationData ? Number(customRotationData.customRotation) : 0
-        const rotation = +(webcam.rotation ?? 0) + customRotation
-        const degree = rotation % 360
-        
-        if (degree === 90 || degree === 270) {
-          isPortrait = true
-        }
-      })
-      
-      this.isAtleastOnePrinterPortrait = isPortrait
-    },
     handleRotateRightClicked(val, streamId) {
       const customRotationIndex = this.customRotationData.findIndex(custom => custom.streamId === streamId)
       if (customRotationIndex === -1) {
@@ -341,7 +340,6 @@ export default {
       }
        
       this.customRotationDeg = val
-      this.calculateAtLeastOneFeedPortrait()
     },
     chooseWebcam(value) {
       if (value == 'all') {

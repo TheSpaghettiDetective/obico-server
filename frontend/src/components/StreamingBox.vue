@@ -131,7 +131,7 @@
 <script>
 import get from 'lodash/get'
 import ifvisible from 'ifvisible'
-
+import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import Janus from '@src/lib/janus'
 import { toArrayBuffer } from '@src/lib/utils'
 import ViewingThrottle from '@src/lib/viewing-throttle'
@@ -212,7 +212,7 @@ export default {
       trackMuted: false,
       videoLoading: false,
       mjpgSrc: null,
-      localStorageRotationKey: `webcamRotationDeg_${this.printer.id}_${this.webcam?.stream_id || 0}`,
+      localStorageRotationKey: `${this.printer.id}_${this.webcam?.stream_id || 0}`,
       customRotationDeg: 0,
     }
   },
@@ -293,7 +293,7 @@ export default {
     },
   },
   created() {
-    this.customRotationDeg = localStorage.getItem(this.localStorageRotationKey) ? Number(localStorage.getItem(this.localStorageRotationKey)) : 0
+    this.customRotationDeg = getLocalPref('webcamRotationDeg', 0, this.localStorageRotationKey)
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
       this.mjpgSrc = `data:image/jpg;base64,${jpg}`
       this.onCanPlay()
@@ -333,7 +333,7 @@ export default {
     },
     onRotateRightClicked() {
       this.customRotationDeg = this.customRotationDeg + 90;
-      localStorage.setItem(this.localStorageRotationKey, this.customRotationDeg % 360)
+      setLocalPref('webcamRotationDeg', this.customRotationDeg % 360, this.localStorageRotationKey)
       this.$emit('onRotateRightClicked', this.customRotationDeg);
     },
     onCanPlay() {

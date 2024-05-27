@@ -366,15 +366,13 @@ class PrinterEventView(CreateAPIView):
                         to_long_term_storage=False,
             )
 
-        clean_event_text = request.data.get('event_text').replace('\x00', '')
-        
         print_event = PrinterEvent.create(
             printer=printer,
             print=printer.current_print,
             event_type=request.data.get('event_type'),
             event_class=request.data.get('event_class'),
             event_title=request.data.get('event_title'),
-            event_text=clean_event_text,
+            event_text=request.data.get('event_text').replace('\x00', ''), # For unknown reason some events contains null bytes
             info_url=request.data.get('info_url'),
             image_url=rotated_jpg_url,
             task_handler=request.data.get('notify', '').lower() in ['t', 'true'],

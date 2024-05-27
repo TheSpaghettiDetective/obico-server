@@ -1137,3 +1137,12 @@ div[id^="b-modal-"] {
     }
   }
 }
+.webcam-dropdown {
+  button {
+    color: var(--color-text-primary);
+    font-size: 14px;
+  }
+  ul {
+    transform: translate3d(-55%, 31px, 0px) !important;
+  }
+}

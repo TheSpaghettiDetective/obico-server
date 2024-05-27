@@ -388,12 +388,12 @@ export default {
   this.$swal.Prompt.fire({
     title: `${this.$i18next.t(`Upgrade for Better Streaming`)}`,
     html: `
-      <p>${this.$i18next.t("Because you are now on the")} <a target="_blank" href="${getDocUrl('/user-guides/upgrade-to-pro/?source=basic_streaming')}">${this.$i18next.t("{brandName} Cloud Free plan",{brandName:this.$syndicateText.brandName})}</a>:</p>
+      <p>${this.$i18next.t("Because you are now on the")} <a target="_blank" href="${this.getDocUrl('/user-guides/upgrade-to-pro/?source=basic_streaming')}">${this.$i18next.t("{brandName} Cloud Free plan",{brandName:this.$syndicateText.brandName})}</a>:</p>
       <ul>
         <li>${this.$i18next.t("Streaming is limited to 5 FPS (frames per second).")}</li>
         <li>${this.$i18next.t("After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.")}</li>
       </ul>
-      <p>${this.$i18next.t("Support the {brandName} project by",{brandName:this.$syndicateText.brandName})} <a href="${getDocUrl('/ent_pub/pricing/?source=basic_streaming')}">${this.$i18next.t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$i18next.t("The Pro plan offers many perks, including the")} <a target="_blank" href="${getDocUrl('/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming')}">${this.$i18next.t("Premium Streaming")}</a>:</p>
+      <p>${this.$i18next.t("Support the {brandName} project by",{brandName:this.$syndicateText.brandName})} <a href="${this.getDocUrl('/ent_pub/pricing/?source=basic_streaming')}">${this.$i18next.t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$i18next.t("The Pro plan offers many perks, including the")} <a target="_blank" href="${this.getDocUrl('/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming')}">${this.$i18next.t("Premium Streaming")}</a>:</p>
       <ul>
         <li>${this.$i18next.t("Smooth 25 FPS.")}</li>
         <li>${this.$i18next.t("Unlimited streaming with no cooldowns.")}</li>
@@ -431,7 +431,7 @@ export default {
           <p>${this.$i18next.t("The video frames are getting dropped because there is most likely a bandwidth bottleneck along the route they travel from your Raspberry Pi to your computer. The bottleneck can be anywhere, but in most cases,")} <Text bold>${this.$i18next.t("it is either your computer's internet connection, or your Raspberry Pi's")}</Text>.</p>
           <p>${this.$i18next.t("Make sure your computer is connected to the same network as your Pi. If you still see this warning, you need to trouble-shoot your computer's Wi-Fi connection, probably by moving closer to the Wi-Fi router.")}</p>
           <p>${this.$i18next.t("If the webcam stream is smooth when your computer is on the same Wi-Fi network as your Pi, the bottleneck is likely with the upload speed of your internet connection. You need to run a speed test to make sure you have high-enough upload speed, as well as")} <b>${this.$i18next.t("low latency (ping)")}</b>.</p>
-          <p>${this.$i18next.t("Check out")} <a target="_blank" href="${getDocUrl('/user-guides/webcam-feed-is-laggy/')}">${this.$i18next.t("the step-by-step trouble-shooting guide.")}</a></p>
+          <p>${this.$i18next.t("Check out")} <a target="_blank" href="${this.getDocUrl('/user-guides/webcam-feed-is-laggy/')}">${this.$i18next.t("the step-by-step trouble-shooting guide.")}</a></p>
         `,
         showCloseButton: true,
       });
@@ -453,7 +453,7 @@ export default {
           <p class="lead">${this.$i18next.t("2. The internet connection of your computer or phone is not fast enough.")}</p>
           <p class="lead">${this.$i18next.t("3. Your webcam is not properly connected to your Raspberry Pi.")}</p>
           <br>
-          <p>${this.$i18next.t("Check")} <a target="_blank" href="${getDocUrl('/user-guides/webcam-feed-is-laggy')}">${this.$i18next.t("this step-by-step troubleshooting guide")}</a>.</p>
+          <p>${this.$i18next.t("Check")} <a target="_blank" href="${this.getDocUrl('/user-guides/webcam-feed-is-laggy')}">${this.$i18next.t("this step-by-step troubleshooting guide")}</a>.</p>
         `,
         showCloseButton: true,
       })

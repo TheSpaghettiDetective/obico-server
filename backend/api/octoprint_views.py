@@ -372,7 +372,7 @@ class PrinterEventView(CreateAPIView):
             event_type=request.data.get('event_type'),
             event_class=request.data.get('event_class'),
             event_title=request.data.get('event_title'),
-            event_text=request.data.get('event_text'),
+            event_text=request.data.get('event_text').replace('\x00', ''), # For unknown reason some events contains null bytes
             info_url=request.data.get('info_url'),
             image_url=rotated_jpg_url,
             task_handler=request.data.get('notify', '').lower() in ['t', 'true'],

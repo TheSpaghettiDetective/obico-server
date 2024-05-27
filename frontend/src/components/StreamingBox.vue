@@ -89,17 +89,16 @@
         :class="webcamRatioClass"
         :style="{ transform: imageTransformStyle }"
       >
-          <img
-            v-if="taggedSrc"
-            class="tagged-jpg"
-            :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
-            :src="taggedSrc"
-            :alt="printer.name + ' current image'"
-          />
-        <div v-show="showMJpeg" class="image_test webcam_fixed_ratio_inner ontop">
-          <img class="tagged-jpg" :src="mjpgSrc" />
+      <img
+        v-if="taggedSrc"
+        style="position: absolute;"
+        :src="taggedSrc"
+        :alt="printer.name + ' current image'"
+      />
+        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
+          <img :src="mjpgSrc" />
         </div>
-        <div v-show="showVideo" class="video_test webcam_fixed_ratio_inner ontop">
+        <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop">
           <video
             ref="video"
             class="remote-video"

@@ -117,7 +117,7 @@
                   <div class="first-layer-modal-video-wrapper">
                     <video-box
                       :video-url="firstLayerInspection.tagged_video_url"
-                      :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0] : null"
+                      :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0].image_url : null"
                       :fluid="false"
                       :fullscreen-btn="false"
                       :download-btn="true"
@@ -134,7 +134,7 @@
                   <div class="first-layer-modal-video-wrapper">
                     <video-box
                       :video-url="firstLayerInspection.video_url"
-                      :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0] : null"
+                      :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0].image_url : null"
                       :fluid="false"
                       :fullscreen-btn="false"
                       :download-btn="true"

@@ -4,3 +4,4 @@ ipdb
 newrelic==4.12.0.113
 requests==2.31.0
 sentry_sdk[flask]==1.40.3
+Flask-Compress==1.15

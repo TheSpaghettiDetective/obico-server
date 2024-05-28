@@ -156,3 +156,31 @@ An object that represents a G-Code file.
 - `email`: Email.
 - `consented_at`: The timestamp when the user has consented to the terms and conditions. It should always be the time when the user signs up. In ISO-8601 format.
 - `dh_balance`: The balance of the AI Detection Hours.
+
+## `PrinterEvent` {#printerevent}
+
+An object that represents a printer-related event, detailing actions or states of a print job or printer.
+
+- `id`: ID used in API path. ReadOnly
+- `print`: The Print job associated with this event. Nullable
+- `printer`: The Printer associated with this event.
+- `event_type`: The type of event. Must be one of the predefined types:
+    - `STARTED`: Print job started.
+    - `ENDED`: Print job ended.
+    - `PAUSED`: Print job paused.
+    - `RESUMED`: Print job resumed.
+    - `FAILURE_ALERTED`: Possible failure detected.
+    - `ALERT_MUTED`: Alerts have been muted.
+    - `ALERT_UNMUTED`: Alerts have been unmuted.
+    - `FILAMENT_CHANGE`: Filament change required.
+    - `PRINTER_ERROR`: Printer error occurred.
+- `event_class`: The class of event, indicating severity or nature. Must be one of:
+    - `ERROR`: Represents an error event.
+    - `WARNING`: Represents a warning event.
+    - `SUCCESS`: Represents a success event.
+    - `INFO`: Represents an informational event.
+- `event_title`: A title for the event. Auto-generated based on event_type if not provided. Nullable
+- `event_text`: Detailed description of the event. Nullable
+- `image_url`: URL to an image related to the event. Auto-generated if not provided. Nullable
+- `info_url`: URL to additional information about the event. Nullable
+- `created_at`: The timestamp when the event was created. ReadOnly

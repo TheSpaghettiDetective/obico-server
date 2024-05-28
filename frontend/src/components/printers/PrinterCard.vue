@@ -38,7 +38,7 @@
           </b-dropdown>
         </div>
       </div>
-      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
+      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" :webcam="webcam" />
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -281,6 +281,7 @@ export default {
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
       webrtc: null,
+      webcam: null,
     }
   },
   computed: {
@@ -365,8 +366,8 @@ export default {
           this.$emit('PrinterUpdated', this.updatedPrinter(data))
 
           if (!this.webrtc && (data?.settings?.webcams || []).length > 0) {
-            const webcam = data.settings?.webcams?.find(webcam => webcam.is_primary_camera === true);
-            this.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+            this.webcam = data.settings?.webcams?.find(webcam => webcam.is_primary_camera === true);
+            this.webrtc = WebRTCConnection(this.webcam.stream_mode, webcam.stream_id)
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
           }

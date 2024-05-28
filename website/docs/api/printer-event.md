@@ -2,7 +2,7 @@
 title: Printer Event API
 ---
 
-## POST `/api/v1/printer_events/` {#post-apiv1printerevents}
+## POST `/api/v1/octo/printer_events/` {#post-apiv1octoprinterevents}
 
 ### Request {#request}
 
@@ -32,20 +32,13 @@ JSON representation of the [`PrinterEvent`] object.
     "result": "ok"
   }
 
-## GET `/api/v1/printer_events/` {#get-apiv1printerevents}
+## GET `/api/v1/octo/printer_events/` {#get-apiv1printerevents}
 
 ### Request {#request}
 
 #### Headers {#headers}
 
 - `Authorization`: A required header with the authentication token for the printer.
-
-#### Query parameters {#query-parameters}
-
-- `filter_by_classes`: (optional): An array of strings representing classes to filter the events by.
-- `filter_by_types[]`: (optional): An array of strings representing types to filter the events by.
-- `start`: (optional): An integer representing the start index for pagination (default is 0).
-- `limit`: An integer representing the maximum number of results to return per page (default is 12).
 
 ### Response {#response}
 

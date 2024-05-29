@@ -114,8 +114,8 @@
         <div class="stream-container">
           <div class="header-container">
             <div class="title">{{ $t('Webcam') }}</div>
-            <div>
-              <b-dropdown v-model="selectedWebcamIndex" class="webcam-dropdown" block size="sm" variant="link" toggle-class="text-decoration-none" no-caret>
+            <div class="d-flex align-items-center">
+              <b-dropdown v-if="webcams.length > 1" v-model="selectedWebcamIndex" class="webcam-dropdown" block size="sm" variant="link" toggle-class="text-decoration-none" no-caret>
                 <template #button-content>
                   <i class="fa fa-camera" aria-hidden="true"></i>
                   {{ isAllWebcamSelected ? 'All' : selectedWebcam.name || 'Primary' }}
@@ -125,6 +125,10 @@
                 <b-dropdown-item v-for="(webcam, index) in webcams" :key="index" href="#" @click="chooseWebcam(index)">{{ webcam.name || 'Primary' }}</b-dropdown-item>
                 <b-dropdown-item @click="chooseWebcam('all')">{{ $t('All') }}</b-dropdown-item>
               </b-dropdown>
+              <div v-else class="mr-3">
+                <i class="fa fa-camera" aria-hidden="true"></i>
+                {{ webcams.length ? webcams[0].name || 'Primary' : '' }}
+              </div>
             </div>
           </div>
           <div class="webcam-main" :class="{ 'justify-center' : isAllWebcamSelected, 'webcam-more-than-two' : isAllWebcamSelected && webcams.length > 2 }">

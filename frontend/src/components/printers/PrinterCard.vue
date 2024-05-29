@@ -367,7 +367,7 @@ export default {
 
           if (!this.webrtc && (data?.settings?.webcams || []).length > 0) {
             this.webcam = data.settings?.webcams?.find(webcam => webcam.is_primary_camera === true);
-            this.webrtc = WebRTCConnection(this.webcam.stream_mode, webcam.stream_id)
+            this.webrtc = WebRTCConnection(this.webcam.stream_mode, this.webcam.stream_id)
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
           }

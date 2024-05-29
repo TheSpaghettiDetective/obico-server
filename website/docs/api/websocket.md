@@ -159,132 +159,130 @@ title: Websocket
 
 ## Sections of the websocket message
 
-### `current_print_ts`
+### `current_print_ts` **Required**
 
-- Timestamp for when current print job starts. This value must maintain consistent for the entire print. Otherwise the server will identify the current print job as a new one.
+Timestamp for when current print job starts. This value must maintain consistent for the entire print. Otherwise the server will identify the current print job as a new one.
 
-### `event`
+### `event` **Optional**
 
-- **`event_type`**: Type of event occurring. One of these values: `PrintStarted|PrintResumed|PrintPaused|PrintDone|PrintFailed`.
+- **`event_type`**: **Required**. Type of event occurring. One of these values: `PrintStarted|PrintResumed|PrintPaused|PrintDone|PrintFailed`.
 
-### `settings`
+### `settings` **Optional**
 
-- **`webcams`**: List of webcam settings
-  - **`name`**: Name of the webcam
-  - **`is_primary_camera`**: Indicates if this is the primary camera
-  - **`is_nozzle_camera`**: Indicates if this is a nozzle camera
-  - **`stream_mode`**: Mode of the stream (e.g., live, recorded)
-  - **`stream_id`**: ID of the stream
-  - **`flipV`**: Vertical flip of the video stream
-  - **`flipH`**: Horizontal flip of the video stream
-  - **`rotation`**: Rotation angle of the video stream
-  - **`streamRatio`**: Aspect ratio of the video stream
+- **`webcams`**: **Optional** List of webcam settings
+  - **`name`**: **Required** Name of the webcam
+  - **`is_primary_camera`**: **Optional** Default to `false`. Indicates if this is the primary camera
+  - **`is_nozzle_camera`**: **Optional** Default to `false`. Indicates if this is a nozzle camera
+  - **`stream_mode`**: **Optional** Mode of the stream (e.g., live, recorded)
+  - **`stream_id`**: **Required** ID of the stream for the WebRTC connection
+  - **`flipV`**: **Optional** Vertical flip of the video stream
+  - **`flipH`**: **Optional** Horizontal flip of the video stream
+  - **`rotation`**: **Optional** Rotation angle of the video stream
+  - **`streamRatio`**: **Optional** Aspect ratio of the video stream
 
-- **`temperature`**: List of temperature profiles
+- **`temperature`**: **Optional** List of temperature profiles
 
-- **`agent`**: Information about the agent managing the print
-  - **`name`**: Name of the agent
-  - **`version`**: Version of the agent software
+- **`agent`**: **Required** Information about the agent managing the print
+  - **`name`**: **Required** Name of the agent
+  - **`version`**: **Required** Version of the agent software
 
-### `status`
+### `status` **Required**
 
-- **`_ts`**: Timestamp of when the status is collected. This is used to de-dup the status message on the server side, and make sure the latest status message will always win, even if an out-of-date status message is sent to the server later because of transition delays.
+- **`_ts`**: **Required** Timestamp of when the status is collected. This is used to de-dup the status message on the server side, and make sure the latest status message will always win, even if an out-of-date status message is sent to the server later because of transition delays.
 
-- **`state`**: Current state of the printer
-  - **`text`**: Textual description of the printer state. One of these values: `Operational|G-Code Downloading|Printing|Pausing|Paused|Cancelling|Offline`.
-  - **`flags`**: State flags indicating various statuses
-    - **`operational`**: Printer is operational
-    - **`printing`**: Printer is printing
-    - **`cancelling`**: Print job is being cancelled
-    - **`pausing`**: Print job is being paused
-    - **`resuming`**: Print job is resuming
-    - **`finishing`**: Print job is finishing
-    - **`paused`**: Printer is paused
+- **`state`**: **Required** Current state of the printer
+  - **`text`**: **Required** Textual description of the printer state. One of these values: `Operational|G-Code Downloading|Printing|Pausing|Paused|Cancelling|Offline`.
+  - **`flags`**: **Required** State flags indicating various statuses
+    - **`operational`**: **Required** Printer is operational
+    - **`printing`**: **Required** Printer is printing
+    - **`cancelling`**: **Required** Print job is being cancelled
+    - **`pausing`**: **Required** Print job is being paused
+    - **`resuming`**: **Required** Print job is resuming
+    - **`finishing`**: **Required** Print job is finishing
+    - **`paused`**: **Required** Printer is paused
 
-- **`currentLayerHeight`**: Current height of the print layer
-- **`currentZ`**: Current Z position of the print head
-- **`currentFeedRate`**: Current feed rate of the print
-- **`currentFlowRate`**: Current flow rate of the print
-- **`currentFanSpeed`**: Current speed of the cooling fan
+- **`currentLayerHeight`**: **Optional** Current height of the print layer
+- **`currentZ`**: **Optional** Current Z position of the print head
+- **`currentFeedRate`**: **Optional** Current feed rate of the print
+- **`currentFlowRate`**: **Optional** Current flow rate of the print
+- **`currentFanSpeed`**: **Optional** Current speed of the cooling fan
 
-- **`job`**: Information about the current print job
-  - **`file`**: Details of the file being printed
-    - **`name`**: Name of the file
-    - **`path`**: Path to the file
-    - **`display`**: Display name of the file
-    - **`origin`**: Origin of the file (e.g., local, SD card)
-    - **`size`**: Size of the file in bytes
-    - **`date`**: Date of the file
-  - **`estimatedPrintTime`**: Estimated time to complete the print job
-  - **`averagePrintTime`**: Average time to complete similar print jobs
-  - **`lastPrintTime`**: Time taken to complete the last print job
-  - **`filament`**: Filament usage details
-    - **`tool0`**: Filament used by tool 0
-      - **`length`**: Length of filament used
-      - **`volume`**: Volume of filament used
-  - **`user`**: User who initiated the print job
+- **`job`**: **Optional** Information about the current print job
+  - **`file`**: **Required** Details of the file being printed
+    - **`name`**: **Required** Name of the file
+    - **`path`**: **Required** Path to the file
+    - **`display`**: **Required** Display name of the file
+    - **`origin`**: **Optional** Origin of the file (e.g., local, SD card)
+    - **`size`**: **Optional** Size of the file in bytes
+    - **`date`**: **Optional** Date of the file
+  - **`estimatedPrintTime`**: **Optional** Estimated time to complete the print job
+  - **`averagePrintTime`**: **Optional** Average time to complete similar print jobs
+  - **`lastPrintTime`**: **Optional** Time taken to complete the last print job
+  - **`filament`**: **Optional** Filament usage details
+    - **`tool0`**: **Optional** Filament used by tool 0
+      - **`length`**: **Optional** Length of filament used
+      - **`volume`**: **Optional** Volume of filament use
 
-- **`progress`**: Progress of the print job
-  - **`completion`**: Percentage of completion
-  - **`filepos`**: Current file position in bytes
-  - **`printTime`**: Time elapsed since the start of the print job
-  - **`printTimeLeft`**: Estimated time remaining to complete the print job
-  - **`printTimeLeftOrigin`**: Origin of the print time left estimation
+- **`progress`**: **Optional** Progress of the print job
+  - **`completion`**: **Optional** Percentage of completion
+  - **`filepos`**: **Optional** Current file position in bytes
+  - **`printTime`**: **Optional** Time elapsed since the start of the print job
+  - **`printTimeLeft`**: **Optional** Estimated time remaining to complete the print job
 
-- **`temperatures`**: Temperature readings
-  - **`tool0`**: Temperature of tool 0
-    - **`actual`**: Actual temperature
-    - **`target`**: Target temperature
-    - **`offset`**: Temperature offset
-  - **`bed`**: Temperature of the print bed
-    - **`actual`**: Actual temperature
-    - **`target`**: Target temperature
-    - **`offset`**: Temperature offset
-  - **`chamber`**: Temperature of the print chamber
-    - **`actual`**: Actual temperature
-    - **`target`**: Target temperature
-    - **`offset`**: Temperature offset
+- **`temperatures`**: **Optional** Temperature readings
+  - **`tool0`**: **Optional** Temperature of tool 0
+    - **`actual`**: **Optional** Actual temperature
+    - **`target`**: **Optional** Target temperature
+    - **`offset`**: **Optional** Temperature offset
+  - **`bed`**: **Optional** Temperature of the print bed
+    - **`actual`**: **Optional** Actual temperature
+    - **`target`**: **Optional** Target temperature
+    - **`offset`**: **Optional** Temperature offset
+  - **`chamber`**: **Optional** Temperature of the print chamber
+    - **`actual`**: **Optional** Actual temperature
+    - **`target`**: **Optional** Target temperature
+    - **`offset`**: **Optional** Temperature offset
 
-- **`file_metadata`**: Metadata about the file being printed
-  - **`hash`**: Hash of the file
-  - **`obico`**: Obico-specific metadata
-    - **`totalLayerCount`**: Total number of layers
-  - **`analysis`**: Analysis of the file
-    - **`printingArea`**: Dimensions of the printing area
-      - **`maxX`**: Maximum X coordinate
-      - **`maxY`**: Maximum Y coordinate
-      - **`maxZ`**: Maximum Z coordinate
-      - **`minX`**: Minimum X coordinate
-      - **`minY`**: Minimum Y coordinate
-      - **`minZ`**: Minimum Z coordinate
-    - **`dimensions`**: Dimensions of the object
-      - **`depth`**: Depth of the object
-      - **`height`**: Height of the object
-      - **`width`**: Width of the object
-    - **`travelArea`**: Dimensions of the travel area
-      - **`maxX`**: Maximum X coordinate
-      - **`maxY`**: Maximum Y coordinate
-      - **`maxZ`**: Maximum Z coordinate
-      - **`minX`**: Minimum X coordinate
-      - **`minY`**: Minimum Y coordinate
-      - **`minZ`**: Minimum Z coordinate
-    - **`travelDimensions`**: Dimensions of the travel path
-      - **`depth`**: Depth of the travel path
-      - **`height`**: Height of the travel path
-      - **`width`**: Width of the travel path
-    - **`estimatedPrintTime`**: Estimated print time from analysis
-    - **`filament`**: Filament usage details from analysis
-      - **`tool0`**: Filament used by tool 0
-        - **`length`**: Length of filament used
-        - **`volume`**: Volume of filament used
-  - **`history`**: Print job history
-    - **`timestamp`**: Timestamp of the history record
-    - **`printTime`**: Print time recorded in history
-    - **`success`**: Indicates if the print was successful
-    - **`printerProfile`**: Profile of the printer used
-  - **`statistics`**: Print job statistics
-    - **`averagePrintTime`**: Average print time
-    - **`lastPrintTime`**: Last recorded print time
+- **`file_metadata`**: **Optional** Metadata about the file being printed
+  - **`hash`**: **Optional** Hash of the file
+  - **`obico`**: **Optional** Obico-specific metadata
+    - **`totalLayerCount`**: **Optional** Total number of layers
+  - **`analysis`**: **Optional** Analysis of the file
+    - **`printingArea`**: **Optional** Dimensions of the printing area
+      - **`maxX`**: **Optional** Maximum X coordinate
+      - **`maxY`**: **Optional** Maximum Y coordinate
+      - **`maxZ`**: **Optional** Maximum Z coordinate
+      - **`minX`**: **Optional** Minimum X coordinate
+      - **`minY`**: **Optional** Minimum Y coordinate
+      - **`minZ`**: **Optional** Minimum Z coordinate
+    - **`dimensions`**: **Optional** Dimensions of the object
+      - **`depth`**: **Optional** Depth of the object
+      - **`height`**: **Optional** Height of the object
+      - **`width`**: **Optional** Width of the object
+    - **`travelArea`**: **Optional** Dimensions of the travel area
+      - **`maxX`**: **Optional** Maximum X coordinate
+      - **`maxY`**: **Optional** Maximum Y coordinate
+      - **`maxZ`**: **Optional** Maximum Z coordinate
+      - **`minX`**: **Optional** Minimum X coordinate
+      - **`minY`**: **Optional** Minimum Y coordinate
+      - **`minZ`**: **Optional** Minimum Z coordinate
+    - **`travelDimensions`**: **Optional** Dimensions of the travel path
+      - **`depth`**: **Optional** Depth of the travel path
+      - **`height`**: **Optional** Height of the travel path
+      - **`width`**: **Optional** Width of the travel path
+    - **`estimatedPrintTime`**: **Optional** Estimated print time from analysis
+    - **`filament`**: **Optional** Filament usage details from analysis
+      - **`tool0`**: **Optional** Filament used by tool 0
+        - **`length`**: **Optional** Length of filament used
+        - **`volume`**: **Optional** Volume of filament used
+  - **`history`**: **Optional** Print job history
+    - **`timestamp`**: **Optional** Timestamp of the history record
+    - **`printTime`**: **Optional** Print time recorded in history
+    - **`success`**: **Optional** Indicates if the print was successful
+    - **`printerProfile`**: **Optional** Profile of the printer used
+  - **`statistics`**: **Optional** Print job statistics
+    - **`averagePrintTime`**: **Optional** Average print time
+    - **`lastPrintTime`**: **Optional** Last recorded print time
 
 
 ## Example when a printer is printing

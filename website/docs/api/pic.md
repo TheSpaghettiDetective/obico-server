@@ -1,5 +1,5 @@
 ---
-title: Picture Api
+title: Snapshot Upload Api
 ---
 ## POST `/api/v1/octo/pic/` {#post-apiv1octopic}
 

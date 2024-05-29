@@ -2,10 +2,40 @@
 title: Websocket
 ---
 
-# General message schema
+##  General message schema
+
 ```json
 {
+  "current_print_ts": "",
+  "event": {
+    "event_type": "",
+  },
+  {
+    "settings": {
+      "webcams": [
+        {
+          "name": "",
+          "is_primary_camera": true,
+          "is_nozzle_camera": false,
+          "stream_mode": "",
+          "stream_id": 1,
+          "flipV": false,
+          "flipH": false,
+          "rotation": 0,
+          "streamRatio": "16:9"
+        }
+      ],
+      "temperature": {
+        "profiles": []
+      },
+      "agent": {
+        "name": "",
+        "version": ""
+      }
+    }
+  },
   "status": {
+    "_ts": 0,
     "state": {
       "text": "",
       "flags": {
@@ -43,19 +73,17 @@ title: Websocket
       },
       "user": ""
     },
+    "currentLayerHeight": 0,
     "currentZ": 0,
+    "currentFeedRate": 1,
+    "currentFlowRate": 1,
+    "currentFanSpeed": 0
     "progress": {
       "completion": 0,
       "filepos": 0,
       "printTime": 0,
       "printTimeLeft": 0,
       "printTimeLeftOrigin": ""
-    },
-    "offsets": {},
-    "resends": {
-      "count": 0,
-      "transmitted": 0,
-      "ratio": 0
     },
     "temperatures": {
       "tool0": {
@@ -74,8 +102,6 @@ title: Websocket
         "offset": 0
       }
     },
-    "_ts": 0,
-    "currentLayerHeight": 0,
     "file_metadata": {
       "hash": "",
       "obico": {
@@ -126,38 +152,159 @@ title: Websocket
         "averagePrintTime": 0,
         "lastPrintTime": 0
       }
-    },
-    "current_print_ts": 0,
-    "event": {
-      "event_type": "",
-      "data": {
-        "state_id": "",
-        "state_string": ""
-      }
     }
   }
 }
 ```
-# Pausing print example
+
+## Sections of the websocket message
+
+### `current_print_ts`
+
+- Timestamp for when current print job starts. This value must maintain consistent for the entire print. Otherwise the server will identify the current print job as a new one.
+
+### `event`
+
+- **`event_type`**: Type of event occurring. One of these values: `PrintStarted|PrintResumed|PrintPaused|PrintDone|PrintFailed`.
+
+### `settings`
+
+- **`webcams`**: List of webcam settings
+  - **`name`**: Name of the webcam
+  - **`is_primary_camera`**: Indicates if this is the primary camera
+  - **`is_nozzle_camera`**: Indicates if this is a nozzle camera
+  - **`stream_mode`**: Mode of the stream (e.g., live, recorded)
+  - **`stream_id`**: ID of the stream
+  - **`flipV`**: Vertical flip of the video stream
+  - **`flipH`**: Horizontal flip of the video stream
+  - **`rotation`**: Rotation angle of the video stream
+  - **`streamRatio`**: Aspect ratio of the video stream
+
+- **`temperature`**: List of temperature profiles
+
+- **`agent`**: Information about the agent managing the print
+  - **`name`**: Name of the agent
+  - **`version`**: Version of the agent software
+
+### `status`
+
+- **`_ts`**: Timestamp of when the status is collected. This is used to de-dup the status message on the server side, and make sure the latest status message will always win, even if an out-of-date status message is sent to the server later because of transition delays.
+
+- **`state`**: Current state of the printer
+  - **`text`**: Textual description of the printer state. One of these values: `Operational|G-Code Downloading|Printing|Pausing|Paused|Cancelling|Offline`.
+  - **`flags`**: State flags indicating various statuses
+    - **`operational`**: Printer is operational
+    - **`printing`**: Printer is printing
+    - **`cancelling`**: Print job is being cancelled
+    - **`pausing`**: Print job is being paused
+    - **`resuming`**: Print job is resuming
+    - **`finishing`**: Print job is finishing
+    - **`paused`**: Printer is paused
+
+- **`currentLayerHeight`**: Current height of the print layer
+- **`currentZ`**: Current Z position of the print head
+- **`currentFeedRate`**: Current feed rate of the print
+- **`currentFlowRate`**: Current flow rate of the print
+- **`currentFanSpeed`**: Current speed of the cooling fan
+
+- **`job`**: Information about the current print job
+  - **`file`**: Details of the file being printed
+    - **`name`**: Name of the file
+    - **`path`**: Path to the file
+    - **`display`**: Display name of the file
+    - **`origin`**: Origin of the file (e.g., local, SD card)
+    - **`size`**: Size of the file in bytes
+    - **`date`**: Date of the file
+  - **`estimatedPrintTime`**: Estimated time to complete the print job
+  - **`averagePrintTime`**: Average time to complete similar print jobs
+  - **`lastPrintTime`**: Time taken to complete the last print job
+  - **`filament`**: Filament usage details
+    - **`tool0`**: Filament used by tool 0
+      - **`length`**: Length of filament used
+      - **`volume`**: Volume of filament used
+  - **`user`**: User who initiated the print job
+
+- **`progress`**: Progress of the print job
+  - **`completion`**: Percentage of completion
+  - **`filepos`**: Current file position in bytes
+  - **`printTime`**: Time elapsed since the start of the print job
+  - **`printTimeLeft`**: Estimated time remaining to complete the print job
+  - **`printTimeLeftOrigin`**: Origin of the print time left estimation
+
+- **`temperatures`**: Temperature readings
+  - **`tool0`**: Temperature of tool 0
+    - **`actual`**: Actual temperature
+    - **`target`**: Target temperature
+    - **`offset`**: Temperature offset
+  - **`bed`**: Temperature of the print bed
+    - **`actual`**: Actual temperature
+    - **`target`**: Target temperature
+    - **`offset`**: Temperature offset
+  - **`chamber`**: Temperature of the print chamber
+    - **`actual`**: Actual temperature
+    - **`target`**: Target temperature
+    - **`offset`**: Temperature offset
+
+- **`file_metadata`**: Metadata about the file being printed
+  - **`hash`**: Hash of the file
+  - **`obico`**: Obico-specific metadata
+    - **`totalLayerCount`**: Total number of layers
+  - **`analysis`**: Analysis of the file
+    - **`printingArea`**: Dimensions of the printing area
+      - **`maxX`**: Maximum X coordinate
+      - **`maxY`**: Maximum Y coordinate
+      - **`maxZ`**: Maximum Z coordinate
+      - **`minX`**: Minimum X coordinate
+      - **`minY`**: Minimum Y coordinate
+      - **`minZ`**: Minimum Z coordinate
+    - **`dimensions`**: Dimensions of the object
+      - **`depth`**: Depth of the object
+      - **`height`**: Height of the object
+      - **`width`**: Width of the object
+    - **`travelArea`**: Dimensions of the travel area
+      - **`maxX`**: Maximum X coordinate
+      - **`maxY`**: Maximum Y coordinate
+      - **`maxZ`**: Maximum Z coordinate
+      - **`minX`**: Minimum X coordinate
+      - **`minY`**: Minimum Y coordinate
+      - **`minZ`**: Minimum Z coordinate
+    - **`travelDimensions`**: Dimensions of the travel path
+      - **`depth`**: Depth of the travel path
+      - **`height`**: Height of the travel path
+      - **`width`**: Width of the travel path
+    - **`estimatedPrintTime`**: Estimated print time from analysis
+    - **`filament`**: Filament usage details from analysis
+      - **`tool0`**: Filament used by tool 0
+        - **`length`**: Length of filament used
+        - **`volume`**: Volume of filament used
+  - **`history`**: Print job history
+    - **`timestamp`**: Timestamp of the history record
+    - **`printTime`**: Print time recorded in history
+    - **`success`**: Indicates if the print was successful
+    - **`printerProfile`**: Profile of the printer used
+  - **`statistics`**: Print job statistics
+    - **`averagePrintTime`**: Average print time
+    - **`lastPrintTime`**: Last recorded print time
+
+
+## Example when a printer is printing
+
 ```json
 {
+  "current_print_ts": 1716904799,
   "status": {
     "state": {
-      "text": "Pausing",
+      "text": "Printing",
       "flags": {
         "operational": true,
         "printing": true,
         "cancelling": false,
-        "pausing": true,
+        "pausing": false,
         "resuming": false,
         "finishing": false,
-        "closedOrError": false,
-        "error": false,
         "paused": false,
         "ready": false,
-        "sdReady": true
-      },
-      "error": ""
+      }
     },
     "job": {
       "file": {
@@ -177,8 +324,7 @@ title: Websocket
           "length": 10177.899699993939,
           "volume": 0.0
         }
-      },
-      "user": "user_example"
+      }
     },
     "currentZ": 3.45,
     "progress": {
@@ -253,173 +399,21 @@ title: Websocket
           }
         }
       }
-    },
-    "current_print_ts": 1716904799,
-    "event": {
-      "event_type": "PrintPaused",
-      "data": {
-        "name": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "path": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "origin": "local",
-        "size": 6661052,
-        "position": {
-          "z": 3.45,
-          "x": 120.614,
-          "e": 0.1896,
-          "f": 1812.0,
-          "t": 0,
-          "y": 71.05
-        },
-        "owner": "user_example",
-        "user": "user_example"
-      }
     }
   }
 }
 ```
-# Paused print example
-```json
-{
-  "status": {
-    "state": {
-      "text": "Paused",
-      "flags": {
-        "operational": true,
-        "printing": false,
-        "cancelling": false,
-        "pausing": false,
-        "resuming": false,
-        "finishing": false,
-        "closedOrError": false,
-        "error": false,
-        "paused": true,
-        "ready": false,
-        "sdReady": true
-      },
-      "error": ""
-    },
-    "job": {
-      "file": {
-        "name": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "path": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "display": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "origin": "local",
-        "size": 6661052,
-        "date": 1716892098,
-        "obico_g_code_file_id": 2
-      },
-      "estimatedPrintTime": 14830.71632999596,
-      "averagePrintTime": null,
-      "lastPrintTime": null,
-      "filament": {
-        "tool0": {
-          "length": 10177.899699993939,
-          "volume": 0.0
-        }
-      },
-      "user": "user_example"
-    },
-    "currentZ": 3.45,
-    "progress": {
-      "completion": 5.315271521675555,
-      "filepos": 354053,
-      "printTime": 116,
-      "printTimeLeft": 2068,
-      "printTimeLeftOrigin": "linear"
-    },
-    "offsets": {},
-    "resends": {
-      "count": 5,
-      "transmitted": 11981,
-      "ratio": 0
-    },
-    "temperatures": {
-      "tool0": {
-        "actual": 220.0,
-        "target": 220.0,
-        "offset": 0
-      },
-      "bed": {
-        "actual": 90.0,
-        "target": 90.0,
-        "offset": 0
-      },
-      "chamber": {
-        "actual": null,
-        "target": null,
-        "offset": 0
-      }
-    },
-    "_ts": 1716904976,
-    "currentLayerHeight": 23,
-    "file_metadata": {
-      "hash": "2a85626157e60f5df7a7cb2e4fd5a8d9fb838265",
-      "obico": {
-        "totalLayerCount": 608
-      },
-      "analysis": {
-        "printingArea": {
-          "maxX": 139.613,
-          "maxY": 144.25,
-          "maxZ": 91.05,
-          "minX": 0.0,
-          "minY": -3.0,
-          "minZ": 0.0
-        },
-        "dimensions": {
-          "depth": 147.25,
-          "height": 91.05,
-          "width": 139.613
-        },
-        "travelArea": {
-          "maxX": 139.613,
-          "maxY": 200.0,
-          "maxZ": 92.05,
-          "minX": 0.0,
-          "minY": -3.0,
-          "minZ": 0.0
-        },
-        "travelDimensions": {
-          "depth": 203.0,
-          "height": 92.05,
-          "width": 139.613
-        },
-        "estimatedPrintTime": 14830.71632999596,
-        "filament": {
-          "tool0": {
-            "length": 10177.899699993939,
-            "volume": 0.0
-          }
-        }
-      }
-    },
-    "current_print_ts": 1716904799,
-    "event": {
-      "event_type": "PrintPaused",
-      "data": {
-        "name": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "path": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "origin": "local",
-        "size": 6661052,
-        "position": {
-          "z": 3.45,
-          "x": 120.614,
-          "e": 0.1896,
-          "f": 1812.0,
-          "t": 0,
-          "y": 71.05
-        },
-        "owner": "user_example",
-        "user": "user_example"
-      }
-    }
-  }
-}
 
-```
-# Printing example
+## Printing state transition
+
+### Printer transitions from idle to printing
+
 ```json
 {
+  "current_print_ts": 1716904799,
+  "event": {
+    "event_type": "PrintStarted",
+  },
   "status": {
     "state": {
       "text": "Printing",
@@ -430,606 +424,93 @@ title: Websocket
         "pausing": false,
         "resuming": false,
         "finishing": false,
-        "closedOrError": false,
-        "error": false,
         "paused": false,
         "ready": false,
-        "sdReady": true
       },
-      "error": ""
-    },
-    "job": {
-      "file": {
-        "name": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "path": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "display": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "origin": "local",
-        "size": 6661052,
-        "date": 1716892098,
-        "obico_g_code_file_id": 2
-      },
-      "estimatedPrintTime": 14830.71632999596,
-      "averagePrintTime": null,
-      "lastPrintTime": null,
-      "filament": {
-        "tool0": {
-          "length": 10177.899699993939,
-          "volume": 0.0
-        }
-      },
-      "user": "user_example"
-    },
-    "currentZ": 2.2,
-    "progress": {
-      "completion": 3.5100911988076353,
-      "filepos": 233809,
-      "printTime": 101,
-      "printTimeLeft": 2791,
-      "printTimeLeftOrigin": "linear"
-    },
-    "offsets": {},
-    "resends": {
-      "count": 5,
-      "transmitted": 7809,
-      "ratio": 0
-    },
-    "temperatures": {
-      "tool0": {
-        "actual": 220.0,
-        "target": 220.0,
-        "offset": 0
-      },
-      "bed": {
-        "actual": 90.0,
-        "target": 90.0,
-        "offset": 0
-      },
-      "chamber": {
-        "actual": null,
-        "target": null,
-        "offset": 0
-      }
-    },
-    "_ts": 1716904901,
-    "currentLayerHeight": 12,
-    "file_metadata": {
-      "hash": "2a85626157e60f5df7a7cb2e4fd5a8d9fb838265",
-      "obico": {
-        "totalLayerCount": 608
-      },
-      "analysis": {
-        "printingArea": {
-          "maxX": 139.613,
-          "maxY": 144.25,
-          "maxZ": 91.05,
-          "minX": 0.0,
-          "minY": -3.0,
-          "minZ": 0.0
-        },
-        "dimensions": {
-          "depth": 147.25,
-          "height": 91.05,
-          "width": 139.613
-        },
-        "travelArea": {
-          "maxX": 139.613,
-          "maxY": 200.0,
-          "maxZ": 92.05,
-          "minX": 0.0,
-          "minY": -3.0,
-          "minZ": 0.0
-        },
-        "travelDimensions": {
-          "depth": 203.0,
-          "height": 92.05,
-          "width": 139.613
-        },
-        "estimatedPrintTime": 14830.71632999596,
-        "filament": {
-          "tool0": {
-            "length": 10177.899699993939,
-            "volume": 0.0
-          }
-        }
-      }
-    },
-    "current_print_ts": 1716904799
-  }
-}
-
-```
-# Canceling print example
-```json
-{
-  "status": {
-    "state": {
-      "text": "Cancelling",
-      "flags": {
-        "operational": true,
-        "printing": true,
-        "cancelling": true,
-        "pausing": false,
-        "resuming": false,
-        "finishing": false,
-        "closedOrError": false,
-        "error": false,
-        "paused": false,
-        "ready": false,
-        "sdReady": true
-      },
-      "error": ""
-    },
-    "job": {
-      "file": {
-        "name": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "path": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "display": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-        "origin": "local",
-        "size": 6661052,
-        "date": 1716892098,
-        "obico_g_code_file_id": 2
-      },
-      "estimatedPrintTime": 14830.71632999596,
-      "averagePrintTime": null,
-      "lastPrintTime": null,
-      "filament": {
-        "tool0": {
-          "length": 10177.899699993939,
-          "volume": 0.0
-        }
-      },
-      "user": "user_example"
-    },
-    "currentZ": null,
-    "progress": {
-      "completion": null,
-      "filepos": null,
-      "printTime": null,
-      "printTimeLeft": null,
-      "printTimeLeftOrigin": null
-    },
-    "offsets": {},
-    "resends": {
-      "count": 5,
-      "transmitted": 18027,
-      "ratio": 0
-    },
-    "temperatures": {
-      "tool0": {
-        "actual": 220.0,
-        "target": 0.0,
-        "offset": 0
-      },
-      "bed": {
-        "actual": 90.0,
-        "target": 0.0,
-        "offset": 0
-      },
-      "chamber": {
-        "actual": null,
-        "target": null,
-        "offset": 0
-      }
-    },
-    "_ts": 1716906394,
-    "currentLayerHeight": 44,
-    "file_metadata": {
-      "hash": "2a85626157e60f5df7a7cb2e4fd5a8d9fb838265",
-      "obico": {
-        "totalLayerCount": 608
-      },
-      "analysis": {
-        "printingArea": {
-          "maxX": 139.613,
-          "maxY": 144.25,
-          "maxZ": 91.05,
-          "minX": 0.0,
-          "minY": -3.0,
-          "minZ": 0.0
-        },
-        "dimensions": {
-          "depth": 147.25,
-          "height": 91.05,
-          "width": 139.613
-        },
-        "travelArea": {
-          "maxX": 139.613,
-          "maxY": 200.0,
-          "maxZ": 92.05,
-          "minX": 0.0,
-          "minY": -3.0,
-          "minZ": 0.0
-        },
-        "travelDimensions": {
-          "depth": 203.0,
-          "height": 92.05,
-          "width": 139.613
-        },
-        "estimatedPrintTime": 14830.71632999596,
-        "filament": {
-          "tool0": {
-            "length": 10177.899699993939,
-            "volume": 0.0
-          }
-        }
-      },
-      "history": [
-        {
-          "timestamp": 1716906394.4987602,
-          "success": false,
-          "printerProfile": "_default"
-        }
-      ],
-      "statistics": {
-        "averagePrintTime": {},
-        "lastPrintTime": {}
-      }
-    },
-    "current_print_ts": 1716904799
-  },
-  "event": {
-    "event_type": "PrintCancelling",
-    "data": {
-      "name": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-      "path": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-      "origin": "local",
-      "size": 6661052,
-      "owner": "user_example",
-      "user": "user_example"
+      ...
     }
   }
 }
+  ```
 
-```
-# Finishing print example
+### Printer transitions from printing to paused
+
 ```json
 {
+  "current_print_ts": 1716904799,
+  "event": {
+    "event_type": "PrintPaused",
+  },
   "status": {
     "state": {
-      "text": "Finishing",
+      "text": "Paused",
       "flags": {
         "operational": true,
-        "printing": true,
+        "printing": false,
         "cancelling": false,
         "pausing": false,
         "resuming": false,
-        "finishing": true,
-        "closedOrError": false,
-        "error": false,
-        "paused": false,
+        "finishing": false,
+        "paused": true,
         "ready": false,
-        "sdReady": true
       },
-      "error": ""
-    },
-    "job": {
-      "file": {
-        "name": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-        "path": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-        "display": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-        "origin": "local",
-        "size": 1090603,
-        "date": 1715889035,
-        "obico_g_code_file_id": 1
-      },
-      "estimatedPrintTime": 1254.4362984387842,
-      "averagePrintTime": 134.169091964143,
-      "lastPrintTime": 127.6107751030031,
-      "filament": {
-        "tool0": {
-          "length": 2195.206300000019,
-          "volume": 5.280089926164226
-        }
-      },
-      "user": "alielshimy"
-    },
-    "currentZ": 35.0,
-    "progress": {
-      "completion": 100.0,
-      "filepos": 1090603,
-      "printTime": 119,
-      "printTimeLeft": 0,
-      "printTimeLeftOrigin": null
-    },
-    "offsets": {},
-    "resends": {
-      "count": 8,
-      "transmitted": 56826,
-      "ratio": 0
-    },
-    "temperatures": {
-      "tool0": {
-        "actual": 210.0,
-        "target": 0.0,
-        "offset": 0
-      },
-      "bed": {
-        "actual": 60.0,
-        "target": 0.0,
-        "offset": 0
-      },
-      "chamber": {
-        "actual": null,
-        "target": null,
-        "offset": 0
-      }
-    },
-    "_ts": 1716907533,
-    "currentLayerHeight": 25,
-    "file_metadata": {
-      "hash": "51217e1b15009326146f76a3390ed81d97f480aa",
-      "obico": {
-        "totalLayerCount": 26
-      },
-      "analysis": {
-        "printingArea": {
-          "maxX": 170.0,
-          "maxY": 122.313,
-          "maxZ": 5.0,
-          "minX": 40.0,
-          "minY": -2.0,
-          "minZ": 0.0
-        },
-        "dimensions": {
-          "depth": 124.313,
-          "height": 5.0,
-          "width": 130.0
-        },
-        "travelArea": {
-          "maxX": 179.0,
-          "maxY": 178.0,
-          "maxZ": 35.0,
-          "minX": 0.0,
-          "minY": -2.0,
-          "minZ": 0.0
-        },
-        "travelDimensions": {
-          "depth": 180.0,
-          "height": 35.0,
-          "width": 179.0
-        },
-        "estimatedPrintTime": 1254.4362984387842,
-        "filament": {
-          "tool0": {
-            "length": 2195.206300000019,
-            "volume": 5.280089926164226
-          }
-        }
-      },
-      "history": [
-        {
-          "timestamp": 1715889179.3695226,
-          "printTime": 130.96288251300575,
-          "success": true,
-          "printerProfile": "_default"
-        },
-                  .
-                  .
-                  .
-      ],
-      "statistics": {
-        "averagePrintTime": {
-          "_default": 133.1707976056669
-        },
-        "lastPrintTime": {
-          "_default": 119.1946765870016
-        }
-      }
-    },
-    "current_print_ts": 1716907414
-  },
-  "event": {
-    "event_type": "PrinterStateChanged",
-    "data": {
-      "state_id": "FINISHING",
-      "state_string": "Finishing"
+      ...
     }
   }
 }
+  ```
 
-```
-# Other schemas to review - delete them if we do not need them
-### Print Job Selected
-#### Event: PrintJobSelected
-
-#### Payload:
-
-origin: The origin of the print job (e.g., 'local').
-path: The file path of the selected print job.
-owner: The owner of the print job.
-user: The user who selected the print job.
-Example:
+### Printer transitions from printing to canceled
 
 ```json
 {
-  "origin": "local",
-  "path": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "owner": "username",
-  "user": "username"
+  "current_print_ts": 1716904799,
+  "event": {
+    "event_type": "PrintCancelled",
+  },
+  "status": {
+    "state": {
+      "text": "Operational",
+      "flags": {
+        "operational": true,
+        "printing": false,
+        "cancelling": false,
+        "pausing": false,
+        "resuming": false,
+        "finishing": false,
+        "paused": false,
+        "ready": false,
+      },
+      ...
+    }
+  }
 }
-```
+  ```
 
-### File Removed
-#### Event: FileRemoved
 
-#### Payload:
-
-storage: The storage location of the file (e.g., 'local').
-path: The file path of the removed file.
-name: The name of the removed file.
-type: An array indicating the type of the file (e.g., ['machinecode', 'gcode']).
-Example:
+### Printer transitions from printing to finished
 
 ```json
 {
-  "storage": "local",
-  "path": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-  "name": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-  "type": ["machinecode", "gcode"]
+  "current_print_ts": 1716904799,
+  "event": {
+    "event_type": "PrintDone",
+  },
+  "status": {
+    "state": {
+      "text": "Operational",
+      "flags": {
+        "operational": true,
+        "printing": false,
+        "cancelling": false,
+        "pausing": false,
+        "resuming": false,
+        "finishing": false,
+        "paused": false,
+        "ready": false,
+      },
+      ...
+    }
+  }
 }
-```
-
-### File Added
-#### Event: FileAdded
-
-#### Payload:
-
-storage: The storage location of the file (e.g., 'local').
-path: The file path of the added file.
-name: The name of the added file.
-type: An array indicating the type of the file (e.g., ['machinecode', 'gcode']).
-operation: The operation performed (e.g., 'add').
-Example:
-
-```json
-{
-  "storage": "local",
-  "path": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-  "name": "temp-tower-220-260_petg_mk3s_4h_34m.gcode",
-  "type": ["machinecode", "gcode"],
-  "operation": "add"
-}
-```
-
-### File Selected
-#### Event: FileSelected
-
-#### Payload:
-
-name: The name of the selected file.
-path: The file path of the selected file.
-origin: The origin of the selected file (e.g., 'local').
-size: The size of the selected file.
-owner: The owner of the selected file.
-user: The user who selected the file.
-Example:
-
-```json
-{
-  "name": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "path": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "origin": "local",
-  "size": null,
-  "owner": "username",
-  "user": "username"
-}
-```
-
-### Printer State Changed
-#### Event: PrinterStateChanged
-
-#### Payload:
-
-state_id: The new state ID (e.g., 'STARTING').
-state_string: The new state string (e.g., 'Starting').
-Example:
-
-```json
-{
-  "state_id": "STARTING",
-  "state_string": "Starting"
-}
-```
-
-6. Print Started
-#### Event: PrintStarted
-
-#### Payload:
-
-name: The name of the print job file.
-path: The file path of the print job.
-origin: The origin of the print job (e.g., 'local').
-size: The size of the print job file.
-owner: The owner of the print job.
-user: The user who started the print job.
-Example:
-
-```json
-{
-  "name": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "path": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "origin": "local",
-  "size": 1090603,
-  "owner": "username",
-  "user": "username"
-}
-```
-
-### Chart Marked
-#### Event: ChartMarked
-
-#### Payload:
-
-type: The type of chart mark (e.g., 'print').
-label: The label of the chart mark (e.g., 'Start').
-Example:
-
-```json
-{
-  "type": "print",
-  "label": "Start"
-}
-```
-
-### Gcode Script Before Print Started Running
-#### Event: GcodeScriptBeforePrintStartedRunning
-
-#### Payload:
-
-name: The name of the Gcode script.
-path: The file path of the Gcode script.
-origin: The origin of the Gcode script (e.g., 'local').
-size: The size of the Gcode script file.
-owner: The owner of the Gcode script.
-user: The user who initiated the Gcode script.
-Example:
-
-```json
-{
-  "name": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "path": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "origin": "local",
-  "size": 1090603,
-  "owner": "username",
-  "user": "username"
-}
-```
-
-### Gcode Script Before Print Started Finished
-#### Event: GcodeScriptBeforePrintStartedFinished
-
-#### Payload:
-
-name: The name of the Gcode script.
-path: The file path of the Gcode script.
-origin: The origin of the Gcode script (e.g., 'local').
-size: The size of the Gcode script file.
-owner: The owner of the Gcode script.
-user: The user who initiated the Gcode script.
-Example:
-
-```json
-{
-  "name": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "path": "PYC3D-SONIC-HEAD-KEYCHAIN.gcode",
-  "origin": "local",
-  "size": 1090603,
-  "owner": "username",
-  "user": "username"
-}
-```
-
-### Z Change
-#### Event: ZChange
-
-#### Payload:
-
-new: The new Z position.
-old: The previous Z position.
-Example:
-
-```json
-{
-  "new": 0.4,
-  "old": 0.2
-}
+  ```

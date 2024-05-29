@@ -323,17 +323,7 @@ export default {
               this.selectedWebcamIndex = this.webcams.findIndex(webcam => webcam.is_primary_camera === true);
             }
             // Set Preferred Webcam
-            const preferredWebcam = getLocalPref('preferredWebcam', null, this.printer.id)
-            if (preferredWebcam) {
-              if (preferredWebcam === 'all') {
-                this.isAllWebcamSelected = true
-              } else {
-                const preferredWebcamIndex = this.webcams.findIndex(webcam => webcam.stream_id == preferredWebcam)
-                if (preferredWebcamIndex !== -1) {
-                  this.selectedWebcamIndex = preferredWebcamIndex
-                }
-              }
-            }
+            this.setPreferredWebcam()
           }
         },
       }
@@ -347,6 +337,19 @@ export default {
   },
 
   methods: {
+    setPreferredWebcam() {
+      const preferredWebcam = getLocalPref('preferredWebcam', null, this.printer.id)
+      if (preferredWebcam) {
+        if (preferredWebcam === 'all') {
+          this.isAllWebcamSelected = true
+        } else {
+          const preferredWebcamIndex = this.webcams.findIndex(webcam => webcam.stream_id == preferredWebcam)
+          if (preferredWebcamIndex !== -1) {
+            this.selectedWebcamIndex = preferredWebcamIndex
+          }
+        }
+      }
+    },
     handleRotateRightClicked(val, streamId) {
       const customRotationIndex = this.customRotationData.findIndex(custom => custom.streamId === streamId)
       if (customRotationIndex === -1) {

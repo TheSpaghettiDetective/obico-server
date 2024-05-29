@@ -115,14 +115,14 @@
           <div class="header-container">
             <div class="title">{{ $t('Webcam') }}</div>
             <div class="d-flex align-items-center">
-              <b-dropdown v-if="webcams.length > 1" v-model="selectedWebcamIndex" class="webcam-dropdown" block size="sm" variant="link" toggle-class="text-decoration-none" no-caret>
+              <b-dropdown v-if="webcams.length > 1" class="webcam-dropdown" block size="sm" variant="link" toggle-class="text-decoration-none" no-caret>
                 <template #button-content>
                   <i class="fa fa-camera" aria-hidden="true"></i>
                   {{ isAllWebcamSelected ? 'All' : selectedWebcam.name || 'Primary' }}
                   <i class="fa fa-chevron-down" aria-hidden="true"></i>
                 </template>
                 <b-dropdown-text class="small text-secondary">{{ $t("WEBCAM SELECTION") }}</b-dropdown-text>
-                <b-dropdown-item v-for="(webcam, index) in webcams" :key="index" href="#" @click="chooseWebcam(index)">{{ webcam.name || 'Primary' }}</b-dropdown-item>
+                <b-dropdown-item v-for="(webcam, index) in webcams" :key="index" href="#" @click="chooseWebcam(index, webcam.stream_id)">{{ webcam.name || 'Primary' }}</b-dropdown-item>
                 <b-dropdown-item @click="chooseWebcam('all')">{{ $t('All') }}</b-dropdown-item>
               </b-dropdown>
               <div v-else class="mr-3">
@@ -166,7 +166,7 @@ import FailureDetectionWidget from '@src/components/printer-control/FailureDetec
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ReorderModal from '@src/components/ReorderModal'
-import { getLocalPref } from '@src/lib/pref'
+import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import SharePrinter from '@src/components/printers/SharePrinter.vue'
 import TerminalWidget from '../components/printer-control/TerminalWidget.vue'
 
@@ -322,6 +322,18 @@ export default {
             if (this.webcams.length > 0) {
               this.selectedWebcamIndex = this.webcams.findIndex(webcam => webcam.is_primary_camera === true);
             }
+            // Set Preferred Webcam
+            const preferredWebcam = getLocalPref('preferredWebcam', null, this.printer.id)
+            if (preferredWebcam) {
+              if (preferredWebcam === 'all') {
+                this.isAllWebcamSelected = true
+              } else {
+                const preferredWebcamIndex = this.webcams.findIndex(webcam => webcam.stream_id == preferredWebcam)
+                if (preferredWebcamIndex !== -1) {
+                  this.selectedWebcamIndex = preferredWebcamIndex
+                }
+              }
+            }
           }
         },
       }
@@ -345,13 +357,14 @@ export default {
        
       this.customRotationDeg = val
     },
-    chooseWebcam(value) {
+    chooseWebcam(value, streamId = 'all') {
       if (value == 'all') {
         this.isAllWebcamSelected = true
       } else {
         this.selectedWebcamIndex = value
         this.isAllWebcamSelected = false
       }
+      setLocalPref('preferredWebcam', streamId, this.printer.id)
     },
     onMenuOptionClicked(menuOptionKey) {
       if (menuOptionKey === 'share') {

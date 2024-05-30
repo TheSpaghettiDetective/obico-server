@@ -905,6 +905,7 @@ class FirstLayerInspection(models.Model):
     score = models.FloatField(null=False)
     video_url = models.CharField(max_length=2000, null=True)
     tagged_video_url = models.CharField(max_length=2000, null=True)
+    poster_url = models.CharField(max_length=2000, null=True, blank=True)
     data_json_url = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

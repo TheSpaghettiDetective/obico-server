@@ -550,9 +550,7 @@ export default {
         const printResponse = await axios.get(urls.print(this.currentPrintId))
         this.print = normalizedPrint(printResponse.data)
         
-        if (printResponse.data.firstlayerinspection_set.length) {
-          this.prepareFirstLayerReport(printResponse.data.firstlayerinspection_set[0])
-        }
+        this.prepareFirstLayerReport(printResponse.data.firstlayerinspection_set.length ? printResponse.data.firstlayerinspection_set[0] : null)
 
         if (this.print.prediction_json_url) {
           axios.get(this.print.prediction_json_url).then((response) => {
@@ -591,8 +589,10 @@ export default {
       }
     },
     prepareFirstLayerReport(firstLayerInspectionData) {
-      this.firstLayerInspection = firstLayerInspectionData;
-      this.gradeResult = calculateGrade(firstLayerInspectionData.score);
+      this.firstLayerInspection = firstLayerInspectionData || {};
+      if (firstLayerInspectionData) {
+        this.gradeResult = calculateGrade(firstLayerInspectionData.score);
+      }
     },
     switchToPrint(print) {
       this.currentPrint = print

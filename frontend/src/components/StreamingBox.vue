@@ -89,12 +89,12 @@
         :class="webcamRatioClass"
         :style="{ transform: imageTransformStyle }"
       >
-      <img
-        v-if="taggedSrc"
-        style="position: absolute;"
-        :src="taggedSrc"
-        :alt="printer.name + ' current image'"
-      />
+        <img
+          v-if="taggedSrc"
+          style="position: absolute;"
+          :src="taggedSrc"
+          :alt="printer.name + ' current image'"
+        />
         <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
           <img :src="mjpgSrc" />
         </div>

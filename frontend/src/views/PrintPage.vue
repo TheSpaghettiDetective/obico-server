@@ -128,7 +128,7 @@
           <b-col lg="7">
             <div class="print-info">
               <!-- First Layer Report Card -->
-              <div v-show="firstLayerInspection.id" class="card-container">
+              <div v-if="firstLayerInspection.id" class="card-container">
                 <b-row class="m-0">
                   <b-col cols="12" sm="6" md="6" lg="12" xl="6"   class="first-layer-info-column">
                     <div>
@@ -167,7 +167,7 @@
                             }">
                       <video-box
                         :video-url="firstLayerInspection.tagged_video_url"
-                        :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0].image_url : null"
+                        :poster-url="firstLayerInspection.images?.length ? firstLayerInspection.images[0].image_url : null"
                         :fluid="false"
                         :fullscreen-btn="fullscreenUrl === null"
                         :exit-fullscreen-btn="fullscreenUrl !== null"

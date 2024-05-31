@@ -68,7 +68,7 @@
                 <div class="icon"><i class="far fa-clock"></i></div>
                 <div>{{ $t("First Layer Print Time") }}</div>
               </div>
-              <div class="value">{{ print.duration || '-' }}</div>
+              <div class="value">{{ firstLayerPrintTime }}</div>
             </div>
           </div>
 
@@ -117,7 +117,7 @@
                   <div class="first-layer-modal-video-wrapper">
                     <video-box
                       :video-url="firstLayerInspection.tagged_video_url"
-                      :poster-url="firstLayerInspection.images.length ? firstLayerInspection.images[0].image_url : null"
+                      :poster-url="aiTimeLapsePosterImageUrl"
                       :fluid="false"
                       :fullscreen-btn="false"
                       :download-btn="true"
@@ -208,6 +208,10 @@ export default {
       type: Object,
       required: true,
     },
+    firstLayerPrintTime: {
+      type: String,
+      required: true
+    },
     gradeResult: {
       type: Object,
       required: true,
@@ -226,6 +230,12 @@ export default {
     },
   },
   computed: {
+    aiTimeLapsePosterImageUrl() {
+      if (this.firstLayerInspection.poster_url) {
+        return this.firstLayerInspection.poster_url
+      }
+      return this.firstLayerInspection.images?.length ? this.firstLayerInspection.images[0].image_url : null
+    },
     file() {
       return this.print.g_code_file || { filename: this.print.filename }
     },

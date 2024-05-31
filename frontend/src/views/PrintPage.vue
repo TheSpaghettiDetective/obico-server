@@ -151,7 +151,7 @@
                           <div class="icon"><i class="far fa-clock"></i></div>
                           <div class="title">{{ $t("First Layer Print Time") }}</div>
                         </div>
-                        <div class="value">{{ print.duration || '-' }}</div>
+                        <div class="value">{{ firstLayerPrintTime }}</div>
                       </div>
                     </div>
                     <b-row class="m-0">
@@ -371,6 +371,7 @@
 </template>
 
 <script>
+import { humanizedDuration } from '@src/lib/formatters'
 import axios from 'axios'
 import moment from 'moment'
 import { getNormalizedP, downloadFile } from '@src/lib/utils'
@@ -378,7 +379,7 @@ import urls from '@config/server-urls'
 import { getLocalPref } from '@src/lib/pref'
 import { humanizedFilamentUsage } from '@src/lib/formatters'
 import { user, settings } from '@src/lib/page-context'
-import { normalizedPrint, PrintStatus, normalizedPrinter } from '@src/lib/normalizers'
+import { normalizedPrint, PrintStatus, normalizedPrinter, toMomentOrNull } from '@src/lib/normalizers'
 import PageLayout from '@src/components/PageLayout.vue'
 import VideoBox from '@src/components/VideoBox'
 import DetectiveWorking from '@src/components/DetectiveWorking'
@@ -444,6 +445,7 @@ export default {
       filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
 
       printerStateCheckInterval: null,
+      firstLayerPrintTime: '-'
     }
   },
 
@@ -550,7 +552,7 @@ export default {
         const printResponse = await axios.get(urls.print(this.currentPrintId))
         this.print = normalizedPrint(printResponse.data)
         
-        this.prepareFirstLayerReport(printResponse.data.firstlayerinspection_set.length ? printResponse.data.firstlayerinspection_set[0] : null)
+        this.prepareFirstLayerReport(printResponse.data.firstlayerinspection_set.length ? printResponse.data.firstlayerinspection_set[0] : {})
 
         if (this.print.prediction_json_url) {
           axios.get(this.print.prediction_json_url).then((response) => {
@@ -589,9 +591,12 @@ export default {
       }
     },
     prepareFirstLayerReport(firstLayerInspectionData) {
-      this.firstLayerInspection = firstLayerInspectionData || {};
-      if (firstLayerInspectionData) {
+      this.firstLayerInspection = firstLayerInspectionData;
+      if (firstLayerInspectionData.id) {
         this.gradeResult = calculateGrade(firstLayerInspectionData.score);
+        const createdAt = toMomentOrNull(this.firstLayerInspection.created_at)
+        const duration = moment.duration(createdAt.diff(this.print.started_at))
+        this.firstLayerPrintTime = humanizedDuration(duration.asSeconds())
       }
     },
     switchToPrint(print) {
@@ -711,6 +716,7 @@ export default {
         {
           printer: this.printer,
           firstLayerInspection: this.firstLayerInspection,
+          firstLayerPrintTime: this.firstLayerPrintTime,
           gradeResult: this.gradeResult,
           print: this.print,
           showOpenButton: this.canOpenFile

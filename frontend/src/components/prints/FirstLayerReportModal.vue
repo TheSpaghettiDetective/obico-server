@@ -68,7 +68,7 @@
                 <div class="icon"><i class="far fa-clock"></i></div>
                 <div>{{ $t("First Layer Print Time") }}</div>
               </div>
-              <div class="value">{{ print.duration || '-' }}</div>
+              <div class="value">{{ firstLayerPrintTime }}</div>
             </div>
           </div>
 
@@ -207,6 +207,10 @@ export default {
     firstLayerInspection: {
       type: Object,
       required: true,
+    },
+    firstLayerPrintTime: {
+      type: String,
+      required: true
     },
     gradeResult: {
       type: Object,

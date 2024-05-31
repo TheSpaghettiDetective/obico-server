@@ -167,7 +167,7 @@
                             }">
                       <video-box
                         :video-url="firstLayerInspection.tagged_video_url"
-                        :poster-url="firstLayerInspection.images?.length ? firstLayerInspection.images[0].image_url : null"
+                        :poster-url="aiTimeLapsePosterImageUrl"
                         :fluid="false"
                         :fullscreen-btn="fullscreenUrl === null"
                         :exit-fullscreen-btn="fullscreenUrl !== null"
@@ -450,6 +450,12 @@ export default {
   },
 
   computed: {
+    aiTimeLapsePosterImageUrl() {
+      if (this.firstLayerInspection.poster_url) {
+        return this.firstLayerInspection.poster_url
+      }
+      return this.firstLayerInspection.images?.length ? this.firstLayerInspection.images[0].image_url : null
+    },
     canOpenFile() {
       return this.print.g_code_file &&
             !this.print.g_code_file.resident_printer &&

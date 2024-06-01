@@ -106,7 +106,7 @@ disable_video_streaming = False
 ```
 
 
-But you also have a webcam named "Main USB Camera" configured in your Mainsail/Fluidd as follows:
+And you also have a webcam named "Main USB Camera" configured in your Mainsail/Fluidd as follows:
 
 ```
 URL Stream
@@ -133,6 +133,10 @@ rotation = 90
 ...
 
 ```
+
+:::tip
+The name matching is case-sensitive.
+:::
 
 :::caution
 If the webcam section doesn't have a name, i.e., just `[webcam]`, **Obico for Klipper** will randomly select a webcam configured in Mainsail/Fluidd and use its settings. This may not be what you want if you have more than one webcams configured in Mainsail/Fluidd.

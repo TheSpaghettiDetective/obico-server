@@ -1,6 +1,6 @@
 ---
 id: nozzle-camera-configuration
-title: First Layer AI Configuration
+title: First Layer AI Configuration for Klipper Printers
 ---
 
 import Tabs from '@theme/Tabs';
@@ -216,3 +216,9 @@ Now, you should see a new button on the webcam tab of the printer control page. 
 
 </TabItem>
 </Tabs>
+
+
+## Next Steps: Slicer Configuration
+
+Once your camera is configured for first layer AI, [configure your slicer for first layer AI](http://localhost:3000/docs/user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only/).
+

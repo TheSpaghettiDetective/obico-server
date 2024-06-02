@@ -47,7 +47,6 @@ class Printer(SafeDeleteModel):
     DEFAULT_WEBCAM_SETTINGS = {
         'name': '',
         'is_primary_camera': True,
-        'is_nozzle_camera': False,
         'flipV': False,
         'flipH': False,
         'rotation': 0,

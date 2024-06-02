@@ -16,7 +16,6 @@ title: Websocket
         {
           "name": "",
           "is_primary_camera": true,
-          "is_nozzle_camera": false,
           "stream_mode": "",
           "stream_id": 1,
           "flipV": false,
@@ -172,7 +171,6 @@ Timestamp for when current print job starts. This value must maintain consistent
 - **`webcams`**: **Optional** List of webcam settings
   - **`name`**: **Required** Name of the webcam
   - **`is_primary_camera`**: **Optional** Default to `false`. Indicates if this is the primary camera
-  - **`is_nozzle_camera`**: **Optional** Default to `false`. Indicates if this is a nozzle camera
   - **`stream_mode`**: **Optional** Mode of the stream (e.g., live, recorded)
   - **`stream_id`**: **Required** ID of the stream for the WebRTC connection
   - **`flipV`**: **Optional** Vertical flip of the video stream

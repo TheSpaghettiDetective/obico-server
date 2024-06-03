@@ -5,20 +5,18 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::warning
-Slicer configuration is only required for Klipper. If you are running OctoPrint, you do not need to make any slicer changes. 
+Slicer configuration is only needed for Klipper. If you are running OctoPrint, you do not need to make any slicer changes. 
 :::
 
-Celestrius will watch your print during the first layer to make sure nothing fishy like poor adhesion, under/over extrusion, blobbing and other issues are present. After the first layer is completed, the print will be paused and a first layer scan will be completed. After the first layer scan is completed, you will get an email with a report card on your first layer.
 
-In order to make this work, Celestrius needs to be able to know when the first layer is printing and when it finishes. To make this happen, you'll need to adjust your slicer settings to include a macro written to help conduct the first layer scan. 
 
 ## Configure Layer Scanning: 
 
 In addition to colllecting images while the first layer prints, you can use a layer scan macro to have Obico's first layer Ai scan the print after the first layer finishes to get a better analysis of the first layer as a whole. 
 
-Follow these steps to configure your setup for first layer scanning: 
+Follow these steps to configure your setup for first layer scanning. After configuring it, layer scanning can be easily enabled or disabled in the Obico web app: 
 
-## Update the Obico Plugin to version 1.5.2-5. 
+## Update the moonraker-obico plugin to version 2.0 if you haven't already 
 First, update the Obico plugin to the latest version. When you update the moonraker-obico plugin, we will automatically make two adjustments to your klipper setup:
 1. Add ```moonraker_obico_macros.cfg``` to your Config Files. This file contains the layer scan macro. 
 2. Add ```[include moonraker_obico_macros.cfg]``` to your ```printer.cfg``` file.
@@ -131,3 +129,7 @@ In the example below, you can see that the z-height of 4mm is clearly more focus
 #### Z-height = 4mm
 ![](/img/user-guides/z4.png)
 
+
+### Configuring Cooldown Extruder Temperature
+
+The cooldown extrudeer temperature is the temperature that will be set for the first layer scan. After the first layer, the temperature will be lowered to avoid oozing of 

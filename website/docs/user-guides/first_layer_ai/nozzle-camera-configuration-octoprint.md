@@ -9,7 +9,9 @@ import TabItem from '@theme/TabItem';
 
 
 ## Required Hardware:
-A nozzle camera that provides an up-close view of your 3D printers’ nozzle. 
+A nozzle camera that provides an up-close view of your 3D printers’ nozzle.
+
+A nozzle camera is a specialized web camera. Nozzle cameras are much smaller than traditional webcams allowing them to get an up-close view of the 3D printer nozzle and the print. With a nozzle camera configured with your 3D printer, you can enable Nozzle Ninja, Obico's first layer AI, to watch your first layer for various types of print issues including over-extrusion, under-extrusion, poor bed adhesion and more. 
 
 ### Recommended Cameras
 

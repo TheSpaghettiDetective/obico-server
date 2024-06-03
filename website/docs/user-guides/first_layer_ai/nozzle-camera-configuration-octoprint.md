@@ -1,0 +1,74 @@
+---
+id: nozzle-camera-configuration-octoprint
+title: First Layer AI Configuration for OctoPrint Printers
+---
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+## Required Hardware:
+A nozzle camera that provides an up-close view of your 3D printers’ nozzle. 
+
+### Recommended Cameras
+
+- **[Mintion Nozzle Camera](https://www.mintion.net/products/mintion-nozzle-camera)**: 
+
+- 3DO Nozzle Camera V1 or V2: 
+
+   - 3DO Nozzle Camera Suppliers:
+   - Kb3d
+   - Fabreeko
+
+## Compatible Printers
+
+Obico’s first layer AI is compatible with any 3D printer running OctoPrint or Klipper, but there may not be a nozzle camera mount readily available for your 3D printer. Check with our nozzle camera partners, Mintion and 3DO to see if there is a mount for your printer. Of course, you can also check out various 3D model repositories such as Printables or Thingiverse, or you can design your own mount. 
+
+## Configure Your Camera for First Layer AI
+
+Obico now supports multiple webcam streams in the Obico app. You can configure your nozzle camera as a second camera in Obico, or you can just use the nozzle camera as your only camera. 
+
+<Tabs>
+<TabItem value="nozzzle-camera-only" label="Configura Only A Nozzle Camera" default>
+
+## Configure Obico to use only a nozzle camera
+
+![](/img/user-guides/nozzle-cam-ai-config/octoprint/octoprint-1-webcam.png)
+
+If you are setting up your nozzle camera as a secondary camera, select the "Multiple Cameras" tab instead.
+
+Before proceeding, ensure your nozzle camera is plugged into your Raspberry Pi or 3D printer, and your nozzle camera is visible in OctoPrint and in Obico. Also, ensure Obico for Octoprint is updated to Obico for OctoPrint version 1.6.8 or newer. 
+
+1. Open the OctoPrint interface.
+2. Click the wrench icon on the top right of the screen to open the OctoPrint Settings menu.
+3. Scroll down to "Obico for OctoPrint" 
+4. Click "Settings" 
+![](/img/user-guides/nozzle-cam-ai-config/octoprint/octoprint-obico-webcam-settings-single.png)
+
+1. Under "Primary Camera", select your camera from the dropdown menu. Skip "Secondary Camera" since you are only setting up one camera.
+2. Under "Nozzle Camera", select your camera from the dropdown menu. 
+3. 8. Click "Save" to save the settings.
+4. Click the "Power" icon in the top right of the screen. Restart OctoPrint for the changes to take effect. 
+
+
+</TabItem>
+<TabItem value="multiple-cameras" label="Configure Multiple Cameras">
+
+![](/img/user-guides/nozzle-cam-ai-config/octoprint/octoprint-1-webcam.png)
+
+1. Open the OctoPrint interface.
+2. Click the wrench icon on the top right of the screen to open the OctoPrint Settings menu.
+3. Scroll down and click "Obico for OctoPrint" 
+4. Click "Settings" 
+![](/img/user-guides/nozzle-cam-ai-config/octoprint/octoprint-obico-webcam-settings-multi.png)
+
+5. Under "Primary Camera", select a primary camera. The primary camera will be used for standard webcam-based AI failure detection. 
+6. Under "Secondary Camera", select a secondary camera. We recommend selecting your nozzle camera as the secondary camera. 
+7. Under "Nozzle Camera", select your nozzle camera from the dropdown menu. 
+8. Click "Save" to save the settings.
+9. Click the "Power" icon in the top right of the screen. Restart OctoPrint for the changes to take effect. 
+
+
+</TabItem>
+</Tabs>

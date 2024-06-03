@@ -23,8 +23,6 @@ First, update the Obico plugin to the latest version. When you update the moonra
 
 ## **Choose your slicer below and make the changes detailed in the section for your slicer** {#choose-your-slicer-below-and-make-the-changes-detailed-in-the-section-for-your-slicer}
 
-## Slicer Configuration
-We already added some custom g-code to the slicer to get the layer information to be passed from the slicer. Now, we will add one more line to the "Before Layer Change" section of the slicer. 
 
 <Tabs>
 <TabItem value="PrusaSlicer" label="PrusaSlicer" default>
@@ -100,9 +98,10 @@ Layer scanning is currently not supported for Cura. It may be added in the futur
 
 The following options are available to be configured in the [Celestrius Alpha Enrollment page](https://app.obico.io/ent/celestrius_alpha_enroll/).: 
 
-1. **Enable or Disable**: Enable or disable the first layer scan by clicking the checkbox (Scanning is enabled by default). If you turn off scanning, first layer AI will still work, but it may be more accurate with scanning enabled. 
+1. **Enable or Disable**: Enable or disable the first layer scan by clicking the checkbox (Scanning is enabled by default). **If you turn off scanning, first layer AI will still work, but it may be more accurate with scanning enabled.** 
 2. **Retraction Value**: This is the amount that your filament will retract after the first layer finishes printing. This helps prevent filanent ooze during the scan. The default is 6.5mm.
 3. **Scan Height**: The Z-height that the scan will run at. The default value is 4mm. If your camera is out of focus while doing the first layer scan, adjust the height so your camera is in focus. 
+4. **Cooldown temperature**: Cools down the hotend to this temperature before performing the first layer scan. Cooling down the hotend helps reduce filament oozing during the first layer scan.
 
 ### Configuring Retraction value
 
@@ -132,4 +131,10 @@ In the example below, you can see that the z-height of 4mm is clearly more focus
 
 ### Configuring Cooldown Extruder Temperature
 
-The cooldown extrudeer temperature is the temperature that will be set for the first layer scan. After the first layer, the temperature will be lowered to avoid oozing of 
+The cooldown extrudeer temperature is the temperature that will be set for the first layer scan. After the first layer, the temperature will be lowered to avoid filament oozing out of the nozzle during the scan. 
+
+The default cooldown temperature is 170 degrees celsius which is typically enough to stop filament from oozing out of the nozzle. 
+
+Increasing this value will decrease the time for the first layer scan to complete, but it may increase chances of oozing. 
+
+Decreasing this value will increase the time for the first layer scan to complete, but it will decrease the chance of oozing. 

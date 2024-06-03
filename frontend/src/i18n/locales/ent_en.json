@@ -228,6 +228,7 @@
   "Nozzle Ninja Configuration": "Nozzle Ninja Configuration",
   "Follow the camera configuration guide to configure your nozzle camera with {brandName}": "Follow the camera configuration guide to configure your nozzle camera with {{brandName}}",
   "Nozzle Ninja configuration guide for Klipper ": "Nozzle Ninja configuration guide for Klipper ",
+  "Nozzle Ninja configuration guide for Octoprint ": "Nozzle Ninja configuration guide for Octoprint ",
   "Slicer Configuration": "Slicer Configuration",
   "Configure your slicer to send first layer information to {brandName} and optionally enable first layer scanning. First layer scanning is an experimental feature that enables a slow scan of the first layer. This feature requires some configureation to avoid impacting print quality.": "Configure your slicer to send first layer information to {{brandName}} and optionally enable first layer scanning. First layer scanning is an experimental feature that enables a slow scan of the first layer. This feature requires some configureation to avoid impacting print quality.",
   "Currently, PrusaSlicer, SuperSlicer and OrcaSlicer are supported.": "Currently, PrusaSlicer, SuperSlicer and OrcaSlicer are supported.",

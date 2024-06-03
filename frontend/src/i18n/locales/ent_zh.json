@@ -228,6 +228,7 @@
   "Nozzle Ninja Configuration": "喷嘴忍者配置",
   "Follow the camera configuration guide to configure your nozzle camera with {brandName}": "按照相机配置指南使用{{brandName}}配置您的喷嘴相机",
   "Nozzle Ninja configuration guide for Klipper ": "Klipper 的 Nozzle Ninja 配置指南 ",
+  "Nozzle Ninja configuration guide for Octoprint ": "Octoprint 的 Nozzle Ninja 配置指南 ",
   "Slicer Configuration": "切片软件配置",
   "Configure your slicer to send first layer information to {brandName} and optionally enable first layer scanning. First layer scanning is an experimental feature that enables a slow scan of the first layer. This feature requires some configureation to avoid impacting print quality.": "配置切片机以将第一层信息发送到 {{brandName}} 并可选择启用第一层扫描。第一层扫描是一项实验性功能，可对第一层进行慢速扫描。此功能需要进行一些配置以避免影响打印质量。",
   "Currently, PrusaSlicer, SuperSlicer and OrcaSlicer are supported.": "目前支持PrusaSlicer、SuperSlicer和OrcaSlicer。",

@@ -166,6 +166,7 @@ def send_first_layer_inspection_report(fli, grade):
         data = dict(
             type='firstLayerInspection',
             printId=str(fli.print.id),
+            picUrl=fli.poster_url,
             title=f'First Layer Done! Grade {grade}.',
             body=fli.print.filename,
         )

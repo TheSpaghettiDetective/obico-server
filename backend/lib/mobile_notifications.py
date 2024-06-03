@@ -154,6 +154,26 @@ def send_print_progress(_print, op_data):
 
     for pushed_platform in pushed_platforms:
         cache.print_status_mobile_push_set(_print.id, pushed_platform, PRINT_PROGRESS_PUSH_INTERVAL[pushed_platform])
+        
+def send_first_layer_inspection_report(fli, grade):
+    pushed_platforms = set()
+
+    for mobile_device in MobileDevice.objects.prefetch_related('user__syndicate').filter(user=fli.print.user):
+        if cache.print_status_mobile_push_get(fli.print.id, mobile_device.platform):
+            continue
+        pushed_platforms.add(mobile_device.platform)
+
+        data = dict(
+            type='firstLayerInspection',
+            printId=str(fli.print.id),
+            title=f'First Layer Done! Grade {grade}.',
+            body=fli.print.filename,
+        )
+                
+        send_to_device(data, mobile_device)
+
+    for pushed_platform in pushed_platforms:
+        cache.print_status_mobile_push_set(fli.print.id, pushed_platform, PRINT_PROGRESS_PUSH_INTERVAL[pushed_platform])
 
 
 def send_to_device(msg, mobile_device):

@@ -31,9 +31,7 @@ This guide assumes you have already configured either one or multiple webcams in
 
 
 <Tabs>
-<TabItem value="nozzzle-camera-only" label="Configura Only A Nozzle Camera" default>
-
-## Configure Obico to use only a nozzle camera
+<TabItem value="nozzzle-camera-only" label="Configure Only One Nozzle Camera" default>
 
 If you are setting up your nozzle camera as a secondary camera, select the "Multiple Cameras" tab instead.
 
@@ -106,7 +104,6 @@ is_nozzle_camera = True
 </TabItem>
 <TabItem value="multiple-cameras" label="Configure Multiple Cameras">
 
-## Configure Obico to use multiple cameras 
 <Tabs>
 <TabItem value="mainsail" label="Mainsail">
 

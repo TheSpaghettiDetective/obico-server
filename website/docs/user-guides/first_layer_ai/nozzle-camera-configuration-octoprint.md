@@ -30,9 +30,7 @@ Obico’s first layer AI is compatible with any 3D printer running OctoPrint or 
 Obico now supports multiple webcam streams in the Obico app. You can configure your nozzle camera as a second camera in Obico, or you can just use the nozzle camera as your only camera. 
 
 <Tabs>
-<TabItem value="nozzzle-camera-only" label="Configura Only A Nozzle Camera" default>
-
-## Configure Obico to use only a nozzle camera
+<TabItem value="nozzzle-camera-only" label="Configure Only One Nozzle Camera" default>
 
 ![](/img/user-guides/nozzle-cam-ai-config/octoprint/octoprint-1-webcam.png)
 

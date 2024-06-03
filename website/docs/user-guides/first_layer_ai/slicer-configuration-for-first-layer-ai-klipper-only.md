@@ -129,3 +129,7 @@ In the example below, you can see that the z-height of 4mm is clearly more focus
 #### Z-height = 4mm
 ![](/img/user-guides/z4.png)
 
+
+### Configuring Cooldown Extruder Temperature
+
+The cooldown extrudeer temperature is the temperature that will be set for the first layer scan. After the first layer, the temperature will be lowered to avoid oozing of 

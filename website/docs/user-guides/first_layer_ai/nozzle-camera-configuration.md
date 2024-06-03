@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 ## Required Hardware:
 A nozzle camera that provides an up-close view of your 3D printers’ nozzle. 
 
-### Recommended Cameras: 
+### Recommended Cameras
 
 - **[Mintion Nozzle Camera](https://www.mintion.net/products/mintion-nozzle-camera)**: 
 

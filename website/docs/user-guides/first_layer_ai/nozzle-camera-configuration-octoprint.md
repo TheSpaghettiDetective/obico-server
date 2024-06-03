@@ -15,7 +15,7 @@ A nozzle camera that provides an up-close view of your 3D printers’ nozzle.
 
 - **[Mintion Nozzle Camera](https://www.mintion.net/products/mintion-nozzle-camera)**: 
 
-- 3DO Nozzle Camera V1 or V2: 
+- **[3DO Nozzle Camera V1 or V2](https://3do.eu/59-3do-camera)**: 
 
    - 3DO Nozzle Camera Suppliers:
    - Kb3d

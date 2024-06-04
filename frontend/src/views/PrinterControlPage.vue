@@ -265,12 +265,12 @@ export default {
         const customRotation = customRotationData ? Number(customRotationData.customRotation) : 0
         const rotation = +(webcam.rotation ?? 0) + customRotation
         const degree = rotation % 360
-        
+
         if (degree === 90 || degree === 270) {
           isPortrait = true
         }
       })
-      
+
       return isPortrait
     },
   },
@@ -349,6 +349,11 @@ export default {
               }
             }
           }
+        },
+        onStatusReceived: (printerStatus) => {
+          // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
+          const status = printerStatus.status || printerStatus.octoprint_data
+          this.printer = normalizedPrinter({ status }, this.printer)
         },
       }
     )

@@ -312,13 +312,27 @@ export default {
           this.printer = normalizedPrinter(data, this.printer)
           if (this.webcams.length === 0 && (this.printer?.settings?.webcams || []).length > 0) {
             const webcams = this.printer?.settings?.webcams
+
+            let dataChannelFound = false
             for (const webcam of webcams) {
               webcam.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
               this.webcams.push(webcam)
               // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
               webcam.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-              // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
+              if (webcam.data_channel_available) {
+                this.printerComm.setWebRTC(webcam.webrtc)
+                dataChannelFound = true
+              }
             }
+
+            // Backward compatibility for agent versions that don't set data_channel_available
+            if (!dataChannelFound) {
+              const primaryWebcam = this.webcams.find(webcam => webcam.is_primary_camera === true);
+              if (primaryWebcam) {
+                this.printerComm.setWebRTC(primaryWebcam.webrtc);
+              }
+            }
+
             if (this.webcams.length > 0) {
               this.selectedWebcamIndex = this.webcams.findIndex(webcam => webcam.is_primary_camera === true);
             }
@@ -354,7 +368,7 @@ export default {
       } else {
         this.customRotationData[customRotationIndex].customRotation = val
       }
-       
+
       this.customRotationDeg = val
     },
     chooseWebcam(value, streamId = 'all') {
@@ -615,11 +629,11 @@ export default {
   .webcam-main
     @media (min-width: 1024px)
       height: calc(100vh - 50px - var(--gap-between-blocks)*2 - 33px)
-    
+
     @media (min-width: 1024px)
       display: grid
       align-items: center
-    
+
   .header-container
     display: flex
     justify-content: space-between

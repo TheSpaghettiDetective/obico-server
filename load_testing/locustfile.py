@@ -4,6 +4,7 @@ import random
 from locust import HttpUser, events, task, run_single_user, tag, between
 import greenlet
 from locust.env import Environment
+from django.conf import settings
 
 # START DEBUG SETTINGS
 
@@ -29,7 +30,7 @@ AUTH_TOKEN = None
 
 @events.test_start.add_listener
 def get_image_content(environment: Environment, **kwargs):
-    with open('/backend/static_build/media/tsd-pics/snapshots/1/latest_unrotated.jpg', 'rb') as file:
+    with open(f'/backend/static_build/media/{settings.PICS_CONTAINER}/snapshots/1/latest_unrotated.jpg', 'rb') as file:
         global IMAGE_CONTENT
         IMAGE_CONTENT = file.read()
 

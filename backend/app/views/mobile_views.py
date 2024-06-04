@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied
 from requests import RequestException
 from allauth.socialaccount.providers.base import ProviderException
 
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from site_specific_allauth_google_provider.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.apple.views import AppleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.views import (
@@ -26,6 +26,9 @@ from allauth.socialaccount.helpers import (
 )
 
 from .web_views import SocialAccountAwareLoginView
+from lib.syndicate import syndicate_from_request
+from app.models import User
+from django.utils.translation import gettext_lazy as _
 
 class MobileLoginView(SocialAccountAwareLoginView):
     template_name = 'mobile/account/login.html'
@@ -41,6 +44,14 @@ class MobileSignupView(SignupView):
 
     def get_success_url(self):
         return '/mobile/auth/fetch/'
+
+    def form_valid(self, form):
+            email = form.cleaned_data['email']
+            syndicate = syndicate_from_request(self.request)
+            if User.objects.filter(emailaddress__email__iexact=email, syndicate=syndicate).exists():
+                form.add_error('email', _('A user is already registered with this email address.'))
+                return self.form_invalid(form)
+            return super().form_valid(form)
 
 
 @login_required
@@ -69,7 +80,6 @@ def oauth_callback(request, *args, **kwargs):
         try:
             if is_google:
                 callback_url = adapter.get_callback_url(request, app)
-                scope = provider.get_scope(request)
                 client = OAuth2Client(
                     request,
                     app.client_id,
@@ -77,7 +87,6 @@ def oauth_callback(request, *args, **kwargs):
                     adapter.access_token_method,
                     adapter.access_token_url,
                     callback_url,
-                    scope,
                     scope_delimiter=adapter.scope_delimiter,
                     headers=adapter.headers,
                     basic_auth=adapter.basic_auth)

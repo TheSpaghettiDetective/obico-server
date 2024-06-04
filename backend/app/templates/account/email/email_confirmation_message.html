@@ -1,11 +1,15 @@
 {% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}
-Thanks for choosing Obico!
+Thanks for joining {{ syndicate_name }}!
 <br /><br />
-Please click <a href="{{ activate_url }}">this link</a> to verify your email address.
+Please click the link below to verify your email address:
 <br /><br />
-If the click doesn't work, you can copy and paste this link into the browser's address bar:
+ <a href="{{ activate_url }}">Verify My Email</a>
+ <br> <br />
+ If the link above doesn't work, you can copy and paste the URL directly into your browser's address bar:
 <br />
 {{ activate_url }}
 <br /><br />
-It is also a good idea to add our email address <strong>support@obico.io</strong> to your contact list so that our emails won't end up in your spam folder.
+To ensure our future communications reach you, please add our email address to your contact list. This will help prevent our emails from landing in your spam folder.
+<br /><br />
+Welcome aboard! We look forward to enhancing your 3D printing experience with {{ syndicate_name }}!
 {% endautoescape %}

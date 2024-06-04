@@ -19,18 +19,20 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
 import json
-
-from allauth.account.views import LoginView, SignupView
+from django.utils.translation import gettext_lazy as _
+from allauth.account.views import LoginView, SignupView, PasswordResetView
 
 from lib.url_signing import HmacSignedUrl
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
-
 from app.models import (User, Printer, SharedResource, GCodeFile, NotificationSetting)
 from app.forms import SocialAccountAwareLoginForm
 from lib import channels
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
+from lib.syndicate import syndicate_from_request
+from app.forms import SyndicateSpecificResetPasswordForm
+
 
 
 def index(request):
@@ -52,6 +54,21 @@ class SocialAccountAwareSignupView(SignupView):
         if settings.ACCOUNT_ALLOW_SIGN_UP:
             return super().dispatch(request, *args, **kwargs)
         return redirect('/accounts/login/')
+    def form_valid(self, form):
+            email = form.cleaned_data['email']
+            syndicate = syndicate_from_request(self.request)
+            if User.objects.filter(emailaddress__email__iexact=email, syndicate=syndicate).exists():
+                form.add_error('email', _('A user is already registered with this email address.'))
+                return self.form_invalid(form)
+            return super(SocialAccountAwareSignupView, self).form_valid(form)
+
+class SyndicateSpecificPasswordResetView(PasswordResetView):
+    form_class = SyndicateSpecificResetPasswordForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
 @login_required
 def printers(request, template_name='printers.html'):
@@ -209,7 +226,7 @@ def upload_print(request):
     if request.method == 'POST':
         _, file_extension = os.path.splitext(request.FILES['file'].name)
         video_path = f'{request.user.id}/{str(timezone.now().timestamp())}{file_extension}'
-        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER, long_term_storage=True)
+        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER, request.user.syndicate.name, long_term_storage=True)
         preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
 
         return JsonResponse(dict(status='Ok'))
@@ -223,18 +240,15 @@ def print_shot_feedback(request, pk):
     return render(request, 'print_shot_feedback.html', {'object': _print})
 
 
-### GCode File page ###
-
 @login_required
 def g_code_folders(request, template_dir=None):
     return render(request, get_template_path('g_code_folders', template_dir))
+
 
 @login_required
 def g_code_files(request, template_dir=None):
     return render(request, get_template_path('g_code_files', template_dir))
 
-
-## Notifications page
 
 @login_required
 def printer_events(request):
@@ -242,6 +256,11 @@ def printer_events(request):
     user.unseen_printer_events = 0
     user.save()
     return render(request, 'printer_events.html')
+
+
+@login_required
+def first_layer_inspection_images(request):
+    return render(request, 'first_layer_inspection_images.html')
 
 
 ### Misc ####

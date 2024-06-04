@@ -43,7 +43,7 @@ disable_video_streaming = False
 # target_fps = 25
 # flip_h = False
 # flip_v = False
-# rotate_90 = False
+# rotation = 0
 # aspect_ratio_169 = False
 
 [logging]
@@ -72,21 +72,14 @@ The configuration for connecting to the Obico Server.
 
 ## `[webcam]` section {#webcam-section}
 
-- `disable_video_streaming`: Default to `False`. Change it to `True` to disable the webcam streaming [in some rare cases](https://www.obico.io/docs/user-guides/disable-25-fps-streaming/).
+In the majority of the cases, you will only need the minimum `[webcam]` section as follows:
 
-:::caution
-Usually, you don't need to configure the following settings in the `[webcam]` section. In that case, **Obico for Klipper** will automatically obtain them from Moonraker.
-:::
+```
+[webcam]
+disable_video_streaming = False
+```
 
-Set values in this section only when **Obico for Klipper** can't obtain these configurations, which is very rare.
-
-- `snapshot_url`:
-- `stream_url`:
-- `target_fps`:
-- `flip_h`:
-- `flip_v`:
-- `rotate_90`:
-- `aspect_ratio_169`:
+If you have a special webcam setup, or have run into issues with your webcam in Obico, check out the detailed [webcam configuration guide](webcam.md).
 
 ## `[logging]` section {#logging-section}
 

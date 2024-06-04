@@ -40,6 +40,101 @@
 
           <!-- Help content -->
           <div class="content">
+            <!-- KINGROON PRICING PAGE HELP CONTENT START -->
+            <!-- basic-streaming-on-kingroon-pricing-page -->
+            <template v-if="id === 'basic-streaming-on-kingroon-pricing-page'">
+              <div>
+                {{$t("Basic Streaming")}}:
+                <ul>
+                  <li>{{ $t("1 FPS (frame-per-second), 100 hours of streaming per month") }}</li>
+                </ul>
+              </div>
+              <div>
+                <i18next :translation="$t('Learn more about {localizedDom}')">
+                  <template #localizedDom>
+                    <a href="https://docs.kingroon.com/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">{{$t("the differences between the Premium Streaming and the Basic Streaming")}} <i class="fas fa-external-link-alt"></i></a>
+                  </template>
+                </i18next>
+
+              </div>
+            </template>
+
+            <!-- detective-hours-free-plan-on-kingroon-pricing-page -->
+            <template v-if="id === 'detective-hours-free-plan-on-kingroon-pricing-page'">
+                <p>{{ $t("Basic AI Detection checks for failures every 30 seconds.") }}</p>
+                <p>{{ $t("AI usage is reset on the 1st of each month. Hours do not roll over month to month.") }}</p>
+              <p>
+                {{$t("Learn more about")}}
+                <a
+                  href="https://www.docs.kingroon.com/docs/user-guides/how-does-detective-hour-work/"
+                  target="_blank"
+                  >{{ $t("how the AI Detection Hour works ") }}<i class="fas fa-external-link-alt"></i
+                ></a>
+              </p>
+            </template>
+
+            <!-- tunneling-free-plan-on-kingroon-pricing-page -->
+            <template v-if="id === 'tunneling-free-plan-on-kingroon-pricing-page'">
+              <p>{{ $t("Securely tunnel to your Mainsail or fluidd Klipper interface from anywhere.") }}</p>
+              <p>
+                {{$t("Free plan is subject to 300MB/month data cap. Data usage is reset on the 1st day of each month.")}}
+              </p>
+              <p>
+                {{$t("Learn more about")}}
+                <a href="https://docs.kingroon.com/docs/user-guides/octoprint-tunneling/" target="_blank"
+                  >{{ $t("Klipper tunnel ") }}<i class="fas fa-external-link-alt"></i
+                ></a>
+              </p>
+            </template>
+
+            <!-- premium-streaming-on-kingroon-pricing-page -->
+            <template v-if="id === 'premium-streaming-on-kingroon-pricing-page'">
+              <div>
+                {{$t("Premium Streaming")}}:
+                <ul>
+                  <li>{{ $t("Up to 25 FPS (frame-per-second)") }}</li>
+                  <li>{{ $t("Up to 5 FPS with any webcam") }}</li>
+                  <li>{{ $t("Up to 25 FPS with Kingroon H.264 Camera.") }}</li>
+                </ul>
+              </div>
+              <p>
+                {{$t("Learn more about")}}
+                <a
+                  href="https://docs.kingroon.com/docs/user-guides/webcam-streaming-for-human-eyes/"
+                  target="_blank"
+                  >{{$t("the differences between the Premium Streaming and the Basic Streaming")}}
+                  <i class="fas fa-external-link-alt"></i
+                ></a>
+              </p>
+            </template>
+
+            <!-- detective-hours-pro-plan-on-kingroon-pricing-page -->
+            <template v-if="id === 'detective-hours-pro-plan-on-kingroon-pricing-page'">
+              <p>{{ $t("Advanced AI checks for failures more frequently - Catch failures up to 2X faster than Basic AI.") }}</p>
+              <p>{{ $t("Unused AI Detection Hours roll over month-to-month") }}</p>
+              <p>
+                {{$t("Learn more about")}}
+                <a
+                  href="https://www.docs.kingroon.com/docs/user-guides/how-does-detective-hour-work/"
+                  target="_blank"
+                  >{{ $t("how the AI Detection Hour works ") }}<i class="fas fa-external-link-alt"></i
+                ></a>
+              </p>
+            </template>
+
+            <!-- tunneling-pro-plan-on-kingroon-pricing-page -->
+            <template v-if="id === 'tunneling-pro-plan-on-kingroon-pricing-page'">
+              <div>{{ $t("Securely tunnel to your Mainsail or fluidd Klipper interface from anywhere. Unlimited.") }}</div>
+              <p>
+                {{$t("Learn more about")}}
+                <a href="https://docs.kingroon.com/docs/user-guides/octoprint-tunneling/" target="_blank"
+                  >{{ $t("Klipper tunnel ") }}<i class="fas fa-external-link-alt"></i
+                ></a>
+              </p>
+            </template>
+
+            <!-- KINGROON PRICING PAGE HELP CONTENT END -->
+
             <!-- basic-streaming-on-pricing-page -->
             <template v-if="id === 'basic-streaming-on-pricing-page'">
               <div>
@@ -52,7 +147,7 @@
               <div>
                 <i18next :translation="$t('Learn more about {localizedDom}')">
                   <template #localizedDom>
-                    <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">{{$t("the differences between the Premium Streaming and the Basic Streaming")}} <i class="fas fa-external-link-alt"></i></a>
+                    <a :href="getDocUrl('/user-guides/webcam-streaming-for-human-eyes/')" target="_blank">{{$t("the differences between the Premium Streaming and the Basic Streaming")}} <i class="fas fa-external-link-alt"></i></a>
                   </template>
                 </i18next>
 
@@ -66,7 +161,7 @@
                 <li>{{ $t("Unused AI Detection Hours roll over month to month.") }}</li>
                 <li>
                   {{$t("You can")}}
-                  <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
+                  <a :href="getDocUrl('/user-guides/how-does-credits-work/')"
                     >{{ $t("earn free AI Detection Hours by helping her improve") }}</a
                   >.
                 </li>
@@ -77,7 +172,7 @@
               <p>
                 {{$t("Learn more about")}}
                 <a
-                  href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/"
+                  :href="getDocUrl('/user-guides/how-does-detective-hour-work/')"
                   target="_blank"
                   >{{ $t("how the AI Detection Hour works ") }}<i class="fas fa-external-link-alt"></i
                 ></a>
@@ -92,7 +187,7 @@
                 <li>{{ $t("AI Detection Hours expire when subscription ends.") }}</li>
                 <li>
                   {{$t("You can")}}
-                  <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
+                  <a :href="getDocUrl('/user-guides/how-does-credits-work/')"
                     >{{ $t("earn more AI Detection Hours by helping her improve") }}</a
                   >.
                 </li>
@@ -103,7 +198,7 @@
               <p>
                 {{$t("Learn more about")}}
                 <a
-                  href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/"
+                  :href="getDocUrl('/user-guides/how-does-detective-hour-work/')"
                   target="_blank"
                   >{{ $t("how the AI Detection Hour works ") }}<i class="fas fa-external-link-alt"></i
                 ></a>
@@ -122,7 +217,7 @@
               <p>
                 {{$t("Learn more about")}}
                 <a
-                  href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/"
+                  :href="getDocUrl('/user-guides/webcam-streaming-for-human-eyes/')"
                   target="_blank"
                   >{{$t("the differences between the Premium Streaming and the Basic Streaming")}}
                   <i class="fas fa-external-link-alt"></i
@@ -138,7 +233,7 @@
               </p>
               <p>
                 {{$t("Learn more about")}}
-                <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
+                <a :href="getDocUrl('/user-guides/octoprint-tunneling/')" target="_blank"
                   >{{ $t("OctoPrint/Klipper tunnel ") }}<i class="fas fa-external-link-alt"></i
                 ></a>
               </p>
@@ -149,7 +244,7 @@
               <div>{{ $t("Securely tunnel to your OctoPrint/Klipper from anywhere. Unlimited.") }}</div>
               <p>
                 {{$t("Learn more about")}}
-                <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
+                <a :href="getDocUrl('/user-guides/octoprint-tunneling/')" target="_blank"
                   >{{ $t("OctoPrint/Klipper tunnel ") }}<i class="fas fa-external-link-alt"></i
                 ></a>
               </p>
@@ -233,7 +328,7 @@
             <!-- thumbnail-setup-guide -->
             <template v-if="id === 'thumbnail-setup-guide'">
               <p>
-                <a href="https://obico.io/docs/user-guides/enable-gcode-thumbnails/" target="_blank"
+                <a :href="getDocUrl('/user-guides/enable-gcode-thumbnails/')" target="_blank"
                   >{{$t("Learn how to configure G-Code preview generation in your slicer")}}
                   <i class="fas fa-external-link-alt"></i
                 ></a>

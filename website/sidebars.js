@@ -34,7 +34,7 @@ module.exports = {
     {
       type: 'category',
       label: 'First Layer AI',
-      items: ['user-guides/first_layer_ai/nozzle-camera-configuration','user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only',],
+      items: ['user-guides/first_layer_ai/nozzle-camera-configuration', 'user-guides/first_layer_ai/nozzle-camera-configuration-octoprint', 'user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only', 'user-guides/first_layer_ai/nozzle-camera-printer-installation',],
     },
     {
       type: 'category',
@@ -48,12 +48,11 @@ module.exports = {
           type: 'category',
           label: 'More... ',
           items: [
-            'user-guides/streaming-compatibility-mode',
-            'user-guides/adjust-webcam-settings-premium-streaming',
             'user-guides/check-webcam-streaming-mode',
             'user-guides/internet-speed-requirement-premium-streaming',
             'user-guides/premium-streaming-raspberry-pi-connection-speed',
             'user-guides/premium-streaming-computer-phone-connection-speed',
+            'user-guides/webcam-streaming-excessive-cpu',
           ],
         },
       ],
@@ -95,7 +94,6 @@ module.exports = {
           label: 'Webcam Settings',
           items: [
             'user-guides/webcam-streaming-resolution-framerate-octoprint',
-            'user-guides/check-webcam-streaming-mode',
             'user-guides/octoprint-webcam-not-streaming',
           ],
         },
@@ -105,7 +103,7 @@ module.exports = {
       type: 'category',
       label: 'Obico for Klipper',
       link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
-      items: ['user-guides/klipper-setup-manual-link','user-guides/moonraker-obico/config', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
+      items: ['user-guides/klipper-setup-manual-link','user-guides/moonraker-obico/config','user-guides/moonraker-obico/webcam', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
     },
     'user-guides/contact-us-for-support',
   ],

@@ -7,7 +7,7 @@ from django.conf import settings
 import requests
 from rest_framework.serializers import ValidationError
 
-from lib import site as site
+from lib import syndicate
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -65,7 +65,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         if not chat_id:
             return
 
-        link = site.build_full_url('/printers/')
+        link = syndicate.build_full_url_for_syndicate('/printers/', context.user.syndicate_name)
         text = self.get_failure_alert_text(context=context, link=link)
         if not text:
             return
@@ -169,7 +169,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(types.InlineKeyboardButton(
             'Go to the Obico app to take a closer look.',
-            url=site.build_full_url('/printers/'))
+            url=syndicate.build_full_url_for_syndicate('/printers/', context.user.syndicate_name))
         )
         return markup
 
@@ -178,19 +178,19 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         links = {
             'cancel': {
                 'text': 'Yes it failed. Cancel the print!',
-                'url': site.build_full_url(f'/prints/{print_id}/cancel/')
+                'url': syndicate.build_full_url_for_syndicate(f'/prints/{print_id}/cancel/', context.user.syndicate_name)
             },
             'resume': {
                 'text': 'It is a false alarm. Resume the print!',
-                'url': site.build_full_url(f'/prints/{print_id}/resume/')
+                'url': syndicate.build_full_url_for_syndicate(f'/prints/{print_id}/resume/', context.user.syndicate_name)
             },
             'do_not_ask': {
                 'text': 'Resume the print, and don\'t alert me for the rest of this print.',
-                'url': site.build_full_url(f'/prints/{print_id}/resume/?mute_alert=true')
+                'url': syndicate.build_full_url_for_syndicate(f'/prints/{print_id}/resume/?mute_alert=true', context.user.syndicate_name)
             },
             'more_info': {
                 'text': 'Go to the Obico app to take a closer look.',
-                'url': site.build_full_url('/printers/')
+                'url': syndicate.build_full_url_for_syndicate('/printers/', context.user.syndicate_name)
             }
         }
 

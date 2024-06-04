@@ -168,7 +168,7 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
               title: `${i18n.t('Failed to contact printer. Is it powered on and connected to Internet?')}`,
             })
           }
-        }, 10 * 1000)
+        }, 60 * 1000)
       }
       if (self.webrtc) {
         self.webrtc.sendData(JSON.stringify(msg))

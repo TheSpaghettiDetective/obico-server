@@ -14,9 +14,16 @@ module.exports = {
   onBrokenMarkdownLinks: 'throw',
   favicon: '/img/favicon.png',
   themeConfig: {
+    // TODO: Revert changes later (FOR BTT)
+    // announcementBar: {
+    //   id: 'giveStarOnGitHubAnnouncement',
+    //   content: `⭐️ If you like Obico, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/TheSpaghettiDetective/obico-server">GitHub</a>`,
+    // },
     announcementBar: {
-      id: 'giveStarOnGitHubAnnouncement',
-      content: `⭐️ If you like Obico, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/TheSpaghettiDetective/obico-server">GitHub</a>`,
+      id: 'bttAnnouncement',
+      content: `<a target="_blank" rel="noopener noreferrer" href="https://biqu.equipment/products/bigtreetech-x-obico-bigtreetech-pi-2-ai">🎉🎉 BIG TREE TECH X OBICO PI 2 IS NOW AVAILABLE! 🎉🎉</a>`,
+      textColor: '#fff',
+      isCloseable: false,
     },
     colorMode: {
       // "light" | "dark"

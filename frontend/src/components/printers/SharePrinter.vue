@@ -13,7 +13,7 @@
       </h5>
       <p>{{ $t("Printer feed sharing is a Pro feature.") }}</p>
       <p>
-        <a  href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">
+        <a  :href="getDocUrl('/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know')">
           {{ $t('Running the {brandName} app incurs non-trivial amount of costs',{brandName:$syndicateText.brandName}) }}
           </a>.
           {{ $t('With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run the {brandName} app smoothly.',{brandName:$syndicateText.brandName}) }}
@@ -92,7 +92,7 @@
                   </li>
                   <li>
                     {{$t("Anyone with this shareable link will be able to see your printer feed.")}}
-                    <a href="https://www.obico.io/docs/user-guides/printer-feed-sharing/"
+                    <a :href="getDocUrl('/user-guides/printer-feed-sharing/')"
                       >{{ $t("Learn more about what they can see.") }}</a
                     >
                   </li>

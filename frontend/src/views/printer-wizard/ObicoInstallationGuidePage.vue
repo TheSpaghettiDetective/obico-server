@@ -6,7 +6,7 @@
           <b-col>
             <div class="form-container full-on-mobile border-radius-lg">
               <div class="row">
-                <h3 class="col-sm-12 text-center p-3">{{ $t("Plugin Setup") }}</h3>
+                <h1 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Install Obico") }}</h1>
               </div>
               <b-row class="center mt-3 mb-5 pb-5">
                 <div class="col-sm-12 col-lg-8">
@@ -14,24 +14,24 @@
                 </div>
               </b-row>
               <div>
-                <div v-if="targetKlipperPreInstall" class="kilpper-pre-install-wrap">
+                <div v-if="targetKlipperPreInstall" class="klipper-pre-install-wrap">
                   <img src="@static/img/printer-wizard/commandLinePrompt.png" alt="">
                   <div class="text-wrap">
-                    <h4>{{ $t("If you haven’t installed Obico Klipper, You need to find the right guide for your printer to install it.") }}</h4>
-                    <div class="find-printer-link"><a href="https://www.obico.io/docs/user-guides/klipper-setup/" target="_blank">{{ $t("Find the Guide for Your Printer") }}</a><i class="fas fa-light fa-arrow-up"></i></div>
-                    <h4>{{ $t("The basic steps involve:") }}</h4>
-                    <ol>
-                      <li>{{ $t('SSH to the device your Klipper runs on.') }}</li>
-                      <li>{{ $t('Enter the terminal commands for your printer.') }}</li>
-                      <li>{{ $t('Follow the installation steps.') }}</li>
-                      <li>{{ $t('Get the one time passcode from the terminal.') }}</li>
+                    <h3>{{ $t("Install Obico for Klipper") }}</h3>
+                    <ol class="secondary-font">
+                      <li><a :href="getDocUrl('/user-guides/klipper-setup/')" target="_blank">{{ $t("Find the Guide for Your Printer to install Obico for Klipper.") }}</a></li>
+                      <li>{{ $t('SSH to your device.') }}</li>
+                      <li>{{ $t('Enter the installation commands.') }}</li>
+                      <li>{{ $t('Alternatively, you can use KIAUH to install Obico.') }}</li>
+                      <li>{{ $t('Upon "Scanning the networking...", come back here and click "Next".') }}</li>
                     </ol>
                   </div>
                 </div>
-                <div v-if="targetOctoPrint" class="octo-wrap">
-                  <div class="row justify-content-center pb-3">
-                    <div class="col-sm-12 col-lg-10">
-                      <ol>
+                <div v-if="targetOctoPrint"  class="kilpper-pre-install-wrap">
+                  <img src="@static/img/octoprint-plugin-guide/install_plugin.png" alt="">
+                  <div class="text-wrap">
+                    <h3>{{ $t("Install Obico for OctoPrint") }}</h3>
+                    <ol class="secondary-font">
                         <li>{{ $t("Open OctoPrint in another browser tab.") }}</li>
                         <li>
                           {{ $t("Select") }}
@@ -43,18 +43,13 @@
                       </ol>
                     </div>
                   </div>
-                  <div class="row justify-content-center">
-                    <div class="col-sm-12 col-lg-8 img-container">
-                      <img class="mx-auto screenshot" :src="require('@static/img/octoprint-plugin-guide/install_plugin.png')
-                  " @click="zoomIn($event)" />
-                    </div>
-                  </div>
                 </div>
-                <div v-if="targetKlipperGeneric" class="klipper-wrap">
-                  <div class="row justify-content-center pb-3">
-                    <div class="col-sm-12 col-lg-10">
-                      <ol>
-                        <li>{{ $t("SSH to the Raspberry Pi your Klipper runs on.") }}</li>
+                <div v-if="targetKlipperGeneric"  class="kilpper-pre-install-wrap">
+                  <img src="@static/img/klipper_logo.jpg" alt="">
+                  <div class="text-wrap">
+                    <h3>{{ $t("Install Obico for Klipper") }}</h3>
+                    <ol class="secondary-font">
+                        <li>{{ $t("SSH to the Raspberry Pi (or other SBC) your Klipper runs on.") }}</li>
                         <li>
                           <div>{{ $t("Run:") }}</div>
                           <pre class="mt-2">
@@ -64,9 +59,9 @@
       ./install.sh
                         </pre>
                         </li>
-                        <li>{{ $t("Follow the installation steps.") }}</li>
-                      </ol>
-                    </div>
+                      <li>{{ $t('Alternatively, you can use KIAUH to install Obico.') }}</li>
+                      <li>{{ $t('Upon "Scanning the networking...", come back here and click "Next".') }}</li>
+                    </ol>
                   </div>
                 </div>
                 <div v-if="printerItem" class="printer-item">
@@ -87,24 +82,23 @@
 
                   </div>
                 </div>
-              </div>
-              <div class="d-flex justify-content-between button-wrap">
-                <div class="back" @click="$router.back()">
-                  <i class="fas fa-chevron-left"></i>
-                  <span> {{ $t("Back") }}</span>
+                <div class="d-flex justify-content-between align-items-center button-wrap">
+                  <div class="back" @click="$router.back()">
+                    <i class="fas fa-chevron-left"></i>
+                    <span> {{ $t("Back") }}</span>
+                  </div>
+                    <b-button variant="primary" @click="goForward">
+                      {{ $t("Next") }}
+                    </b-button>
                 </div>
-                  <b-button variant="primary" @click="goForward">
-                    {{ $t("Next") }}
-                  </b-button>
+                <div class="text-center mt-5 wizard-default-font">
+                  <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
+                    <template #localizedDom>
+                      <a target="_blank" :href="targetKlipper? getDocUrl('/user-guides/klipper-setup/'):getDocUrl('/user-guides/octoprint-plugin-setup/')">{{$t("step-by-step set up guide")}}.</a>
+                    </template>
+                  </i18next>
+                </div>
               </div>
-              <div class="center mt-5">
-                <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
-                  <template #localizedDom>
-                    <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
-                  </template>
-                </i18next>
-              </div>
-            </div>
           </b-col>
         </b-row>
       </b-container>
@@ -155,7 +149,7 @@ export default {
 
 <style lang="scss" scoped>
 .form-container {
-  .kilpper-pre-install-wrap {
+  .klipper-pre-install-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;

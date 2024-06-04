@@ -7,7 +7,7 @@ from enum import IntEnum
 import requests
 from rest_framework.serializers import ValidationError
 
-from lib import site as site
+from lib import syndicate
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -118,7 +118,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         if not user_key:
             return
 
-        link = site.build_full_url('/')
+        link = syndicate.build_full_url_for_syndicate('/', context.user.syndicate_name),
         title = self.get_failure_alert_title(context=context, link=link)
         text = self.get_failure_alert_text(context=context, link=link)
         if not title or not text:

@@ -11,7 +11,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting, PrinterEvent, GCodeFolder
+    NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspection, FirstLayerInspectionImage,
 )
 
 from notifications.handlers import handler
@@ -30,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password', 'last_login', 'is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions',)
+        exclude = ('password', 'last_login', 'is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions', 'syndicate')
         extra_kwargs = {
             'id': {'read_only': True},
             'email': {'read_only': True},
@@ -76,6 +76,21 @@ class BaseGCodeFileSerializer(serializers.ModelSerializer):
         read_only_fields = ('user', 'resident_printer')
 
 
+class FirstLayerInspectionImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FirstLayerInspectionImage
+        fields = '__all__'
+
+
+class FirstLayerInspectionSerializer(serializers.ModelSerializer):
+    images = FirstLayerInspectionImageSerializer(many=True, read_only=True, source='firstlayerinspectionimage_set')
+
+    class Meta:
+        model = FirstLayerInspection
+        fields = '__all__'
+
+
 class BasePrintSerializer(serializers.ModelSerializer):
     ended_at = serializers.DateTimeField(read_only=True)
     printer = BasePrinterSerializer(many=False, read_only=True)
@@ -102,11 +117,12 @@ class BasePrintSerializer(serializers.ModelSerializer):
 class PrintSerializer(BasePrintSerializer):
     printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
     prediction_json_url = serializers.SerializerMethodField()
+    firstlayerinspection_set = FirstLayerInspectionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Print
-        fields = BasePrintSerializer.Meta.fields + ('printer', 'prediction_json_url', 'printshotfeedback_set',)
-        read_only_fields = BasePrintSerializer.Meta.read_only_fields + ('printer', 'prediction_json_url', 'printshotfeedback_set',)
+        fields = BasePrintSerializer.Meta.fields + ('printer', 'prediction_json_url', 'printshotfeedback_set', 'firstlayerinspection_set',)
+        read_only_fields = BasePrintSerializer.Meta.read_only_fields + ('printer', 'prediction_json_url', 'printshotfeedback_set', 'firstlayerinspection_set',)
 
     def get_prediction_json_url(self, obj: Print) -> str:
         return reverse('Print-prediction-json', kwargs={'pk': obj.pk})
@@ -320,4 +336,3 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
 
 class VerifyCodeInputSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=64, required=True)
-

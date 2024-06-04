@@ -14,6 +14,8 @@ from app.models import User, OctoPrintTunnel
 HTTPScope = dict
 ScopeOrRequest = Union[HTTPScope, django.http.HttpRequest]
 
+LOGGER = logging.getLogger(__name__)
+
 
 class TunnelAuthenticationError(Exception):
 
@@ -152,14 +154,16 @@ class OctoprintTunnelV2Helper(object):
     ) -> OctoPrintTunnel:
         subdomain_code = cls.get_subdomain_code(s_or_r)
         port = cls.get_port(s_or_r)
-        logging.debug(
+        LOGGER.debug(
             ('get_octoprinttunnel', port, subdomain_code)
         )
 
         if subdomain_code:
             qs_kwargs = {'subdomain_code':  subdomain_code}
-        else:   # Port should be present when subdomain_code is missing
+        elif port:   # Port should be present when subdomain_code is missing
             qs_kwargs = {'port': port}
+        else:
+            raise TunnelAuthenticationError('invalid credentials', realm=None)
 
         qs = OctoPrintTunnel.objects.filter(
             **qs_kwargs

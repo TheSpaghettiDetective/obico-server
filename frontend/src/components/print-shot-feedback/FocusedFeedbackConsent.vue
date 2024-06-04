@@ -14,7 +14,7 @@
           <strong class="text-light">{{$t("2 non-expirable AI Detection Hours")}}</strong>
         </template>
         <template #localizedDom2>
-          <a target="_blank" href="https://www.obico.io/docs/user-guides/how-does-credits-work/">{{$t('Learn more')}}. <small><i class="fas fa-external-link-alt"></i></small ></a>
+          <a target="_blank" :href="getDocUrl('/user-guides/how-does-credits-work/')">{{$t('Learn more')}}. <small><i class="fas fa-external-link-alt"></i></small ></a>
         </template>
       </i18next>
     </p>
@@ -37,11 +37,11 @@
         class="custom-control-input"
       />
       <label class="custom-control-label" style="font-size: 16px" for="consented-checkbox">
-        {{ $t("I grant the {brandName} app team members the permission to review the time-lapse video of the print shown on this page.", { brandName: $t('brandName') }) }}
+        {{ $t("I grant the {brandName} app team members the permission to review the time-lapse video of the print shown on this page.", {brandName:$syndicateText.brandName}) }}
 
         <a
           target="_blank"
-          href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse"
+          :href="getDocUrl('/user-guides/how-does-credits-work#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse')"
           >{{$t("Why is this necessary? ")}}<small><i class="fas fa-external-link-alt"></i></small
         ></a>
       </label>

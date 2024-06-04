@@ -79,9 +79,9 @@ INSTALLED_APPS = [
 
 if get_bool('SOCIAL_LOGIN', False):
     INSTALLED_APPS += [
-        'allauth.socialaccount.providers.facebook',
-        'allauth.socialaccount.providers.google',
         'allauth.socialaccount.providers.apple',
+        'site_specific_allauth_google_provider',
+        'site_specific_allauth_facebook_provider',
     ]
 
 MIDDLEWARE = [
@@ -97,11 +97,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app.middleware.TopDomainMatchingCurrentSiteMiddleware',
     'app.middleware.octoprint_tunnelv2',
     'app.middleware.check_admin_ip_whitelist',
     'allauth.account.middleware.AccountMiddleware',
     'hijack.middleware.HijackUserMiddleware',
     'app.middleware.check_x_api',
+    'app.middleware.syndicate_header',
 ]
 
 if DEBUG:
@@ -255,7 +257,6 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # This allows us to interact with the popup window during autodiscovery handshake
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'unsafe-none'
 
-SITE_ID = 1
 SITE_USES_HTTPS = get_bool('SITE_USES_HTTPS', False)
 SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)
 
@@ -282,17 +283,14 @@ RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 # Allauth
 
 AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'app.accounts.SyndicateSpecificBackend',
     'oauth2_provider.backends.OAuth2Backend',
 )
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = False
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
@@ -300,7 +298,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if SITE_USES_HTTPS else 'http'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_ALLOW_SIGN_UP = get_bool('ACCOUNT_ALLOW_SIGN_UP', False)
-
+ACCOUNT_ADAPTER = 'app.accounts.SyndicateSpecificAccountAdapter'
 AUTH_USER_MODEL = 'app.User'
 SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
 SOCIALACCOUNT_PROVIDERS = {
@@ -496,3 +494,11 @@ CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('CSRF_TRUSTED_ORIGINS') or '[]'
 # This line prevents warning messages after 3.2
 # https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+SYNDICATES = {
+  'base': {
+    'display_name': 'Obico',
+    'from_email': DEFAULT_FROM_EMAIL,
+    'docRoot': 'https://www.obico.io/docs/',
+  },
+}

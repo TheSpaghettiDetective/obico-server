@@ -1,0 +1,123 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
+  <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+  <style type="text/css">
+    @import url('https://fonts.googleapis.com/css?family=Roboto');
+
+    @media screen and (max-width: 630px) {
+      .full-width-nopad {
+        width: 100% !important;
+        height: auto !important;
+        padding: 0 !important;
+      }
+
+      .full-width-20pad {
+        width: 100% !important;
+        height: auto !important;
+        padding: 20px !important;
+      }
+
+      .vs20 {
+        width: 100% !important;
+        height: 20px !important;
+      }
+
+      .header-image {
+        width: 100% !important;
+        height: auto !important;
+      }
+
+      .mobile-cta-button-table {
+        text-align: center !important;
+        width: 100% !important;
+        height: 48px !important;
+      }
+
+      .mobile-cta-button-row {
+        text-align: center !important;
+        width: 100% !important;
+        height: 48px !important;
+      }
+
+      .mobile-cta-font {
+        font-size: 18px !important;
+      }
+    }
+  </style>
+</head>
+
+<body style="padding:0; margin:0">
+  {% if preheader %}
+  <div style="display:none !important;
+                              visibility:hidden;
+                              mso-hide:all;
+                              font-size:1px;
+                              color:#ffffff;
+                              line-height:1px;
+                              max-height:0px;
+                              max-width:0px;
+                              opacity:0;
+                              overflow:hidden;">
+  {{ preheader }}</div>
+
+  <!-- Insert &zwnj;&nbsp; hack after hidden preview text -->
+  <div style="display: none; max-height: 0px; overflow: hidden;">
+    &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
+  </div>
+
+  {% endif %}
+  <table class="full-width-nopad" border="0px" cellpadding="0" cellspacing="0" style="margin:0 auto; padding-top:32px; padding-left:32px; padding-right:32px"
+    bgcolor="#FCFCFC" width="600">
+    <tr>
+      <td align="left" valign="top">
+        <table class="full-width-20pad" border="0px" cellpadding="0" cellspacing="0" style="margin:0 auto; padding:32px;
+        border-style:solid; border-color:#E7E7EA; border-width:1px;"
+          width="100%" bgcolor="#FFFFFF">
+          <tr>
+            <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
+            font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+              {% block email_content %}{% endblock email_content %}
+              <table style="padding: 24px 0px;">
+                  <tr>
+                      <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
+                      font-size:14px; font-weight:400; color:#888796; line-height:18px;">Best regards,</td>
+                  </tr>
+                <tr>
+                    <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
+                    font-size:14px; font-weight:400; color:#888796; line-height:18px;">- The Kingroon team</td>
+                </tr>
+                <tr>
+                  <td height="8px" valign="top">&nbsp;</td>
+                </tr>
+              </table>
+              <table style="color:#888796; overflow:auto; text-align:center;
+              margin:0 auto; padding: 16px; height:48px; width:100%"
+                cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:10px; font-weight:400; color:#888796; line-height:22px;">
+                    Kingroon - Room 703, Jinhe Building,  No. 8  Xinhe Street, Bantian Subdistrict, Longgang,District, Shenzhen City,China 518129 - <a href="https://kingroon.com/pages/terms-of-service">Term of Use</a> - <a href="https://kingroon.com/pages/privacy-statement">Privacy</a>
+                  </td>
+                </tr>
+		            {% if unsub_url %}
+                <tr>
+                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:12px; font-weight:400; color:#888796; line-height:22px;">
+                    <a href="{{ unsub_url }}">Unsubscribe</a>
+                  </td>
+                </tr>
+		            {% endif %}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>

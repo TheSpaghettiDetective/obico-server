@@ -4,6 +4,10 @@ description: For Klipper/Moonraker/Mainsail/Fluidd users
 sidebar_label: Manually Link Klipper
 ---
 
+:::caution
+  **If you are on Obico for Klipper version than 1.6.0 or newer, switch to [Updated Manual Setup Guide](https://www.obico.io/docs/user-guides/klipper-setup/#link-manually) to link your printer using a one-time passcode.**
+:::
+
 Follow this guide in one of these 2 rare cases:
 
 * You are trying to re-link your Klipper printer. There are only [a few reasons](/docs/user-guides/relink-printer/) why you need to re-link printer.
@@ -28,7 +32,7 @@ This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io)
 
 ## Step 1: Download Obico for Klipper and run `install.sh` {#step-1-download-obico-for-klipper-and-run-installsh}
 
-1. SSH to the Raspberry Pi your Klipper runs on.
+1. SSH to the Raspberry Pi (or other SBC) your Klipper runs on.
 2. Run:
 ```bash
     cd ~

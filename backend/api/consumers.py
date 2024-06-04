@@ -17,7 +17,7 @@ from channels_presence.models import Presence
 
 from lib import cache
 from lib import channels
-from .octoprint_messages import process_octoprint_status
+from .octoprint_messages import process_printer_status
 from app.models import *
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
 from lib.view_helpers import touch_user_last_active
@@ -292,7 +292,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             channels.send_message_to_web(self.printer.id, data)
         else:
             self.printer.refresh_from_db()
-            process_octoprint_status(self.printer, data)
+            process_printer_status(self.printer, data)
 
     @newrelic.agent.background_task()
     @report_error
@@ -314,12 +314,19 @@ class OctoPrintConsumer(WebsocketConsumer):
 
 
 class JanusWebConsumer(WebsocketConsumer):
-
     def get_printer(self):
         if 'token' in self.scope['url_route']['kwargs']:
             return Printer.objects.get(
                 auth_token=self.scope['url_route']['kwargs']['token'],
             )
+
+        # Mobileraker wants to use tunnel credential to connect janus websocket
+        try:
+            pt = OctoprintTunnelV2Helper.get_octoprinttunnel(self.scope)
+            if pt and str(pt.printer_id) == self.scope['url_route']['kwargs']['printer_id']:
+                return pt.printer
+        except TunnelAuthenticationError:
+            pass    # Continue to other ways of authentication
 
         if not self.scope['user'].is_authenticated:
             raise Printer.DoesNotExist('session is not authenticated')

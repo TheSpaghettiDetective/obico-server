@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import flask
+from flask_compress import Compress
 from flask import abort, make_response, request, jsonify
 from os import path, environ
 import sentry_sdk
@@ -23,6 +24,7 @@ if environ.get('SENTRY_DSN'):
     )
 
 app = flask.Flask(__name__)
+Compress(app)
 
 status = dict()
 

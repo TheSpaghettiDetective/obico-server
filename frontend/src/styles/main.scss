@@ -44,6 +44,17 @@
   --border-radius-xs: 4px;
 }
 
+[data-tenant="kingroon"] {
+  // Primary Color
+  --color-primary: #ED7100;
+  // Dark Background
+  --color-background: #212224;
+  // Surface Primary
+  --color-surface-primary: #131920;
+  // Surface Secondary
+  --color-surface-secondary: #000000;
+}
+
 :root {
   --gap-between-blocks: 30px;
   --default-font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -1054,4 +1065,84 @@ div[id^="b-modal-"] {
 }
 .border-radius-lg {
   border-radius: var(--border-radius-lg);
+}
+.kingroon-page {
+  background: #212224;
+}
+#kingroon-footer {
+  padding: 23px 0;
+  text-align: center;
+  background-color: #131920 !important;
+  color: var(--color-text-primary);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.first-layer-video-wrapper {
+  display: flex;
+  .card-img-top {
+    display: flex;
+    justify-content: center;
+    border-radius: var(--border-radius-md);
+  }
+  .buttons-container {
+    border-radius: var(--border-radius-md);
+    background-color: unset !important;
+  }
+  .action-btn {
+    font-size: 1rem !important;
+  }
+  .vjs-tech {
+    position: relative !important;
+  }
+  .vjs-poster {
+    border-radius: var(--border-radius-md);
+  }
+  .video-js {
+    border-radius: var(--border-radius-md);
+    height: 240px;
+    @media (max-width: 576px) {
+      height: 300px;
+    }
+    @media (max-width: 1198px) and (min-width: 991px) {
+      height: 300px;
+    }
+  }
+}
+.first-layer-modal-video-wrapper {
+  display: flex;
+  .card-img-top {
+    display: flex;
+    justify-content: center;
+    border-radius: var(--border-radius-md);
+  }
+  .buttons-container {
+    border-radius: var(--border-radius-md);
+    background-color: unset !important;
+  }
+  .action-btn {
+    font-size: 1rem !important;
+  }
+  .vjs-tech {
+    position: relative !important;
+  }
+  .vjs-poster {
+    border-radius: var(--border-radius-md);
+  }
+  .video-js {
+    border-radius: var(--border-radius-md);
+    height: 510px;
+    @media (max-width: 991px) {
+      height: 400px;
+    }
+  }
+}
+.webcam-dropdown {
+  button {
+    color: var(--color-text-primary);
+    font-size: 14px;
+  }
+  ul {
+    transform: translate3d(-55%, 31px, 0px) !important;
+  }
 }

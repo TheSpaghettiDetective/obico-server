@@ -128,9 +128,9 @@
           <b-col lg="7">
             <div class="print-info">
               <!-- First Layer Report Card -->
-              <div v-show="firstLayerInspection.id" class="card-container">
+              <div v-if="firstLayerInspection.id" class="card-container">
                 <b-row class="m-0">
-                  <b-col cols="12" sm="7" md="7" lg="12" xl="7"   class="first-layer-info-column">
+                  <b-col cols="12" sm="6" md="6" lg="12" xl="6"   class="first-layer-info-column">
                     <div>
                       <b-row class="mb-4">
                         <span class="ml-3">{{ $t("First Layer Report") }}</span>
@@ -151,7 +151,7 @@
                           <div class="icon"><i class="far fa-clock"></i></div>
                           <div class="title">{{ $t("First Layer Print Time") }}</div>
                         </div>
-                        <div class="value">{{ print.duration || '-' }}</div>
+                        <div class="value">{{ firstLayerPrintTime }}</div>
                       </div>
                     </div>
                     <b-row class="m-0">
@@ -160,21 +160,29 @@
                       >
                     </b-row>
                   </b-col>
-                  <b-col cols="12" sm="5" md="5" lg="12" xl="5" class="heatmap-image-column">
-                    <div class="heatmap-image-container">
-                      <transition name="fade" mode="out-in">
-                        <b-img
-                          v-if="image"
-                          :src="image"
-                          alt="First Layer Map"
-                          class="heatmap-image"
-                        />
-                      </transition>
+                  <b-col cols="12" sm="6" md="6" lg="12" xl="6" class="first-layer-report-block-video-container">
+                    <div class="first-layer-video-wrapper" :class="{
+                              'is-fullscreen original':
+                                !!fullscreenUrl && fullscreenUrl === firstLayerInspection.tagged_video_url,
+                            }">
+                      <video-box
+                        :video-url="firstLayerInspection.tagged_video_url"
+                        :poster-url="aiTimeLapsePosterImageUrl"
+                        :fluid="false"
+                        :fullscreen-btn="fullscreenUrl === null"
+                        :exit-fullscreen-btn="fullscreenUrl !== null"
+                        :download-btn="true"
+                        @fullscreen="() => enterFullscreen(firstLayerInspection.tagged_video_url)"
+                        @exitFullscreen="exitFullscreen"
+                        @download="
+                          () => downloadFile(firstLayerInspection.tagged_video_url, `${print.id}_tagged_video_inspection.mp4`)
+                        "
+                      />
                     </div>
                   </b-col>
                 </b-row>
-
               </div>
+
               <div class="time-lapse">
                 <div v-if="print.video_archived_at" class="card-container">
                   <h2 class="title">{{ $t("Time-Lapse video deleted") }}</h2>
@@ -281,7 +289,7 @@
                                     <span v-else>
                                       {{$t("With Focused Feedback, you can tell us exactly where we got it wrong. This is the most effective way to help us improve.")}}
                                       <a
-                                        href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
+                                        :href="getDocUrl('/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback')"
                                         target="_blank"
                                       >
                                         {{$t("You will earn 2 AI Detection Hours once you finish the Focused Feedback")}}
@@ -291,7 +299,7 @@
                                   <small v-else>
                                     {{$t("Every time you give us feedback,")}}
                                     <a
-                                      href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
+                                      :href="getDocUrl('/user-guides/how-does-credits-work/')"
                                       target="_blank"
                                     >
                                       {{$t("you help us get better at detecting failures")}}
@@ -363,6 +371,7 @@
 </template>
 
 <script>
+import { humanizedDuration } from '@src/lib/formatters'
 import axios from 'axios'
 import moment from 'moment'
 import { getNormalizedP, downloadFile } from '@src/lib/utils'
@@ -370,7 +379,7 @@ import urls from '@config/server-urls'
 import { getLocalPref } from '@src/lib/pref'
 import { humanizedFilamentUsage } from '@src/lib/formatters'
 import { user, settings } from '@src/lib/page-context'
-import { normalizedPrint, PrintStatus, normalizedPrinter } from '@src/lib/normalizers'
+import { normalizedPrint, PrintStatus, normalizedPrinter, toMomentOrNull } from '@src/lib/normalizers'
 import PageLayout from '@src/components/PageLayout.vue'
 import VideoBox from '@src/components/VideoBox'
 import DetectiveWorking from '@src/components/DetectiveWorking'
@@ -411,7 +420,6 @@ export default {
     return {
       image: '',
       gradeResult: {},
-      firstLayerInfo: {},
       firstLayerInspection: {},
       isFirstLayerReportModalOpen: false,
       PrintStatus,
@@ -437,10 +445,17 @@ export default {
       filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
 
       printerStateCheckInterval: null,
+      firstLayerPrintTime: '-'
     }
   },
 
   computed: {
+    aiTimeLapsePosterImageUrl() {
+      if (this.firstLayerInspection.poster_url) {
+        return this.firstLayerInspection.poster_url
+      }
+      return this.firstLayerInspection.images?.length ? this.firstLayerInspection.images[0].image_url : null
+    },
     canOpenFile() {
       return this.print.g_code_file &&
             !this.print.g_code_file.resident_printer &&
@@ -542,6 +557,8 @@ export default {
       try {
         const printResponse = await axios.get(urls.print(this.currentPrintId))
         this.print = normalizedPrint(printResponse.data)
+        
+        this.prepareFirstLayerReport(printResponse.data.firstlayerinspection_set.length ? printResponse.data.firstlayerinspection_set[0] : {})
 
         if (this.print.prediction_json_url) {
           axios.get(this.print.prediction_json_url).then((response) => {
@@ -578,46 +595,14 @@ export default {
       } catch (error) {
         console.log(error)
       }
-
-      if (this.isEnt) {
-        return fetch(urls.firstLayerInspection(this.currentPrintId))
-          .then((response) => {
-            if (!response.ok) {
-              console.log('first layer inspection failure is ignored because it may not exist');
-              return []
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data.length) {
-              const inspectionData = data[0];
-              this.firstLayerInspection = inspectionData;
-              this.gradeResult = calculateGrade(inspectionData.score);
-              return inspectionData.data_json_url;
-            }
-            return null;
-          })
-          .then((dataJsonUrl) => {
-            if (dataJsonUrl) {
-              this.isLoading = true
-              fetch(dataJsonUrl)
-                .then((response) => {
-                  if (!response.ok) {
-                    console.log('first layer info failure is ignored because it may not exist');
-                    return {}
-                  }
-                  return response.json();
-                })
-                .then((data) => {
-                  this.firstLayerInfo = data
-                  this.image = data.heatmap_img_url
-                })
-                .catch((err) => console.log('Could not fetch data'))
-              }
-          })
-          .finally(() => {
-            this.isLoading = false
-          })
+    },
+    prepareFirstLayerReport(firstLayerInspectionData) {
+      this.firstLayerInspection = firstLayerInspectionData;
+      if (firstLayerInspectionData.id) {
+        this.gradeResult = calculateGrade(firstLayerInspectionData.score);
+        const createdAt = toMomentOrNull(this.firstLayerInspection.created_at)
+        const duration = moment.duration(createdAt.diff(this.print.started_at))
+        this.firstLayerPrintTime = humanizedDuration(duration.asSeconds())
       }
     },
     switchToPrint(print) {
@@ -736,7 +721,8 @@ export default {
         FirstLayerReportModal,
         {
           printer: this.printer,
-          firstLayerInfo: this.firstLayerInfo,
+          firstLayerInspection: this.firstLayerInspection,
+          firstLayerPrintTime: this.firstLayerPrintTime,
           gradeResult: this.gradeResult,
           print: this.print,
           showOpenButton: this.canOpenFile
@@ -772,12 +758,17 @@ export default {
 .open-detailed-report-button
   width: 100%
 
-.heatmap-image-column
+.first-layer-report-block-video-container
   display: flex
   justify-content: flex-end
   padding-right: 0
-  @media (max-width: 768px)
+  @media (max-width: 576px)
     padding: 0
+    margin-top: 1em
+    justify-content: center
+  @media (max-width: 577px) and (max-width: 767px)
+    padding: 0 0 0 5px
+    justify-content: center
   @media (max-width: 1198px) and (min-width: 991px)
     margin-top: 1em
     padding: 0
@@ -979,6 +970,12 @@ export default {
 .detective-placeholder
   border-radius: var(--border-radius-md)
   overflow: hidden
+
+.first-layer-video-wrapper.is-fullscreen
+  flex: 1
+  order: 1
+  ::v-deep .video-js
+    height: 100vh !important
 
 .is-fullscreen
   position: fixed

@@ -47,12 +47,13 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        gap:10px;
     }
     .social-btn{
         font-weight: 100;
-        width: 49%;
         color:white;
         font-size: 0.9rem;
+        flex:1;
     }
 
     a{
@@ -112,7 +113,6 @@
       .social-btn{
           font-size: 1.3rem;
           font-weight: 100;
-          width: 100%;
           color:white;
       }
       .social-btn:nth-child(1){

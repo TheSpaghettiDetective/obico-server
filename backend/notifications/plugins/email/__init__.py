@@ -4,15 +4,14 @@ import logging
 import backoff  # type: ignore
 import os
 import requests
-
 from django.conf import settings
 from django.template.base import Template
 from django.template.loader import get_template
+from django.template.exceptions import TemplateDoesNotExist
 from django.core.mail import EmailMessage
+from allauth.account.models import EmailAddress
 
-from allauth.account.admin import EmailAddress  # type: ignore
-from lib import site as site
-
+from lib import syndicate
 from notifications.handlers import handler
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -21,6 +20,7 @@ from notifications.plugin import (
     notification_types,
     UserContext,
 )
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -89,9 +89,9 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             printer=context.printer,
             print_paused=context.print_paused,
             is_warning=context.is_warning,
-            view_link=site.build_full_url('/printers/'),
-            cancel_link=site.build_full_url('/prints/{}/cancel/'.format(context.print.id)),
-            resume_link=site.build_full_url('/prints/{}/resume/'.format(context.print.id)),
+            view_link=syndicate.build_full_url_for_syndicate('/printers/', context.user.syndicate_name),
+            cancel_link=syndicate.build_full_url_for_syndicate('/prints/{}/cancel/'.format(context.print.id), context.user.syndicate_name),
+            resume_link=syndicate.build_full_url_for_syndicate('/prints/{}/resume/'.format(context.print.id), context.user.syndicate_name),
         )
 
         subject = 'Your print {} on {} {}.'.format(
@@ -117,8 +117,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         email_ctx.update(
             printer=context.printer,
             print=context.print,
-            timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
-            user_pref_url=site.build_full_url('/user_preferences/notification_email/'),
+            timelapse_link=syndicate.build_full_url_for_syndicate(f'/prints/{context.print.id}/', context.user.syndicate_name),
+            user_pref_url=syndicate.build_full_url_for_syndicate('/user_preferences/notification_email/', context.user.syndicate_name),
         )
 
         if context.print.ended_at and context.print.started_at:
@@ -144,12 +144,23 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             attachments: Optional[List] = None) -> None:
 
         attachments = attachments or []
-        tpl = get_template(template_path)
 
+        tpl = None
+        layout_template_path='email/Layout.html'
+        if user.syndicate_name and user.syndicate_name != 'base':
+            layout_template_path=f'{user.syndicate_name}/email/Layout.html'
+            try:
+                tpl = get_template(f'{user.syndicate_name}/{template_path}')
+            except TemplateDoesNotExist:
+                pass # Fall back to default template
+
+        if not tpl:
+            tpl = get_template(template_path)
+
+        ctx['layout_template_path'] = layout_template_path
         ctx['user'] = user
-        unsub_url = site.build_full_url(
-            f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}'
-        )
+        unsub_url = syndicate.build_full_url_for_syndicate(
+            f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}', user.syndicate_name)
         ctx['unsub_url'] = unsub_url
 
         headers = {
@@ -177,23 +188,25 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             emails = EmailAddress.objects.filter(user_id=user.id)
 
         for email in emails:
-            self._send_email(email=email.email, subject=subject, message=message, attachments=attachments, headers=headers)
+            self._send_email(email=email.email, subject=subject, message=message, attachments=attachments, headers=headers, user=user)
 
     @backoff.on_exception(
         backoff.expo,
         (smtplib.SMTPServerDisconnected, smtplib.SMTPSenderRefused, smtplib.SMTPResponseException, ),
         max_tries=3
     )
-    def _send_email(self, email: str, subject: str, message: str, headers: Dict, attachments: Optional[List]) -> None:
+    def _send_email(self, email: str, subject: str, message: str, headers: Dict, attachments: Optional[List], user: UserContext) -> None:
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
+
+        from_email = syndicate.settings_for_syndicate(user.syndicate_name).get('from_email', settings.DEFAULT_FROM_EMAIL)
 
         msg = EmailMessage(
             subject,
             message,
             to=(email,),
-            from_email=settings.DEFAULT_FROM_EMAIL,
+            from_email=from_email,
             attachments=attachments or [],
             headers=headers,
         )

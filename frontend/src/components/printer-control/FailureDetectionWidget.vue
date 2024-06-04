@@ -29,7 +29,7 @@
               <span
                 >{{$t("Not watching")}} ({{ printer.not_watching_reason }}).
                 <a
-                  href="https://www.obico.io/docs/user-guides/detective-not-watching/"
+                  :href="getDocUrl('/user-guides/detective-not-watching/')"
                   target="_blank"
                   >{{$t("Learn all possible reasons")}}
                   <small><i class="fas fa-external-link-alt"></i></small></a
@@ -65,7 +65,7 @@
           </div>
           <div class="line">
             <label class="label" :for="'pause_on_failure-toggle-' + printer.id">
-              {{t("Pause on detected failures")}}
+              {{ $t("Pause on detected failures") }}
               <div v-if="!pauseOnFailure" class="text-muted">
                 {{$t("You will still be alerted via notifications.")}}
               </div>

@@ -35,11 +35,11 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer
+    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer, FirstLayerInspectionImageSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache, gcode_metadata
@@ -283,14 +283,9 @@ class PrintViewSet(
         )
 
         for raw_pred in data:
-            if 'fields' not in raw_pred:
-                # once upon a time in production
-                # should not happen, exact cause is TODO/FIXME
-                raw_pred['fields'] = {'normalized_p': 0.0}
-            else:
-                pred = PrinterPrediction(**raw_pred['fields'])
-                raw_pred['fields']['normalized_p'] = calc_normalized_p(
-                    detective_sensitivity, pred)
+            pred = PrinterPrediction(**raw_pred['fields'])
+            raw_pred['fields']['normalized_p'] = calc_normalized_p(
+                detective_sensitivity, pred)
 
         return Response(
             data,
@@ -525,10 +520,10 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             if num_bytes > file_size_limit:
                 return Response({'error': 'File size too large'}, status=413)
 
-            self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET))
+            self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET), request.user.syndicate.name)
 
             request.FILES['file'].seek(0)
-            _, ext_url = save_file_obj(self.path_in_storage(gcode_file), request.FILES['file'], settings.GCODE_CONTAINER)
+            _, ext_url = save_file_obj(self.path_in_storage(gcode_file), request.FILES['file'], settings.GCODE_CONTAINER, request.user.syndicate.name)
             gcode_file.url = ext_url
             gcode_file.num_bytes = num_bytes
             gcode_file.save()
@@ -546,7 +541,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
         gcode_file.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def set_metadata(self, gcode_file, metadata, thumbnails):
+    def set_metadata(self, gcode_file, metadata, thumbnails, syndicate_name):
         gcode_file.metadata_json = json.dumps(metadata)
         for key in ['estimated_time', 'filament_total']:
             setattr(gcode_file, key, metadata.get(key))
@@ -556,7 +551,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             thumb_num += 1
             if thumb_num > 3:
                 continue
-            _, ext_url = save_file_obj(f'gcode_thumbnails/{gcode_file.user.id}/{gcode_file.id}/{thumb_num}.png', thumb, settings.TIMELAPSE_CONTAINER)
+            _, ext_url = save_file_obj(f'gcode_thumbnails/{gcode_file.user.id}/{gcode_file.id}/{thumb_num}.png', thumb, settings.TIMELAPSE_CONTAINER, syndicate_name)
             setattr(gcode_file, f'thumbnail{thumb_num}_url', ext_url)
 
     def path_in_storage(self, gcode_file):
@@ -592,7 +587,7 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
         if should_credit:
             _print = unanswered_print_shots.first().print
-            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution',
+            celery_app.send_task('app_ent.tasks.base_tasks.credit_dh_for_contribution',
                                  args=[request.user.id, 2, f'Credit | Focused Feedback - "{_print.filename[:100]}"', f'ff:p:{_print.id}']
                                  )
 
@@ -892,6 +887,27 @@ class PrinterEventViewSet(
 
         serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
+
+
+class FirstLayerInspectionImageViewSet(
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    serializer_class = FirstLayerInspectionImageSerializer
+
+    def get_queryset(self):
+        queryset = FirstLayerInspectionImage.objects.filter(first_layer_inspection__print__user=self.request.user)
+        print_id = self.request.GET.get('print_id', None)
+
+        if print_id:
+            queryset = queryset.filter(first_layer_inspection__print_id=print_id)
+
+        return queryset
+
 
 class ApiVersionView(APIView):
     permission_classes = (IsAuthenticated,)

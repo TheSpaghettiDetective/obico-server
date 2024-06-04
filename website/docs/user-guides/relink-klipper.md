@@ -6,7 +6,7 @@ title: Re-link Klipper-based printer
 
 Re-linking process is very similar to [the initial setup process](/user-guides/klipper-setup.md).
 
-1. SSH to the Raspberry Pi your Klipper runs on.
+1. SSH to the Raspberry Pi (or other SBC) your Klipper runs on.
 2. Run:
 
 ```bash
@@ -23,7 +23,7 @@ Re-linking process is very similar to [the initial setup process](/user-guides/k
 
 1. Open `moonraker-obico.cfg` in Mainsail/Fluidd.
 2. Change the `url = ` line inside the `[server]` section. Remember the format should be `http(s)://full_server_domain_name_or_ip_address:port_if_not_80`
-3. SSH to the Raspberry Pi your Klipper runs on.
+3. SSH to the Raspberry Pi (or other SBC) your Klipper runs on.
 4. Run:
 
 ```bash

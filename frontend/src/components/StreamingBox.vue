@@ -87,35 +87,24 @@
       <div
         class="webcam_fixed_ratio"
         :class="webcamRatioClass"
-        :style="{ transform: `rotate(${videoRotationDeg}deg)` }"
+        :style="{ transform: imageTransformStyle }"
       >
-        <div class="webcam_fixed_ratio_inner">
-          <img
-            v-if="taggedSrc !== printerStockImgSrc"
-            class="tagged-jpg"
-            :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
-            :src="taggedSrc"
-            :alt="printer.name + ' current image'"
-          />
-          <svg
-            v-else
-            class="poster-placeholder"
-            :style="{ transform: `rotate(-${videoRotationDeg}deg)` }"
-          >
-            <use :href="printerStockImgSrc" />
-          </svg>
-        </div>
+        <img
+          v-if="taggedSrc"
+          style="position: absolute;"
+          :src="taggedSrc"
+          :alt="printer.name + ' current image'"
+        />
         <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
-          <img class="tagged-jpg" :src="mjpgSrc" />
+          <img :src="mjpgSrc" />
         </div>
         <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop">
           <video
             ref="video"
             class="remote-video"
-            :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
             width="960"
             :height="webcamVideoHeight"
-            :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
+            :poster="taggedSrc"
             autoplay
             muted
             playsinline
@@ -128,7 +117,7 @@
 
     <div class="extra-controls">
       <div
-        v-if="showVideo || showVideo || taggedSrc !== printerStockImgSrc"
+        v-if="showVideo || showVideo || taggedSrc"
         class="video-control-btn"
         @click="onRotateRightClicked"
       >
@@ -142,7 +131,6 @@
 import get from 'lodash/get'
 import ifvisible from 'ifvisible'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
-
 import Janus from '@src/lib/janus'
 import { toArrayBuffer } from '@src/lib/utils'
 import ViewingThrottle from '@src/lib/viewing-throttle'
@@ -199,6 +187,10 @@ export default {
       type: Object,
       default: null,
     },
+    webcam: {
+      type: Object,
+      default: null,
+    },
     autoplay: {
       type: Boolean,
       required: true,
@@ -218,15 +210,20 @@ export default {
       slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
-      printerStockImgSrc: '#svg-3d-printer',
       mjpgSrc: null,
-      customRotationDeg: getLocalPref('webcamRotationDeg', 0),
+      localStorageRotationKey: `${this.printer.id}_${this.webcam?.stream_id || 0}`,
+      customRotationDeg: 0,
     }
   },
 
   computed: {
-    taggedImgAvailable() {
-      return this.taggedSrc !== this.printerStockImgSrc
+    imageTransformStyle() {
+      let style = ''
+      if (this.webcam?.flipH) style += ' scaleX(-1)'
+      if (this.webcam?.flipV) style += ' scaleY(-1)'
+      style += `rotate(${this.videoRotationDeg}deg)`
+
+      return style
     },
     showVideo() {
       return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
@@ -235,7 +232,7 @@ export default {
       return this.mjpgSrc && this.stickyStreamingSrc !== 'IMAGE'
     },
     videoRotationDeg() {
-      const rotation = +(this.printer.settings.webcam_rotation ?? 0) + this.customRotationDeg
+      const rotation = +(this.webcam?.rotation || 0) + this.customRotationDeg
       return rotation % 360
     },
     webcamRotateClass() {
@@ -262,7 +259,10 @@ export default {
       }
     },
     taggedSrc() {
-      return get(this.printer, 'pic.img_url', this.printerStockImgSrc)
+      if (this.webcam?.is_primary_camera) {
+        return  get(this.printer, 'pic.img_url', null)
+      }
+      return null
     },
 
     // streaming timeline
@@ -286,49 +286,54 @@ export default {
       return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
     },
   },
+  watch: {
+    webrtc: {
+      handler: 'initWebRTC',
+    },
+  },
   created() {
+    this.customRotationDeg = getLocalPref('webcamRotationDeg', 0, this.localStorageRotationKey)
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
       this.mjpgSrc = `data:image/jpg;base64,${jpg}`
       this.onCanPlay()
     })
-
-    if (this.webrtc) {
-      this.webrtc.setCallbacks({
-        onStreamAvailable: this.onStreamAvailable,
-        onRemoteStream: this.onWebRTCRemoteStream,
-        onDefaultStreamCleanup: () => (this.isVideoVisible = false),
-        onSlowLink: this.onSlowLink,
-        onTrackMuted: () => (this.trackMuted = true),
-        onTrackUnmuted: () => (this.trackMuted = false),
-        onBitrateUpdated: (bitrate) => {
-          this.currentBitrate = bitrate.value
-        },
-        onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
-      })
-
-      if (!this.autoplay) {
-        this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
-      }
-
-      ifvisible.on('blur', () => {
-        if (this.webrtc) {
-          this.webrtc.stopStream()
-        }
-      })
-
-      ifvisible.on('focus', () => {
-        if (this.webrtc && this.autoplay) {
-          this.webrtc.startStream()
-        }
-      })
+    if (!this.autoplay) {
+      this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
     }
+    this.initWebRTC()
+    ifvisible.on('blur', () => {
+      if (this.webrtc) {
+        this.webrtc.stopStream()
+      }
+    })
+    ifvisible.on('focus', () => {
+      if (this.webrtc && this.autoplay) {
+        this.webrtc.startStream()
+      }
+    })
   },
 
   methods: {
+    initWebRTC() {
+      if (this.webrtc) {
+        this.webrtc.setCallbacks({
+          onStreamAvailable: this.onStreamAvailable,
+          onRemoteStream: this.onWebRTCRemoteStream,
+          onDefaultStreamCleanup: () => (this.isVideoVisible = false),
+          onSlowLink: this.onSlowLink,
+          onTrackMuted: () => (this.trackMuted = true),
+          onTrackUnmuted: () => (this.trackMuted = false),
+          onBitrateUpdated: (bitrate) => {
+            this.currentBitrate = bitrate.value
+          },
+          onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
+        })
+      }
+    },
     onRotateRightClicked() {
-      this.customRotationDeg = this.customRotationDeg + 90
-      setLocalPref('webcamRotationDeg', this.customRotationDeg % 360)
-      this.$emit('onRotateRightClicked', this.customRotationDeg)
+      this.customRotationDeg = this.customRotationDeg + 90;
+      setLocalPref('webcamRotationDeg', this.customRotationDeg % 360, this.localStorageRotationKey)
+      this.$emit('onRotateRightClicked', this.customRotationDeg);
     },
     onCanPlay() {
       this.videoLoading = false
@@ -376,26 +381,25 @@ export default {
     },
 
     onInfoClicked() {
-      if (this.autoplay) {
-        return
-      }
-      this.$swal.Prompt.fire({
-        title: `${this.$i18next.t(`Upgrade for Better Streaming`)}`,
-        html: `
-          <p>${this.$i18next.t("Because you are now on the")} <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">${this.$i18next.t("{brandName} Cloud Free plan",{brandName:this.$syndicateText.brandName})}</a>:</p>
-          <ul>
-            <li>${this.$i18next.t("Streaming is limited to 5 FPS (frames per second).")}</li>
-            <li>${this.$i18next.t("After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.")}</li>
-          </ul>
-          <p>${this.$i18next.t("Support the {brandName} project by",{brandName:this.$syndicateText.brandName})} <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">${this.$i18next.t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$i18next.t("The Pro plan offers many perks, including the")} <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">${this.$i18next.t("Premium Streaming")}</a>:</p>
-          <ul>
-            <li>${this.$i18next.t("Smooth 25 FPS.")}</li>
-            <li>${this.$i18next.t("Unlimited streaming with no cooldowns.")}</li>
-          </ul>
-
-        `,
-        showCloseButton: true,
-      })
+  if (this.autoplay) {
+    return;
+  }
+  this.$swal.Prompt.fire({
+    title: `${this.$i18next.t(`Upgrade for Better Streaming`)}`,
+    html: `
+      <p>${this.$i18next.t("Because you are now on the")} <a target="_blank" href="${this.getDocUrl('/user-guides/upgrade-to-pro/?source=basic_streaming')}">${this.$i18next.t("{brandName} Cloud Free plan",{brandName:this.$syndicateText.brandName})}</a>:</p>
+      <ul>
+        <li>${this.$i18next.t("Streaming is limited to 5 FPS (frames per second).")}</li>
+        <li>${this.$i18next.t("After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.")}</li>
+      </ul>
+      <p>${this.$i18next.t("Support the {brandName} project by",{brandName:this.$syndicateText.brandName})} <a href="${this.getDocUrl('/ent_pub/pricing/?source=basic_streaming')}">${this.$i18next.t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$i18next.t("The Pro plan offers many perks, including the")} <a target="_blank" href="${this.getDocUrl('/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming')}">${this.$i18next.t("Premium Streaming")}</a>:</p>
+      <ul>
+        <li>${this.$i18next.t("Smooth 25 FPS.")}</li>
+        <li>${this.$i18next.t("Unlimited streaming with no cooldowns.")}</li>
+      </ul>
+    `,
+    showCloseButton: true,
+      });
     },
 
     /** End of free user streaming **/
@@ -416,9 +420,9 @@ export default {
     },
 
     slowLinkClicked() {
-      this.slowLinkShowing = false
-      this.slowLinkHiding = false
-      this.slowLinkLoss = 0
+      this.slowLinkShowing = false;
+      this.slowLinkHiding = false;
+      this.slowLinkLoss = 0;
 
       this.$swal.Prompt.fire({
         title: `${this.$i18next.t('Video frames dropped')}`,
@@ -426,10 +430,10 @@ export default {
           <p>${this.$i18next.t("The video frames are getting dropped because there is most likely a bandwidth bottleneck along the route they travel from your Raspberry Pi to your computer. The bottleneck can be anywhere, but in most cases,")} <Text bold>${this.$i18next.t("it is either your computer's internet connection, or your Raspberry Pi's")}</Text>.</p>
           <p>${this.$i18next.t("Make sure your computer is connected to the same network as your Pi. If you still see this warning, you need to trouble-shoot your computer's Wi-Fi connection, probably by moving closer to the Wi-Fi router.")}</p>
           <p>${this.$i18next.t("If the webcam stream is smooth when your computer is on the same Wi-Fi network as your Pi, the bottleneck is likely with the upload speed of your internet connection. You need to run a speed test to make sure you have high-enough upload speed, as well as")} <b>${this.$i18next.t("low latency (ping)")}</b>.</p>
-          <p>${this.$i18next.t("Check out")} <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-laggy/">${this.$i18next.t("the step-by-step trouble-shooting guide.")}</a></p>
+          <p>${this.$i18next.t("Check out")} <a target="_blank" href="${this.getDocUrl('/user-guides/webcam-feed-is-laggy/')}">${this.$i18next.t("the step-by-step trouble-shooting guide.")}</a></p>
         `,
         showCloseButton: true,
-      })
+      });
     },
 
     showMutedStatusDescription(event) {
@@ -448,12 +452,11 @@ export default {
           <p class="lead">${this.$i18next.t("2. The internet connection of your computer or phone is not fast enough.")}</p>
           <p class="lead">${this.$i18next.t("3. Your webcam is not properly connected to your Raspberry Pi.")}</p>
           <br>
-          <p>${this.$i18next.t("Check")} <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-laggy">${this.$i18next.t("this step-by-step troubleshooting guide")}</a>.</p>
+          <p>${this.$i18next.t("Check")} <a target="_blank" href="${this.getDocUrl('/user-guides/webcam-feed-is-laggy')}">${this.$i18next.t("this step-by-step troubleshooting guide")}</a>.</p>
         `,
         showCloseButton: true,
       })
     },
-    /** End of video warning handling */
   },
 }
 </script>
@@ -471,6 +474,7 @@ export default {
     padding-bottom: 100%
 
     .webcam_fixed_ratio
+      display: flex
       position: absolute
       top: 0
       bottom: 0
@@ -478,10 +482,8 @@ export default {
       right: 0
 
       .webcam_fixed_ratio_inner
-        width: 100%
-        height: 100%
         &.ontop
-          position: absolute
+          position: relative
           top: 0
 
   .webcam_rotate_0, .webcam_rotate_180
@@ -664,12 +666,15 @@ export default {
 
 .extra-controls
   position: absolute
+  display: flex
+  flex-direction: row
   right: 0
   bottom: 0
   padding: .5rem
   .video-control-btn
     width: 2rem
     height: 2rem
+    margin: 0.1rem
     border-radius: 999px
     background-color: var(--color-overlay)
     color: var(--color-text-secondary)

@@ -39,11 +39,11 @@ import {
   faCheck
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
-import { syndicate,language } from '@src/lib/page-context'
+import { syndicate, language } from '@src/lib/page-context'
 import { syndicateTextConstant } from '@src/config/syndicateText'
 
-Vue.prototype.$syndicate = syndicate().provider
-Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().provider||'base'] || syndicateTextConstant.base
+Vue.prototype.$syndicate = syndicate().name
+Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().name||'base'] || syndicateTextConstant.base
 
 export default (router, components) => {
   initTheme()
@@ -74,6 +74,15 @@ export default (router, components) => {
           })
         }
       },
+      getDocUrl(path) {
+        return this.$syndicateText.docRoot + path;
+      },
+      getAppUrl(path) {
+        if(path)
+          return this.$syndicateText.appRoot + path;
+        else
+        return this.$syndicateText.appRoot;
+      }
     },
   })
 

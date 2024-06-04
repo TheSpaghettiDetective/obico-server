@@ -6,7 +6,7 @@
           <b-col>
             <div class="form-container full-on-mobile border-radius-lg">
               <div class="row">
-                <h3 class="col-sm-12 text-center p-3">{{ $t("Plugin Setup") }}</h3>
+                <h3 class="col-sm-12 text-center p-3 wizard-page-title-font">{{ $t("Link Printer") }}</h3>
               </div>
               <b-row class="center mt-3 mb-5">
                 <div class="col-sm-12 col-lg-8">
@@ -52,14 +52,14 @@
                       </div>
                       <div class="d-flex flex-column align-items-center">
                         <div class="mt-5 mb-3">
-                        {{ $t(`Can’t find the printer you want to link? Switch to manual linking instead.`) }}
+                        {{ $t(`Can’t find the printer you want to link? Switch to Manual Linking instead.`) }}
                         </div>
                         <button
                           class="btn btn-outline-secondary"
                           type="button"
                           @click="discoveryEnabled = false"
                         >
-                          {{ $t("Switch to manual linking") }}
+                          {{ $t("Switch to Manual Linking") }}
                         </button>
                       </div>
                     </div>
@@ -138,16 +138,16 @@
                       </div>
                     </div>
                     <div class="row justify-content-center pb-3">
-                      <div v-if="oneTimePasscodeStatus === 'failed'" class="text-danger col-sm-12 d-flex flex-column align-items-center">
+                      <div v-if="oneTimePasscodeStatus === 'failed'" class="text-danger col-sm-12 d-flex flex-column align-items-center wizard-secondary-text-font text-secondary">
                         {{$t("Invalid code. Is it expired?")}}
                       </div>
-                      <div v-else class="col-sm-12 d-flex flex-column align-items-center">
+                      <div v-else class="col-sm-12 d-flex flex-column align-items-center wizard-secondary-text-font text-secondary">
                         {{$t("Enter the One-time Passcode")}}
                       </div>
                     </div>
                     <div class="mt-4">
-                      <muted-alert class="muted-alert">
-                        <i18next :translation="$t(`If you using Obico for OctoPrint older than 2.5.0, or Obico for Klipper older than 1.6.0, switch to {localizedDom}.`)">
+                      <muted-alert class="muted-alert wizard-secondary-text-font text-secondary">
+                        <i18next class="" :translation="$t(`If you using Obico for OctoPrint older than 2.5.0, or Obico for Klipper older than 1.6.0, switch to {localizedDom}.`)">
                           <template #localizedDom>
                             <a class="link" @click="useLegacyVerificationCode = true">{{$t("6-digit verification code")}}</a>
                           </template>
@@ -157,50 +157,54 @@
                   </div>
                 </div>
               </b-row>
-              <b-row v-if="!discoveryEnabled && !useLegacyVerificationCode" class="center mt-3 mb-5">
-                <div class="col-md-4 p-4">
-                    <h4 class="text-center font-weight-bold">{{ $t("Touch Screen") }}</h4>
-                    <img src="@static/img/printer-wizard/klipperScreenMenu.png" style="max-width: 80%;" alt="">
+              <b-row v-if="!discoveryEnabled && !useLegacyVerificationCode" class="mt-3 mb-5">
+                <div class="col-md-4 p-4 method-block">
+                    <h4 class="text-center font-weight-bold wizard-page-title-font">{{ $t("Touch Screen") }}</h4>
+                    <div class="image-block">
+                      <img src="@static/img/printer-wizard/klipperScreenMenu.png" style="max-width: 80%;" alt="">
+                    </div>
                     <ol>
                       <li>{{ $t("Check to see if your printer already has Obico installed your printer screen.") }}</li>
                       <li>{{ $t("Navigate to the settings menu on the LCD screen of your printer.") }}</li>
                       <li>{{ $t("Find the “Link Obico” menu item and tap it to open the connection screen.") }}</li>
                     </ol>
                 </div>
-                <div class="col-md-4 p-4">
-                    <h4 class="text-center font-weight-bold">{{ $t("LCD Screen ") }}</h4>
-                    <img src="@static/img/printer-wizard/lcdScreenLarge.png" style="max-width: 80%;" alt="">
+                <div class="col-md-4 p-4 method-block">
+                    <h4 class="text-center font-weight-bold wizard-page-title-font">{{ $t("LCD Screen ") }}</h4>
+                    <div class="image-block">
+                      <img src="@static/img/printer-wizard/lcdScreenLarge.png" style="max-width: 80%;" alt="">
+                    </div>
                     <ol>
                       <li>{{ $t("Check to see if your printer already has Obico Easy Link installed on the LCD menu.") }}</li>
                       <li>{{ $t("Navigate to the settings menu on the LCD screen of your printer.") }}</li>
                       <li>{{ $t("Find the “Link Obico” menu item.") }}</li>
                     </ol>
                 </div>
-                <div class="col-md-4 p-4">
-                    <h4 class="text-center font-weight-bold">{{ $t("Install Via SSH") }}</h4>
-                    <img src="@static/img/printer-wizard/commandLinePrompt.png" style="max-width: 80%;" alt="">
+                <div class="col-md-4 p-4 method-block">
+                    <h4 class="text-center font-weight-bold wizard-page-title-font">{{ $t("Install Via SSH") }}</h4>
+                    <div class="image-block">
+                      <img src="@static/img/printer-wizard/commandLinePrompt.png" style="max-width: 80%;" alt="">
+                    </div>
                     <ol>
                       <li>{{ $t("If you can't find Obico Easy Link, you will need to SSH to your printer to install Obico. You will need to find a guide that works for your printer.") }}</li>
                     </ol>
                     <div>
-                      <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/">{{ $t("Show me how") }}</a>
+                      <a target="_blank" :href="getDocUrl('/user-guides/klipper-setup/')">{{ $t("Show me how") }}</a>
                     </div>
                 </div>
               </b-row>
-              <div class="d-flex justify-content-between button-wrap">
+              <div class="d-flex justify-content-between align-items-center button-wrap">
                 <div class="back" @click="$router.back()">
                   <i class="fas fa-chevron-left"></i>
                   <span> {{ $t("Back") }}</span>
                 </div>
               </div>
-              <div class="row">
-                <div class="helper col-sm-12">
-                  <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
-                    <template #localizedDom>
-                      <a target="_blank" :href="targetKlipper? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
-                    </template>
-                  </i18next>
-                </div>
+              <div class="text-center mt-5 wizard-default-font">
+                <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
+                  <template #localizedDom>
+                    <a target="_blank" :href="targetKlipper? getDocUrl('/user-guides/klipper-setup/'):getDocUrl('/user-guides/octoprint-plugin-setup/')">{{$t("step-by-step set up guide")}}.</a>
+                  </template>
+                </i18next>
               </div>
             </div>
           </b-col>
@@ -367,12 +371,12 @@ export default {
         <p><ul>
         <li style="margin: 10px 0;">${this.$i18next.t("You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click")} <a href="/printers/wizard/">here</a> ${this.$i18next.t("to walk through the process again.")}</li>
         <li style="margin: 10px 0;">${this.$i18next.t("The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to")} <b>1.5.0</b> ${this.$i18next.t("or later.")}</li>
-        <li style="margin: 10px 0;">${this.$i18next.t("Still no dice? Check out the step-by-step")} <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-plugin-setup/">${this.$i18next.t("set up guide")}</a>.</li>
+        <li style="margin: 10px 0;">${this.$i18next.t("Still no dice? Check out the step-by-step")} <a target="_blank" href=${getDocUrl('/user-guides/octoprint-plugin-setup/')}">${this.$i18next.t("set up guide")}</a>.</li>
         </ul></p>`
 
       if (!this.targetOctoPrint) {
         html = `<p>${this.$i18next.t("The 6-digit code needs to be entered to the Obico for Klipper installation script.")}</p>
-        <p>${this.$i18next.t("Check")} <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/"${this.$i18next.t("this set up guide")}</a> ${this.$i18next.t("for detailed instructions.")}</p>`
+        <p>${this.$i18next.t("Check")} <a target="_blank" href=${getDocUrl('/user-guides/klipper-setup/')}"${this.$i18next.t("this set up guide")}</a> ${this.$i18next.t("for detailed instructions.")}</p>`
       }
 
       this.$swal.fire({
@@ -531,4 +535,15 @@ pre
         margin-bottom: 0.8rem
   li
     margin: initial
+.method-block
+  display: flex
+  flex-direction: column
+  align-items: center
+  .image-block
+    display: flex
+    justify-content: center
+.button-wrap
+  margin-top:80px
+  .back
+    cursor: pointer
 </style>

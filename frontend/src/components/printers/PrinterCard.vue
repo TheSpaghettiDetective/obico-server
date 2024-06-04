@@ -38,7 +38,7 @@
           </b-dropdown>
         </div>
       </div>
-      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
+      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" :webcam="webcam" />
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -65,7 +65,7 @@
           <h5 class="text-warning">{{ $t("Failure Detection is Off") }}</h5>
           <small v-if="printer.not_watching_reason"
             >{{ printer.not_watching_reason }}.
-            <a href="https://www.obico.io/docs/user-guides/detective-not-watching/" target="_blank"
+            <a :href="getDocUrl('/user-guides/detective-not-watching/')" target="_blank"
               >{{ $t("Learn more. ") }}<small><i class="fas fa-external-link-alt"></i></small></a
           ></small>
           <div></div>
@@ -280,7 +280,8 @@ export default {
         time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
-      webrtc: WebRTCConnection(),
+      webrtc: null,
+      webcam: null,
     }
   },
   computed: {
@@ -363,6 +364,13 @@ export default {
       {
         onPrinterUpdateReceived: (data) => {
           this.$emit('PrinterUpdated', this.updatedPrinter(data))
+
+          if (!this.webrtc && (data?.settings?.webcams || []).length > 0) {
+            this.webcam = data.settings?.webcams?.find(webcam => webcam.is_primary_camera === true);
+            this.webrtc = WebRTCConnection(this.webcam.stream_mode, this.webcam.stream_id)
+            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+            // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
+          }
         },
         onStatusReceived: (printerStatus) => {
           // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
@@ -372,9 +380,6 @@ export default {
       }
     )
     this.printerComm.connect()
-
-    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-    this.printerComm.setWebRTC(this.webrtc)
   },
 
   methods: {

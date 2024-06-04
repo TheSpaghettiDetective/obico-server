@@ -1,0 +1,120 @@
+{% extends layout_template_path %}
+
+{% block email_content %}
+
+<p>Hi {{ user.first_name|default:"" }},</p>
+<p>The Kingroon app has detected a potential issue with your Kingroon KLP1 printer.</p>
+
+{% if print_paused %}
+<p>
+  <strong>The print has been paused to prevent further complications. </strong> <span style="color:#888796;">If you prefer not to have your print paused in the future, you can <a
+      href="https://app.kingroon.com/printers/{{ printer.id }}/">adjust your settings accordingly.</a></span>
+</p>
+{% elif printer.pause_on_failure and is_warning %}
+<p>
+  The printer wasn't paused because the app couldn't confirm if it was an actual failure.
+</p>
+{% endif %}
+{% if img_url %}
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td>
+    <td><img style="width: 100%;" src="{{ img_url }}" alt="Print Snapshot" />
+    </td>
+  </tr>
+</table>
+{% endif %}
+
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
+  style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td class="mobile-cta-button-row" bgcolor="#ED7100" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+      align="center">
+      <a class="mobile-cta-font" href="{{ cancel_link }}" target="_blank"
+        style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+        Yes it failed. Cancel the print!
+      </a>
+    </td>
+  </tr>
+</table>
+
+{% if print_paused %}
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
+  style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td class="mobile-cta-button-row" bgcolor="#ED7100" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+      align="center">
+      <a class="mobile-cta-font" href="{{ resume_link }}" target="_blank"
+        style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+        It is a false alarm. Resume the print!
+      </a>
+    </td>
+  </tr>
+</table>
+
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
+  style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td class="mobile-cta-button-row" bgcolor="#ED7100" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+      align="center">
+      <a class="mobile-cta-font" href="{{ resume_link }}?mute_alert=true" target="_blank"
+        style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+        Resume the print, and don't alert me again for this print.
+      </a>
+    </td>
+  </tr>
+</table>
+{% endif %}
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
+  style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td class="mobile-cta-button-row" bgcolor="#ED7100" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+      align="center">
+      <a class="mobile-cta-font" href="{{ view_link }}" target="_blank"
+        style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+        Go to the Kingroon app to take a closer look.
+      </a>
+    </td>
+  </tr>
+</table>
+<br />
+<hr />
+<table style="margin-top:18px;" cellpadding="0" cellspacing="0">
+  <tr>
+    <td
+      style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+      <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">Why did I receive this email?</span></span></h2>
+      <ul>
+        <li>The Kingroon app noticed features in your webcam images that may indicate print failure (like the characteristic spaghetti-like shapes). 
+          Although your print might have failed, it's also possible that this is a false alarm since the detection algorithm isn't perfect yet.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td
+      style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+      <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What can I do now?</span></span></h2>
+      <ul>
+        <li> If the attached image shows that your print is indeed failing, click the "Yes, it failed. Cancel the print!" button above. 
+          You might need to sign in to the Kingroon web app. </li>
+          {% if print_paused %}
+          <li>If the image shows that your print is actually fine and this was a false alarm, click the "False alarm. Resume the print!" button. 
+          If you're confident that the print will proceed smoothly, you can suppress further alerts for the current print by selecting 
+          "Resume the print, and don't alert me for the rest of this print."
+        </li>
+        {% endif %}
+        <li>If the image isn't clear, click "Go to the Kingroon app for a closer look" to access the real-time webcam feed. 
+          From there, you can decide if you need to cancel the print.</li>
+          {% if print_paused %}
+        <li>You can also resume the print through Mainsail or Fluidd. Please note that the Kingroon app has turned
+           off the heaters for safety, so be sure to turn them back on before resuming.</li>
+           {% endif %}
+          <li>We're here to support you in your 3D printing journey!</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td class="vs20" height="54px" valign="top">&nbsp;</td>
+  </tr>
+</table>
+{% endblock %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-08 16:58+0800\n"
+"POT-Creation-Date: 2024-05-10 11:13+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,13 @@ msgstr "权限"
 msgid "Important dates"
 msgstr "重要日期"
 
-#: app/models.py:82
+#: app/forms.py:37
+#, fuzzy
+#| msgid "Wrong email or password."
+msgid "Invalid email or password."
+msgstr "错误的电子邮件或密码。"
+
+#: app/models.py:100
 msgid "email address"
 msgstr "电子邮箱地址"
 
@@ -183,53 +189,74 @@ msgstr ""
 "此电子邮件确认链接已过期或无效。请<a href=\"%(email_url)s\">发起一个新的电子"
 "邮件确认请求</a>。"
 
-#: app/templates/account/login.html:7 app/templates/account/login.html:15
-#: app/templates/account/login.html:61 app/templates/account/signup.html:88
+#: app/templates/account/login.html:7 app/templates/account/login.html:18
+#: app/templates/account/login.html:64 app/templates/account/signup.html:92
 #: app/templates/mobile/account/login.html:10
-#: app/templates/mobile/account/login.html:18
-#: app/templates/mobile/account/login.html:69
-#: app/templates/mobile/account/signup.html:94
+#: app/templates/mobile/account/login.html:21
+#: app/templates/mobile/account/login.html:72
+#: app/templates/mobile/account/signup.html:99
 #: app/templates/non_vue_layout.html:49
 msgid "SIGN IN"
 msgstr "登录"
 
-#: app/templates/account/login.html:20
-#: app/templates/mobile/account/login.html:22
+#: app/templates/account/login.html:11 app/templates/account/signup.html:12
+#: app/templates/mobile/account/login.html:14
+#: app/templates/mobile/account/signup.html:16
+#, fuzzy
+#| msgid "email address"
+msgid "Email address"
+msgstr "电子邮箱地址"
+
+#: app/templates/account/login.html:12 app/templates/account/signup.html:13
+#: app/templates/mobile/account/login.html:15
+#: app/templates/mobile/account/signup.html:17
+#, fuzzy
+#| msgid "Set Password"
+msgid "Password"
+msgstr "设置密码"
+
+#: app/templates/account/login.html:23
+#: app/templates/mobile/account/login.html:25
 msgid "Sign In with Facebook"
 msgstr "使用 Facebook 登录"
 
-#: app/templates/account/login.html:22
-#: app/templates/mobile/account/login.html:24
+#: app/templates/account/login.html:25
+#: app/templates/mobile/account/login.html:27
 msgid "Sign In with Google"
 msgstr "使用 Google 登录"
 
-#: app/templates/account/login.html:36
-#: app/templates/mobile/account/login.html:44
+#: app/templates/account/login.html:39
+#: app/templates/mobile/account/login.html:47
 msgid "Click here to reset your password"
 msgstr "点击这里重置您的密码"
 
-#: app/templates/account/login.html:39 app/templates/account/login.html:65
-#: app/templates/mobile/account/login.html:47
-#: app/templates/mobile/account/login.html:73
+#: app/templates/account/login.html:41
+#: app/templates/mobile/account/login.html:49
+msgid "Wrong email or password."
+msgstr "错误的电子邮件或密码。"
+
+#: app/templates/account/login.html:42 app/templates/account/login.html:68
+#: app/templates/mobile/account/login.html:50
+#: app/templates/mobile/account/login.html:76
 msgid "Forgot Password?"
 msgstr "忘记密码？"
 
-#: app/templates/account/login.html:54
-#: app/templates/mobile/account/login.html:62
+#: app/templates/account/login.html:57
+#: app/templates/mobile/account/login.html:65
 msgid "Remember me"
 msgstr "记住我"
 
-#: app/templates/account/login.html:68
-#: app/templates/mobile/account/login.html:76
+#: app/templates/account/login.html:71
+#: app/templates/mobile/account/login.html:79
 msgid "Having Trouble?"
 msgstr "遇到问题？"
 
-#: app/templates/account/login.html:75
-#: app/templates/mobile/account/login.html:83
+#: app/templates/account/login.html:78
+#: app/templates/mobile/account/login.html:86
 msgid "Having trouble?"
 msgstr "遇到问题？"
 
-#: app/templates/account/login.html:82
+#: app/templates/account/login.html:85
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the mobile app, you can use the same to sign "
@@ -238,7 +265,7 @@ msgstr ""
 "您的登录凭证在移动应用和网页应用中是相同的。如果您之前使用移动应用注册，您可"
 "以使用相同的凭证在这里登录。"
 
-#: app/templates/account/login.html:83
+#: app/templates/account/login.html:86
 msgid ""
 "\"Sign in with Apple\" is not available in the web app. If you want to use "
 "the web app, please sign up for a different account and<a class=\"link\" "
@@ -249,56 +276,56 @@ msgstr ""
 "户并<a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/"
 "user-guides/relink-printer/\">重新链接您的打印机</a>"
 
-#: app/templates/account/login.html:84
-#: app/templates/mobile/account/login.html:91
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:94
 msgid ""
 "Even if you previously signed up an account using Google or Facebook, you "
 "can still"
 msgstr "即使您之前使用 Google 或 Facebook 注册了账户，您仍然可以"
 
-#: app/templates/account/login.html:84
-#: app/templates/mobile/account/login.html:91
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:94
 msgid "reset password"
 msgstr "重置密码"
 
-#: app/templates/account/login.html:84
-#: app/templates/mobile/account/login.html:91
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:94
 msgid "using the same email address."
 msgstr "使用相同的电子邮件地址。"
 
-#: app/templates/account/login.html:85
-#: app/templates/mobile/account/login.html:92
+#: app/templates/account/login.html:88
+#: app/templates/mobile/account/login.html:95
 msgid ""
 "If you can't sign in the mobile app, re-install the mobile app and try it "
 "again."
 msgstr "如果您无法在移动应用中登录，请重新安装移动应用并再次尝试。"
 
-#: app/templates/account/login.html:86
-#: app/templates/mobile/account/login.html:93
+#: app/templates/account/login.html:89
+#: app/templates/mobile/account/login.html:96
 msgid "Contact us"
 msgstr "联系我们"
 
-#: app/templates/account/login.html:86
-#: app/templates/mobile/account/login.html:93
+#: app/templates/account/login.html:89
+#: app/templates/mobile/account/login.html:96
 msgid "if you have tried everything else."
 msgstr "如果您已尝试了其他所有方法。"
 
-#: app/templates/account/login.html:90
-#: app/templates/mobile/account/login.html:97
+#: app/templates/account/login.html:93
+#: app/templates/mobile/account/login.html:100
 msgid "Close"
 msgstr "关闭"
 
-#: app/templates/account/login.html:101 app/templates/account/signup.html:86
-#: app/templates/mobile/account/signup.html:93
+#: app/templates/account/login.html:104 app/templates/account/signup.html:90
+#: app/templates/mobile/account/signup.html:98
 msgid "OR"
 msgstr "或"
 
-#: app/templates/account/login.html:102 app/templates/account/signup.html:16
-#: app/templates/account/signup.html:84
-#: app/templates/mobile/account/login.html:108
+#: app/templates/account/login.html:105 app/templates/account/signup.html:20
+#: app/templates/account/signup.html:88
+#: app/templates/mobile/account/login.html:111
 #: app/templates/mobile/account/signup.html:11
-#: app/templates/mobile/account/signup.html:19
-#: app/templates/mobile/account/signup.html:91
+#: app/templates/mobile/account/signup.html:24
+#: app/templates/mobile/account/signup.html:96
 #: app/templates/socialaccount/signup.html:9
 #: app/templates/socialaccount/signup.html:20
 msgid "SIGN UP"
@@ -403,8 +430,15 @@ msgstr "设置密码"
 msgid "Signup"
 msgstr "注册"
 
-#: app/templates/account/signup.html:22
-#: app/templates/mobile/account/signup.html:25
+#: app/templates/account/signup.html:14
+#: app/templates/mobile/account/signup.html:18
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Password. Again"
+msgstr "密码重置"
+
+#: app/templates/account/signup.html:26
+#: app/templates/mobile/account/signup.html:30
 #, python-format
 msgid ""
 "By signing up, I agree to\n"
@@ -418,23 +452,23 @@ msgstr ""
 "obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://www."
 "obico.io/privacy.html\">隐私政策</a>"
 
-#: app/templates/account/signup.html:32
-#: app/templates/mobile/account/signup.html:37
+#: app/templates/account/signup.html:36
+#: app/templates/mobile/account/signup.html:42
 msgid "Sign up with Facebook"
 msgstr "使用 Facebook 注册"
 
-#: app/templates/account/signup.html:34
-#: app/templates/mobile/account/signup.html:39
+#: app/templates/account/signup.html:38
+#: app/templates/mobile/account/signup.html:44
 msgid "Sign up with Google"
 msgstr "使用 Google 注册"
 
-#: app/templates/account/signup.html:55
-#: app/templates/mobile/account/signup.html:62
+#: app/templates/account/signup.html:59
+#: app/templates/mobile/account/signup.html:67
 msgid "We'll never share your email with anyone else."
 msgstr "我们绝不会与他人分享您的电子邮件。"
 
-#: app/templates/account/signup.html:67
-#: app/templates/mobile/account/signup.html:74
+#: app/templates/account/signup.html:71
+#: app/templates/mobile/account/signup.html:79
 msgid "At least 6 characters. And be secure, please."
 msgstr "至少 6 个字符。请确保安全。"
 
@@ -507,20 +541,16 @@ msgstr ""
 msgid "All Rights Reserved"
 msgstr "版权所有"
 
-#: app/templates/mobile/account/login.html:29
-#: app/templates/mobile/account/signup.html:44
+#: app/templates/mobile/account/login.html:32
+#: app/templates/mobile/account/signup.html:49
 msgid "Sign in with Apple"
 msgstr "使用 Apple 登录"
 
-#: app/templates/mobile/account/login.html:42
+#: app/templates/mobile/account/login.html:45
 msgid "This email was previously signed up using either Google or Facebook."
 msgstr "此电子邮件之前是使用 Google 或 Facebook 注册的。"
 
-#: app/templates/mobile/account/login.html:46
-msgid "Wrong email or password."
-msgstr "错误的电子邮件或密码。"
-
-#: app/templates/mobile/account/login.html:90
+#: app/templates/mobile/account/login.html:93
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the web app, you can use the same to sign in "
@@ -701,6 +731,19 @@ msgstr "在账户通知上。"
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
 msgstr "更改通知偏好设置"
+
+#: app/views/web_views.py:60
+msgid "A user is already registered with this email address."
+msgstr "用户已使用此电子邮件地址注册。"
+
+#, fuzzy
+#~| msgid "Password Reset"
+#~ msgid "passwordagain"
+#~ msgstr "密码重置"
+
+#~| msgid "email address"
+#~ msgid "Email Address"
+#~ msgstr "电子邮箱地址"
 
 #, python-format
 #~ msgid ""

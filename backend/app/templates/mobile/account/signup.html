@@ -12,6 +12,11 @@
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
+
+{% trans 'Email address' as email_placeholder %}
+{% trans 'Password' as password_placeholder %}
+{% trans 'Password. Again' as password_again_placeholder %}
+
 <div class="container">
   <div class="row justify-content-center logreg">
     <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
@@ -22,24 +27,36 @@
             <input type="checkbox" class="custom-control-input" id="tos-checkbox" checked>
             <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox">
               <small>
-                {% blocktrans with page_context.syndicate.brand_name as brand_name %}By signing up, I agree to
-            the {{ brand_name }} app's <a class="link" href="https://www.obico.io/terms.html">Terms of
-              Use</a> and <a class="link" href="https://www.obico.io/privacy.html">Privacy
-              Policy</a>{% endblocktrans %}
-                
+                {% if page_context.syndicate.name == 'base' %}
+                {% blocktrans with brand_name=page_context.syndicate.display_name %}
+                By signing up, I agree to the {{ brand_name }} app's 
+                <a class="link" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" href="https://www.obico.io/privacy.html">Privacy Policy</a>
+                {% endblocktrans %}
+                {% else %}
+                {% blocktrans with brand_name=page_context.syndicate.display_name privacy_link=page_context.syndicate.privacy_link tos_link=page_context.syndicate.tos_link %}
+                By signing up, I agree to the {{ brand_name }} app's 
+                <a class="link" href="{{ tos_link }}">Terms of Use</a> and <a class="link" href="{{ privacy_link }}">Privacy Policy</a>
+                {% endblocktrans %}
+                {% endif %}
               </small>
               </label>
           </div>
         </div>
         {% if socialaccount_providers %}
         <div class="social-login">
-          <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
-            role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign up with Facebook" %}</span> </a>
-          <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
-            role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign up with Google" %}</span> </a>
+          {% for provider in socialaccount_providers %}
+            {% if provider.id == "facebook" %}
+            <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
+              role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign up with Facebook" %}</span> </a>
+            {% endif %}
+            {% if provider.id == "google" %}
+            <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
+              role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign up with Google" %}</span> </a>
+            {% endif %}
+          {% endfor %}
         </div>
-          {% if page_context.app_platform == 'ios' %}
-          <div class="social-login">
+        {% if page_context.app_platform == 'ios' and page_context.syndicate.name == "base" %}
+        <div class="social-login">
             <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
               role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>{% trans "Sign in with Apple" %}</span> </a>
           </div>
@@ -51,7 +68,7 @@
           {% csrf_token %}
           {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
           <div class="form-group">
-            {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder="Email address" %}
+            {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder=email_placeholder %}
             {% if form.email.errors %}
             <small id="emailHelp" class="text-danger">
               {% for error in form.email.errors %}
@@ -63,7 +80,7 @@
             {% endif %}
           </div>
           <div class="form-group">
-            {% render_field form.password1 class="form-control" aria-describedby="password1Help" placeholder="Password" %}
+            {% render_field form.password1 class="form-control" aria-describedby="password1Help" placeholder=password_placeholder %}
             {% if form.password1.errors %}
             <small id="password1Help" class="text-danger">
               {% for error in form.password1.errors %}
@@ -75,7 +92,7 @@
             {% endif %}
           </div>
           <div class="form-group">
-            {% render_field form.password2 class="form-control" aria-describedby="password2Help" placeholder="Password. Again" %}
+            {% render_field form.password2 class="form-control" aria-describedby="password2Help" placeholder=password_again_placeholder %}
             {% if form.password2.errors %}
             <small id="password2Help" class="text-danger">
               {% for error in form.password2.errors %}

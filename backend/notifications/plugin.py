@@ -41,6 +41,7 @@ class Feature(enum.Enum):
 class UserContext:
     id: int
     email: str
+    syndicate_name: str
     first_name: str
     last_name: str
     unsub_token: str

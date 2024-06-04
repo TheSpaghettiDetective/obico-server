@@ -63,37 +63,7 @@ Learn more about [the config file for Obico for Klipper](moonraker-obico/config.
 There are [a few rare reasons](/docs/user-guides/disable-25-fps-streaming) why you may want to have the webcam streaming disabled.
 :::
 
-## 2. Is OctoPrint running on a Raspberry Pi? {#2-is-octoprint-running-on-a-raspberry-pi}
-
-The webcam streaming requires Raspberry Pi to work. It is well tested on **Raspberry Pi 4B, Raspberry Pi 3B/3B+, and Zero/Zero W**.
-
-If you are not using a Raspberry Pi, the Obico plugin will only "stream" by taking one snapshot from the webcam every 10 seconds.
-
-:::caution
-
-If you have installed docker on the Raspberry Pi, and are running OctoPrint Or Klipper/Moonraker inside the docker containers, you won't get the webcam stream either.
-
-:::
-
-:::info
-The reason why Raspberry Pi is required for the webcam streaming is because it has a special hardware accelerator required to encode H.264 video efficiently.
-:::
-
-## 3. Try "always stream in compatibility mode" (OctoPrint only) {#3-try-always-stream-in-compatibility-mode}
-
-In most cases, the webcam streaming will automatically switch between the compatibility mode the advanced mode. But there is a slight possibility it will get stuck in the "wrong" mode and hence fail.
-
-Try to [set the compatibility mode set to "**always**"](/docs/user-guides/streaming-compatibility-mode#how-to-change-the-compatibility-mode-setting) to see if it'll get it out of the "Basic" streaming mode. **You need to restart the Raspberry Pi after the switch**.
-
-:::info
-Learn more about [advanced mode and compatibility mode](/docs/user-guides/streaming-compatibility-mode).
-:::
-
-:::tip
-This step is relevant only to OctoPrint users. Obico for Klipper always uses the compatibility mode for webcam streaming.
-:::
-
-## 4. Are you using an OS image that doesn't support streaming? {#4-did-you-use-the-official-octopi-image-to-flash-the-sd-card}
+## 2. Are you using an OS image that doesn't support streaming? {#4-did-you-use-the-official-octopi-image-to-flash-the-sd-card}
 
 Not all Operating Systems that can run on a Raspberry Pi has the libraries required for the webcam streaming. Make sure you flashed the SD card using the supported OS images if you want to have a smooth webcam stream in Obico.
 
@@ -153,6 +123,6 @@ None.
 
 If you are not sure if the OS causes the webcam stream to be stuck at 0.1 FPS, grab a spare SD card, flash it with one of the supported OS images, and see if you are getting a smooth webcam stream in the Obico app now.
 
-## 5. If none of the above worked {#6-if-none-of-the-above-worked}
+## 3. If none of the above worked {#6-if-none-of-the-above-worked}
 
 [Get help from a human](/docs/user-guides/contact-us-for-support).

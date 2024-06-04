@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-01 19:16+0800\n"
+"POT-Creation-Date: 2024-05-10 10:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,11 @@ msgstr ""
 msgid "Important dates"
 msgstr ""
 
-#: app/models.py:82
+#: app/forms.py:37
+msgid "Invalid email or password."
+msgstr ""
+
+#: app/models.py:100
 msgid "email address"
 msgstr ""
 
@@ -167,60 +171,72 @@ msgid ""
 "href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
 
-#: app/templates/account/login.html:7 app/templates/account/login.html:15
-#: app/templates/account/login.html:61 app/templates/account/signup.html:87
+#: app/templates/account/login.html:7 app/templates/account/login.html:18
+#: app/templates/account/login.html:64 app/templates/account/signup.html:92
 #: app/templates/mobile/account/login.html:10
-#: app/templates/mobile/account/login.html:18
-#: app/templates/mobile/account/login.html:69
-#: app/templates/mobile/account/signup.html:91
+#: app/templates/mobile/account/login.html:21
+#: app/templates/mobile/account/login.html:72
+#: app/templates/mobile/account/signup.html:99
 #: app/templates/non_vue_layout.html:49
 msgid "SIGN IN"
 msgstr ""
 
-#: app/templates/account/login.html:20
-#: app/templates/mobile/account/login.html:22
+#: app/templates/account/login.html:11 app/templates/account/signup.html:12
+#: app/templates/mobile/account/login.html:14
+#: app/templates/mobile/account/signup.html:16
+msgid "Email address"
+msgstr ""
+
+#: app/templates/account/login.html:12 app/templates/account/signup.html:13
+#: app/templates/mobile/account/login.html:15
+#: app/templates/mobile/account/signup.html:17
+msgid "Password"
+msgstr ""
+
+#: app/templates/account/login.html:23
+#: app/templates/mobile/account/login.html:25
 msgid "Sign In with Facebook"
 msgstr ""
 
-#: app/templates/account/login.html:22
-#: app/templates/mobile/account/login.html:24
+#: app/templates/account/login.html:25
+#: app/templates/mobile/account/login.html:27
 msgid "Sign In with Google"
 msgstr ""
 
-#: app/templates/account/login.html:36
-#: app/templates/mobile/account/login.html:44
+#: app/templates/account/login.html:39
+#: app/templates/mobile/account/login.html:47
 msgid "Click here to reset your password"
 msgstr ""
 
-#: app/templates/account/login.html:39 app/templates/account/login.html:65
-#: app/templates/mobile/account/login.html:47
-#: app/templates/mobile/account/login.html:73
+#: app/templates/account/login.html:42 app/templates/account/login.html:68
+#: app/templates/mobile/account/login.html:50
+#: app/templates/mobile/account/login.html:76
 msgid "Forgot Password?"
 msgstr ""
 
-#: app/templates/account/login.html:54
-#: app/templates/mobile/account/login.html:62
+#: app/templates/account/login.html:57
+#: app/templates/mobile/account/login.html:65
 msgid "Remember me"
 msgstr ""
 
-#: app/templates/account/login.html:68
-#: app/templates/mobile/account/login.html:76
+#: app/templates/account/login.html:71
+#: app/templates/mobile/account/login.html:79
 msgid "Having Trouble?"
 msgstr ""
 
-#: app/templates/account/login.html:75
-#: app/templates/mobile/account/login.html:83
+#: app/templates/account/login.html:78
+#: app/templates/mobile/account/login.html:86
 msgid "Having trouble?"
 msgstr ""
 
-#: app/templates/account/login.html:82
+#: app/templates/account/login.html:85
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the mobile app, you can use the same to sign "
 "in here."
 msgstr ""
 
-#: app/templates/account/login.html:83
+#: app/templates/account/login.html:86
 msgid ""
 "\"Sign in with Apple\" is not available in the web app. If you want to use "
 "the web app, please sign up for a different account and<a class=\"link\" "
@@ -228,55 +244,56 @@ msgid ""
 "printer/\">re-link your printer\"</a> "
 msgstr ""
 
-#: app/templates/account/login.html:84
-#: app/templates/mobile/account/login.html:91
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:94
 msgid ""
 "Even if you previously signed up an account using Google or Facebook, you "
 "can still"
 msgstr ""
 
-#: app/templates/account/login.html:84
-#: app/templates/mobile/account/login.html:91
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:94
 msgid "reset password"
 msgstr ""
 
-#: app/templates/account/login.html:84
-#: app/templates/mobile/account/login.html:91
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:94
 msgid "using the same email address."
 msgstr ""
 
-#: app/templates/account/login.html:85
-#: app/templates/mobile/account/login.html:92
+#: app/templates/account/login.html:88
+#: app/templates/mobile/account/login.html:95
 msgid ""
 "If you can't sign in the mobile app, re-install the mobile app and try it "
 "again."
 msgstr ""
 
-#: app/templates/account/login.html:86
-#: app/templates/mobile/account/login.html:93
+#: app/templates/account/login.html:89
+#: app/templates/mobile/account/login.html:96
 msgid "Contact us"
 msgstr ""
 
-#: app/templates/account/login.html:86
-#: app/templates/mobile/account/login.html:93
+#: app/templates/account/login.html:89
+#: app/templates/mobile/account/login.html:96
 msgid "if you have tried everything else."
 msgstr ""
 
-#: app/templates/account/login.html:90
-#: app/templates/mobile/account/login.html:97
+#: app/templates/account/login.html:93
+#: app/templates/mobile/account/login.html:100
 msgid "Close"
 msgstr ""
 
-#: app/templates/account/login.html:101 app/templates/account/signup.html:85
+#: app/templates/account/login.html:104 app/templates/account/signup.html:90
+#: app/templates/mobile/account/signup.html:98
 msgid "OR"
 msgstr ""
 
-#: app/templates/account/login.html:102 app/templates/account/signup.html:16
-#: app/templates/account/signup.html:83
-#: app/templates/mobile/account/login.html:108
+#: app/templates/account/login.html:105 app/templates/account/signup.html:20
+#: app/templates/account/signup.html:88
+#: app/templates/mobile/account/login.html:111
 #: app/templates/mobile/account/signup.html:11
-#: app/templates/mobile/account/signup.html:19
-#: app/templates/mobile/account/signup.html:88
+#: app/templates/mobile/account/signup.html:24
+#: app/templates/mobile/account/signup.html:96
 #: app/templates/socialaccount/signup.html:9
 #: app/templates/socialaccount/signup.html:20
 msgid "SIGN UP"
@@ -379,7 +396,13 @@ msgstr ""
 msgid "Signup"
 msgstr ""
 
-#: app/templates/account/signup.html:21
+#: app/templates/account/signup.html:14
+#: app/templates/mobile/account/signup.html:18
+msgid "Password. Again"
+msgstr ""
+
+#: app/templates/account/signup.html:26
+#: app/templates/mobile/account/signup.html:30
 #, python-format
 msgid ""
 "By signing up, I agree to\n"
@@ -390,23 +413,23 @@ msgid ""
 "              Policy</a>"
 msgstr ""
 
-#: app/templates/account/signup.html:31
-#: app/templates/mobile/account/signup.html:34
+#: app/templates/account/signup.html:36
+#: app/templates/mobile/account/signup.html:42
 msgid "Sign up with Facebook"
 msgstr ""
 
-#: app/templates/account/signup.html:33
-#: app/templates/mobile/account/signup.html:36
+#: app/templates/account/signup.html:38
+#: app/templates/mobile/account/signup.html:44
 msgid "Sign up with Google"
 msgstr ""
 
-#: app/templates/account/signup.html:54
-#: app/templates/mobile/account/signup.html:59
+#: app/templates/account/signup.html:59
+#: app/templates/mobile/account/signup.html:67
 msgid "We'll never share your email with anyone else."
 msgstr ""
 
-#: app/templates/account/signup.html:66
-#: app/templates/mobile/account/signup.html:71
+#: app/templates/account/signup.html:71
+#: app/templates/mobile/account/signup.html:79
 msgid "At least 6 characters. And be secure, please."
 msgstr ""
 
@@ -467,45 +490,28 @@ msgid ""
 "mail address</a>."
 msgstr ""
 
-#: app/templates/email/test_email.html:5
-msgid ""
-"It worked! You have successfully sent email from your self-hosted Obico "
-"Server."
-msgstr ""
-
-#: app/templates/layout.html:89
+#: app/templates/layout.html:87
 msgid "All Rights Reserved"
 msgstr ""
 
-#: app/templates/mobile/account/login.html:29
-#: app/templates/mobile/account/signup.html:41
+#: app/templates/mobile/account/login.html:32
+#: app/templates/mobile/account/signup.html:49
 msgid "Sign in with Apple"
 msgstr ""
 
-#: app/templates/mobile/account/login.html:42
+#: app/templates/mobile/account/login.html:45
 msgid "This email was previously signed up using either Google or Facebook."
 msgstr ""
 
-#: app/templates/mobile/account/login.html:46
+#: app/templates/mobile/account/login.html:49
 msgid "Wrong email or password."
 msgstr ""
 
-#: app/templates/mobile/account/login.html:90
+#: app/templates/mobile/account/login.html:93
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the web app, you can use the same to sign in "
 "here."
-msgstr ""
-
-#: app/templates/mobile/account/signup.html:24
-#, python-format
-msgid ""
-"By signing up, I agree to\n"
-"              the %(brand_name)s app's <a class=\"link\" href=\"https://www."
-"obico.io/terms.html\">Terms of\n"
-"              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
-"privacy.html\">Privacy\n"
-"              Policy</a>"
 msgstr ""
 
 #: app/templates/new_octoprinttunnel_succeeded.html:7
@@ -572,14 +578,11 @@ msgstr ""
 #: app/templates/printer_acted.html:31
 #, python-format
 msgid ""
-"\n"
-"        You are trying to %(action)s a print but %(printer_name)s is not "
-"printing... maybe you clicked a link in an\n"
-"        outdated email?\n"
-"        "
+" You are trying to %(action)s a print but %(printer_name)s is not "
+"printing... maybe you clicked a link in an outdated email? "
 msgstr ""
 
-#: app/templates/printer_acted.html:42
+#: app/templates/printer_acted.html:39
 msgid "Go to webcam view"
 msgstr ""
 
@@ -675,4 +678,8 @@ msgstr ""
 
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
+msgstr ""
+
+#: app/views/web_views.py:60
+msgid "A user is already registered with this email address."
 msgstr ""

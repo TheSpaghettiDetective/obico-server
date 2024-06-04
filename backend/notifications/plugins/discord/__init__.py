@@ -4,7 +4,7 @@ from django.conf import settings
 from rest_framework.serializers import ValidationError
 
 from discord_webhook import DiscordWebhook, DiscordEmbed  # type: ignore
-from lib import site as site
+from lib import syndicate
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext, PrinterNotificationContext, TestMessageContext,
@@ -36,7 +36,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         return "__{}__".format(s.replace('_', '\_'))
 
     @classmethod
-    def call_webhook(self, title: str, text: str, color: int, webhook_url: str, image_url: Optional[str] = None):
+    def call_webhook(self, syndicate_name, title: str, text: str, color: int, webhook_url: str, image_url: Optional[str] = None):
         webhook = DiscordWebhook(url=webhook_url, username="Obico")
         embed = DiscordEmbed(title=title, description=text, color=color)
         if image_url:
@@ -44,7 +44,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
 
         embed.set_author(
             name="Obico Printer Notification",
-            url=site.build_full_url('/printers/'),
+            url=syndicate.build_full_url_for_syndicate('/printers/', syndicate_name),
             icon_url="https://obico.io/img/favicon.png"
         )
         embed.set_timestamp()
@@ -70,11 +70,12 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         text = f"Hi {context.user.first_name or ''},\n{text}"
 
         self.call_webhook(
+            context.user.syndicate_name,
             title=context.printer.name,
             text=text,
             color=color,
             webhook_url=context.config['webhook_url'],
-            image_url=context.img_url
+            image_url=context.img_url,
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
@@ -89,11 +90,12 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         text = f"Hi {context.user.first_name or ''},\n{text}"
 
         self.call_webhook(
+            context.user.syndicate_name,
             title=context.printer.name,
             text=text,
             color=color,
             webhook_url=context.config['webhook_url'],
-            image_url=context.img_url
+            image_url=context.img_url,
         )
 
     def notification_type_to_color(self, notification_type: str) -> int:
@@ -110,6 +112,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
 
     def send_test_message(self, context: TestMessageContext) -> None:
         self.call_webhook(
+            context.user.syndicate_name,
             title='Test Notification',
             text='It works!',
             color=self.OK_COLOR,

@@ -8,6 +8,9 @@
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
+{% trans 'Email address' as email_placeholder %}
+{% trans 'Password' as password_placeholder %}
+
 <div class="container">
   <div class="row justify-content-center logreg">
     <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
@@ -16,10 +19,16 @@
 
         {% if socialaccount_providers %}
         <div class="social-login">
-          <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
-            role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign In with Facebook" %}</span> </a>
-          <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
-            role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign In with Google" %}</span> </a>
+          {% for provider in socialaccount_providers %}
+            {% if provider.id == "facebook" %}
+            <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
+              role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign In with Facebook" %}</span> </a>
+            {% endif %}
+            {% if provider.id == "google" %}
+            <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
+              role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign In with Google" %}</span> </a>
+            {% endif %}
+          {% endfor %}
         </div>
         {% endif %}
 
@@ -35,7 +44,7 @@
             </span>
             <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Click here to reset your password" %}</a>.
             {% else %}
-            <span class="text-danger">Wrong email or password.</span>
+            <span class="text-danger">{% trans "Wrong email or password." %}</span>
             <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
             {% endif %}
           </div>
@@ -43,10 +52,10 @@
           {% csrf_token %}
           {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
           <div class="input-group mb-2">
-            {% render_field form.login class="form-control" placeholder="Email address" %}
+            {% render_field form.login class="form-control" placeholder=email_placeholder %}
           </div>
           <div class="input-group">
-            {% render_field form.password class="form-control" placeholder="Password" %}
+            {% render_field form.password class="form-control" placeholder=password_placeholder %}
           </div>
           <div style="padding-top: 0.5rem;">
             <div class="custom-control custom-checkbox form-check-inline">

@@ -48,12 +48,11 @@ module.exports = {
           type: 'category',
           label: 'More... ',
           items: [
-            'user-guides/streaming-compatibility-mode',
-            'user-guides/adjust-webcam-settings-premium-streaming',
             'user-guides/check-webcam-streaming-mode',
             'user-guides/internet-speed-requirement-premium-streaming',
             'user-guides/premium-streaming-raspberry-pi-connection-speed',
             'user-guides/premium-streaming-computer-phone-connection-speed',
+            'user-guides/webcam-streaming-excessive-cpu',
           ],
         },
       ],
@@ -95,7 +94,6 @@ module.exports = {
           label: 'Webcam Settings',
           items: [
             'user-guides/webcam-streaming-resolution-framerate-octoprint',
-            'user-guides/check-webcam-streaming-mode',
             'user-guides/octoprint-webcam-not-streaming',
           ],
         },

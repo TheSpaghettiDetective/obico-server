@@ -30,8 +30,7 @@ Just like any other live video streaming or video conferencing, the Obico Premiu
 * Your Raspberry Pi doesn't have a reliable Internet connection, especially if the Pi is connected via Wi-Fi.
 * The webcam is not properly connected to the Raspberry Pi.
 * The webcam resolution is set too high.
-* The webcam streaming frame rate is set too high. This can happen only when the webcam is [streamed in compatibility mode](/docs/user-guides/streaming-compatibility-mode).
-
+* The webcam streaming frame rate is set too high.
 
 ## 1. Check the webcam streaming mode {#1-check-the-webcam-streaming-mode}
 
@@ -41,7 +40,7 @@ Follow [this guide](/docs/user-guides/check-webcam-streaming-mode) to find out y
 
 This means the Premium Streaming process failed to start. Follow [this troubleshooting guide](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/) to figure out why.
 
-### If the webcam streaming mode is "Premium (25ps)" or "Premium (compatibility)": {#if-the-webcam-streaming-mode-is-premium-25ps-or-premium-compatibility}
+### If the webcam streaming mode is "Premium": {#if-the-webcam-streaming-mode-is-premium-25ps-or-premium-compatibility}
 
 Continue to the next troubleshooting step.
 
@@ -71,7 +70,6 @@ This may indicate a similar connection issue as the one above. But it may also i
 - Make sure [the webcam resolution is not set too high](webcam-streaming-resolution-framerate-octoprint.md/#if-the-streaming-mode-is-premium-compatibility-or-basic).
 - Make sure your webcam is properly connected to the Raspberry Pi, and [is properly configured in OctoPrint](/docs/user-guides/octoprint-webcam-not-streaming/#3-check-if-the-webcam-is-configured-correctly-in-octoprint).
 - If you are using the mobile app, check it in the web app to see if you have the same problem. If you are using the web app, check it in the mobile app, or check it in a different browser.
-- If everything is ruled out, try to [set the streaming to "**Always stream in compatibility mode**"](/docs/user-guides/streaming-compatibility-mode/#how-to-change-the-compatibility-mode-setting). Restart OctoPrint and see if the "Buffering" warning goes away and the Premium Stream is smooth now.
 
 ## 4. Get help from a human {#4-get-help-from-a-human}
 

@@ -17,7 +17,7 @@ There are a few critical differences between the **Premium Streaming** and the *
 :::info
 The Premium Streaming in Obico is based on H.264 video encoding, which is highly efficient in network bandwidth.
 
-Whereas the streaming in OctoPrint is based on M-JPEG encoding, which uses 5x more network bandwidth and mobile data.
+Whereas the Basic Streaming in OctoPrint is based on M-JPEG encoding, which uses 5x more network bandwidth and mobile data.
 :::
 
 :::info

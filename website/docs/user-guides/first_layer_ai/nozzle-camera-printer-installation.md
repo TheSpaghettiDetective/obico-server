@@ -1,6 +1,6 @@
 ---
 id: nozzle-camera-printer-installation
-title: How to Install a Nozzle Camera on our 3D Printer
+title: How to Install a Nozzle Camera on Your 3D Printer
 ---
 
 

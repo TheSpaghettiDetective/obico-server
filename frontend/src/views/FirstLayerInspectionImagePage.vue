@@ -75,7 +75,7 @@ import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import PageLayout from '@src/components/PageLayout'
-import FirstLayerShotCard from '@entSrc/components/first-layer-review/FirstLayerShotCard.vue'
+import FirstLayerShotCard from '@src/components/first-layer-review/FirstLayerShotCard.vue'
 
 export default {
   name: 'FirstLayerInspectionImagePage',

@@ -28,7 +28,7 @@
                   </div>
                 </div>
                 <div v-if="targetOctoPrint"  class="kilpper-pre-install-wrap">
-                  <img src="@static/img/octoprint-plugin-guide/install_plugin.png" alt="">
+                  <img class="octoprint-image" src="@static/img/octoprint-plugin-guide/install_plugin.png" alt="">
                   <div class="text-wrap">
                     <h3>{{ $t("Install Obico for OctoPrint") }}</h3>
                     <ol class="secondary-font">
@@ -148,6 +148,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.octoprint-image {
+  width: 100%; 
+  margin-bottom: 1em;
+}
 .form-container {
   .klipper-pre-install-wrap {
     display: flex;

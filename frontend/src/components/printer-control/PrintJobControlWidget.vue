@@ -293,7 +293,7 @@ export default {
         }
       } else {
         this.$swal.Confirm.fire({
-          html: `If you haven't changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="${getDocUrl('/user-guides/detection-print-job-settings#when-print-is-paused')}">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>`,
+          html: `If you haven't changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="${this.getDocUrl('/user-guides/detection-print-job-settings#when-print-is-paused')}">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>`,
         }).then((result) => {
           if (result.value) {
             this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT)

@@ -392,7 +392,7 @@ export default {
         <li>${this.$i18next.t("Streaming is limited to 5 FPS (frames per second).")}</li>
         <li>${this.$i18next.t("After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.")}</li>
       </ul>
-      <p>${this.$i18next.t("Support the {brandName} project by",{brandName:this.$syndicateText.brandName})} <a href="${this.getDocUrl('/ent_pub/pricing/?source=basic_streaming')}">${this.$i18next.t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$i18next.t("The Pro plan offers many perks, including the")} <a target="_blank" href="${this.getDocUrl('/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming')}">${this.$i18next.t("Premium Streaming")}</a>:</p>
+      <p>${this.$i18next.t("Support the {brandName} project by",{brandName:this.$syndicateText.brandName})} <a href="${this.getAppUrl('/ent_pub/pricing/?source=basic_streaming')}">${this.$i18next.t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$i18next.t("The Pro plan offers many perks, including the")} <a target="_blank" href="${this.getDocUrl('/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming')}">${this.$i18next.t("Premium Streaming")}</a>:</p>
       <ul>
         <li>${this.$i18next.t("Smooth 25 FPS.")}</li>
         <li>${this.$i18next.t("Unlimited streaming with no cooldowns.")}</li>

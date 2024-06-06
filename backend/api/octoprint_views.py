@@ -139,6 +139,8 @@ class OctoPrintPicView(APIView):
         req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
         detections = req.json()['detections']
+        if settings.DEBUG:
+            LOGGER.info(f'Detections: {detections}')
 
         update_prediction_with_detections(prediction, detections)
         prediction.save()

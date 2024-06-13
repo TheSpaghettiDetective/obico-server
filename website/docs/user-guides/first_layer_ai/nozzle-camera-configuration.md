@@ -25,6 +25,14 @@ A nozzle camera is a specialized web camera. Nozzle cameras are much smaller tha
 
 Obico’s first layer AI is compatible with any 3D printer running OctoPrint or Klipper, but there may not be a nozzle camera mount readily available for your 3D printer. Check with our nozzle camera partners, Mintion and 3DO to see if there is a mount for your printer. Of course, you can also check out various 3D model repositories such as Printables or Thingiverse, or you can design your own mount. 
 
+:::tip
+Prefer watching a video instead? The video below walks through the process of configuring a standard USB webcam with a nozzle camera. It also goes through the process of adding multiple webcams to Mainsail/Fluidd in case you haven't done that already (cameras must be configured in Mainsail/fluidd before adding them to Obico).
+:::
+
+<div className="videoWrapper">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/06D01zrQTqg?si=cgbKdlxr50gXRONY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+
 ## Configure Your Camera for First Layer AI
 
 Obico now supports multiple webcam streams in the Obico app. You can configure your nozzle camera as a second camera in Obico, or you can just use the nozzle camera as your only camera. 

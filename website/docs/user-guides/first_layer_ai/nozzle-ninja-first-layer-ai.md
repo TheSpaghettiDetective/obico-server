@@ -3,6 +3,10 @@ id: nozzle-ninja-first-layer-ai
 title: Nozzle Ninja - First Layer AI
 ---
 
+
+![](/img/user-guides/nozzle-cam-ai-config/what-is-first-layer-ai/nozzle_ninja_examples.png)
+
+
 Since our early days as The Spaghetti Detective, Obico has been at the forefront of 3D print failure detection. Today, over a hundred thousand makers trust our technology which has caught [over one million failed 3D prints](https://obico.io/failure-detection.html)!
 
 The Obico team is excited to announce our newest AI software, Nozzle Ninja - Obico's First Layer AI error detection system!

@@ -10,7 +10,7 @@ Obico webcam streaming relies on a program called "janus" to work. If janus is n
 :::
 
 
-## `[webcam]` in moonraker-obic.cfg
+## `[webcam]` Section in moonraker-obico.cfg
 
 - `disable_video_streaming`: Default to `False`. Change it to `True` to disable the webcam streaming [in some rare cases](https://www.obico.io/docs/user-guides/disable-25-fps-streaming/).
 
@@ -78,6 +78,11 @@ Set values in this section only when **Obico for Klipper** can't obtain these co
 
 
 ## Configure multiple webcams
+
+:::tip
+Before configuring multiple webcams in Obico, they need to be configured in Mainsail/fluidd. Watch this [video for a guide on configuring multiple webcams in Mainsail/fluidd](https://youtu.be/06D01zrQTqg?si=JpvhdhpLXazZbvmA
+).
+:::
 
 You can configure more than one webcams by additional named webcam sections. For instance:
 
@@ -149,3 +154,173 @@ The "URL Stream" or "URL Snapshot" in Mainsail/Fluidd doesn't require the hostna
 
 If the hostname part is not included in Mainsail/Fluidd webcam configuration, **Obico for Klipper**  will automatically use `http://127.0.0.1`. If this is not what you want, you will have to specify the `stream_url` and `snapshot_url` in `moonraker-obico.cfg` with the full URLs.
 :::
+
+
+## Single and Multi-Camera Configuration Examples
+
+Below are examples of valid moonraker-obico.cfg configurations
+
+### Two Cameras: Webcam and Nozzle Camera
+
+![](/img/user-guides/mainsail_nozzle_camera_usb_camera_using_port.png)
+
+In this example, I have two webcams configured in Mainsail, one logitech c270 usb webcam and one Mintion Nozzle camera for first layer AI. 
+
+**Mainsail Webcam Configuration**:
+
+**Webcam**: c270
+**URL Stream**:  /webcam/?action=stream
+**URL Snapshot**:  /webcam/?action=snapshot
+
+**Webcam**: nozzle
+**URL Stream**:  /webcam2/?action=stream
+**URL Snapshot**:  /webcam2/?action=snapshot
+
+#### moonraker-obico.cfg Webcam Section
+
+```
+[webcam c270]
+disable_video_streaming = False
+
+[webcam nozzle]
+disable_video_streaming = False
+```
+
+If the webcams are not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to each webcam configuration
+
+I access the mainsail interface at: 192.168.1.123
+So, I have configured moonraker-obico.cfg as:
+
+```
+[webcam c270]
+disable_video_streaming = False
+stream_url = http://192.168.123/webcam/?action=stream
+snapshot_url = http://192.168.123/webcam/?action=snapshot
+
+[webcam nozzle]
+disable_video_streaming = False
+stream_url = http://192.168.123/webcam2/?action=stream
+snapshot_url = http://192.168.123/webcam2/?action=snapshot
+is_nozzle_camera = True
+
+```
+
+### Multiple Webcams in Mainsail/fluidd - One webcam in Obico
+
+If you have two webcams configured in Mainsail or fluidd, but you only want one specific webcam to be shown in Obico at all times, simply add the name of the webcam from Mainsail/fluidd to the ```moonraker-obico.cfg``` file. 
+
+
+**Mainsail Webcam Configuration**:
+
+```
+Webcam: c270
+URL Stream: /webcam/?action=stream
+URL Snapshot:  /webcam/?action=snapshot
+``` 
+
+```
+Webcam: nozzle
+URL Stream:  /webcam2/?action=stream
+URL Snapshot:  /webcam2/?action=snapshot
+```
+
+#### moonraker-obico.cfg Webcam Section
+
+If I want to only see the c270 webcam in Obico, the configuration is as follows:
+
+```
+[webcam c270]
+disable_video_streaming = False
+``` 
+
+If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration. 
+
+I access the mainsail interface at: 192.168.1.123
+So, I have configured moonraker-obico.cfg as:
+
+```
+[webcam c270]
+disable_video_streaming = False
+stream_url = http://192.168.123/webcam/?action=stream
+snapshot_url = http://192.168.123/webcam/?action=snapshot
+```
+
+ 
+
+### Creality K1 with fluidd - Stock Camera
+
+In this example, I have a Creality K1 Max with the stock webcam installed.
+
+
+**Fluidd Webcam Configuration**: 
+
+```
+Webcam: K1 Webcam
+URL Stream: /webcam/?action=stream
+URL Snapshot:  /webcam/?action=snapshot
+```
+
+#### moonraker-obico.cfg Webcam Section
+
+```
+[webcam K1 Webcam]
+disable_video_streaming = False
+```
+
+If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration. 
+
+Fluidd is accesssed at: http://192.168.1.123:4408 so I have configured the webcam section of ```moonraker-obico.cfg``` as follows: 
+
+```
+[webcam K1 Webcam]
+disable_video_streaming = False
+snapshot_url = http://192.168.1.123:4408/webcam/?action=snapshot
+stream_url = http://192.168.1.123:4408/webcam/?action=stream
+```
+
+### Creality K1 with fluidd - Stock Camera Plus Nozzle Camera
+
+![](/img/user-guides/fluidd_k1_max_two_webcams.png)
+
+In this example, I have a Creality K1 Max with the stock webcam and an additional nozzle camera installed.
+
+
+**Fluidd Webcam Configuration**: 
+
+```
+Webcam: K1 Webcam
+URL Stream: /webcam/?action=stream
+URL Snapshot:  /webcam/?action=snapshot
+```
+
+```
+Webcam: nozzle
+URL Stream: /webcam2/?action=stream
+URL Snapshot:  /webcam2/?action=snapshot
+```
+
+#### moonraker-obico.cfg Webcam Section
+
+```
+[webcam K1 Webcam]
+disable_video_streaming = False
+
+[webcam nozzle]
+disable_video_streaming = False
+```
+
+If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration. 
+
+Fluidd is accesssed at: http://192.168.1.123:4408 so I have configured the webcam section of ```moonraker-obico.cfg``` as follows: 
+
+```
+[webcam K1 Webcam]
+disable_video_streaming = False
+snapshot_url = http://192.168.1.123:4408/webcam/?action=snapshot
+stream_url = http://192.168.1.123:4408/webcam/?action=stream
+
+[webcam nozzle]
+disable_video_streaming = False
+snapshot_url = http://192.168.1.123:4408/webcam2/?action=snapshot
+stream_url = http://192.168.1.123:4408/webcam2/?action=stream
+```

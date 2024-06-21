@@ -227,5 +227,5 @@ Now, you should see a new button on the webcam tab of the printer control page. 
 
 ## Next Steps: Slicer Configuration
 
-Once your camera is configured for first layer AI, [configure your slicer for first layer AI](http://localhost:3000/docs/user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only/).
+Once your camera is configured for first layer AI, [configure your slicer for first layer AI](/docs/user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only/).
 

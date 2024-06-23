@@ -22,7 +22,7 @@ The status can be one of the following:
 
 * "**premium**" - Premium Streaming.
 * "**Basic**" - Basic Streaming.
-* "**0.1FPS**" - [Video streaming failed to start](http://localhost:3000/docs/user-guides/webcam-stream-stuck-at-1-10-fps/). The Obico plugin is now "streaming" by taking snapshots at 0.1FPS.
+* "**0.1FPS**" - [Video streaming failed to start](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/). The Obico plugin is now "streaming" by taking snapshots at 0.1FPS.
 
 :::info
 Learn more about [Premium Streaming vs Basic Streaming](/docs/user-guides/webcam-streaming-for-human-eyes).

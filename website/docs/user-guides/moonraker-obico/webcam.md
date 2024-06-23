@@ -10,7 +10,7 @@ Obico webcam streaming relies on a program called "janus" to work. If janus is n
 :::
 
 
-## `[webcam]` Section in moonraker-obico.cfg
+## `[webcam]` Section in moonraker-obico.cfg {#webcam-section-in-moonraker-obicocfg}
 
 - `disable_video_streaming`: Default to `False`. Change it to `True` to disable the webcam streaming [in some rare cases](https://www.obico.io/docs/user-guides/disable-25-fps-streaming/).
 
@@ -77,7 +77,7 @@ Set values in this section only when **Obico for Klipper** can't obtain these co
     Required only when `stream_node=h264_device`. It needs to be a device that supports H.264 output capability.
 
 
-## Configure multiple webcams
+## Configure multiple webcams {#configure-multiple-webcams}
 
 :::tip
 Before configuring multiple webcams in Obico, they need to be configured in Mainsail/fluidd. Watch this [video for a guide on configuring multiple webcams in Mainsail/fluidd](https://youtu.be/06D01zrQTqg?si=JpvhdhpLXazZbvmA
@@ -156,11 +156,11 @@ If the hostname part is not included in Mainsail/Fluidd webcam configuration, **
 :::
 
 
-## Single and Multi-Camera Configuration Examples
+## Single and Multi-Camera Configuration Examples {#single-and-multi-camera-configuration-examples}
 
 Below are examples of valid moonraker-obico.cfg configurations
 
-### Two Cameras: Webcam and Nozzle Camera
+### Two Cameras: Webcam and Nozzle Camera {#two-cameras-webcam-and-nozzle-camera}
 
 ![](/img/user-guides/mainsail_nozzle_camera_usb_camera_using_port.png)
 
@@ -176,7 +176,7 @@ In this example, I have two webcams configured in Mainsail, one logitech c270 us
 **URL Stream**:  /webcam2/?action=stream
 **URL Snapshot**:  /webcam2/?action=snapshot
 
-#### moonraker-obico.cfg Webcam Section
+#### moonraker-obico.cfg Webcam Section {#moonraker-obicocfg-webcam-section}
 
 ```
 [webcam c270]
@@ -205,7 +205,7 @@ is_nozzle_camera = True
 
 ```
 
-### Multiple Webcams in Mainsail/fluidd - One webcam in Obico
+### Multiple Webcams in Mainsail/fluidd - One webcam in Obico {#multiple-webcams-in-mainsailfluidd---one-webcam-in-obico}
 
 If you have two webcams configured in Mainsail or fluidd, but you only want one specific webcam to be shown in Obico at all times, simply add the name of the webcam from Mainsail/fluidd to the ```moonraker-obico.cfg``` file. 
 
@@ -224,7 +224,7 @@ URL Stream:  /webcam2/?action=stream
 URL Snapshot:  /webcam2/?action=snapshot
 ```
 
-#### moonraker-obico.cfg Webcam Section
+#### moonraker-obico.cfg Webcam Section {#moonraker-obicocfg-webcam-section-1}
 
 If I want to only see the c270 webcam in Obico, the configuration is as follows:
 
@@ -247,7 +247,7 @@ snapshot_url = http://192.168.123/webcam/?action=snapshot
 
  
 
-### Creality K1 with fluidd - Stock Camera
+### Creality K1 with fluidd - Stock Camera {#creality-k1-with-fluidd---stock-camera}
 
 In this example, I have a Creality K1 Max with the stock webcam installed.
 
@@ -260,7 +260,7 @@ URL Stream: /webcam/?action=stream
 URL Snapshot:  /webcam/?action=snapshot
 ```
 
-#### moonraker-obico.cfg Webcam Section
+#### moonraker-obico.cfg Webcam Section {#moonraker-obicocfg-webcam-section-2}
 
 ```
 [webcam K1 Webcam]
@@ -278,7 +278,7 @@ snapshot_url = http://192.168.1.123:4408/webcam/?action=snapshot
 stream_url = http://192.168.1.123:4408/webcam/?action=stream
 ```
 
-### Creality K1 with fluidd - Stock Camera Plus Nozzle Camera
+### Creality K1 with fluidd - Stock Camera Plus Nozzle Camera {#creality-k1-with-fluidd---stock-camera-plus-nozzle-camera}
 
 ![](/img/user-guides/fluidd_k1_max_two_webcams.png)
 
@@ -299,7 +299,7 @@ URL Stream: /webcam2/?action=stream
 URL Snapshot:  /webcam2/?action=snapshot
 ```
 
-#### moonraker-obico.cfg Webcam Section
+#### moonraker-obico.cfg Webcam Section {#moonraker-obicocfg-webcam-section-3}
 
 ```
 [webcam K1 Webcam]

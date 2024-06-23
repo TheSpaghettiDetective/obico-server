@@ -15,7 +15,7 @@ If after increasing the webcam resolution and/or FPS in the webcam settings page
 
 To confirm that, [disable webcam streaming on the settings page](disable-25-fps-streaming.md). If the problem goes away right after the compatibility mode is disabled, we know it is causing the problem.
 
-## How to fix it?
+## How to fix it? {#how-to-fix-it}
 
 Once confirmed that the excessive CPU usage is caused by the resolution/FPS being too high, what you can do is to experiment different levels of resolution and FPS until you find a sweet spot that you are happen with the streaming result, while not stressing your SBC so much that print quality is impacted.
 

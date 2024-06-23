@@ -12,13 +12,13 @@ Since our early days as The Spaghetti Detective, Obico has been at the forefront
 The Obico team is excited to announce our newest AI software, Nozzle Ninja - Obico's First Layer AI error detection system!
 
 
-## Why Nozzle Ninja?
+## Why Nozzle Ninja? {#why-nozzle-ninja}
 
 Webcam based AI is great for detecting major 3D printing errors such as spaghetti, but it isn't as good at detecting less major flaws. Webcam based AI is also not great at detecting any issues with  the first layer of the print as the first layer is often blocked by the print head. The first layer is one of the most critical aspects of a 3D print, so we created Nozzle Ninja to help diagnose first layer issues including under-extrusion, over-extrusion, bed adhesion issues, warping, bubbling,nozzle blobbing and more! 
 
 
 
-## What is a nozzle camera and why is it needed? 
+## What is a nozzle camera and why is it needed? {#what-is-a-nozzle-camera-and-why-is-it-needed}
 A nozzle camera is a USB web camera that is specially designed to provide a very up close view of the 3D printer nozzle and the 3D print. While webcams are typically mounted in front of or on the 3D printer to provide a view of the whole 3D print bed, the nozzle camera provides a much narrower and zoomed in view. 
 
 ![](/img/user-guides/nozzle-cam-ai-config/what-is-first-layer-ai/nozzle_camera_versus_webcam.png)
@@ -26,7 +26,7 @@ A nozzle camera is a USB web camera that is specially designed to provide a very
 
 
 
-## How does Nozzle Ninja work? 
+## How does Nozzle Ninja work? {#how-does-nozzle-ninja-work}
 
 Once configured, nozzle ninja will watch your prints during the first layer. At the end of the first layer, Obico will send you a report via:
 
@@ -47,7 +47,7 @@ Once configured, nozzle ninja will watch your prints during the first layer. At 
      height="500" />
 
 
-## I’m in, How do I get started? 
+## I’m in, How do I get started? {#im-in-how-do-i-get-started}
 
 First, you’ll need a compatible nozzle camera:
 

@@ -19,7 +19,7 @@ The ways to restart the printer or Raspberry Pi are slightly different between M
 
 ![](/img/user-guides/helpdocs/restart-printer-pi.png)
 
-## An example of the configuration file
+## An example of the configuration file {#an-example-of-the-configuration-file}
 
 ```
 [server]

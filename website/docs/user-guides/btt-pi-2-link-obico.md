@@ -154,7 +154,7 @@ The default settings for your printer in The Spaghetti Detective are the ones th
 Only follow this section if linking your printer automatically in [step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) did not work.
 :::
 
-### Link Your Printer Manually Using KlipperScreen
+### Link Your Printer Manually Using KlipperScreen {#link-your-printer-manually-using-klipperscreen}
 
 If you have KlipperScreen installed using the firmware provided by BigTreeTech, you can link your printer to Obico by scanning a QR code on your KlipperScreen. 
 
@@ -173,7 +173,7 @@ If you have KlipperScreen installed using the firmware provided by BigTreeTech, 
 
 7. Go to **[step 4 of the setup guide](#restart-pi)** to  complete the installation.
 
-### Link Your Printer Manually **Without** KlipperScreen
+### Link Your Printer Manually **Without** KlipperScreen {#link-your-printer-manually-without-klipperscreen}
 
 If you are not using a screen or you are using the web app, you can get the one-time passcode to link your printer through SSH. 
 

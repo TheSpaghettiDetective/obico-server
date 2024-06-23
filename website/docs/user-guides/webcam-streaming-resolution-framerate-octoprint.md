@@ -11,7 +11,7 @@ Please keep in mind that most SBCs have a weak CPU. If the resolution and/or fra
 :::
 
 
-## Steps to change the webcam resolution and framerate
+## Steps to change the webcam resolution and framerate {#steps-to-change-the-webcam-resolution-and-framerate}
 
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
 2. Scroll down the navigation bar on the left side.

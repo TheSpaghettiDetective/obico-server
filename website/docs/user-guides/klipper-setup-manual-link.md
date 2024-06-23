@@ -171,7 +171,7 @@ On the welcome page, click the "**Link Printer**" button.
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-klipper.png" /></div>
 <br />
 
-## Step 6: Restart the Raspberry Pi.
+## Step 6: Restart the Raspberry Pi. {#step-6-restart-the-raspberry-pi}
 
 Once the Raspberry Pi has booted up, you should be able to see your printer and the webcam stream in the Obico app.
 

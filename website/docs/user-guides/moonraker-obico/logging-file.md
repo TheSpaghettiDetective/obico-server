@@ -14,9 +14,9 @@ You need to restart the printer or Raspberry Pi for any change to take effect.
 When you set the logging level to `DEBUG`, the log file will become very large quickly.
 :::
 
-## Download the log file to view it
+## Download the log file to view it {#download-the-log-file-to-view-it}
 
-### If you are using Mainsail
+### If you are using Mainsail {#if-you-are-using-mainsail}
 
 1. Go to the "MACHINE" tab in the Mainsail UI. Select "Logs" from the dropdown.
 
@@ -27,7 +27,7 @@ When you set the logging level to `DEBUG`, the log file will become very large q
 ![](/img/user-guides/helpdocs/download-moonraker-obico-log-mainsail.png)
 
 
-### If you are using Fluidd
+### If you are using Fluidd {#if-you-are-using-fluidd}
 
 1. Go to the "Configuration" tab in the Fluidd UI.
 

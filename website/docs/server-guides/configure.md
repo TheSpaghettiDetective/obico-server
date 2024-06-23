@@ -5,7 +5,7 @@ title: Server configurations
 There are a few server configurations you may want to do to make the server reasonably helpful.
 
 
-## Change admin password
+## Change admin password {#change-admin-password}
 
 1. Open Django admin page at [http://localhost:3334/admin/](http://localhost:3334/admin/).
 
@@ -58,7 +58,7 @@ If you are running the Obico Server on your laptop and enter [http://localhost:3
 
 In this case, follow the steps below:
 
-### 1. Determine the address part of the Django site
+### 1. Determine the address part of the Django site {#1-determine-the-address-part-of-the-django-site}
 
 The address part depends on how you want to access your Obico Server:
 
@@ -68,7 +68,7 @@ The address part depends on how you want to access your Obico Server:
 
 - You want to access your Obico Server using a domain name. It can be [an mDNS address](/docs/server-guides/server-addresses/#creating-and-obtaining-your-servers-local-address), or a domain name that can be resolved by a DNS server. We will call it `server_domain_name` for the remaining of this guide. How to obtain the domain name is beyond the scope of this guide.
 
-### 2. Determine the port part of the Django site
+### 2. Determine the port part of the Django site {#2-determine-the-port-part-of-the-django-site}
 
 By default, the Obico Server listens on port `3334`.
 
@@ -76,7 +76,7 @@ However, if you have set up a reverse proxy, e.g., in the case when you want to 
 
 We will use `server_port` to represent the port part for the remaining of this guide.
 
-### 3. Put the address part and the port part together to be the Django site
+### 3. Put the address part and the port part together to be the Django site {#3-put-the-address-part-and-the-port-part-together-to-be-the-django-site}
 
 - If the address part is an IP address, either LAN IP address or a public IP address, the Django site is `server_ip_address:server_port`.
 
@@ -86,11 +86,11 @@ We will use `server_port` to represent the port part for the remaining of this g
 Counter-intuitively, the Django site should NOT include `http://` or `https://`. Otherwise your server will not run correctly.
 :::
 
-### 4. Add a site to your Obico Server
+### 4. Add a site to your Obico Server {#4-add-a-site-to-your-obico-server}
 
 There are 2 ways to add a new site to your Obico Sever.
 
-### 4.1 If you can access your Obico Server using [http://localhost:3334](http://localhost:3334)
+### 4.1 If you can access your Obico Server using [http://localhost:3334](http://localhost:3334) {#41-if-you-can-access-your-obico-server-using-httplocalhost3334}
 
 In this case, the easiest way is to add the site in Django Admin.
 
@@ -101,7 +101,7 @@ In this case, the easiest way is to add the site in Django Admin.
 
 ![Site configuration](/img/server-guides/site_config.png)
 
-### 4.2 If you can NOT access your Obico Server using [http://localhost:3334](http://localhost:3334)
+### 4.2 If you can NOT access your Obico Server using [http://localhost:3334](http://localhost:3334) {#42-if-you-can-not-access-your-obico-server-using-httplocalhost3334}
 
 This method works no matter if your Obico Server is running on the localhost. This is especially useful for cases such as running your Obico Server in the cloud.
 

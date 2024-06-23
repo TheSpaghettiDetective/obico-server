@@ -116,6 +116,7 @@ module.exports = {
         'server-guides/hardware-requirements',
         'server-guides/install',
         'server-guides/configure',
+        'server-guides/server-addresses',
         {
           type: 'category',
           label: 'Platform-Specific Guides',

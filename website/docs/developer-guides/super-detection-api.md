@@ -54,7 +54,8 @@ API request was processed successfully.
       "rolling_mean_long": 0,
       "prediction_num": 0,
       "prediction_num_lifetime": 0
-    }
+    },
+    detections: 
   }
 }
 ```

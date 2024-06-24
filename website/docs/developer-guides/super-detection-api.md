@@ -55,7 +55,7 @@ API request was processed successfully.
       "prediction_num": 0,
       "prediction_num_lifetime": 0
     },
-    detections: 
+    detections: //TODO: add example
   }
 }
 ```
@@ -67,6 +67,7 @@ API request was processed successfully.
     - `rolling_mean_long`: Long-term rolling mean for `p`. Rolling window span = 7200. This rolling mean is accumulated over the lifetime of the printer.
     - `prediction_num`: The number of predictions for the current print so far.
     - `prediction_num_lifetime`: The number of predictions for the life-time of the printer.
+    - `prediction_num_lifetime`: //TODO: Add attribute description 
 
 :::tip
 It's a good practice to use the temporal stats to smoothen out the noises in failure detection. Otherwise there may be excessive amount of false alarms.

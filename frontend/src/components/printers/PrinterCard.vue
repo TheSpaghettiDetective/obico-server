@@ -371,7 +371,7 @@ export default {
             if (this.webcam) {
               this.webrtc = WebRTCConnection(this.webcam.stream_mode, this.webcam.stream_id)
               this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-              this.printerComm.setWebRTC(this.webrtc)
+              this.printerComm.setDataChannelWebRTCConn(this.webrtc)
             }
           }
         },

@@ -135,7 +135,7 @@
             <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" :class="isAllWebcamSelected ? (isAtleastOnePrinterPortrait ? 'two-webcam-portrait' : 'two-webcam-landscape') : (videoRotationDeg === 90 || videoRotationDeg === 270 ? 'single-webcam-portrait' : '')" v-show="isAllWebcamSelected ? true : (index === selectedWebcamIndex)">
               <streaming-box
                 :printer="printer"
-                :webrtc="webcam.webrtc"
+                :webrtc="printerComm.webrtcConnections.get(webcam.name)"
                 :autoplay="user.is_pro"
                 :webcam="webcam"
                 @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
@@ -156,7 +156,7 @@ import { isLocalStorageSupported } from '@static/js/utils'
 import { normalizedPrinter, normalizedPrint } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
 import { printerCommManager } from '@src/lib/printer-comm'
-import WebRTCConnection from '@src/lib/webrtc'
+import WebRTCConnection, {DataChannelOnlyWebRTCConnection} from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
 import { user } from '@src/lib/page-context'
 import CascadedDropdown from '@src/components/CascadedDropdown'
@@ -310,27 +310,26 @@ export default {
       {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
-          if (this.webcams.length === 0 && (this.printer?.settings?.webcams || []).length > 0) {
-            const webcams = this.printer?.settings?.webcams
+
+          if (this.printer?.settings?.data_channel_id && !this.printerComm.webrtcConnections.has(null)) { // null means it's data channel only
+            const dataChannelOnlyWebrtc = DataChannelOnlyWebRTCConnection([parseInt(this.printer.settings.data_channel_id)]);
+            dataChannelOnlyWebrtc.openForPrinter(this.printer.id, this.printer.auth_token);
+            this.printerComm.setWebRTCConnection(null, dataChannelOnlyWebrtc);
+          }
+
+          if ((this.printer?.settings?.webcams || []).length > 0) {
+            const webcamsDeepCopy = JSON.parse(JSON.stringify(this.printer?.settings?.webcams)) // Probably a good idea to deep copy as we will change the objects and keep them around
 
             let dataChannelFound = false
-            for (const webcam of webcams) {
-              webcam.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+            for (const webcam of webcamsDeepCopy) {
+              if (this.printerComm.webrtcConnections.has(webcam.name)) {
+                  continue;
+              }
               this.webcams.push(webcam)
+              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              this.printerComm.setWebRTCConnection(webcam.name, webrtc);
               // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
-              webcam.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-              if (webcam.data_channel_available) {
-                this.printerComm.setWebRTC(webcam.webrtc)
-                dataChannelFound = true
-              }
-            }
-
-            // Backward compatibility for agent versions that don't set data_channel_available
-            if (!dataChannelFound) {
-              const primaryWebcam = this.webcams.find(webcam => webcam.is_primary_camera === true);
-              if (primaryWebcam) {
-                this.printerComm.setWebRTC(primaryWebcam.webrtc);
-              }
+              webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             }
 
             if (this.webcams.length > 0) {

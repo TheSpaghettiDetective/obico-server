@@ -79,9 +79,8 @@ export default function WebRTCConnection(streamMode, streamIdToTest) {
       if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.startStream()
     },
     setCallbacks(callbacks) {
-        self.callbacks = { ...self.callbacks, ...callbacks }
-        if (self.h264WebRTCConn) self.h264WebRTCConn.callbacks = self.callbacks
-        if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.callbacks = self.callbacks
+        if (self.h264WebRTCConn) self.h264WebRTCConn.setCallbacks(callbacks)
+        if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.setCallbacks(callbacks)
     },
   }
   return self
@@ -172,12 +171,49 @@ function H264WebRTCConnection(streamIdsToTest) {
   return baseConnection;
 }
 
+export function DataChannelOnlyWebRTCConnection(streamIdsToTest) {
+
+  let baseConnection = BaseWebRTCConnection(streamIdsToTest); // webcamName is null for data channel-only WebRTC
+
+  baseConnection.openForPrinter = function (printerId, authToken) {
+    baseConnection.connect(printerWebRTCUrl(printerId), authToken)
+  };
+
+  baseConnection.infoSuccessCallback = function (result, pluginHandle) {
+    let stream = get(result, 'info')
+    if (stream) {
+      baseConnection.streamId = stream.id
+      baseConnection.streaming = pluginHandle
+
+      const dataStreamExisting =
+        get(stream, 'data') || // Janus 0.x format
+        find(get(stream, 'media', []), { type: 'data' }) // Janus 1.x format
+
+      if (dataStreamExisting) {
+        baseConnection.startStream();
+      } else {
+        baseConnection.close();
+      }
+    }
+  };
+
+  baseConnection.onRawData = function (rawData) {
+    baseConnection.callbacks.onData(rawData);
+  };
+
+  return baseConnection;
+}
+
 function BaseWebRTCConnection(streamIdsToTest) {
   let self = {
     callbacks: {},
     streamId: undefined,
     streaming: undefined,
     bitrateInterval: null,
+
+    setCallbacks(callbacks) {
+      self.callbacks = {...self.callbacks, ...callbacks};
+    },
 
     connect(wsUri, token) {
       Janus.init({
@@ -299,6 +335,13 @@ function BaseWebRTCConnection(streamIdsToTest) {
     },
     channelOpen() {
       return !(self.streamId === undefined || self.streaming === undefined)
+    },
+    startStream() {
+      if (!self.channelOpen()) {
+        return
+      }
+      const body = { request: 'watch', offer_video: false, id: parseInt(self.streamId) }
+      self.streaming?.send({ message: body })
     },
     stopStream() {
       self.clearBitrateInterval()

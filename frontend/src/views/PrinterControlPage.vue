@@ -320,7 +320,6 @@ export default {
           if ((this.printer?.settings?.webcams || []).length > 0) {
             const webcamsDeepCopy = JSON.parse(JSON.stringify(this.printer?.settings?.webcams)) // Probably a good idea to deep copy as we will change the objects and keep them around
 
-            let dataChannelFound = false
             for (const webcam of webcamsDeepCopy) {
               if (this.printerComm.webrtcConnections.has(webcam.name)) {
                   continue;

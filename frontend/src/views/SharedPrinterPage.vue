@@ -9,7 +9,17 @@
           <div class="card-header">
             <div>{{ printer.name }}</div>
           </div>
-          <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="true" />
+
+          <div class="webcam-main justify-center webcam-more-than-two">
+            <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner">
+              <streaming-box
+                :printer="printer"
+                :webrtc="printerComm.webrtcConnections.get(webcam.name)"
+                :autoplay="true"
+                :webcam="webcam"
+              />
+            </div>
+          </div>
           <div class="p-3 p-md-5">
             <p class="text-center">
               {{$t("You are viewing an awesome 3D print your friend shared specifically with you on")}}
@@ -54,6 +64,7 @@ export default {
       shareToken: null,
       videoAvailable: {},
       loading: true,
+      webcams: [],
       isWebrtcOpened: false,
       webrtc: WebRTCConnection(),
     }
@@ -68,11 +79,20 @@ export default {
           this.printer = normalizedPrinter(data, this.printer)
           this.loading = false
 
-          if (!this.isWebrtcOpened) {
-            this.webrtc.openForShareToken(this.shareToken)
-            this.isWebrtcOpened = true
+          if ((this.printer?.settings?.webcams || []).length > 0) {
+            const webcamsDeepCopy = JSON.parse(JSON.stringify(this.printer?.settings?.webcams)) // Probably a good idea to deep copy as we will change the objects and keep them around
+            for (const webcam of webcamsDeepCopy) {
+              if (this.printerComm.webrtcConnections.has(webcam.name)) {
+                  continue;
+              }
+              this.webcams.push(webcam)
+              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              this.printerComm.setWebRTCConnection(webcam.name, webrtc);
+              // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
+              webrtc.openForShareToken(this.shareToken)
+            }
           }
-        },
+       },
       }
     )
     this.printerComm.connect()
@@ -85,4 +105,17 @@ export default {
   margin-top: 1.5rem
 .printer-card
   margin-bottom: 1.5rem
+.webcam-main
+  @media (min-width: 1024px)
+    height: calc(100vh - 50px - var(--gap-between-blocks)*2 - 33px)
+
+  @media (min-width: 1024px)
+    display: grid
+    align-items: center
+.justify-center
+  @media (min-width: 1024px)
+    justify-content: center
+.webcam-more-than-two
+  display: flex !important
+  gap: 10px
 </style>

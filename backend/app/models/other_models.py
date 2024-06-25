@@ -99,7 +99,7 @@ class Printer(SafeDeleteModel):
         if p_settings.get('webcams') is not None:
             p_settings['webcams'] = json.loads(p_settings.get('webcams'))
 
-            ## Backward compatibility with mobile app 2.10 or earlier
+            ## Backward compatibility with mobile app 2.5 or earlier
 
             if len(p_settings['webcams']) > 0:
                 webcam_settings = p_settings['webcams'][0]
@@ -116,12 +116,12 @@ class Printer(SafeDeleteModel):
 
         p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '16:9') == '16:9'
 
-        ## End of backward compatibility with mobile app 2.10 or earlier
+        ## End of backward compatibility with mobile app 2.5 or earlier
 
         if p_settings.get('temp_profiles'):
             p_settings['temp_profiles'] = json.loads(p_settings.get('temp_profiles'))
 
-        # Backward compatibility: for mobile app 1.66 or earlier
+        # Backward compatibility: for mobile app 2.8 or earlier
         if self.agent_name and self.agent_version:
             p_settings.update(dict(agent_name=self.agent_name, agent_version=self.agent_version))
 

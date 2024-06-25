@@ -63,8 +63,21 @@ def settings_dict(printer_settings):
         webcams = printer_settings.get('webcams')
 
     settings = dict()
+    data_channel_id = printer_settings.get('data_channel_id')
+
     if webcams is not None:
-         settings.update(dict(webcams=json.dumps(webcams)))
+        settings.update(dict(webcams=json.dumps(webcams)))
+
+        if data_channel_id is None:
+            # Backward compatibility: for OctoPrint-Obico 2.5.x or earlier, or moonraker-obico 2.0.x or earlier
+            agent_data_channel = next((webcam for webcam in webcams if webcam.get('data_channel_available')), None) or \
+                next((webcam for webcam in webcams if webcam.get('is_primary_camera')), None)
+            if agent_data_channel:
+                data_channel_id = agent_data_channel.get('stream_id')
+
+    if data_channel_id is not None:
+        settings.update(dict(data_channel_id=data_channel_id))
+
     settings.update(dict(temp_profiles=json.dumps(printer_settings.get('temperature', {}).get('profiles', []))))
     settings.update(dict(printer_metadata=json.dumps(printer_settings.get('printer_metadata', {}))))
     settings.update(

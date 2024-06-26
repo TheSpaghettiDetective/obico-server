@@ -54,7 +54,13 @@ API request was processed successfully.
       "rolling_mean_long": 0,
       "prediction_num": 0,
       "prediction_num_lifetime": 0
-    }
+    },
+    "detections": [
+        [0.541085422039032, [422.7984619140625, 236.30227661132812, 61.9364013671875, 74.49552917480469]],
+        [0.43781569600105286, [426.05596923828125, 264.619140625, 42.386478424072266, 4.73854064941406]],
+        [0.2545202076435089, [423.3209533691406, 238.6829071044922, 113.47953796386719, 135.73854064941406]],
+        [0.20370429754257202, [456.3966369628906, 236.23785400390625, 39.029632568359375, 67.34481811523438]]
+      ]
   }
 }
 ```
@@ -66,6 +72,9 @@ API request was processed successfully.
     - `rolling_mean_long`: Long-term rolling mean for `p`. Rolling window span = 7200. This rolling mean is accumulated over the lifetime of the printer.
     - `prediction_num`: The number of predictions for the current print so far.
     - `prediction_num_lifetime`: The number of predictions for the life-time of the printer.
+  - `detections`: A list of tuples. Each tuple is `[confidence, [xc, yc, w, h]]`.
+    - `confidence`: Range: [0, 1], where 0 means not failure and 1.0 means the maximum confidence on predicting a print failure.
+    - `[xc, yc, w, h]`: Rectangle of the detected area. `xc` and `yc` are the X and Y coordinates of the **center** of the rectangle. `w` and `h` are the width and hight of the rectangle.
 
 :::tip
 It's a good practice to use the temporal stats to smoothen out the noises in failure detection. Otherwise there may be excessive amount of false alarms.

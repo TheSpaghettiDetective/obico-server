@@ -12,7 +12,7 @@ Obico webcam streaming relies on a program called "janus" to work. If janus is n
 
 ## `[webcam]` Section in moonraker-obico.cfg {#webcam-section-in-moonraker-obicocfg}
 
-### `disable_video_streaming`
+### `disable_video_streaming` {#disable_video_streaming}
 
 **Possible values**:
 
@@ -29,15 +29,15 @@ Usually, you don't need to configure the following settings in the `[webcam]` se
 
 Set values in this section only when **Obico for Klipper** can't obtain these configurations, which is very rare.
 
-### `snapshot_url`
+### `snapshot_url` {#snapshot_url}
 
 Such as "http://127.0.0.1:8080/?action=snapshot". This URL is required for the primary webcam unless there is a matching webcam configuration in Mainsail/Fluidd. This URL needs to return a valid JPG on each request.
 
-### `stream_url`
+### `stream_url` {#stream_url}
 
 Such as "http://127.0.0.1:8080/?action=stream". This URL is required for "h264_transcode" and "mjpeg_webrtc" stream mode, unless there is a matching webcam configuration in Mainsail/Fluidd.  This URL has to return a valid MJPEG stream.
 
-### `is_nozzle_camera`
+### `is_nozzle_camera` {#is_nozzle_camera}
 
 If you set it to "True", make sure this is indeed a nozzle camera. Otherwise, the first layer AI won't work properly.
 
@@ -50,7 +50,7 @@ If you set it to "True", make sure this is indeed a nozzle camera. Otherwise, th
 
 - `False`
 
-### `stream_mode`
+### `stream_mode` {#stream_mode}
 
 **Possible values**:
 
@@ -63,11 +63,11 @@ If you set it to "True", make sure this is indeed a nozzle camera. Otherwise, th
 
 **Obico for Klipper**  will try "h264_transcode" first, and fallback to "mjpeg_webrtc". Please note all these stream_mode needs janus to function properly.
 
-### `target_fps`
+### `target_fps` {#target_fps}
 
 Note: If you are on self-hosted Obico server, the real FPS may be limited your hardware capabilities. If you are on Obico cloud, the real FPS may be limited by the service level you have subscribed. [More info](/docs/user-guides/webcam-streaming-resolution-framerate-klipper/).
 
-### `resolution`
+### `resolution` {#resolution}
 
 **Default value**:
 
@@ -75,7 +75,7 @@ Automatically detected based on the stream_url or snapshot_url.
 
 Note: If you are on self-hosted Obico server, the real resolution may be limited your hardware capabilities. If you are on Obico cloud, the real resolution may be limited by the service level you have subscribed. [More info](/docs/user-guides/webcam-streaming-resolution-framerate-klipper/).
 
-### `flip_h`
+### `flip_h` {#flip_h}
 
 **Possible values**:
 
@@ -86,7 +86,7 @@ Note: If you are on self-hosted Obico server, the real resolution may be limited
 
 - `False`
 
-### `flip_v`
+### `flip_v` {#flip_v}
 
 **Possible values**:
 
@@ -98,7 +98,7 @@ Note: If you are on self-hosted Obico server, the real resolution may be limited
 - `False`
 
 
-### `rotation`
+### `rotation` {#rotation}
 
 Clockwise rotation.
 
@@ -114,7 +114,7 @@ Clockwise rotation.
 - `0`
 
 
-### `aspect_ratio_169`
+### `aspect_ratio_169` {#aspect_ratio_169}
 
 
 **Possible values**:
@@ -126,11 +126,11 @@ Clockwise rotation.
 
 - `False`
 
-### `h264_http_url`
+### `h264_http_url` {#h264_http_url}
 
 Required only when `stream_node=h264_copy`. It needs to be a valid Camera Streamer MP4 url, such as "http://127.0.0.1:8080/video.mp4".
 
-### `h264_device_path`
+### `h264_device_path` {#h264_device_path}
 
 Required only when `stream_node=h264_device`. It needs to be a device that supports H.264 output capability.
 

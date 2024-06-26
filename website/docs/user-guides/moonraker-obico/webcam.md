@@ -12,7 +12,16 @@ Obico webcam streaming relies on a program called "janus" to work. If janus is n
 
 ## `[webcam]` Section in moonraker-obico.cfg {#webcam-section-in-moonraker-obicocfg}
 
-- `disable_video_streaming`: Default to `False`. Change it to `True` to disable the webcam streaming [in some rare cases](https://www.obico.io/docs/user-guides/disable-25-fps-streaming/).
+### `disable_video_streaming`
+
+**Possible values**:
+
+- `True`: Disable the webcam streaming [in some rare cases](https://www.obico.io/docs/user-guides/disable-25-fps-streaming/).
+- `False`:
+
+**Default value**:
+
+- `False`
 
 :::caution
 Usually, you don't need to configure the following settings in the `[webcam]` section. In that case, **Obico for Klipper** will automatically obtain them from Moonraker.
@@ -20,61 +29,110 @@ Usually, you don't need to configure the following settings in the `[webcam]` se
 
 Set values in this section only when **Obico for Klipper** can't obtain these configurations, which is very rare.
 
-- `snapshot_url`
+### `snapshot_url`
 
-    Such as "http://127.0.0.1:8080/?action=snapshot". This URL is required for the primary webcam unless there is a matching webcam configuration in Mainsail/Fluidd. This URL needs to return a valid JPG on each request.
+Such as "http://127.0.0.1:8080/?action=snapshot". This URL is required for the primary webcam unless there is a matching webcam configuration in Mainsail/Fluidd. This URL needs to return a valid JPG on each request.
 
-- `stream_url`
+### `stream_url`
 
-    Such as "http://127.0.0.1:8080/?action=stream". This URL is required for "h264_transcode" and "mjpeg_webrtc" stream mode, unless there is a matching webcam configuration in Mainsail/Fluidd.  This URL has to return a valid MJPEG stream.
+Such as "http://127.0.0.1:8080/?action=stream". This URL is required for "h264_transcode" and "mjpeg_webrtc" stream mode, unless there is a matching webcam configuration in Mainsail/Fluidd.  This URL has to return a valid MJPEG stream.
 
-- `is_nozzle_camera`
+### `is_nozzle_camera`
 
-    True|False. Default: False.
+If you set it to "True", make sure this is indeed a nozzle camera. Otherwise, the first layer AI won't work properly.
 
-    If you set it to "True", make sure this is indeed a nozzle camera. Otherwise, the first layer AI won't work properly.
+**Possible values**:
 
-- `stream_mode`
+- `True`
+- `False`
 
-    h264_transcode|mjpeg_webrtc|h264_copy|h264_device
+**Default value**:
 
-    By default, **Obico for Klipper**  will try "h264_transcode" first, and fallback to "mjpeg_webrtc". Please note all these stream_mode needs janus to function properly.
+- `False`
 
-- `target_fps`
+### `stream_mode`
 
-    Note: If you are on self-hosted Obico server, the real FPS may be limited your hardware capabilities. If you are on Obico cloud, the real FPS may be limited by the service level you have subscribed. [More info](/docs/user-guides/webcam-streaming-resolution-framerate-klipper/).
+**Possible values**:
 
-- `resolution`
+- `h264_transcode`
+- `mjpeg_webrtc`
+- `h264_copy`
+- `h264_device`
 
-    Default: Automatically detected based on the stream_url or snapshot_url.
+**Default value**:
 
-    Note: If you are on self-hosted Obico server, the real resolution may be limited your hardware capabilities. If you are on Obico cloud, the real resolution may be limited by the service level you have subscribed. [More info](/docs/user-guides/webcam-streaming-resolution-framerate-klipper/).
+**Obico for Klipper**  will try "h264_transcode" first, and fallback to "mjpeg_webrtc". Please note all these stream_mode needs janus to function properly.
 
-- `flip_h`
+### `target_fps`
 
-    True|False. Default: False
+Note: If you are on self-hosted Obico server, the real FPS may be limited your hardware capabilities. If you are on Obico cloud, the real FPS may be limited by the service level you have subscribed. [More info](/docs/user-guides/webcam-streaming-resolution-framerate-klipper/).
 
-- `flip_v`
+### `resolution`
 
-    True|False. Default: False
+**Default value**:
 
-- `rotation`
+Automatically detected based on the stream_url or snapshot_url.
 
-    0|90|180|270. Default: 0
+Note: If you are on self-hosted Obico server, the real resolution may be limited your hardware capabilities. If you are on Obico cloud, the real resolution may be limited by the service level you have subscribed. [More info](/docs/user-guides/webcam-streaming-resolution-framerate-klipper/).
 
-    Clockwise rotation.
+### `flip_h`
 
-- `aspect_ratio_169`
+**Possible values**:
 
-    True|False. Default: False
+- `True`
+- `False`
 
-- `h264_http_url`
+**Default value**:
 
-    Required only when `stream_node=h264_copy`. It needs to be a valid Camera Streamer MP4 url, such as "http://127.0.0.1:8080/video.mp4".
+- `False`
 
-- `h264_device_path`
+### `flip_v`
 
-    Required only when `stream_node=h264_device`. It needs to be a device that supports H.264 output capability.
+**Possible values**:
+
+- `True`
+- `False`
+
+**Default value**:
+
+- `False`
+
+
+### `rotation`
+
+Clockwise rotation.
+
+**Possible values**:
+
+- `0`
+- `90`
+- `180`
+- `270`
+
+**Default value**:
+
+- `0`
+
+
+### `aspect_ratio_169`
+
+
+**Possible values**:
+
+- `True`
+- `False`
+
+**Default value**:
+
+- `False`
+
+### `h264_http_url`
+
+Required only when `stream_node=h264_copy`. It needs to be a valid Camera Streamer MP4 url, such as "http://127.0.0.1:8080/video.mp4".
+
+### `h264_device_path`
+
+Required only when `stream_node=h264_device`. It needs to be a device that supports H.264 output capability.
 
 
 ## Configure multiple webcams {#configure-multiple-webcams}
@@ -164,7 +222,7 @@ Below are examples of valid moonraker-obico.cfg configurations
 
 ![](/img/user-guides/mainsail_nozzle_camera_usb_camera_using_port.png)
 
-In this example, I have two webcams configured in Mainsail, one logitech c270 usb webcam and one Mintion Nozzle camera for first layer AI. 
+In this example, I have two webcams configured in Mainsail, one logitech c270 usb webcam and one Mintion Nozzle camera for first layer AI.
 
 **Mainsail Webcam Configuration**:
 
@@ -207,7 +265,7 @@ is_nozzle_camera = True
 
 ### Multiple Webcams in Mainsail/fluidd - One webcam in Obico {#multiple-webcams-in-mainsailfluidd---one-webcam-in-obico}
 
-If you have two webcams configured in Mainsail or fluidd, but you only want one specific webcam to be shown in Obico at all times, simply add the name of the webcam from Mainsail/fluidd to the ```moonraker-obico.cfg``` file. 
+If you have two webcams configured in Mainsail or fluidd, but you only want one specific webcam to be shown in Obico at all times, simply add the name of the webcam from Mainsail/fluidd to the ```moonraker-obico.cfg``` file.
 
 
 **Mainsail Webcam Configuration**:
@@ -216,7 +274,7 @@ If you have two webcams configured in Mainsail or fluidd, but you only want one 
 Webcam: c270
 URL Stream: /webcam/?action=stream
 URL Snapshot:  /webcam/?action=snapshot
-``` 
+```
 
 ```
 Webcam: nozzle
@@ -231,9 +289,9 @@ If I want to only see the c270 webcam in Obico, the configuration is as follows:
 ```
 [webcam c270]
 disable_video_streaming = False
-``` 
+```
 
-If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration. 
+If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration.
 
 I access the mainsail interface at: 192.168.1.123
 So, I have configured moonraker-obico.cfg as:
@@ -245,14 +303,14 @@ stream_url = http://192.168.123/webcam/?action=stream
 snapshot_url = http://192.168.123/webcam/?action=snapshot
 ```
 
- 
+
 
 ### Creality K1 with fluidd - Stock Camera {#creality-k1-with-fluidd---stock-camera}
 
 In this example, I have a Creality K1 Max with the stock webcam installed.
 
 
-**Fluidd Webcam Configuration**: 
+**Fluidd Webcam Configuration**:
 
 ```
 Webcam: K1 Webcam
@@ -267,9 +325,9 @@ URL Snapshot:  /webcam/?action=snapshot
 disable_video_streaming = False
 ```
 
-If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration. 
+If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration.
 
-Fluidd is accesssed at: http://192.168.1.123:4408 so I have configured the webcam section of ```moonraker-obico.cfg``` as follows: 
+Fluidd is accesssed at: http://192.168.1.123:4408 so I have configured the webcam section of ```moonraker-obico.cfg``` as follows:
 
 ```
 [webcam K1 Webcam]
@@ -285,7 +343,7 @@ stream_url = http://192.168.1.123:4408/webcam/?action=stream
 In this example, I have a Creality K1 Max with the stock webcam and an additional nozzle camera installed.
 
 
-**Fluidd Webcam Configuration**: 
+**Fluidd Webcam Configuration**:
 
 ```
 Webcam: K1 Webcam
@@ -309,9 +367,9 @@ disable_video_streaming = False
 disable_video_streaming = False
 ```
 
-If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration. 
+If the webcam is not picked up in the Obico app after restarting moonraker-obico, you may need to add the snapshot_url and stream_url to the webcam configuration.
 
-Fluidd is accesssed at: http://192.168.1.123:4408 so I have configured the webcam section of ```moonraker-obico.cfg``` as follows: 
+Fluidd is accesssed at: http://192.168.1.123:4408 so I have configured the webcam section of ```moonraker-obico.cfg``` as follows:
 
 ```
 [webcam K1 Webcam]

@@ -66,7 +66,6 @@ export default {
       loading: true,
       webcams: [],
       isWebrtcOpened: false,
-      webrtc: WebRTCConnection(),
     }
   },
   created() {

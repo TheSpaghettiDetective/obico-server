@@ -72,7 +72,9 @@ API request was processed successfully.
     - `rolling_mean_long`: Long-term rolling mean for `p`. Rolling window span = 7200. This rolling mean is accumulated over the lifetime of the printer.
     - `prediction_num`: The number of predictions for the current print so far.
     - `prediction_num_lifetime`: The number of predictions for the life-time of the printer.
-    - `detections`: A list of detected areas. Each detection is represented by a score from 0 to 1.0, where 0 means not failure and 1.0 means the maximum confidence on predicting a print failure and a list of four numbers indicating the coordinates of the detected spot.
+  - `detections`: A list of tuples. Each tuple is `[confidence, [xc, yc, w, h]]`.
+    - `confidence`: Range: [0, 1], where 0 means not failure and 1.0 means the maximum confidence on predicting a print failure.
+    - `[xc, yc, w, h]`: Rectangle of the detected area. `xc` and `yc` are the X and Y coordinates of the **center** of the rectangle. `w` and `h` are the width and hight of the rectangle.
 
 :::tip
 It's a good practice to use the temporal stats to smoothen out the noises in failure detection. Otherwise there may be excessive amount of false alarms.

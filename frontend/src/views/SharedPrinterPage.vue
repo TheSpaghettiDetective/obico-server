@@ -10,7 +10,7 @@
             <div>{{ printer.name }}</div>
           </div>
 
-          <div class="webcam-main justify-center webcam-more-than-two">
+          <div class="webcam-main webcam-more-than-two">
             <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner">
               <streaming-box
                 :printer="printer"
@@ -107,15 +107,12 @@ export default {
   margin-bottom: 1.5rem
 .webcam-main
   @media (min-width: 1024px)
-    height: calc(100vh - 50px - var(--gap-between-blocks)*2 - 33px)
-
-  @media (min-width: 1024px)
     display: grid
     align-items: center
-.justify-center
-  @media (min-width: 1024px)
-    justify-content: center
 .webcam-more-than-two
   display: flex !important
+  flex-direction: column
   gap: 10px
+.stream-inner
+  width: 100%
 </style>

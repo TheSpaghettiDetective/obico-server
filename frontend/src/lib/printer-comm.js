@@ -191,7 +191,9 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
       }
 
       const dataChannelWebrtc = self.webrtcConnections.get(null); // key == null -> data channel-only WebRTC
-      dataChannelWebrtc.sendData(JSON.stringify(msg))
+      if (dataChannelWebrtc) {
+        dataChannelWebrtc.sendData(JSON.stringify(msg))
+      }
 
       self.ws.send(JSON.stringify({ passthru: msg }))
     } else {

@@ -21,7 +21,7 @@ bson==0.5.10
 cachecontrol==0.13.1 ; python_version >= '3.7'
 cachetools==5.3.2 ; python_version >= '3.7'
 celery[redis]==5.3.4
-certifi==2023.7.22 ; python_version >= '3.6'
+certifi==2024.7.4 ; python_version >= '3.6'
 cffi==1.16.0 ; platform_python_implementation != 'PyPy'
 channels[daphne]==4.0.0
 channels-redis==4.1.0

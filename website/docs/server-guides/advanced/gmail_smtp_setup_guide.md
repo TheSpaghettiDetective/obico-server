@@ -12,13 +12,13 @@ To use Gmail's SMTP server for sending email, follow the following simple steps.
 
 Follow [this guide](https://support.google.com/accounts/answer/185839) to turn on 2-Step Verification.
 
-## 2. Add an "app password" for your self-hosted Obico server. {#2-add-an-app-password-for-your-self-hosted-obico-server}
+## 2. Add an "app password" for your self-hosted Obico Server. {#2-add-an-app-password-for-your-self-hosted-obico-server}
 
 1. Go to the account page for the Gmail account you intend to use.
 1. Select "Security".
 1. Under "How you sign in to Google" select "2-Step Verification".
 1. At the bottom, choose "App Passwords".
-1. Choose a name for this app password, such as "My Obico server".
+1. Choose a name for this app password, such as "My Obico Server".
 1. Click "Create".
 1. On the next screen, copy the text in the white box. This is the pass you will use in the next step.
 

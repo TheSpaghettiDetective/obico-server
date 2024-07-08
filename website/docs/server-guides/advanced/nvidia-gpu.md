@@ -69,7 +69,7 @@ Succeeded!
 ...
 ```
 
-Then your self-hosted Obico server is using your GPU.
+Then your self-hosted Obico Server is using your GPU.
 
 If, instead, you see:
 
@@ -85,7 +85,7 @@ Succeeded!
 ...
 ```
 
-Then somehow the Obico server failed to load the GPU driver and hence fell back to using CPU.
+Then somehow the Obico Server failed to load the GPU driver and hence fell back to using CPU.
 
 ## More details about the ML model and their supports of GPU {#more-details-about-the-ml-model-and-their-supports-of-gpu}
 

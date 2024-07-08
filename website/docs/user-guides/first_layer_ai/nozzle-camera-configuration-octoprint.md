@@ -9,12 +9,12 @@ import TabItem from '@theme/TabItem';
 
 
 
-## Required Hardware:
+## Required Hardware: {#required-hardware}
 A nozzle camera that provides an up-close view of your 3D printers’ nozzle.
 
 A nozzle camera is a specialized web camera. Nozzle cameras are much smaller than traditional webcams allowing them to get an up-close view of the 3D printer nozzle and the print. With a nozzle camera configured with your 3D printer, you can enable Nozzle Ninja, Obico's first layer AI, to watch your first layer for various types of print issues including over-extrusion, under-extrusion, poor bed adhesion and more. 
 
-### Recommended Cameras
+### Recommended Cameras {#recommended-cameras}
 
 - **[Mintion Nozzle Camera](https://www.mintion.net/products/mintion-nozzle-camera)**: 
 
@@ -24,7 +24,7 @@ A nozzle camera is a specialized web camera. Nozzle cameras are much smaller tha
    - Kb3d
    - Fabreeko
 
-## Compatible Printers
+## Compatible Printers {#compatible-printers}
 
 Obico’s first layer AI is compatible with any 3D printer running OctoPrint or Klipper, but there may not be a nozzle camera mount readily available for your 3D printer. Check with our nozzle camera partners, Mintion and 3DO to see if there is a mount for your printer. Of course, you can also check out various 3D model repositories such as Printables or Thingiverse, or you can design your own mount. 
 
@@ -38,7 +38,7 @@ Prefer watching a video instead? The video below walks through the process of co
 <iframe width="560" height="315" src="https://www.youtube.com/embed/BFV9HgJkRJI?si=wRyuRxZ2ypMZOVVD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
-## Configure Your Camera for First Layer AI
+## Configure Your Camera for First Layer AI {#configure-your-camera-for-first-layer-ai}
 
 Obico now supports multiple webcam streams in the Obico app. You can configure your nozzle camera as a second camera in Obico, or you can just use the nozzle camera as your only camera. 
 

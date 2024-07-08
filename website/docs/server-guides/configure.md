@@ -1,65 +1,22 @@
 ---
-title: Configuration
+title: Server configurations
 ---
 
-## Basic server configuration {#basic-server-configuration}
+There are a few server configurations you may want to do to make the server reasonably helpful.
 
-This is the bare minimum configuration required for the server to be reasonably useful.
 
-### Django Site {#django-site}
+## Change admin password {#change-admin-password}
 
-#### Obtain server's IP address {#obtain-servers-ip-address}
+1. Open Django admin page at [http://localhost:3334/admin/](http://localhost:3334/admin/).
 
-This refers to the LAN IP address that has been given to the computer that the Obico server is running on.
-- If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value.
-- If you are on Windows: Select "Properties" for the network your device is connected to, then look for the IPv4 value.
-- If you are on Mac: Go to Settings > Network. You will find your IPv4 value below the wifi status.
-
-The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
-
-It is also recommended that a static IP is set to avoid issues with changing IP's. Please look up your WiFi routers guide on how to do this.
-
-#### Creating and Obtaining your server's .local address {#creating-and-obtaining-your-servers-local-address}
-
-Similarly to how one can connect to octopi with octopi.local instead of an IP address, we can do the same for our Obico server.
-:::caution
-Doing this on a device that is already running software with similar functionality(ex. Homebridge) **may** cause issues. If a conflict does occur, it will not be fatal to either program or computer. This warning can mostly be ignored if this tool is new to you.
+:::tip
+If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up. Wait for a bit longer and try it again.
 :::
 
-- If you are on Windows, install [iTunes](https://www.apple.com/itunes/). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
-- If you are on Mac, you do not need to do anything. Mac already has this set up by default.
-- If you are on Linux, most distros come with `avahi-daemon` installed(ubuntu, debian, arch, redhat). Instructions on installation/update for `avahi-daemon` for your distro can be found online.
-  - To enable Avahi, run `sudo systemctl enable avahi-daemon && sudo systemctl start avahi-daemon`. You are now done.
-  - Although optional, we recommend you change some settings in your config file.
-    - Located in `/etc/avahi/avahi-daemon.conf`, uncomment(if needed, done by removing the `#`) and set `publish-addresses`, `publish-hinfo`, `publish-workstation`, `publish-domain` all equal to `yes`. Do **not** include spaces before and after the equal sign
-    - More optionally, you can change the hostname of the service by uncommenting and setting `hostname` to whatever you would like.
-    - you can now restart avahi by running `sudo systemctl restart avahi-daemon`
-    - More information on this can be found in the [docs](https://manpages.ubuntu.com/manpages/trusty/man5/avahi-daemon.conf.5.html).
+2. Login with the default username `root@example.com`, password `supersecret`. Once logged in, you should change the admin password using this link: [http://localhost:3334/admin/app/user/1/password/](http://localhost:3334/admin/app/user/1/password/).
 
-You can find your hostname by typing `hostname` into your terminal, regardless of OS.
 
-You can now connect to your server with `your_host_name.local:3334`. Conveniently, your host name is not case sensitive.
-
-To reiterate, you can connect to your server with either `your_server_ip:3334` or `your_host_name.local:3334`. If you choose to use a .local address, you may assume `your_server_ip` to be interchangeable with your .local address. You can use it not only as a URL, but also for SSH and as a general replacement for the ip address.
-#### Login as Django admin {#login-as-django-admin}
-
-1. Open Django admin page at `http://your_server_ip:3334/admin/`.
-
-*Note: If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up.*
-
-2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
-
-#### Configure Django site {#configure-django-site}
-
-1. In the same browser window, go to the address `http://your_server_ip:3334/admin/sites/site/1/change/`. Change "Domain name" to `your_server_ip:3334`. No "http://", "https://" prefix or trailing "/", otherwise it will NOT work. *Note: Deleting the original site and adding a new one won't work, thanks to the quirkiness of Django site.*
-
-2. Click "Save". Yes it's correct that Django is not as smart as most people think. ;)
-
-![Site configuration](/img/server-guides/site_config.png)
-
-*Note: If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](advanced/reverse-proxy.md) for details.*
-
-### Email (SMTP) {#email-smtp}
+## Email (SMTP) {#email-smtp}
 
 The following is using gmail as an example. Other web mail services may vary slightly, such as EMAIL_PORT
 
@@ -92,7 +49,77 @@ You can follow [this guide](advanced/gmail_smtp_setup_guide.md) if you want to u
 If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](advanced/email_guide.md).
 *Note: Make sure to to remove the # or else it will not work.
 
-### (Re-)generate `DJANGO_SECRET_KEY` {#re-generate-django_secret_key}
+
+## Django Site {#django-site}
+
+The Django site is what you enter in the browser address bar to open the server page.
+
+If you are running the Obico Server on your laptop and enter [http://localhost:3334](http://localhost:3334) in your browser to open the server page, there is nothing you need to do about the Django site. But if Obico Server is running on another computer, you will need to configure a Django site that matches your server's IP address or host name.
+
+In this case, follow the steps below:
+
+### 1. Determine the address part of the Django site {#1-determine-the-address-part-of-the-django-site}
+
+The address part depends on how you want to access your Obico Server:
+
+- You want to access your Obico Server using a LAN IP address. In this case, [obtain the server's IP address](/docs/server-guides/server-addresses/#obtain-servers-ip-address). We will call it `server_ip_address` for the remaining of this guide.
+
+- You want to access your Obico Server from outside of your LAN using a public IP. We will call it `server_ip_address` for the remaining of this guide. Exposing your Obico Server outside your LAN is beyond the scope of this guide. You may find useful info in [the advanced server configurations section](/docs/server-guides/advanced/).
+
+- You want to access your Obico Server using a domain name. It can be [an mDNS address](/docs/server-guides/server-addresses/#creating-and-obtaining-your-servers-local-address), or a domain name that can be resolved by a DNS server. We will call it `server_domain_name` for the remaining of this guide. How to obtain the domain name is beyond the scope of this guide.
+
+### 2. Determine the port part of the Django site {#2-determine-the-port-part-of-the-django-site}
+
+By default, the Obico Server listens on port `3334`.
+
+However, if you have set up a reverse proxy, e.g., in the case when you want to access the server outside the LAN, the port will be the port of your reverse proxy.
+
+We will use `server_port` to represent the port part for the remaining of this guide.
+
+### 3. Put the address part and the port part together to be the Django site {#3-put-the-address-part-and-the-port-part-together-to-be-the-django-site}
+
+- If the address part is an IP address, either LAN IP address or a public IP address, the Django site is `server_ip_address:server_port`.
+
+- If the address part is an domain name, the Django site is `server_domain_name:server_port`.
+
+:::caution
+Counter-intuitively, the Django site should NOT include `http://` or `https://`. Otherwise your server will not run correctly.
+:::
+
+### 4. Add a site to your Obico Server {#4-add-a-site-to-your-obico-server}
+
+There are 2 ways to add a new site to your Obico Sever.
+
+### 4.1 If you can access your Obico Server using [http://localhost:3334](http://localhost:3334) {#41-if-you-can-access-your-obico-server-using-httplocalhost3334}
+
+In this case, the easiest way is to add the site in Django Admin.
+
+1. Login as Django admin at [http://localhost:3334/admin/sites/site/](http://localhost:3334/admin/sites/site/).
+1. Click "ADD SITE".
+1. Fill in the "Domain Name" field with the Django site determined in the previous step.
+1. Click "Save".
+
+![Site configuration](/img/server-guides/site_config.png)
+
+### 4.2 If you can NOT access your Obico Server using [http://localhost:3334](http://localhost:3334) {#42-if-you-can-not-access-your-obico-server-using-httplocalhost3334}
+
+This method works no matter if your Obico Server is running on the localhost. This is especially useful for cases such as running your Obico Server in the cloud.
+
+```
+cd obico-server && docker compose run web ./manage.py site --add xxxx # xxxx is the Django site determined in the previous step.
+```
+
+Replace xxxx in the command with the Django site determined in the previous step.
+
+:::tip
+If you set up your Obico Server before June 5th, 2024, you may need to run the following command after the server is upgraded:
+
+```
+cd obico-server && docker compose run web ./manage.py site --fix
+```
+:::
+
+## (Re-)generate `DJANGO_SECRET_KEY` {#re-generate-django_secret_key}
 
 This step is optional. But you are highly recommended to generate `DJANGO_SECRET_KEY` and rotate (re-generate) it periodically, especially if you have your Obico Server exposed to the Internet via reverse proxy.
 
@@ -123,7 +150,6 @@ docker compose stop && docker compose up -d
 ```
 docker compose exec web ./manage.py resign_media_urls
 ```
-
 
 ## What's next? {#whats-next}
 

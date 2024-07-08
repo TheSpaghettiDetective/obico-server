@@ -3,7 +3,7 @@ id: pushover-notification-plugin
 title: Build a Pushover notification plugin for Obico
 ---
 
-This tutorial walks you through the steps to build a Pushover notification plugin and run it in your self-hosted Obico server. As a matter of fact, the Pushover notification that's shipped with the Obico server is just a slightly polished version.
+This tutorial walks you through the steps to build a Pushover notification plugin and run it in your self-hosted Obico Server. As a matter of fact, the Pushover notification that's shipped with the Obico Server is just a slightly polished version.
 
 ## 1. Create a Pushover app and obtain its API Token {#1-create-a-pushover-app-and-obtain-its-api-token}
 
@@ -63,6 +63,6 @@ cd ..
 docker-compose restart
 ```
 
-You should be able to see the notification plugin you just created on your Obico server and start receiving notifications from your own pushover app!
+You should be able to see the notification plugin you just created on your Obico Server and start receiving notifications from your own pushover app!
 
 ![](/img/tutorials/pushover-notification-plugin-done.jpg)

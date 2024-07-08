@@ -113,7 +113,7 @@ def printer_pic_get(printer_id, key=None):
 
 
 def printer_settings_set(printer_id, mapping, ex=None):
-    cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
+    cleaned_mapping = {k: v for k, v in mapping.items() if v is not None} # Redis doesn't allow None values
     prefix = printer_key_prefix(printer_id) + 'settings'
     REDIS.hmset(prefix, cleaned_mapping)
     if ex:

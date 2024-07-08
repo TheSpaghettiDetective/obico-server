@@ -19,7 +19,7 @@ The ways to restart the printer or Raspberry Pi are slightly different between M
 
 ![](/img/user-guides/helpdocs/restart-printer-pi.png)
 
-## An example of the configuration file
+## An example of the configuration file {#an-example-of-the-configuration-file}
 
 ```
 [server]
@@ -62,13 +62,23 @@ level = INFO
 
 The configuration for connecting to the Obico Server.
 
-- `url`: The URL for the Obico Server. Such as "https://app.obico.io".
-- `auth_token`: The authentication token to authenticate Obico for Klipper client to the Obico Server. This is typically obtained by the `install.sh` from the server during the linking process. Don't directly set it.
+### `url` {#url}
+
+The URL for the Obico Server. Such as "https://app.obico.io".
+
+### `auth_token` {#auth_token}
+
+The authentication token to authenticate Obico for Klipper client to the Obico Server. This is typically obtained by the `install.sh` from the server during the linking process. Don't directly set it.
 
 ## `[moonraker]` section {#moonraker-section}
 
-- `host`: Moonraker host. Usually it's "127.0.0.1", namely the same host as **Obico for Klipper**.
-- `port`: The port Moonraker is listening on. The default port for Moonraker is 7125 but can be a different one, which is very typical on a system that runs multiple Moonraker instances.
+### `host` {#host}
+
+Moonraker host. Usually it's "127.0.0.1", namely the same host as **Obico for Klipper**.
+
+### `port` {#port}
+
+The port Moonraker is listening on. The default port for Moonraker is 7125 but can be a different one, which is very typical on a system that runs multiple Moonraker instances.
 
 ## `[webcam]` section {#webcam-section}
 
@@ -83,13 +93,26 @@ If you have a special webcam setup, or have run into issues with your webcam in 
 
 ## `[logging]` section {#logging-section}
 
-- `path`: The path to the log file. Will be automatically rotated at 5MB size.
-- `level`: Default to `INFO`. Set to `DEBUG` to see _a lot_ more details in the logs
+### `path` {#path}
+
+The path to the log file. Will be automatically rotated at 5MB size.
+
+### `level` {#level}
+
+Default to `INFO`. Set to `DEBUG` to see _a lot_ more details in the logs
 
 ## `[tunnel]` section {#tunnel-section}
 
 The configuration specifically for Klipper Tunnel. Most of the time you should just leave them as default.
 
-- `dest_host`: Default to `127.0.0.1`. The hostname or IP address that you want to the tunnel request to be sent to. It is typically the same as the hostname/IP you enter in the browser to use Mainsail/Fluidd. For example, `mainsailos.local`, or `192.168.0.32`. Do NOT include "http://" or the port number here.
-- `dest_port`: Default to `80`. The port that you want to the tunnel request to be sent to. This is typically 80 (default).
-- `dest_is_ssl`: Default to `False`. You almost should never set this to `True` unless you do know that your Klipper only be accessed by SSL.
+### `dest_host` {#dest_host}
+
+Default to `127.0.0.1`. The hostname or IP address that you want to the tunnel request to be sent to. It is typically the same as the hostname/IP you enter in the browser to use Mainsail/Fluidd. For example, `mainsailos.local`, or `192.168.0.32`. Do NOT include "http://" or the port number here.
+
+### `dest_port` {#dest_port}
+
+Default to `80`. The port that you want to the tunnel request to be sent to. This is typically 80 (default).
+
+### `dest_is_ssl` {#dest_is_ssl}
+
+Default to `False`. You almost should never set this to `True` unless you do know that your Klipper only be accessed by SSL.

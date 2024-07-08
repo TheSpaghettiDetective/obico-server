@@ -28,7 +28,7 @@ Path to timelapses:
 
 ## Prune old images {#prune-old-images}
 
-As you upgrade the Obico server containers, old (now unused) versions of these containers will be left behind.  To remove these old images, one can run the following:
+As you upgrade the Obico Server containers, old (now unused) versions of these containers will be left behind.  To remove these old images, one can run the following:
 
 ```
 docker image prune

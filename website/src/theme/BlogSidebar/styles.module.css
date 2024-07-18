@@ -64,6 +64,45 @@ html[data-theme=dark] .sidebarItem {
   color: var(--ifm-color-primary);
 }
 
+.nozzleNinzaBlock {
+  background: #2D3E4F !important;
+  color: #fff;
+  padding: 18px 16px 30px 16px;
+  margin-bottom: 1rem;
+  h1 {
+    margin-bottom: 0;
+  }
+  h3 {
+    margin-bottom: 10px;
+  }
+}
+
+.obicoAccent {
+  color: #03DAC5;
+}
+
+.nozzleNizaBadgeImage {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.learnMoreButton {
+  border: 1px solid #181623;
+  box-sizing: border-box;
+  border-radius: 44px;
+  line-height: 1.5;
+  font-weight: 600;
+  display: inline-block;
+  font-size: 18px;
+  text-align: center;
+  padding: 8px 0 9px 0;
+  width: 100%;
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
 @media only screen and (max-width: 996px) {
   .sidebar {
     margin-top: 2rem;

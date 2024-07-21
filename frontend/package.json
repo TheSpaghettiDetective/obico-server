@@ -64,6 +64,9 @@
     "vue-template-compiler": "^2.6.11",
     "webpack-bundle-tracker": "^2.0.1"
   },
+  "resolutions": {
+    "sweetalert2": "9.17.3"
+  },
   "browserslist": [
     "> 1%",
     "last 2 versions",

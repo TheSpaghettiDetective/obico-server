@@ -29,6 +29,9 @@
     "react-medium-image-zoom": "^4.3.5",
     "url-loader": "^4.1.1"
   },
+  "resolutions": {
+    "sweetalert2": "9.17.3"
+  },
   "browserslist": {
     "production": [
       ">0.5%",

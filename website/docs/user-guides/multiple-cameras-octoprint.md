@@ -3,14 +3,10 @@ id: multiple-cameras-octoprint
 title: Setup Multiple Cameras In OctoPrint
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+The video below will walk you through the process of adding multiple webcams to OctoPrint using the multi-cam plugin. Once configured in OctoPrint, you can setup multiple cameras in Obico as well.
 
-
-The video below will walk you through the process of adding multiple webcams to OctoPrint using the multi-cam plugin. Once configured in OctoPrint, you can setup multiple cameras in Obico as well. 
-
-:::Note
-This video assumes you are running OctoPi with the new camera stack (released in May, 2023.)
+:::note
+This video assumes you are running [OctoPi with the new camera stack](https://octoprint.org/blog/2023/05/24/a-new-camera-stack-for-octopi/).
 :::
 
 

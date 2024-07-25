@@ -93,6 +93,7 @@ module.exports = {
           type: 'category',
           label: 'Webcam Settings',
           items: [
+            'user-guides/multiple-cameras-octoprint',
             'user-guides/webcam-streaming-resolution-framerate-octoprint',
             'user-guides/octoprint-webcam-not-streaming',
           ],

@@ -18,6 +18,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import i18next from "@src/i18n/i18n.js";
 import I18NextVue from "i18next-vue";
+import { createPinia, PiniaVuePlugin } from 'pinia'
+
 import {
   faStar,
   faFileCode,
@@ -112,10 +114,13 @@ export default (router, components) => {
   )
   Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 
+  const pinia = createPinia()
+
   if (document.getElementById('app')) {
     new Vue({
       router,
       components,
+      pinia,
     }).$mount('#app')
   }
 

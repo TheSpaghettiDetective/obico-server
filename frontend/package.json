@@ -29,6 +29,7 @@
     "moment": "^2.29.4",
     "pako": "^2.0.3",
     "patch-package": "^6.5.0",
+    "pinia": "^2.2.0",
     "postinstall-postinstall": "^2.1.0",
     "semver": "^7.3.5",
     "three": "^0.167.0",

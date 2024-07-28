@@ -92,6 +92,7 @@ import detached1 from '@src/components/first-layer-review/example-images/detache
 import detached2 from '@src/components/first-layer-review/example-images/detached-2.jpg'
 import gaps1 from '@src/components/first-layer-review/example-images/gaps-1.jpg'
 import gaps2 from '@src/components/first-layer-review/example-images/gaps-2.jpg'
+import urls from '@config/server-urls'
 
 export default {
   name: 'FirstLayerShotCard',
@@ -163,7 +164,7 @@ export default {
       const labelsString = this.labelsToString(this.labels)
 
       axios
-        .patch(`/ent/api/first_layer_inspection_image/${this.shot.id}/`, {
+        .patch(urls.firstLayerInspectionImage(this.shot.id), {
           labels: labelsString,
         })
         .then((response) => {

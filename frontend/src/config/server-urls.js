@@ -28,6 +28,9 @@ export default {
 
   printerEvents: () => '/api/v1/printer_events/',
 
+  firstLayerInspection: (print_id) => `/api/first_layer_inspection/?print_id=${print_id}`,
+  firstLayerInspectionImage: (flii_id) => `/api/first_layer_inspection_images/${flii_id}/`,
+
   // Notifications
   notificationPlugins: () => '/api/v1/notification_settings/available_plugins/',
   notificationChannels: () => '/api/v1/notification_settings/',

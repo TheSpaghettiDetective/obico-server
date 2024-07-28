@@ -45,7 +45,7 @@ import { syndicateTextConstant } from '@src/config/syndicateText'
 Vue.prototype.$syndicate = syndicate().name
 Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().name||'base'] || syndicateTextConstant.base
 
-export default (router, components) => {
+export default (router, components, store) => {
   initTheme()
   setupSentry(Vue)
   Vue.use(VueRouter)
@@ -115,6 +115,7 @@ export default (router, components) => {
   if (document.getElementById('app')) {
     new Vue({
       router,
+      store,
       components,
     }).$mount('#app')
   }

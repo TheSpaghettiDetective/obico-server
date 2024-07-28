@@ -31,6 +31,7 @@
     "patch-package": "^6.5.0",
     "postinstall-postinstall": "^2.1.0",
     "semver": "^7.3.5",
+    "three": "^0.167.0",
     "vue": "^2.6.11",
     "vue-click-outside": "^1.1.0",
     "vue-loading-overlay": "^3.3.2",
@@ -49,6 +50,7 @@
     "vue2-canvas-gauges": "^0.0.0",
     "vue2-dropzone": "^3.6.0",
     "vuedraggable": "^2.24.3",
+    "vuex": "^4.1.0",
     "webrtc-adapter": "^8.0.0"
   },
   "devDependencies": {

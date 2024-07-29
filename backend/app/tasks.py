@@ -143,12 +143,13 @@ def compile_timelapse(print_id):
 
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
-def preprocess_timelapse(self, user_id, video_path, filename):
+def preprocess_timelapse(self, user_id, video_url, video_path, filename):
     tmp_file_path = os.path.join(tempfile.gettempdir(), video_path)
     converted_mp4_path = tmp_file_path + '.mp4'
     Path(tmp_file_path).parent.mkdir(parents=True, exist_ok=True)
+    response = requests.get(video_url)
     with open(tmp_file_path, 'wb') as file_obj:
-        retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.PICS_CONTAINER, long_term_storage=True)
+        file_obj.write(response.content)
 
     subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
 

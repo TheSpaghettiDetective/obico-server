@@ -20,6 +20,15 @@ let vueConfig = {
 
   configureWebpack: {
     devtool: 'source-map',
+    module: {
+      rules: [
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: "javascript/auto"
+        }
+      ] 
+    },
     resolve: {
       alias: {
         '@src': path.join(__dirname, 'src'),

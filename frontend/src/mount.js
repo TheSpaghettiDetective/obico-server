@@ -58,6 +58,7 @@ export default (router, components) => {
   Vue.use(VuePluralize)
   Vue.use(OnoffToggle)
   Vue.use(LoadScript)
+  Vue.use(PiniaVuePlugin)
   Vue.use(I18NextVue, { i18next });
   Vue.mixin({
     methods: {
@@ -114,7 +115,10 @@ export default (router, components) => {
   )
   Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 
+
+
   const pinia = createPinia()
+
 
   if (document.getElementById('app')) {
     new Vue({

@@ -41,12 +41,11 @@ import {
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 import { syndicate, language } from '@src/lib/page-context'
 import { syndicateTextConstant } from '@src/config/syndicateText'
-import store from '@src/store';
 
 Vue.prototype.$syndicate = syndicate().name
 Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().name||'base'] || syndicateTextConstant.base
 
-export default (router, components) => {
+export default (store, router, components) => {
   initTheme()
   setupSentry(Vue)
   Vue.use(VueRouter)

@@ -152,7 +152,7 @@ def preprocess_timelapse(self, user_id, video_path, filename):
 
     subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
 
-    _print = Print.objects.create(user_id=user_id, filename=filename, uploaded_at=timezone.now())
+    _print = Print.objects.create(user_id=user_id, filename=filename, uploaded_at=timezone.now(), started_at=timezone.now(), finished_at=timezone.now())
     with open(converted_mp4_path, 'rb') as mp4_file:
         _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
     _print.video_url = video_url
@@ -304,7 +304,7 @@ def send_timelapse_detection_done_email(_print):
     ctx = {
         'print': _print,
         'unsub_url': 'https://app.obico.io/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
-        'prints_link': syndicate.build_full_url_for_syndicate('/prints/', syndicate_name),
+        'prints_link': syndicate.build_full_url_for_syndicate('/print_history/', syndicate_name),
     }
     emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
     message = get_template('email/upload_print_processed.html').render(ctx)

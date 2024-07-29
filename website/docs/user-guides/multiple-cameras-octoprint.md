@@ -6,7 +6,7 @@ title: Setup Multiple Cameras In OctoPrint
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-:::Note
+:::note
 This guide assumes you are running OctoPi with the new camera stack (released in May, 2023.)
 :::
 
@@ -79,6 +79,7 @@ sudo add-usb-camera nozzle_cam
 ```
 
 2. The system will list the connected cameras. Select your nozzle camera by entering its number from the list.
+
 ![](/img/user-guides/octoprint-multiple-cameras/add-another-camera.png)
 
 
@@ -86,39 +87,50 @@ sudo add-usb-camera nozzle_cam
 
 ### Step 6: 
 1. Open the configuration file for the first camera using:
+
 ```
 sudo nano <configuration_file_path>
 ```
- Replace `<configuration_file_path>` with the actual path provided earlier.
+
+Replace `<configuration_file_path>` with the actual path provided earlier.
 
 2. Add the following line under the options section:
- ```
+
+```
 --http-listen=0.0.0.0
 ```
+
 ![](/img/user-guides/octoprint-multiple-cameras/edit-configuration-files.png)
 
 
 3. Save the file by pressing Ctrl+O, then exit by pressing Ctrl+X.
 4. Repeat the above steps for the nozzle camera's configuration file:
+
 ```
 sudo nano <nozzle_camera_configuration_file_path>
 ```
-   Add the same line:
-  ```
+
+Add the same line:
+
+```
 --http-listen=0.0.0.0
 ```
+
 ![](/img/user-guides/octoprint-multiple-cameras/edit-configuration-files-camera-two.png)
 
 
-
-   Save and exit.
+Save and exit.
 
 ### Step 7: Restart Camera Streamer
 1. Restart the camera streamer using the following command:
- ```
+
+
+```
 sudo systemctl restart camera-streamer
 ```
+
 ### Step 8: Verify Webcam Streams
+
 1. Verify the webcam streams are working by opening the following URLs in your web browser:
    For the first camera:
    - Stream: `http://<your_device_IP>:8081/?action=stream`
@@ -127,12 +139,14 @@ sudo systemctl restart camera-streamer
    - Stream: `http://<your_device_IP>:8082/?action=stream`
    - Snapshot: `http://<your_device_IP>:8082/?action=snapshot`
 
+
 ![](/img/user-guides/octoprint-multiple-cameras/verify-webcam-streams.png)
 
 ### Step 9: Configure OctoPrint
 1. Access OctoPrint by navigating to `http://<your_device_IP>` in your web browser.
 2. Go to the "Plugin Manager" under the settings menu.
 3. Find and disable the "Classic Webcam" plugin.
+
 ![](/img/user-guides/octoprint-multiple-cameras/configure-octoprint.png)
 
 
@@ -143,6 +157,7 @@ sudo systemctl restart camera-streamer
 3. Configure the Multi-Cam plugin:
    - Go to the Multi-Cam plugin settings.
    - Enter a name for the first camera.
+
 ![](/img/user-guides/octoprint-multiple-cameras/configure-the-multi-cam-plugin-add-first-cam.png)
 
    - Enter the stream URL (e.g., `http://<your_device_IP>:8081/?action=stream`) and the snapshot URL (e.g., `http://<your_device_IP>:8081/?action=snapshot`) for the first camera.

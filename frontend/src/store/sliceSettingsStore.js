@@ -13,8 +13,11 @@ const mutations = {
 }
 
 const actions = {
-  updateBottomSheetOpen({ commit }, bottomSheetOpen) {
-    commit('SET_BOTTOM_SHEET_OPEN', bottomSheetOpen)
+  openModelRotationBottomSheet({ commit }) {
+    commit('SET_BOTTOM_SHEET_OPEN', true)
+  },
+  closeModelRotationBottomSheet({ commit }) {
+    commit('SET_BOTTOM_SHEET_OPEN', false)
   },
   updateRotationAngle({ commit }, rotationAngle) {
     commit('SET_ROTATION_ANGLE', rotationAngle)

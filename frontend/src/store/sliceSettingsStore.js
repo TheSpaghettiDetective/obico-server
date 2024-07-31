@@ -5,7 +5,7 @@ const state = {
   rotationAngles: [0, 0, 0],
   initialDimensions: { x: 0, y: 0, z: 0 },
   currentDimensions: { x: 0, y: 0, z: 0 },
-
+  moveMagnitudes: [0, 0],
 }
 
 const mutations = {
@@ -25,6 +25,11 @@ const mutations = {
   SET_ROTATION_ANGLE(state, {index, angle}) {
     state.rotationAngles.splice(index, 1, angle);
   },
+
+  SET_MOVE_MAGNITUDE(state, {index, magnitude}) {
+    state.moveMagnitudes.splice(index, 1, magnitude);
+  },
+
   SET_SCALE_BOTTOM_SHEET_OPEN(state, ScalebottomSheetOpen) {
     state.ScalebottomSheetOpen = ScalebottomSheetOpen
   },
@@ -76,6 +81,11 @@ const actions = {
     commit('SET_ROTATION_ANGLE', payload)
   },
 
+
+  updateMoveMagnitude({ commit }, payload) {
+    commit('SET_MOVE_MAGNITUDE', payload)
+  },
+
 }
 
 const getters = {
@@ -85,6 +95,7 @@ const getters = {
   initialDimensions: (state) => state.initialDimensions,
   currentDimensions: (state) => state.currentDimensions,
   rotationAngles: (state) => state.rotationAngles,
+  moveMagnitudes: (state) => state.moveMagnitudes,
 }
 
 export default {

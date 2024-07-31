@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import VueCompositionAPI from '@vue/composition-api'
 import VueRouter from 'vue-router'
 import VueSwal from '@src/lib/vue-swal'
 import { BootstrapVue } from 'bootstrap-vue'
@@ -49,7 +48,6 @@ Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().name||'base'] |
 export default (store, router, components) => {
   initTheme()
   setupSentry(Vue)
-  Vue.use(VueCompositionAPI)
   Vue.use(VueRouter)
   Vue.use(BootstrapVue)
   Vue.use(VueSwal)

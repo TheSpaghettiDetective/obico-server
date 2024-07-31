@@ -2,6 +2,7 @@ const state = {
   RotationbottomSheetOpen: false,
   ScalebottomSheetOpen: false,
   MovebottomSheetOpen: false,
+  PrintProfilebottomSheetOpen: false,
   rotationAngles: [0, 0, 0],
   initialDimensions: { x: 0, y: 0, z: 0 },
   currentDimensions: { x: 0, y: 0, z: 0 },
@@ -35,6 +36,10 @@ const mutations = {
   },
   SET_MOVE_BOTTOM_SHEET_OPEN(state, MovebottomSheetOpen) { 
     state.MovebottomSheetOpen = MovebottomSheetOpen
+  },
+
+  SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN(state, PrintProfilebottomSheetOpen) {
+    state.PrintProfilebottomSheetOpen = PrintProfilebottomSheetOpen;
   },
 
 }
@@ -76,6 +81,15 @@ const actions = {
   },
 
 
+  //Print Profile BottomSheet
+  openPrintProfileBottomSheet({ commit }) {
+    commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', true);
+  },
+  closePrintProfileBottomSheet({ commit }) {
+    commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', false);
+  },
+
+
   //Rotation Angle
   updateRotationAngle({ commit }, payload) {
     commit('SET_ROTATION_ANGLE', payload)
@@ -92,6 +106,7 @@ const getters = {
   RotationbottomSheetOpen: (state) => state.RotationbottomSheetOpen,
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
   MovebottomSheetOpen: (state) => state.MovebottomSheetOpen,
+  PrintProfilebottomSheetOpen: (state) => state.PrintProfilebottomSheetOpen,
   initialDimensions: (state) => state.initialDimensions,
   currentDimensions: (state) => state.currentDimensions,
   rotationAngles: (state) => state.rotationAngles,

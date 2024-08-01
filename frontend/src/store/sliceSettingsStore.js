@@ -2,10 +2,11 @@ const state = {
   RotationbottomSheetOpen: false,
   ScalebottomSheetOpen: false,
   MovebottomSheetOpen: false,
+  PrintProfilebottomSheetOpen: false,
   rotationAngles: [0, 0, 0],
   initialDimensions: { x: 0, y: 0, z: 0 },
   currentDimensions: { x: 0, y: 0, z: 0 },
-
+  moveMagnitudes: [0, 0],
 }
 
 const mutations = {
@@ -25,11 +26,20 @@ const mutations = {
   SET_ROTATION_ANGLE(state, {index, angle}) {
     state.rotationAngles.splice(index, 1, angle);
   },
+
+  SET_MOVE_MAGNITUDE(state, {index, magnitude}) {
+    state.moveMagnitudes.splice(index, 1, magnitude);
+  },
+
   SET_SCALE_BOTTOM_SHEET_OPEN(state, ScalebottomSheetOpen) {
     state.ScalebottomSheetOpen = ScalebottomSheetOpen
   },
   SET_MOVE_BOTTOM_SHEET_OPEN(state, MovebottomSheetOpen) { 
     state.MovebottomSheetOpen = MovebottomSheetOpen
+  },
+
+  SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN(state, PrintProfilebottomSheetOpen) {
+    state.PrintProfilebottomSheetOpen = PrintProfilebottomSheetOpen;
   },
 
 }
@@ -71,9 +81,23 @@ const actions = {
   },
 
 
+  //Print Profile BottomSheet
+  openPrintProfileBottomSheet({ commit }) {
+    commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', true);
+  },
+  closePrintProfileBottomSheet({ commit }) {
+    commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', false);
+  },
+
+
   //Rotation Angle
   updateRotationAngle({ commit }, payload) {
     commit('SET_ROTATION_ANGLE', payload)
+  },
+
+
+  updateMoveMagnitude({ commit }, payload) {
+    commit('SET_MOVE_MAGNITUDE', payload)
   },
 
 }
@@ -82,9 +106,11 @@ const getters = {
   RotationbottomSheetOpen: (state) => state.RotationbottomSheetOpen,
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
   MovebottomSheetOpen: (state) => state.MovebottomSheetOpen,
+  PrintProfilebottomSheetOpen: (state) => state.PrintProfilebottomSheetOpen,
   initialDimensions: (state) => state.initialDimensions,
   currentDimensions: (state) => state.currentDimensions,
   rotationAngles: (state) => state.rotationAngles,
+  moveMagnitudes: (state) => state.moveMagnitudes,
 }
 
 export default {

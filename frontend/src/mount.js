@@ -45,7 +45,7 @@ import { syndicateTextConstant } from '@src/config/syndicateText'
 Vue.prototype.$syndicate = syndicate().name
 Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().name||'base'] || syndicateTextConstant.base
 
-export default (store, router, components) => {
+export default (store, routes, components) => {
   initTheme()
   setupSentry(Vue)
   Vue.use(VueRouter)
@@ -84,6 +84,11 @@ export default (store, router, components) => {
         return this.$syndicateText.appRoot;
       }
     },
+  })
+
+  const router = new VueRouter({
+    mode: 'history',
+    routes,
   })
 
   Vue.component('LoadingPlaceholder', LoadingPlaceholder)

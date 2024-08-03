@@ -25,9 +25,7 @@ import PrinterTerminalPage from '@src/views/PrinterTerminalPage.vue'
 import FirstLayerInspectionImagePage from '@src/views/FirstLayerInspectionImagePage.vue'
 
 
-const router = new VueRouter({
-  mode: 'history',
-  routes: [
+  const routes = [
     {
       path: '/g_code_folders/cloud/:parentFolder',
       component: GCodeFoldersPage,
@@ -68,8 +66,7 @@ const router = new VueRouter({
       path: route,
       component: UserPreferencesPage,
     })),
-  ],
-})
+  ]
 
 const components = {
   NewOctoPrintTunnelPage,
@@ -93,4 +90,4 @@ const components = {
   FirstLayerInspectionImagePage,
 }
 
-export { router, components }
+export { routes, components }

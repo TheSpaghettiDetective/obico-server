@@ -6,7 +6,8 @@ WORKDIR /app
 EXPOSE 3334
 RUN apk -U add bash vim ffmpeg postgresql-libs git openjpeg tiff
 RUN apk add --virtual .build-deps g++ musl-dev postgresql-dev zlib-dev jpeg-dev libffi-dev openjpeg-dev tiff-dev openblas-dev \
-    patch curl-dev python3-dev build-base freetype-dev lcms2-dev tk-dev tcl-dev  # Needed by /moonraker/scripts/moonraker-requirements.txt
+    patch curl-dev python3-dev build-base freetype-dev lcms2-dev tk-dev tcl-dev \       # Needed by /moonraker/scripts/moonraker-requirements.txt
+    gcc musl-dev mariadb-dev                                                            # Needed by mysqlclient
 
 # Checkout moonraker and lock the version so that we can use the metadata parser
 RUN git clone https://github.com/Arksine/moonraker.git /moonraker

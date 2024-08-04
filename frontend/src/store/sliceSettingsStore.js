@@ -3,7 +3,7 @@ const state = {
   //Component States
   RotationbottomSheetOpen: false,
   ScalebottomSheetOpen: false,
-  TransformbottomSheetOpen: false,
+  TranslatebottomSheetOpen: false,
   PrintProfilebottomSheetOpen: false,
   PrinterSelectionOpen: false,
   FilamentSelectionOpen: false,
@@ -14,7 +14,7 @@ const state = {
   rotationAngles: [0, 0, 0],
   initialDimensions: { x: 0, y: 0, z: 0 },
   currentDimensions: { x: 0, y: 0, z: 0 },
-  transformMagnitudes: [0, 0],
+  translateMagnitudes: [0, 0],
 
 
 
@@ -42,15 +42,15 @@ const mutations = {
     state.rotationAngles.splice(index, 1, angle);
   },
 
-  SET_MOVE_MAGNITUDE(state, {index, magnitude}) {
-    state.transformMagnitudes.splice(index, 1, magnitude);
+  SET_TRANSLATE_MAGNITUDE(state, {index, magnitude}) {
+    state.translateMagnitudes.splice(index, 1, magnitude);
   },
 
   SET_SCALE_BOTTOM_SHEET_OPEN(state, ScalebottomSheetOpen) {
     state.ScalebottomSheetOpen = ScalebottomSheetOpen
   },
-  SET_MOVE_BOTTOM_SHEET_OPEN(state, TransformbottomSheetOpen) { 
-    state.TransformbottomSheetOpen = TransformbottomSheetOpen
+  SET_TRANSLATE_BOTTOM_SHEET_OPEN(state, TranslatebottomSheetOpen) { 
+    state.TranslatebottomSheetOpen = TranslatebottomSheetOpen
   },
 
   SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN(state, PrintProfilebottomSheetOpen) {
@@ -112,12 +112,12 @@ const actions = {
     commit('SET_SCALE_BOTTOM_SHEET_OPEN', false)
   },
 
-  //Transform Bottom Sheet
-  openTransformBottomSheet({ commit }) { 
-    commit('SET_MOVE_BOTTOM_SHEET_OPEN', true)
+  //Translate Bottom Sheet
+  openTranslateBottomSheet({ commit }) { 
+    commit('SET_TRANSLATE_BOTTOM_SHEET_OPEN', true)
   },
-  closeTransformBottomSheet({ commit }) { 
-    commit('SET_MOVE_BOTTOM_SHEET_OPEN', false)
+  closeTranslateBottomSheet({ commit }) { 
+    commit('SET_TRANSLATE_BOTTOM_SHEET_OPEN', false)
   },
 
 
@@ -177,8 +177,8 @@ const actions = {
   },
 
 
-  updateTransformMagnitude({ commit }, payload) {
-    commit('SET_MOVE_MAGNITUDE', payload)
+  updateTranslateMagnitude({ commit }, payload) {
+    commit('SET_TRANSLATE_MAGNITUDE', payload)
   },
 
 }
@@ -186,7 +186,7 @@ const actions = {
 const getters = {
   RotationbottomSheetOpen: (state) => state.RotationbottomSheetOpen,
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
-  TransformbottomSheetOpen: (state) => state.TransformbottomSheetOpen,
+  TranslatebottomSheetOpen: (state) => state.TranslatebottomSheetOpen,
   PrintProfilebottomSheetOpen: (state) => state.PrintProfilebottomSheetOpen,
   PrinterSelectionOpen: (state) => state.PrinterSelectionOpen,
   FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
@@ -195,7 +195,7 @@ const getters = {
   initialDimensions: (state) => state.initialDimensions,
   currentDimensions: (state) => state.currentDimensions,
   rotationAngles: (state) => state.rotationAngles,
-  transformMagnitudes: (state) => state.transformMagnitudes,
+  translateMagnitudes: (state) => state.translateMagnitudes,
   selectedPrinter: (state) => state.selectedPrinter,
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcessess: (state) => state.selectedPrintProcessess

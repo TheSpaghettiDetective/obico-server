@@ -1,12 +1,27 @@
 const state = {
+
+  //Component States
   RotationbottomSheetOpen: false,
   ScalebottomSheetOpen: false,
   MovebottomSheetOpen: false,
   PrintProfilebottomSheetOpen: false,
+  PrinterSelectionOpen: false,
+  FilamentSelectionOpen: false,
+  PrintProcessessSelectionOpen: false,
+
+
+  // Model Manipulation Parameter States
   rotationAngles: [0, 0, 0],
   initialDimensions: { x: 0, y: 0, z: 0 },
   currentDimensions: { x: 0, y: 0, z: 0 },
   moveMagnitudes: [0, 0],
+
+
+
+  //printers
+  selectedPrinter: null,
+  selectedFilament: null,
+  selectedPrintProcessess: null,
 }
 
 const mutations = {
@@ -40,6 +55,31 @@ const mutations = {
 
   SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN(state, PrintProfilebottomSheetOpen) {
     state.PrintProfilebottomSheetOpen = PrintProfilebottomSheetOpen;
+  },
+
+  SET_PRINTER_SELECTION_OPEN(state, PrinterSelectionOpen) {
+    state.PrinterSelectionOpen = PrinterSelectionOpen;
+  },
+
+
+  SET_FILAMENT_SELECTION_OPEN(state, FilamentSelectionOpen) {
+    state.FilamentSelectionOpen = FilamentSelectionOpen;
+  },
+
+  SET_PRINT_PROCESSESS_SELECTION_OPEN(state, PrintProcessessSelectionOpen) {
+    state.PrintProcessessSelectionOpen = PrintProcessessSelectionOpen;
+  },
+
+  SET_SELECTED_PRINTER(state, printerName) {
+    state.selectedPrinter = printerName;
+  },
+  
+  SET_SELECTED_FILAMENT(state, filamentName) {
+    state.selectedFilament = filamentName;
+  },
+
+  SET_SELECTED_PRINT_PROCESSESS(state, selectedPrintProcessess) {
+    state.selectedPrintProcessess = selectedPrintProcessess;
   },
 
 }
@@ -89,6 +129,47 @@ const actions = {
     commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', false);
   },
 
+  //PrinterSelection
+
+  openPrinterSelection({ commit }) {
+    commit('SET_PRINTER_SELECTION_OPEN', true);
+  },
+  closePrinterSelection({ commit }) {
+    commit('SET_PRINTER_SELECTION_OPEN', false);
+  },
+
+  setSelectedPrinter({ commit }, printerName) {
+    commit('SET_SELECTED_PRINTER', printerName);
+  },
+
+  setSelectedFilament({ commit }, filamentName) {
+    commit('SET_SELECTED_FILAMENT', filamentName);
+  },
+
+
+  setSelectedPrintProcessess({ commit }, selectedPrintProcessess) {
+    commit('SET_SELECTED_PRINT_PROCESSESS', selectedPrintProcessess);
+  },
+
+
+
+  //FilamentSelection
+  openFilamentSelection({ commit }) {
+    commit('SET_FILAMENT_SELECTION_OPEN', true);
+  },
+  closeFilamentSelection({ commit }) {
+    commit('SET_FILAMENT_SELECTION_OPEN', false);
+  },
+
+
+  //PrintProcessess
+  openPrintProcessess({ commit }) {
+    commit('SET_PRINT_PROCESSESS_SELECTION_OPEN', true);
+  },
+  closePrintProcessess({ commit }) {
+    commit('SET_PRINT_PROCESSESS_SELECTION_OPEN', false);
+  },
+
 
   //Rotation Angle
   updateRotationAngle({ commit }, payload) {
@@ -107,10 +188,18 @@ const getters = {
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
   MovebottomSheetOpen: (state) => state.MovebottomSheetOpen,
   PrintProfilebottomSheetOpen: (state) => state.PrintProfilebottomSheetOpen,
+  PrinterSelectionOpen: (state) => state.PrinterSelectionOpen,
+  FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
+  PrintProcessessSelectionOpen: (state) => state.PrintProcessessSelectionOpen,
+
   initialDimensions: (state) => state.initialDimensions,
   currentDimensions: (state) => state.currentDimensions,
   rotationAngles: (state) => state.rotationAngles,
   moveMagnitudes: (state) => state.moveMagnitudes,
+  selectedPrinter: (state) => state.selectedPrinter,
+  selectedFilament: (state) => state.selectedFilament,
+  selectedPrintProcessess: (state) => state.selectedPrintProcessess
+
 }
 
 export default {

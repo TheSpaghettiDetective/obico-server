@@ -33,15 +33,15 @@ const mutations = {
   SET_SELECTED_MODEL_INDEX(state, index) {
     state.selectedModelIndex = index;
   },
-  UPDATE_MODEL_ROTATION(state, { index, rotationAngles }) {
+  UPDATE_MODEL_ROTATION(state, { index, rotation }) {
     if (state.models[index]) {
-      state.models[index].rotationAngles = rotationAngles;
+      state.models[index].rotation = rotation;
     }
   },
 
-  UPDATE_MODEL_TRANSLATION(state, { index, translation }) {
+  UPDATE_MODEL_TRANSLATE(state, { index, translation }) {
     if (state.models[index]) {
-      state.models[index].translateMagnitudes = translation;
+      state.models[index].translate = translation;
     }
   },
 
@@ -55,8 +55,8 @@ const mutations = {
     state.RotationbottomSheetOpen = RotationbottomSheetOpen
   },
 
-  SET_TRANSLATE_MAGNITUDE(state, {index, magnitude}) {
-    state.translateMagnitudes.splice(index, 1, magnitude);
+  SET_TRANSLATE(state, {index, value}) {
+    state.translate.splice(index, 1, value);
   },
 
   SET_SCALE_BOTTOM_SHEET_OPEN(state, ScalebottomSheetOpen) {
@@ -109,15 +109,15 @@ const actions = {
   setSelectedModelIndex({ commit }, index) {
     commit('SET_SELECTED_MODEL_INDEX', index);
   },
-  updateModelRotation({ commit, state }, rotationAngles) {
+  updateModelRotation({ commit, state }, rotation) {
     const index = state.selectedModelIndex;
-    commit('UPDATE_MODEL_ROTATION', { index, rotationAngles });
+    commit('UPDATE_MODEL_ROTATION', { index, rotation });
   },
 
 
-  updateTranslateMagnitude({ commit, state }, translation) {
+  updateTranslate({ commit, state }, translation) {
     const index = state.selectedModelIndex;
-    commit('UPDATE_MODEL_TRANSLATION', { index, translation });
+    commit('UPDATE_MODEL_TRANSLATE', { index, translation });
   },
 
 
@@ -209,8 +209,8 @@ const actions = {
 const getters = {
 
   //Multi Model Setup
-  selectedModelRotation: (state) => state.models[state.selectedModelIndex]?.rotationAngles,
-  selectedModelTranslation: (state) => state.models[state.selectedModelIndex]?.translateMagnitudes,
+  selectedModelRotation: (state) => state.models[state.selectedModelIndex]?.rotation,
+  selectedModelTranslate: (state) => state.models[state.selectedModelIndex]?.translate,
 
   selectedModelDimensions: (state) => ({
     originalDimensions: state.models[state.selectedModelIndex]?.originalDimensions,

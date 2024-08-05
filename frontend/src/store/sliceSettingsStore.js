@@ -39,9 +39,9 @@ const mutations = {
     }
   },
 
-  UPDATE_MODEL_TRANSLATE(state, { index, translation }) {
+  UPDATE_MODEL_TRANSLATE(state, { index, translate }) {
     if (state.models[index]) {
-      state.models[index].translate = translation;
+      state.models[index].translate = translate;
     }
   },
 
@@ -111,9 +111,9 @@ const actions = {
   },
 
 
-  updateTranslate({ commit, state }, translation) {
+  updateTranslate({ commit, state }, translate) {
     const index = state.selectedModelIndex;
-    commit('UPDATE_MODEL_TRANSLATE', { index, translation });
+    commit('UPDATE_MODEL_TRANSLATE', { index, translate });
   },
 
 

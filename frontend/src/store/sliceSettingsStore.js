@@ -10,13 +10,14 @@ const state = {
   PrintProcessessSelectionOpen: false,
 
 
-  //printers
+  // Profile Presets
+  profilePreset: {},
   selectedPrinter: null,
   selectedFilament: null,
   selectedPrintProcessess: null,
 
 
-  //Multimodel setup 
+  //Multimodel setup
 
    // Models Array
    models: [], // Array to store model-specific data
@@ -61,7 +62,7 @@ const mutations = {
   SET_SCALE_BOTTOM_SHEET_OPEN(state, ScalebottomSheetOpen) {
     state.ScalebottomSheetOpen = ScalebottomSheetOpen
   },
-  SET_TRANSLATE_BOTTOM_SHEET_OPEN(state, TranslatebottomSheetOpen) { 
+  SET_TRANSLATE_BOTTOM_SHEET_OPEN(state, TranslatebottomSheetOpen) {
     state.TranslatebottomSheetOpen = TranslatebottomSheetOpen
   },
 
@@ -85,7 +86,7 @@ const mutations = {
   SET_SELECTED_PRINTER(state, printerName) {
     state.selectedPrinter = printerName;
   },
-  
+
   SET_SELECTED_FILAMENT(state, filamentName) {
     state.selectedFilament = filamentName;
   },
@@ -94,6 +95,9 @@ const mutations = {
     state.selectedPrintProcessess = selectedPrintProcessess;
   },
 
+  SET_PROFILE_PRESET(state, profilePreset) {
+    state.profilePreset = { ...profilePreset };
+  },
 }
 
 const actions = {
@@ -138,10 +142,10 @@ const actions = {
   },
 
   //Translate Bottom Sheet
-  openTranslateBottomSheet({ commit }) { 
+  openTranslateBottomSheet({ commit }) {
     commit('SET_TRANSLATE_BOTTOM_SHEET_OPEN', true)
   },
-  closeTranslateBottomSheet({ commit }) { 
+  closeTranslateBottomSheet({ commit }) {
     commit('SET_TRANSLATE_BOTTOM_SHEET_OPEN', false)
   },
 
@@ -154,7 +158,11 @@ const actions = {
     commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', false);
   },
 
-  //PrinterSelection
+  //Profile Presets
+
+  setProfilePreset({ commit }, profilePreset) {
+    commit('SET_PROFILE_PRESET', profilePreset);
+  },
 
   openPrinterSelection({ commit }) {
     commit('SET_PRINTER_SELECTION_OPEN', true);
@@ -208,7 +216,7 @@ const getters = {
     originalDimensions: state.models[state.selectedModelIndex]?.originalDimensions,
     currentDimensions: state.models[state.selectedModelIndex]?.currentDimensions,
   }),
-    
+
   RotationbottomSheetOpen: (state) => state.RotationbottomSheetOpen,
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
   TranslatebottomSheetOpen: (state) => state.TranslatebottomSheetOpen,
@@ -216,11 +224,13 @@ const getters = {
   PrinterSelectionOpen: (state) => state.PrinterSelectionOpen,
   FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
   PrintProcessessSelectionOpen: (state) => state.PrintProcessessSelectionOpen,
- 
+
   selectedPrinter: (state) => state.selectedPrinter,
   selectedFilament: (state) => state.selectedFilament,
-  selectedPrintProcessess: (state) => state.selectedPrintProcessess
-
+  selectedPrintProcessess: (state) => state.selectedPrintProcessess,
+  getProfilePresetValue: (state) => (key) => {
+    return state.profilePreset[key] || ''
+  },
 }
 
 export default {

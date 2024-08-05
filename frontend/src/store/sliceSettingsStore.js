@@ -17,36 +17,36 @@ const state = {
   selectedPrintProcessess: null,
 
 
-  //Multimodel setup
+  //Multimesh setup
 
-   // Models Array
-   models: [], // Array to store model-specific data
-   selectedModelIndex: 0 // Index of the currently selected model
+   // Meshs Array
+   meshes: [], // Array to store mesh-specific data
+   selectedMeshIndex: 0 // Index of the currently selected mesh
 }
 
 const mutations = {
 
   //ADD MODEL
-  ADD_MODEL(state, model) {
-    state.models.push(model);
+  ADD_MODEL(state, mesh) {
+    state.meshes.push(mesh);
   },
-  SET_SELECTED_MODEL_INDEX(state, index) {
-    state.selectedModelIndex = index;
+  SET_SELECTED_MESH_INDEX(state, index) {
+    state.selectedMeshIndex = index;
   },
-  UPDATE_MODEL_ROTATION(state, { index, rotation }) {
-    if (state.models[index]) {
-      state.models[index].rotation = rotation;
+  UPDATE_MESH_ROTATION(state, { index, rotation }) {
+    if (state.meshes[index]) {
+      state.meshes[index].rotation = rotation;
     }
   },
 
-  UPDATE_MODEL_TRANSLATE(state, { index, translate }) {
-    if (state.models[index]) {
-      state.models[index].translate = translate;
+  UPDATE_MESH_TRANSLATE(state, { index, translate }) {
+    if (state.meshes[index]) {
+      state.meshes[index].translate = translate;
     }
   },
 
-  UPDATE_MODEL_DIMENSIONS(state, { index, dimensions }) {
-    state.models[index].currentDimensions = dimensions;
+  UPDATE_MESH_DIMENSIONS(state, { index, dimensions }) {
+    state.meshes[index].currentDimensions = dimensions;
   },
 
 
@@ -98,42 +98,42 @@ const mutations = {
 
 const actions = {
 
-  //Multi Model Setup
-  addModel({ commit }, model) {
-    commit('ADD_MODEL', model);
+  //Multi Mesh Setup
+  addMesh({ commit }, mesh) {
+    commit('ADD_MODEL', mesh);
   },
-  setSelectedModelIndex({ commit }, index) {
-    commit('SET_SELECTED_MODEL_INDEX', index);
+  setSelectedMeshIndex({ commit }, index) {
+    commit('SET_SELECTED_MESH_INDEX', index);
   },
-  updateModelRotation({ commit, state }, rotation) {
-    const index = state.selectedModelIndex;
-    commit('UPDATE_MODEL_ROTATION', { index, rotation });
+  updateMeshRotation({ commit, state }, rotation) {
+    const index = state.selectedMeshIndex;
+    commit('UPDATE_MESH_ROTATION', { index, rotation });
   },
 
 
   updateTranslate({ commit, state }, translate) {
-    const index = state.selectedModelIndex;
-    commit('UPDATE_MODEL_TRANSLATE', { index, translate });
+    const index = state.selectedMeshIndex;
+    commit('UPDATE_MESH_TRANSLATE', { index, translate });
   },
 
 
   updateCurrentDimensions({ commit, state }, { index, dimensions }) {
-    commit('UPDATE_MODEL_DIMENSIONS', { index, dimensions });
+    commit('UPDATE_MESH_DIMENSIONS', { index, dimensions });
   },
 
   //RotationBottomSheet
-  openModelRotationBottomSheet({ commit }) {
+  openMeshRotationBottomSheet({ commit }) {
     commit('SET_ROTATION_BOTTOM_SHEET_OPEN', true)
   },
-  closeModelRotationBottomSheet({ commit }) {
+  closeMeshRotationBottomSheet({ commit }) {
     commit('SET_ROTATION_BOTTOM_SHEET_OPEN', false)
   },
 
   //Scale Bottom Sheet
-  openModelScaleBottomSheet({ commit }) {
+  openMeshScaleBottomSheet({ commit }) {
     commit('SET_SCALE_BOTTOM_SHEET_OPEN', true)
   },
-  closeModelScaleBottomSheet({ commit }) {
+  closeMeshScaleBottomSheet({ commit }) {
     commit('SET_SCALE_BOTTOM_SHEET_OPEN', false)
   },
 
@@ -204,13 +204,13 @@ const actions = {
 
 const getters = {
 
-  //Multi Model Setup
-  selectedModelRotation: (state) => state.models[state.selectedModelIndex]?.rotation,
-  selectedModelTranslate: (state) => state.models[state.selectedModelIndex]?.translate,
+  //Multi Mesh Setup
+  selectedMeshRotation: (state) => state.meshes[state.selectedMeshIndex]?.rotation,
+  selectedMeshTranslate: (state) => state.meshes[state.selectedMeshIndex]?.translate,
 
-  selectedModelDimensions: (state) => ({
-    originalDimensions: state.models[state.selectedModelIndex]?.originalDimensions,
-    currentDimensions: state.models[state.selectedModelIndex]?.currentDimensions,
+  selectedMeshDimensions: (state) => ({
+    originalDimensions: state.meshes[state.selectedMeshIndex]?.originalDimensions,
+    currentDimensions: state.meshes[state.selectedMeshIndex]?.currentDimensions,
   }),
 
   RotationbottomSheetOpen: (state) => state.RotationbottomSheetOpen,

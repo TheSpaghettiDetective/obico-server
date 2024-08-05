@@ -10,12 +10,6 @@ const state = {
   PrintProcessessSelectionOpen: false,
 
 
-  initialDimensions: { x: 0, y: 0, z: 0 },
-  currentDimensions: { x: 0, y: 0, z: 0 },
-  translateMagnitudes: [0, 0],
-
-
-
   //printers
   selectedPrinter: null,
   selectedFilament: null,
@@ -44,15 +38,14 @@ const mutations = {
     }
   },
 
-
-
-
-
-  SET_INITIAL_DIMENSIONS(state, dimensions) {
-    Object.assign(state.initialDimensions, dimensions);
+  UPDATE_MODEL_TRANSLATION(state, { index, translation }) {
+    if (state.models[index]) {
+      state.models[index].translateMagnitudes = translation;
+    }
   },
-  SET_CURRENT_DIMENSIONS(state, dimensions) {
-    Object.assign(state.currentDimensions, dimensions);
+
+  UPDATE_MODEL_DIMENSIONS(state, { index, dimensions }) {
+    state.models[index].currentDimensions = dimensions;
   },
 
 
@@ -117,15 +110,16 @@ const actions = {
     commit('UPDATE_MODEL_ROTATION', { index, rotationAngles });
   },
 
-  setInitialDimensions({ commit }, dimensions) {
-    commit('SET_INITIAL_DIMENSIONS', dimensions);
-    commit('SET_CURRENT_DIMENSIONS', dimensions); // Initialize current dimensions without triggering watchers
-  },
-  updateCurrentDimensions({ commit }, dimensions) {
-    commit('SET_CURRENT_DIMENSIONS', dimensions);
+
+  updateTranslateMagnitude({ commit, state }, translation) {
+    const index = state.selectedModelIndex;
+    commit('UPDATE_MODEL_TRANSLATION', { index, translation });
   },
 
 
+  updateCurrentDimensions({ commit, state }, { index, dimensions }) {
+    commit('UPDATE_MODEL_DIMENSIONS', { index, dimensions });
+  },
 
   //RotationBottomSheet
   openModelRotationBottomSheet({ commit }) {
@@ -202,19 +196,18 @@ const actions = {
   },
 
 
-
-  updateTranslateMagnitude({ commit }, payload) {
-    commit('SET_TRANSLATE_MAGNITUDE', payload)
-  },
-
 }
 
 const getters = {
 
   //Multi Model Setup
   selectedModelRotation: (state) => state.models[state.selectedModelIndex]?.rotationAngles,
+  selectedModelTranslation: (state) => state.models[state.selectedModelIndex]?.translateMagnitudes,
 
-
+  selectedModelDimensions: (state) => ({
+    originalDimensions: state.models[state.selectedModelIndex]?.originalDimensions,
+    currentDimensions: state.models[state.selectedModelIndex]?.currentDimensions,
+  }),
     
   RotationbottomSheetOpen: (state) => state.RotationbottomSheetOpen,
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
@@ -223,10 +216,7 @@ const getters = {
   PrinterSelectionOpen: (state) => state.PrinterSelectionOpen,
   FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
   PrintProcessessSelectionOpen: (state) => state.PrintProcessessSelectionOpen,
-
-  initialDimensions: (state) => state.initialDimensions,
-  currentDimensions: (state) => state.currentDimensions,
-  translateMagnitudes: (state) => state.translateMagnitudes,
+ 
   selectedPrinter: (state) => state.selectedPrinter,
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcessess: (state) => state.selectedPrintProcessess

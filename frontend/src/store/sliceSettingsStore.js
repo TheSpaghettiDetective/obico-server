@@ -10,27 +10,43 @@ const state = {
   PrintProcessessSelectionOpen: false,
 
 
-  // Model Manipulation Parameter States
-  rotationAngles: [0, 0, 0],
-  initialDimensions: { x: 0, y: 0, z: 0 },
-  currentDimensions: { x: 0, y: 0, z: 0 },
-  translateMagnitudes: [0, 0],
-
-
-
-  //printers
+  // Profile Presets
+  profilePreset: {},
   selectedPrinter: null,
   selectedFilament: null,
   selectedPrintProcessess: null,
+
+
+  //Multimesh setup
+
+   // Meshs Array
+   meshes: [], // Array to store mesh-specific data
+   selectedMeshIndex: 0 // Index of the currently selected mesh
 }
 
 const mutations = {
 
-  SET_INITIAL_DIMENSIONS(state, dimensions) {
-    Object.assign(state.initialDimensions, dimensions);
+  //ADD MODEL
+  ADD_MODEL(state, mesh) {
+    state.meshes.push(mesh);
   },
-  SET_CURRENT_DIMENSIONS(state, dimensions) {
-    Object.assign(state.currentDimensions, dimensions);
+  SET_SELECTED_MESH_INDEX(state, index) {
+    state.selectedMeshIndex = index;
+  },
+  UPDATE_MESH_ROTATION(state, { index, rotation }) {
+    if (state.meshes[index]) {
+      state.meshes[index].rotation = rotation;
+    }
+  },
+
+  UPDATE_MESH_TRANSLATE(state, { index, translate }) {
+    if (state.meshes[index]) {
+      state.meshes[index].translate = translate;
+    }
+  },
+
+  UPDATE_MESH_DIMENSIONS(state, { index, dimensions }) {
+    state.meshes[index].currentDimensions = dimensions;
   },
 
 
@@ -38,18 +54,11 @@ const mutations = {
   SET_ROTATION_BOTTOM_SHEET_OPEN(state, RotationbottomSheetOpen) {
     state.RotationbottomSheetOpen = RotationbottomSheetOpen
   },
-  SET_ROTATION_ANGLE(state, {index, angle}) {
-    state.rotationAngles.splice(index, 1, angle);
-  },
-
-  SET_TRANSLATE_MAGNITUDE(state, {index, magnitude}) {
-    state.translateMagnitudes.splice(index, 1, magnitude);
-  },
 
   SET_SCALE_BOTTOM_SHEET_OPEN(state, ScalebottomSheetOpen) {
     state.ScalebottomSheetOpen = ScalebottomSheetOpen
   },
-  SET_TRANSLATE_BOTTOM_SHEET_OPEN(state, TranslatebottomSheetOpen) { 
+  SET_TRANSLATE_BOTTOM_SHEET_OPEN(state, TranslatebottomSheetOpen) {
     state.TranslatebottomSheetOpen = TranslatebottomSheetOpen
   },
 
@@ -73,7 +82,7 @@ const mutations = {
   SET_SELECTED_PRINTER(state, printerName) {
     state.selectedPrinter = printerName;
   },
-  
+
   SET_SELECTED_FILAMENT(state, filamentName) {
     state.selectedFilament = filamentName;
   },
@@ -82,41 +91,56 @@ const mutations = {
     state.selectedPrintProcessess = selectedPrintProcessess;
   },
 
+  SET_PROFILE_PRESET(state, profilePreset) {
+    state.profilePreset = { ...profilePreset };
+  },
 }
 
 const actions = {
 
-  setInitialDimensions({ commit }, dimensions) {
-    commit('SET_INITIAL_DIMENSIONS', dimensions);
-    commit('SET_CURRENT_DIMENSIONS', dimensions); // Initialize current dimensions without triggering watchers
+  //Multi Mesh Setup
+  addMesh({ commit }, mesh) {
+    commit('ADD_MODEL', mesh);
   },
-  updateCurrentDimensions({ commit }, dimensions) {
-    commit('SET_CURRENT_DIMENSIONS', dimensions);
+  setSelectedMeshIndex({ commit }, index) {
+    commit('SET_SELECTED_MESH_INDEX', index);
+  },
+  updateMeshRotation({ commit, state }, rotation) {
+    const index = state.selectedMeshIndex;
+    commit('UPDATE_MESH_ROTATION', { index, rotation });
+  },
+
+  updateMeshTranslate({ commit, state }, translate) {
+    const index = state.selectedMeshIndex;
+    commit('UPDATE_MESH_TRANSLATE', { index, translate });
   },
 
 
+  updateCurrentDimensions({ commit, state }, { index, dimensions }) {
+    commit('UPDATE_MESH_DIMENSIONS', { index, dimensions });
+  },
 
   //RotationBottomSheet
-  openModelRotationBottomSheet({ commit }) {
+  openMeshRotationBottomSheet({ commit }) {
     commit('SET_ROTATION_BOTTOM_SHEET_OPEN', true)
   },
-  closeModelRotationBottomSheet({ commit }) {
+  closeMeshRotationBottomSheet({ commit }) {
     commit('SET_ROTATION_BOTTOM_SHEET_OPEN', false)
   },
 
   //Scale Bottom Sheet
-  openModelScaleBottomSheet({ commit }) {
+  openMeshScaleBottomSheet({ commit }) {
     commit('SET_SCALE_BOTTOM_SHEET_OPEN', true)
   },
-  closeModelScaleBottomSheet({ commit }) {
+  closeMeshScaleBottomSheet({ commit }) {
     commit('SET_SCALE_BOTTOM_SHEET_OPEN', false)
   },
 
   //Translate Bottom Sheet
-  openTranslateBottomSheet({ commit }) { 
+  openTranslateBottomSheet({ commit }) {
     commit('SET_TRANSLATE_BOTTOM_SHEET_OPEN', true)
   },
-  closeTranslateBottomSheet({ commit }) { 
+  closeTranslateBottomSheet({ commit }) {
     commit('SET_TRANSLATE_BOTTOM_SHEET_OPEN', false)
   },
 
@@ -129,7 +153,11 @@ const actions = {
     commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', false);
   },
 
-  //PrinterSelection
+  //Profile Presets
+
+  setProfilePreset({ commit }, profilePreset) {
+    commit('SET_PROFILE_PRESET', profilePreset);
+  },
 
   openPrinterSelection({ commit }) {
     commit('SET_PRINTER_SELECTION_OPEN', true);
@@ -171,19 +199,19 @@ const actions = {
   },
 
 
-  //Rotation Angle
-  updateRotationAngle({ commit }, payload) {
-    commit('SET_ROTATION_ANGLE', payload)
-  },
-
-
-  updateTranslateMagnitude({ commit }, payload) {
-    commit('SET_TRANSLATE_MAGNITUDE', payload)
-  },
-
 }
 
 const getters = {
+
+  //Multi Mesh Setup
+  selectedMeshRotation: (state) => state.meshes[state.selectedMeshIndex]?.rotation,
+  selectedMeshTranslate: (state) => state.meshes[state.selectedMeshIndex]?.translate,
+
+  selectedMeshDimensions: (state) => ({
+    originalDimensions: state.meshes[state.selectedMeshIndex]?.originalDimensions,
+    currentDimensions: state.meshes[state.selectedMeshIndex]?.currentDimensions,
+  }),
+
   RotationbottomSheetOpen: (state) => state.RotationbottomSheetOpen,
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
   TranslatebottomSheetOpen: (state) => state.TranslatebottomSheetOpen,
@@ -192,14 +220,12 @@ const getters = {
   FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
   PrintProcessessSelectionOpen: (state) => state.PrintProcessessSelectionOpen,
 
-  initialDimensions: (state) => state.initialDimensions,
-  currentDimensions: (state) => state.currentDimensions,
-  rotationAngles: (state) => state.rotationAngles,
-  translateMagnitudes: (state) => state.translateMagnitudes,
   selectedPrinter: (state) => state.selectedPrinter,
   selectedFilament: (state) => state.selectedFilament,
-  selectedPrintProcessess: (state) => state.selectedPrintProcessess
-
+  selectedPrintProcessess: (state) => state.selectedPrintProcessess,
+  getProfilePresetValue: (state) => (key) => {
+    return state.profilePreset[key] || ''
+  },
 }
 
 export default {

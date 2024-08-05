@@ -55,10 +55,6 @@ const mutations = {
     state.RotationbottomSheetOpen = RotationbottomSheetOpen
   },
 
-  SET_TRANSLATE(state, {index, value}) {
-    state.translate.splice(index, 1, value);
-  },
-
   SET_SCALE_BOTTOM_SHEET_OPEN(state, ScalebottomSheetOpen) {
     state.ScalebottomSheetOpen = ScalebottomSheetOpen
   },

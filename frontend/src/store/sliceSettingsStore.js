@@ -10,8 +10,6 @@ const state = {
   PrintProcessessSelectionOpen: false,
 
 
-  // Model Manipulation Parameter States
-  rotationAngles: [0, 0, 0],
   initialDimensions: { x: 0, y: 0, z: 0 },
   currentDimensions: { x: 0, y: 0, z: 0 },
   translateMagnitudes: [0, 0],
@@ -22,9 +20,33 @@ const state = {
   selectedPrinter: null,
   selectedFilament: null,
   selectedPrintProcessess: null,
+
+
+  //Multimodel setup 
+
+   // Models Array
+   models: [], // Array to store model-specific data
+   selectedModelIndex: 0 // Index of the currently selected model
 }
 
 const mutations = {
+
+  //ADD MODEL
+  ADD_MODEL(state, model) {
+    state.models.push(model);
+  },
+  SET_SELECTED_MODEL_INDEX(state, index) {
+    state.selectedModelIndex = index;
+  },
+  UPDATE_MODEL_ROTATION(state, { index, rotationAngles }) {
+    if (state.models[index]) {
+      state.models[index].rotationAngles = rotationAngles;
+    }
+  },
+
+
+
+
 
   SET_INITIAL_DIMENSIONS(state, dimensions) {
     Object.assign(state.initialDimensions, dimensions);
@@ -37,9 +59,6 @@ const mutations = {
 
   SET_ROTATION_BOTTOM_SHEET_OPEN(state, RotationbottomSheetOpen) {
     state.RotationbottomSheetOpen = RotationbottomSheetOpen
-  },
-  SET_ROTATION_ANGLE(state, {index, angle}) {
-    state.rotationAngles.splice(index, 1, angle);
   },
 
   SET_TRANSLATE_MAGNITUDE(state, {index, magnitude}) {
@@ -85,6 +104,18 @@ const mutations = {
 }
 
 const actions = {
+
+  //Multi Model Setup
+  addModel({ commit }, model) {
+    commit('ADD_MODEL', model);
+  },
+  setSelectedModelIndex({ commit }, index) {
+    commit('SET_SELECTED_MODEL_INDEX', index);
+  },
+  updateModelRotation({ commit, state }, rotationAngles) {
+    const index = state.selectedModelIndex;
+    commit('UPDATE_MODEL_ROTATION', { index, rotationAngles });
+  },
 
   setInitialDimensions({ commit }, dimensions) {
     commit('SET_INITIAL_DIMENSIONS', dimensions);
@@ -171,11 +202,6 @@ const actions = {
   },
 
 
-  //Rotation Angle
-  updateRotationAngle({ commit }, payload) {
-    commit('SET_ROTATION_ANGLE', payload)
-  },
-
 
   updateTranslateMagnitude({ commit }, payload) {
     commit('SET_TRANSLATE_MAGNITUDE', payload)
@@ -184,6 +210,12 @@ const actions = {
 }
 
 const getters = {
+
+  //Multi Model Setup
+  selectedModelRotation: (state) => state.models[state.selectedModelIndex]?.rotationAngles,
+
+
+    
   RotationbottomSheetOpen: (state) => state.RotationbottomSheetOpen,
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
   TranslatebottomSheetOpen: (state) => state.TranslatebottomSheetOpen,
@@ -194,7 +226,6 @@ const getters = {
 
   initialDimensions: (state) => state.initialDimensions,
   currentDimensions: (state) => state.currentDimensions,
-  rotationAngles: (state) => state.rotationAngles,
   translateMagnitudes: (state) => state.translateMagnitudes,
   selectedPrinter: (state) => state.selectedPrinter,
   selectedFilament: (state) => state.selectedFilament,

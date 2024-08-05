@@ -110,8 +110,7 @@ const actions = {
     commit('UPDATE_MESH_ROTATION', { index, rotation });
   },
 
-
-  updateTranslate({ commit, state }, translate) {
+  updateMeshTranslate({ commit, state }, translate) {
     const index = state.selectedMeshIndex;
     commit('UPDATE_MESH_TRANSLATE', { index, translate });
   },

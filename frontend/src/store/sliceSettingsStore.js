@@ -94,6 +94,13 @@ const mutations = {
   SET_PROFILE_PRESET(state, profilePreset) {
     state.profilePreset = { ...profilePreset };
   },
+
+  UPDATE_PROFILE_PRESET_VALUE(state, { key, value }) {
+    state.profilePreset = {
+      ...state.profilePreset,
+      [key]: value,
+    };
+  },
 }
 
 const actions = {
@@ -114,6 +121,8 @@ const actions = {
     const index = state.selectedMeshIndex;
     commit('UPDATE_MESH_TRANSLATE', { index, translate });
   },
+
+  
 
 
   updateCurrentDimensions({ commit, state }, { index, dimensions }) {
@@ -157,6 +166,10 @@ const actions = {
 
   setProfilePreset({ commit }, profilePreset) {
     commit('SET_PROFILE_PRESET', profilePreset);
+  },
+
+  updateProfilePresetValue({ commit }, { key, value }) {
+    commit('UPDATE_PROFILE_PRESET_VALUE', { key, value });
   },
 
   openPrinterSelection({ commit }) {

@@ -46,7 +46,12 @@ const mutations = {
   },
 
   UPDATE_MESH_DIMENSIONS(state, { index, dimensions }) {
-    state.meshes[index].currentDimensions = dimensions;
+
+    state.meshes[index].currentDimensions = {
+      x: parseFloat(dimensions.x),
+      y: parseFloat(dimensions.y),
+      z: parseFloat(dimensions.z),
+    };
   },
 
 
@@ -239,6 +244,11 @@ const getters = {
   getProfilePresetValue: (state) => (key) => {
     return state.profilePreset[key] || ''
   },
+
+  getProfilePreset: (state) => state.profilePreset,
+  getMeshes: (state) => state.meshes,
+
+  
 }
 
 export default {

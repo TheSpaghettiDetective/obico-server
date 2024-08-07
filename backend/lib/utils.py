@@ -31,9 +31,6 @@ def set_as_str_if_present(target_dict, source_dict, key, target_key=None):
 def ml_api_auth_headers():
     return {"Authorization": "Bearer {}".format(settings.ML_API_TOKEN)} if settings.ML_API_TOKEN else {}
 
-def slicer_api_auth_headers():
-    return {"Authorization": "Bearer {}".format(settings.SLICER_API_TOKEN)} if settings.SLICER_API_TOKEN else {}
-
 
 def orientation_to_ffmpeg_options(printer_settings):
     options = '-vf pad=ceil(iw/2)*2:ceil(ih/2)*2'

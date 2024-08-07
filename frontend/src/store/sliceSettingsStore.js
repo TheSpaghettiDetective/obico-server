@@ -15,6 +15,7 @@ const state = {
   selectedPrinter: null,
   selectedFilament: null,
   selectedPrintProcessess: null,
+  design_name: null,
 
 
   //Multimesh setup
@@ -86,6 +87,11 @@ const mutations = {
 
   SET_SELECTED_PRINTER(state, printerName) {
     state.selectedPrinter = printerName;
+  },
+
+
+  SET_DESIGN_NAME(state, design_name) {
+    state.design_name = design_name;
   },
 
   SET_SELECTED_FILAMENT(state, filamentName) {
@@ -192,6 +198,10 @@ const actions = {
     commit('SET_SELECTED_FILAMENT', filamentName);
   },
 
+  setDesignName({ commit }, design_name) {
+    commit('SET_DESIGN_NAME', design_name);
+  },
+
 
   setSelectedPrintProcessess({ commit }, selectedPrintProcessess) {
     commit('SET_SELECTED_PRINT_PROCESSESS', selectedPrintProcessess);
@@ -241,6 +251,7 @@ const getters = {
   selectedPrinter: (state) => state.selectedPrinter,
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcessess: (state) => state.selectedPrintProcessess,
+  design_name: (state) => state.design_name,
   getProfilePresetValue: (state) => (key) => {
     return state.profilePreset[key] || ''
   },

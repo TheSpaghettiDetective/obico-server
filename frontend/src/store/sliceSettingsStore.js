@@ -15,7 +15,7 @@ const state = {
   selectedPrinter: null,
   selectedFilament: null,
   selectedPrintProcessess: null,
-  design_name: null,
+  designName: null,
 
 
   //Multimesh setup
@@ -90,8 +90,8 @@ const mutations = {
   },
 
 
-  SET_DESIGN_NAME(state, design_name) {
-    state.design_name = design_name;
+  SET_DESIGN_NAME(state, designName) {
+    state.designName = designName;
   },
 
   SET_SELECTED_FILAMENT(state, filamentName) {
@@ -133,7 +133,7 @@ const actions = {
     commit('UPDATE_MESH_TRANSLATE', { index, translate });
   },
 
-  
+
 
 
   updateCurrentDimensions({ commit, state }, { index, dimensions }) {
@@ -198,8 +198,8 @@ const actions = {
     commit('SET_SELECTED_FILAMENT', filamentName);
   },
 
-  setDesignName({ commit }, design_name) {
-    commit('SET_DESIGN_NAME', design_name);
+  setDesignName({ commit }, designName) {
+    commit('SET_DESIGN_NAME', designName);
   },
 
 
@@ -251,7 +251,7 @@ const getters = {
   selectedPrinter: (state) => state.selectedPrinter,
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcessess: (state) => state.selectedPrintProcessess,
-  design_name: (state) => state.design_name,
+  designName: (state) => state.designName,
   getProfilePresetValue: (state) => (key) => {
     return state.profilePreset[key] || ''
   },
@@ -259,7 +259,7 @@ const getters = {
   getProfilePreset: (state) => state.profilePreset,
   getMeshes: (state) => state.meshes,
 
-  
+
 }
 
 export default {

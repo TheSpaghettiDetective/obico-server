@@ -7,14 +7,14 @@ const state = {
   PrintProfilebottomSheetOpen: false,
   PrinterSelectionOpen: false,
   FilamentSelectionOpen: false,
-  PrintProcessessSelectionOpen: false,
+  PrintProcessSelectionOpen: false,
 
 
   // Profile Presets
   profilePreset: {},
-  selectedPrinter: null,
+  selectedMachine: null,
   selectedFilament: null,
-  selectedPrintProcessess: null,
+  selectedPrintProcess: null,
 
 
   //Multimesh setup
@@ -80,20 +80,20 @@ const mutations = {
     state.FilamentSelectionOpen = FilamentSelectionOpen;
   },
 
-  SET_PRINT_PROCESSESS_SELECTION_OPEN(state, PrintProcessessSelectionOpen) {
-    state.PrintProcessessSelectionOpen = PrintProcessessSelectionOpen;
+  SET_PRINT_PROCESSESS_SELECTION_OPEN(state, PrintProcessSelectionOpen) {
+    state.PrintProcessSelectionOpen = PrintProcessSelectionOpen;
   },
 
-  SET_SELECTED_PRINTER(state, printerName) {
-    state.selectedPrinter = printerName;
+  SET_SELECTED_MACHINE(state, printerName) {
+    state.selectedMachine = printerName;
   },
 
   SET_SELECTED_FILAMENT(state, filamentName) {
     state.selectedFilament = filamentName;
   },
 
-  SET_SELECTED_PRINT_PROCESSESS(state, selectedPrintProcessess) {
-    state.selectedPrintProcessess = selectedPrintProcessess;
+  SET_SELECTED_PRINT_PROCESSESS(state, selectedPrintProcess) {
+    state.selectedPrintProcess = selectedPrintProcess;
   },
 
   SET_PROFILE_PRESET(state, profilePreset) {
@@ -127,7 +127,7 @@ const actions = {
     commit('UPDATE_MESH_TRANSLATE', { index, translate });
   },
 
-  
+
 
 
   updateCurrentDimensions({ commit, state }, { index, dimensions }) {
@@ -184,8 +184,8 @@ const actions = {
     commit('SET_PRINTER_SELECTION_OPEN', false);
   },
 
-  setSelectedPrinter({ commit }, printerName) {
-    commit('SET_SELECTED_PRINTER', printerName);
+  setSelectedMachine({ commit }, printerName) {
+    commit('SET_SELECTED_MACHINE', printerName);
   },
 
   setSelectedFilament({ commit }, filamentName) {
@@ -193,8 +193,8 @@ const actions = {
   },
 
 
-  setSelectedPrintProcessess({ commit }, selectedPrintProcessess) {
-    commit('SET_SELECTED_PRINT_PROCESSESS', selectedPrintProcessess);
+  setSelectedPrintProcess({ commit }, selectedPrintProcess) {
+    commit('SET_SELECTED_PRINT_PROCESSESS', selectedPrintProcess);
   },
 
 
@@ -208,11 +208,11 @@ const actions = {
   },
 
 
-  //PrintProcessess
-  openPrintProcessess({ commit }) {
+  //PrintProcess
+  openPrintProcess({ commit }) {
     commit('SET_PRINT_PROCESSESS_SELECTION_OPEN', true);
   },
-  closePrintProcessess({ commit }) {
+  closePrintProcess({ commit }) {
     commit('SET_PRINT_PROCESSESS_SELECTION_OPEN', false);
   },
 
@@ -236,11 +236,11 @@ const getters = {
   PrintProfilebottomSheetOpen: (state) => state.PrintProfilebottomSheetOpen,
   PrinterSelectionOpen: (state) => state.PrinterSelectionOpen,
   FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
-  PrintProcessessSelectionOpen: (state) => state.PrintProcessessSelectionOpen,
+  PrintProcessSelectionOpen: (state) => state.PrintProcessSelectionOpen,
 
-  selectedPrinter: (state) => state.selectedPrinter,
+  selectedMachine: (state) => state.selectedMachine,
   selectedFilament: (state) => state.selectedFilament,
-  selectedPrintProcessess: (state) => state.selectedPrintProcessess,
+  selectedPrintProcess: (state) => state.selectedPrintProcess,
   getProfilePresetValue: (state) => (key) => {
     return state.profilePreset[key] || ''
   },
@@ -248,7 +248,7 @@ const getters = {
   getProfilePreset: (state) => state.profilePreset,
   getMeshes: (state) => state.meshes,
 
-  
+
 }
 
 export default {

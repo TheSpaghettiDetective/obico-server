@@ -14,6 +14,14 @@
     </template>
     <template #topBarRight>
       <div class="action-panel">
+        <a
+          v-if="gcode?.url && gcode?.safe_filename"
+          @click.prevent="downloadGcode"
+          class="btn shadow-none icon-btn action-btn"
+          :title="$t('Download file')"
+        >
+          <i class="fas fa-download"></i>
+        </a>
         <!-- Rename -->
         <a
           v-if="isCloud"
@@ -353,6 +361,14 @@ export default {
     onRefresh() {
       this.$router.go()
     },
+    downloadGcode() {
+      const link = document.createElement('a');
+      link.href = this.gcode.url;
+      link.download = `${this.gcode.safe_filename}.gcode`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   },
 }
 </script>

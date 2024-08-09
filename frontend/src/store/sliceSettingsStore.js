@@ -106,7 +106,7 @@ const mutations = {
   SET_PROFILE_PRESET(state, profilePreset) {
     state.profilePreset = { ...profilePreset,
       fuzzy_skin: 'none',
-      internal_infill_pattern: 'monotonic',
+      internal_solid_infill_pattern: 'monotonic',
       brim_type: 'auto_brim',
      };
   },

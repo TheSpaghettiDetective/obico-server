@@ -5,13 +5,14 @@ const state = {
   ScalebottomSheetOpen: false,
   TranslatebottomSheetOpen: false,
   PrintProfilebottomSheetOpen: false,
-  PrinterSelectionOpen: false,
+  MachineSelectionOpen: false,
   FilamentSelectionOpen: false,
   PrintProcessSelectionOpen: false,
 
 
   // Profile Presets
-  profilePreset: {},
+  profilePreset: {},   // Preset values for the selected print profile. Should not be modified.
+  profileOverwrites: {}, // User-modified values for the selected print profile. Should be used to generate the final print profile.
   selectedMachine: null,
   selectedFilament: null,
   selectedPrintProcess: null,
@@ -72,8 +73,8 @@ const mutations = {
     state.PrintProfilebottomSheetOpen = PrintProfilebottomSheetOpen;
   },
 
-  SET_PRINTER_SELECTION_OPEN(state, PrinterSelectionOpen) {
-    state.PrinterSelectionOpen = PrinterSelectionOpen;
+  SET_MACHINE_SELECTION_OPEN(state, MachineSelectionOpen) {
+    state.MachineSelectionOpen = MachineSelectionOpen;
   },
 
 
@@ -183,11 +184,11 @@ const actions = {
     commit('UPDATE_PROFILE_PRESET_VALUE', { key, value });
   },
 
-  openPrinterSelection({ commit }) {
-    commit('SET_PRINTER_SELECTION_OPEN', true);
+  openMachineSelection({ commit }) {
+    commit('SET_MACHINE_SELECTION_OPEN', true);
   },
-  closePrinterSelection({ commit }) {
-    commit('SET_PRINTER_SELECTION_OPEN', false);
+  closeMachineSelection({ commit }) {
+    commit('SET_MACHINE_SELECTION_OPEN', false);
   },
 
   setSelectedMachine({ commit }, printerName) {
@@ -244,7 +245,7 @@ const getters = {
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
   TranslatebottomSheetOpen: (state) => state.TranslatebottomSheetOpen,
   PrintProfilebottomSheetOpen: (state) => state.PrintProfilebottomSheetOpen,
-  PrinterSelectionOpen: (state) => state.PrinterSelectionOpen,
+  MachineSelectionOpen: (state) => state.MachineSelectionOpen,
   FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
   PrintProcessSelectionOpen: (state) => state.PrintProcessSelectionOpen,
 

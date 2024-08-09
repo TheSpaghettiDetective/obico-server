@@ -8,6 +8,7 @@ const state = {
   MachineSelectionOpen: false,
   FilamentSelectionOpen: false,
   PrintProcessSelectionOpen: false,
+  isInitialLoad: true,
 
 
   // Profile Presets
@@ -124,6 +125,11 @@ const mutations = {
       [key]: value,
     };
   },
+
+  SET_INITIAL_LOAD(state, value) {
+    state.isInitialLoad = value;
+  },
+
 }
 
 const actions = {
@@ -144,9 +150,6 @@ const actions = {
     const index = state.selectedMeshIndex;
     commit('UPDATE_MESH_TRANSLATE', { index, translate });
   },
-
-
-
 
   updateCurrentDimensions({ commit, state }, { index, dimensions }) {
     commit('UPDATE_MESH_DIMENSIONS', { index, dimensions });
@@ -182,6 +185,10 @@ const actions = {
     commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', true);
   },
   closePrintProfileBottomSheet({ commit }) {
+
+    if(state.isInitialLoad){
+      commit('SET_INITIAL_LOAD', false);
+    }
     commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', false);
   },
 

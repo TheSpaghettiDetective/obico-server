@@ -5,14 +5,13 @@ const state = {
   ScalebottomSheetOpen: false,
   TranslatebottomSheetOpen: false,
   PrintProfilebottomSheetOpen: false,
-  MachineSelectionOpen: false,
+  PrinterSelectionOpen: false,
   FilamentSelectionOpen: false,
   PrintProcessSelectionOpen: false,
 
 
   // Profile Presets
-  profilePreset: {},   // Preset values for the selected print profile. Should not be modified.
-  profileOverwrites: {}, // User-modified values for the selected print profile. Should be used to generate the final print profile.
+  profilePreset: {},
   selectedMachine: null,
   selectedFilament: null,
   selectedPrintProcess: null,
@@ -73,8 +72,8 @@ const mutations = {
     state.PrintProfilebottomSheetOpen = PrintProfilebottomSheetOpen;
   },
 
-  SET_MACHINE_SELECTION_OPEN(state, MachineSelectionOpen) {
-    state.MachineSelectionOpen = MachineSelectionOpen;
+  SET_PRINTER_SELECTION_OPEN(state, PrinterSelectionOpen) {
+    state.PrinterSelectionOpen = PrinterSelectionOpen;
   },
 
 
@@ -104,19 +103,16 @@ const mutations = {
   },
 
   SET_PROFILE_PRESET(state, profilePreset) {
-    state.profilePreset = { ...profilePreset };
+    state.profilePreset = { ...profilePreset,
+      fuzzy_skin: 'None',
+      internal_infill_pattern: 'monotonic',
+      brim_type: 'Auto',
+     };
   },
 
   UPDATE_PROFILE_PRESET_VALUE(state, { key, value }) {
     state.profilePreset = {
       ...state.profilePreset,
-      [key]: value,
-    };
-  },
-
-  UPDATE_PROFILE_OVERWRITE_VALUE(state, { key, value }) {
-    state.profileOverwrites = {
-      ...state.profileOverwrites,
       [key]: value,
     };
   },
@@ -187,15 +183,15 @@ const actions = {
     commit('SET_PROFILE_PRESET', profilePreset);
   },
 
-  updateProfileValue({ commit }, { key, value }) {
-    commit('UPDATE_PROFILE_OVERWRITE_VALUE', { key, value });
+  updateProfilePresetValue({ commit }, { key, value }) {
+    commit('UPDATE_PROFILE_PRESET_VALUE', { key, value });
   },
 
-  openMachineSelection({ commit }) {
-    commit('SET_MACHINE_SELECTION_OPEN', true);
+  openPrinterSelection({ commit }) {
+    commit('SET_PRINTER_SELECTION_OPEN', true);
   },
-  closeMachineSelection({ commit }) {
-    commit('SET_MACHINE_SELECTION_OPEN', false);
+  closePrinterSelection({ commit }) {
+    commit('SET_PRINTER_SELECTION_OPEN', false);
   },
 
   setSelectedMachine({ commit }, printerName) {
@@ -252,22 +248,22 @@ const getters = {
   ScalebottomSheetOpen: (state) => state.ScalebottomSheetOpen,
   TranslatebottomSheetOpen: (state) => state.TranslatebottomSheetOpen,
   PrintProfilebottomSheetOpen: (state) => state.PrintProfilebottomSheetOpen,
-  MachineSelectionOpen: (state) => state.MachineSelectionOpen,
+  PrinterSelectionOpen: (state) => state.PrinterSelectionOpen,
   FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
   PrintProcessSelectionOpen: (state) => state.PrintProcessSelectionOpen,
 
   selectedMachine: (state) => state.selectedMachine,
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcess: (state) => state.selectedPrintProcess,
-  profileOverwrites: (state) => state.profileOverwrites,
   designName: (state) => state.designName,
-  getProfileValue: (state) => (key) => {
-    if (state.profileOverwrites[key]) {
-      return state.profileOverwrites[key];
-    }
+  getProfilePresetValue: (state) => (key) => {
     return state.profilePreset[key] || ''
   },
+
+  getProfilePreset: (state) => state.profilePreset,
   getMeshes: (state) => state.meshes,
+
+
 }
 
 export default {

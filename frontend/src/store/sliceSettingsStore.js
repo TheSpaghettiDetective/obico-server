@@ -113,6 +113,13 @@ const mutations = {
       [key]: value,
     };
   },
+
+  UPDATE_PROFILE_OVERWRITE_VALUE(state, { key, value }) {
+    state.profileOverwrites = {
+      ...state.profileOverwrites,
+      [key]: value,
+    };
+  },
 }
 
 const actions = {
@@ -180,8 +187,8 @@ const actions = {
     commit('SET_PROFILE_PRESET', profilePreset);
   },
 
-  updateProfilePresetValue({ commit }, { key, value }) {
-    commit('UPDATE_PROFILE_PRESET_VALUE', { key, value });
+  updateProfileValue({ commit }, { key, value }) {
+    commit('UPDATE_PROFILE_OVERWRITE_VALUE', { key, value });
   },
 
   openMachineSelection({ commit }) {
@@ -252,15 +259,15 @@ const getters = {
   selectedMachine: (state) => state.selectedMachine,
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcess: (state) => state.selectedPrintProcess,
+  profileOverwrites: (state) => state.profileOverwrites,
   designName: (state) => state.designName,
-  getProfilePresetValue: (state) => (key) => {
+  getProfileValue: (state) => (key) => {
+    if (state.profileOverwrites[key]) {
+      return state.profileOverwrites[key];
+    }
     return state.profilePreset[key] || ''
   },
-
-  getProfilePreset: (state) => state.profilePreset,
   getMeshes: (state) => state.meshes,
-
-
 }
 
 export default {

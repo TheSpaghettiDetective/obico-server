@@ -19,12 +19,8 @@ const state = {
   selectedPrintProcess: null,
   designName: null,
 
-
-  //Multimesh setup
-
-   // Meshs Array
-   meshes: [], // Array to store mesh-specific data
-   selectedMeshIndex: 0 // Index of the currently selected mesh
+  meshes: [], // Array to store mesh-specific data
+  selectedMeshIndex: 0 // Index of the currently selected mesh
 }
 
 const mutations = {
@@ -36,16 +32,16 @@ const mutations = {
   SET_SELECTED_MESH_INDEX(state, index) {
     state.selectedMeshIndex = index;
   },
-  UPDATE_MESH_ROTATION(state, { index, rotation }) {
-    if (state.meshes[index]) {
-      state.meshes[index].rotation = rotation;
-    }
+  UPDATE_MESH_ROTATION(state, { meshIndex, rotation }) {
+    state.meshes[meshIndex].rotation = rotation;
   },
 
-  UPDATE_MESH_TRANSLATE(state, { index, translate }) {
-    if (state.meshes[index]) {
-      state.meshes[index].translate = translate;
-    }
+  UPDATE_MESH_TRANSLATE(state, { meshIndex, translate }) {
+    state.meshes[meshIndex].translate = translate;
+  },
+
+  UPDATE_MESH_CENTER(state, { meshIndex, center }) {
+    state.meshes[meshIndex].center = center;
   },
 
   UPDATE_MESH_DIMENSIONS(state, { index, dimensions }) {
@@ -146,9 +142,12 @@ const actions = {
     commit('UPDATE_MESH_ROTATION', { index, rotation });
   },
 
-  updateMeshTranslate({ commit, state }, translate) {
-    const index = state.selectedMeshIndex;
-    commit('UPDATE_MESH_TRANSLATE', { index, translate });
+  updateMeshTranslate({ commit, state }, {meshIndex, translate}) {
+    commit('UPDATE_MESH_TRANSLATE', { meshIndex, translate });
+  },
+
+  updateMeshCenter({ commit, state }, {meshIndex, center}) {
+    commit('UPDATE_MESH_CENTER', { meshIndex, center });
   },
 
   updateCurrentDimensions({ commit, state }, { index, dimensions }) {
@@ -253,6 +252,7 @@ const getters = {
   //Multi Mesh Setup
   selectedMeshRotation: (state) => state.meshes[state.selectedMeshIndex]?.rotation,
   selectedMeshTranslate: (state) => state.meshes[state.selectedMeshIndex]?.translate,
+  selectedMeshCenter: (state) => state.meshes[state.selectedMeshIndex]?.center,
 
   selectedMeshDimensions: (state) => ({
     originalDimensions: state.meshes[state.selectedMeshIndex]?.originalDimensions,
@@ -278,7 +278,7 @@ const getters = {
     }
     return state.profilePreset[key] || ''
   },
-  getMeshes: (state) => state.meshes,
+  meshes: (state) => state.meshes,
 }
 
 export default {

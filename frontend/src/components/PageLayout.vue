@@ -44,7 +44,7 @@
           :class="{ active: path.includes('/ent/designs/') }"
         >
           <a href="/ent/designs/">
-            <font-awesome-icon :icon="['fas', 'cubes']" />
+            <i class="fa fa-light fa-cubes" />
             {{$t("3D Models")}}
           </a>
         </li>

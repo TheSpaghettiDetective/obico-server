@@ -6,6 +6,10 @@ const state = {
   TranslatebottomSheetOpen: false,
   PrintProfilebottomSheetOpen: false,
   MachineSelectionOpen: false,
+  PatternSelectionOpen: false,
+  GeneralTypeSelectionOpen: false,
+  PatternSelectionType: null,
+  GeneralTypeSelectionType: null,
   FilamentSelectionOpen: false,
   PrintProcessSelectionOpen: false,
   isInitialLoad: true,
@@ -71,7 +75,22 @@ const mutations = {
     state.MachineSelectionOpen = MachineSelectionOpen;
   },
 
+  SET_PATTERN_SELECTION_OPEN(state, PatternSelectionOpen) {
+    state.PatternSelectionOpen = PatternSelectionOpen;
+  },
 
+  SET_PATTERN_SELECTION_TYPE(state, PatternSelectionType) {
+    state.PatternSelectionType = PatternSelectionType;
+  },
+
+  SET_GENERAL_TYPE_SELECTION_OPEN(state, GeneralTypeSelectionOpen) {
+    state.GeneralTypeSelectionOpen = GeneralTypeSelectionOpen;
+  },
+
+  SET_GENERAL_TYPE_SELECTION_TYPE(state, GeneralTypeSelectionType) {
+    state.GeneralTypeSelectionType = GeneralTypeSelectionType;
+  },
+  
   SET_FILAMENT_SELECTION_OPEN(state, FilamentSelectionOpen) {
     state.FilamentSelectionOpen = FilamentSelectionOpen;
   },
@@ -201,6 +220,27 @@ const actions = {
     commit('SET_MACHINE_SELECTION_OPEN', false);
   },
 
+  openPatternSelection({ commit }) {
+    commit('SET_PATTERN_SELECTION_OPEN', true);
+  },
+  closePatternSelection({ commit }) {
+    commit('SET_PATTERN_SELECTION_OPEN', false);
+  },
+  setPatternSelectionType({ commit }, type) {
+    commit('SET_PATTERN_SELECTION_TYPE', type);
+  },
+
+  
+  openGeneralTypeSelection({ commit }) {
+    commit('SET_GENERAL_TYPE_SELECTION_OPEN', true);
+  },
+  closeGeneralTypeSelection({ commit }) {
+    commit('SET_GENERAL_TYPE_SELECTION_OPEN', false);
+  },
+  setGeneralTypeSelectionType({ commit }, type) {
+    commit('SET_GENERAL_TYPE_SELECTION_TYPE', type);
+  },
+
   setSelectedMachine({ commit }, printerName) {
     commit('SET_SELECTED_MACHINE', printerName);
   },
@@ -257,6 +297,7 @@ const getters = {
   TranslatebottomSheetOpen: (state) => state.TranslatebottomSheetOpen,
   PrintProfilebottomSheetOpen: (state) => state.PrintProfilebottomSheetOpen,
   MachineSelectionOpen: (state) => state.MachineSelectionOpen,
+  PatternSelectionOpen: (state) => state.PatternSelectionOpen,
   FilamentSelectionOpenn: (state) => state.FilamentSelectionOpen,
   PrintProcessSelectionOpen: (state) => state.PrintProcessSelectionOpen,
 

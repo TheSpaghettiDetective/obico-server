@@ -79,6 +79,8 @@
       {% comment %} Do not render footer for printer control page {% endcomment %}
     {% elif request.path|slice:":10" == '/printers/' and request.path|slice:"-10:" == '/terminal/' %}
       {% comment %} Do not render footer for terminal page {% endcomment %}
+    {% elif request.path|slice:":19" == '/ent/slice_settings/' %}
+      {% comment %} Do not render footer for terminal page {% endcomment %}
     {% elif not page_context.app_platform %}
       <footer id="global-footer">
         <div class="container">

@@ -90,7 +90,7 @@ const mutations = {
   SET_GENERAL_TYPE_SELECTION_TYPE(state, GeneralTypeSelectionType) {
     state.GeneralTypeSelectionType = GeneralTypeSelectionType;
   },
-  
+
   SET_FILAMENT_SELECTION_OPEN(state, FilamentSelectionOpen) {
     state.FilamentSelectionOpen = FilamentSelectionOpen;
   },
@@ -196,10 +196,6 @@ const actions = {
     commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', true);
   },
   closePrintProfileBottomSheet({ commit }) {
-
-    if(state.isInitialLoad){
-      commit('SET_INITIAL_LOAD', false);
-    }
     commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', false);
   },
 
@@ -217,6 +213,7 @@ const actions = {
     commit('SET_MACHINE_SELECTION_OPEN', true);
   },
   closeMachineSelection({ commit }) {
+    commit('SET_INITIAL_LOAD', false);
     commit('SET_MACHINE_SELECTION_OPEN', false);
   },
 
@@ -230,7 +227,7 @@ const actions = {
     commit('SET_PATTERN_SELECTION_TYPE', type);
   },
 
-  
+
   openGeneralTypeSelection({ commit }) {
     commit('SET_GENERAL_TYPE_SELECTION_OPEN', true);
   },

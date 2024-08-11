@@ -40,9 +40,6 @@ const mutations = {
     state.meshes[meshIndex].translate = translate;
   },
 
-  UPDATE_MESH_CENTER(state, { meshIndex, center }) {
-    state.meshes[meshIndex].center = center;
-  },
 
   UPDATE_MESH_DIMENSIONS(state, { index, dimensions }) {
 
@@ -144,10 +141,6 @@ const actions = {
 
   updateMeshTranslate({ commit, state }, {meshIndex, translate}) {
     commit('UPDATE_MESH_TRANSLATE', { meshIndex, translate });
-  },
-
-  updateMeshCenter({ commit, state }, {meshIndex, center}) {
-    commit('UPDATE_MESH_CENTER', { meshIndex, center });
   },
 
   updateCurrentDimensions({ commit, state }, { index, dimensions }) {

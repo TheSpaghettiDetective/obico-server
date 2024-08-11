@@ -274,6 +274,9 @@ const actions = {
     commit('SET_PRINT_PROCESSESS_SELECTION_OPEN', false);
   },
 
+  setInitialLoadDone({ commit }) {
+    commit('SET_INITIAL_LOAD', false);
+  }
 
 }
 

@@ -39,6 +39,15 @@
             {{$t("Print History")}}
           </a>
         </li>
+        <li
+          v-if="user"
+          :class="{ active: path.includes('/ent/designs/') }"
+        >
+          <a href="/ent/designs/">
+            <font-awesome-icon :icon="['fas', 'cubes']" />
+            {{$t("3D Models")}}
+          </a>
+        </li>
         <li v-if="user" :class="{ active: path.includes('/stats/') }">
           <a href="/stats/">
             <font-awesome-icon icon="fa-chart-pie" />

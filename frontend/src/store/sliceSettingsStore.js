@@ -7,7 +7,9 @@ const state = {
   PrintProfilebottomSheetOpen: false,
   MachineSelectionOpen: false,
   PatternSelectionOpen: false,
+  GeneralTypeSelectionOpen: false,
   PatternSelectionType: null,
+  GeneralTypeSelectionType: null,
   FilamentSelectionOpen: false,
   PrintProcessSelectionOpen: false,
   isInitialLoad: true,
@@ -81,6 +83,14 @@ const mutations = {
     state.PatternSelectionType = PatternSelectionType;
   },
 
+  SET_GENERAL_TYPE_SELECTION_OPEN(state, GeneralTypeSelectionOpen) {
+    state.GeneralTypeSelectionOpen = GeneralTypeSelectionOpen;
+  },
+
+  SET_GENERAL_TYPE_SELECTION_TYPE(state, GeneralTypeSelectionType) {
+    state.GeneralTypeSelectionType = GeneralTypeSelectionType;
+  },
+  
   SET_FILAMENT_SELECTION_OPEN(state, FilamentSelectionOpen) {
     state.FilamentSelectionOpen = FilamentSelectionOpen;
   },
@@ -218,6 +228,17 @@ const actions = {
   },
   setPatternSelectionType({ commit }, type) {
     commit('SET_PATTERN_SELECTION_TYPE', type);
+  },
+
+  
+  openGeneralTypeSelection({ commit }) {
+    commit('SET_GENERAL_TYPE_SELECTION_OPEN', true);
+  },
+  closeGeneralTypeSelection({ commit }) {
+    commit('SET_GENERAL_TYPE_SELECTION_OPEN', false);
+  },
+  setGeneralTypeSelectionType({ commit }, type) {
+    commit('SET_GENERAL_TYPE_SELECTION_TYPE', type);
   },
 
   setSelectedMachine({ commit }, printerName) {

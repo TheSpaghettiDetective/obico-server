@@ -23,7 +23,6 @@ const state = {
   selectedMachine: null,
   selectedFilament: null,
   selectedPrintProcess: null,
-  designName: null,
 
   meshes: [], // Array to store mesh-specific data
   selectedMeshIndex: 0 // Index of the currently selected mesh
@@ -107,11 +106,6 @@ const mutations = {
 
   SET_SELECTED_MACHINE(state, printerName) {
     state.selectedMachine = printerName;
-  },
-
-
-  SET_DESIGN_NAME(state, designName) {
-    state.designName = designName;
   },
 
   SET_SELECTED_FILAMENT(state, filamentName) {
@@ -258,10 +252,6 @@ const actions = {
     dispatch('closeMachineSelectionAndClearInitialLoad');
   },
 
-  setDesignName({ commit }, designName) {
-    commit('SET_DESIGN_NAME', designName);
-  },
-
 
   changePrintProcessAndLoadPreset({ commit }, selectedPrintProcess) {
     commit('SET_SELECTED_PRINT_PROCESS', selectedPrintProcess);
@@ -326,7 +316,6 @@ const getters = {
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcess: (state) => state.selectedPrintProcess,
   profileOverwrites: (state) => state.profileOverwrites,
-  designName: (state) => state.designName,
   getProfileValue: (state) => (key) => {
     if (state.profileOverwrites[key]) {
       return state.profileOverwrites[key];

@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 const state = {
 
   //Component States
@@ -95,7 +97,7 @@ const mutations = {
     state.FilamentSelectionOpen = FilamentSelectionOpen;
   },
 
-  SET_PRINT_PROCESSESS_SELECTION_OPEN(state, PrintProcessSelectionOpen) {
+  SET_PRINT_PROCESS_SELECTION_OPEN(state, PrintProcessSelectionOpen) {
     state.PrintProcessSelectionOpen = PrintProcessSelectionOpen;
   },
 
@@ -112,7 +114,7 @@ const mutations = {
     state.selectedFilament = filamentName;
   },
 
-  SET_SELECTED_PRINT_PROCESSESS(state, selectedPrintProcess) {
+  SET_SELECTED_PRINT_PROCESS(state, selectedPrintProcess) {
     state.selectedPrintProcess = selectedPrintProcess;
   },
 
@@ -201,10 +203,6 @@ const actions = {
 
   //Profile Presets
 
-  setProfilePreset({ commit }, profilePreset) {
-    commit('SET_PROFILE_PRESET', profilePreset);
-  },
-
   updateProfileValue({ commit }, { key, value }) {
     commit('UPDATE_PROFILE_OVERWRITE_VALUE', { key, value });
   },
@@ -212,7 +210,8 @@ const actions = {
   openMachineSelection({ commit }) {
     commit('SET_MACHINE_SELECTION_OPEN', true);
   },
-  closeMachineSelection({ commit }) {
+
+  closeMachineSelectionAndClearInitialLoad({ commit }) {
     commit('SET_INITIAL_LOAD', false);
     commit('SET_MACHINE_SELECTION_OPEN', false);
   },
@@ -238,12 +237,21 @@ const actions = {
     commit('SET_GENERAL_TYPE_SELECTION_TYPE', type);
   },
 
-  setSelectedMachine({ commit }, printerName) {
-    commit('SET_SELECTED_MACHINE', printerName);
-  },
+  changeMachineAndRelatedPresets({ commit, state, dispatch }, machine) {
+    commit('SET_SELECTED_MACHINE', machine);
+    commit('SET_SELECTED_FILAMENT', machine?.default_filament);
+    dispatch('changePrintProcessAndLoadPreset', machine?.default_print_process);
 
-  setSelectedFilament({ commit }, filamentName) {
-    commit('SET_SELECTED_FILAMENT', filamentName);
+    if (state.isInitialLoad) {
+      setTimeout(() => {
+        // A short delay to allow animation to complete for better UX
+        if (!state.selectedFilament || !state.selectedPrintProcess) {
+          commit('SET_PRINT_PROFILE_BOTTOM_SHEET_OPEN', true);
+        }
+      }, 300)
+    }
+
+    dispatch('closeMachineSelectionAndClearInitialLoad');
   },
 
   setDesignName({ commit }, designName) {
@@ -251,10 +259,18 @@ const actions = {
   },
 
 
-  setSelectedPrintProcess({ commit }, selectedPrintProcess) {
-    commit('SET_SELECTED_PRINT_PROCESSESS', selectedPrintProcess);
-  },
+  changePrintProcessAndLoadPreset({ commit }, selectedPrintProcess) {
+    commit('SET_SELECTED_PRINT_PROCESS', selectedPrintProcess);
+    commit('SET_PRINT_PROCESS_SELECTION_OPEN', false);
 
+    if (selectedPrintProcess?.slicer_profile_url) {
+      axios
+        .get(selectedPrintProcess?.slicer_profile_url)
+        .then((response) => {
+          commit('SET_PROFILE_PRESET', response.data)
+        })
+      }
+  },
 
 
   //FilamentSelection
@@ -268,10 +284,10 @@ const actions = {
 
   //PrintProcess
   openPrintProcess({ commit }) {
-    commit('SET_PRINT_PROCESSESS_SELECTION_OPEN', true);
+    commit('SET_PRINT_PROCESS_SELECTION_OPEN', true);
   },
   closePrintProcess({ commit }) {
-    commit('SET_PRINT_PROCESSESS_SELECTION_OPEN', false);
+    commit('SET_PRINT_PROCESS_SELECTION_OPEN', false);
   },
 
   setInitialLoadDone({ commit }) {

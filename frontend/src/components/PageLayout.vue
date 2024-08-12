@@ -40,7 +40,7 @@
           </a>
         </li>
         <li
-          v-if="user"
+          v-if="isEnt && user"
           :class="{ active: path.includes('/ent/designs/') }"
         >
           <a href="/ent/designs/">

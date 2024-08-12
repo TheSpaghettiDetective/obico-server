@@ -46,6 +46,10 @@ const mutations = {
     state.meshes[meshIndex].translate = translate;
   },
 
+  UPDATE_MESH_DEFAULT_TRANSLATE(state, { meshIndex, translate }) {
+    state.meshes[meshIndex].defaultTranslate = translate;
+  },
+
 
   UPDATE_MESH_DIMENSIONS(state, { index, dimensions }) {
 
@@ -301,6 +305,7 @@ const getters = {
   //Multi Mesh Setup
   selectedMeshRotation: (state) => state.meshes[state.selectedMeshIndex]?.rotation,
   selectedMeshTranslate: (state) => state.meshes[state.selectedMeshIndex]?.translate,
+  selectedMeshDefaultTranslate: (state) => state.meshes[state.selectedMeshIndex]?.defaultTranslate,
   selectedMeshCenter: (state) => state.meshes[state.selectedMeshIndex]?.center,
 
   selectedMeshDimensions: (state) => ({

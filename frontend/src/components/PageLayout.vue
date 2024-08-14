@@ -369,6 +369,7 @@ export default {
   padding: calc(50px + var(--gap-between-blocks)) calc(var(--gap-between-blocks) - 15px) var(--gap-between-blocks)
   display: flex
   flex-direction: column
+  min-height: 100vh
 
 .content-overlay
   position: fixed
@@ -399,7 +400,7 @@ export default {
         display: none
       .page-content
         padding-top: 30px
-        min-height: calc(100vh - 68px)
+        min-height: 100vh
 
 @media (max-width: 768px)
   .page-wrapper

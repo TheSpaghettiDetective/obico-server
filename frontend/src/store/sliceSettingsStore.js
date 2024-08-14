@@ -131,6 +131,10 @@ const mutations = {
     };
   },
 
+  CLEAR_PROFILE_OVERWRITE_VALUE(state) {
+    state.profileOverwrites = {}
+  },
+
   UPDATE_PROFILE_OVERWRITE_VALUE(state, { key, value }) {
     state.profileOverwrites = {
       ...state.profileOverwrites,
@@ -262,6 +266,7 @@ const actions = {
         .get(selectedPrintProcess?.slicer_profile_url)
         .then((response) => {
           commit('SET_PROFILE_PRESET', response.data)
+          commit('CLEAR_PROFILE_OVERWRITE_VALUE')
         })
       }
   },

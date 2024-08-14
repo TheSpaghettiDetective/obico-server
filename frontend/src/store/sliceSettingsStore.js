@@ -122,6 +122,7 @@ const mutations = {
       internal_solid_infill_pattern: 'monotonic',
       brim_type: 'auto_brim',
      };
+     state.profileOverwrites = { ...state.profileOverwrites, ...profilePreset }
   },
 
   UPDATE_PROFILE_PRESET_VALUE(state, { key, value }) {

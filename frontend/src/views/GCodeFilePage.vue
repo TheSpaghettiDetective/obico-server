@@ -380,12 +380,22 @@ export default {
     onRefresh() {
       this.$router.go()
     },
-    downloadGcode() {
+    async downloadGcode() {
+      const fileUrl = this.gcode.url
+      const fileName = `${this.gcode.safe_filename}.gcode`
+
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      
       const link = document.createElement('a');
-      link.href = this.gcode.url;
-      link.download = `${this.gcode.safe_filename}.gcode`;
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName
+
       document.body.appendChild(link);
+      
       link.click();
+
+      URL.revokeObjectURL(link.href);
       document.body.removeChild(link);
     }
   },

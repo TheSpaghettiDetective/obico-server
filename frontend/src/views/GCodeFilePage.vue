@@ -382,17 +382,16 @@ export default {
     },
     async downloadGcode() {
       const fileUrl = this.gcode.url
-      const fileName = `${this.gcode.safe_filename}.gcode`
 
       const response = await fetch(fileUrl);
       const blob = await response.blob();
-      
+
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = fileName
+      link.download = this.gcode.safe_filename
 
       document.body.appendChild(link);
-      
+
       link.click();
 
       URL.revokeObjectURL(link.href);

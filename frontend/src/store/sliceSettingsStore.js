@@ -120,7 +120,7 @@ const mutations = {
     state.profilePreset = { ...profilePreset,
       fuzzy_skin: 'none',
       internal_solid_infill_pattern: 'monotonic',
-      brim_type: 'auto_brim',
+      brim_type: 'Auto',
      };
   },
 

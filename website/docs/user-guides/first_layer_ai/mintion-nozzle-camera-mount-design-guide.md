@@ -1,8 +1,9 @@
 ---
-id: enable-gcode-thumbnails
+id: nozzle-camera-mount-design
 title: Mintion Camera Mount Design Guide
 sidebar_label: Mintion Nozzle Camera Mount Design
 ---
+
 
 ![Nozzle Camera Mount](/img/user-guides/mintion-nozzle-cam-mount-design/nozzle-camera-mount-design-guide-main.png)
 
@@ -79,7 +80,7 @@ Consider printability, aiming for little to no support during printing. You can 
 
 The following design is an identical example of a good printable design that requires no support at all:
 
-![Printable Design Example](/img/user-guides/mintion-nozzle-cam-mount-design/mintion-nozzle-cam-mount-nozzle-in-view.png)
+![Printable Design Example](/img/user-guides/mintion-nozzle-cam-mount-design/nozzle-cam-mount-printing-considerations.png)
 
 
 
@@ -131,3 +132,21 @@ You can use [this website](https://webcamtests.com/check) to test the Mintion ca
 Designing a 3D printable mount for the Mintion camera involves careful consideration of several factors, including material selection, print orientation, clearance, and overall ease of printing. By following this guide, you can create a mount that is both functional and easy to print, helping you maximize the benefits of the Nozzle Ninja AI feature.
 
 Remember, iteration is key. Don’t hesitate to refine your design until it meets your needs perfectly. Sharing your design with the community can also provide valuable feedback and suggestions for further improvements.
+
+## CAD Files for Select 3D Printers
+
+Below is a selection of CAD models for various 3D printers to aid in designing your nozzle camera mount.
+
+**Creality K1**: https://makerworld.com/en/models/171995
+
+**Creality Ender 3 V2**: https://grabcad.com/library/ender-3-v2-3d-printer-1
+
+**Creality Ender 3**: https://github.com/CrealityOfficial/Ender-3/tree/main/Ender-3%20Mechanical
+
+**Sovol SV06**: https://github.com/Sovol3d/SV06-Fully-Open-Source
+
+**SV06 Plus**: https://github.com/Sovol3d/SV06-PLUS
+
+**Sovol Sv08**: https://github.com/Sovol3d/SV08
+
+**Elegoo Neptune 3 Pro**: https://github.com/elegooofficial/neptune3pro/tree/main/3D

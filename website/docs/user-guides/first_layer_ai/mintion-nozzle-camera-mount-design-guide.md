@@ -1,5 +1,4 @@
 ---
-id: nozzle-camera-mount-design
 title: Mintion Camera Mount Design Guide
 sidebar_label: Mintion Nozzle Camera Mount Design
 ---

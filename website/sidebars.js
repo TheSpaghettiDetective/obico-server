@@ -34,7 +34,7 @@ module.exports = {
     {
       type: 'category',
       label: 'First Layer AI',
-      items: ['user-guides/first_layer_ai/nozzle-ninja-first-layer-ai', 'user-guides/first_layer_ai/nozzle-camera-configuration', 'user-guides/first_layer_ai/nozzle-camera-configuration-octoprint', 'user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only', 'user-guides/first_layer_ai/nozzle-camera-printer-installation',],
+      items: ['user-guides/first_layer_ai/nozzle-ninja-first-layer-ai', 'user-guides/first_layer_ai/nozzle-camera-configuration', 'user-guides/first_layer_ai/nozzle-camera-configuration-octoprint', 'user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only', 'user-guides/first_layer_ai/nozzle-camera-printer-installation', ' user-guides/first_layer_ai/mintion-nozzle-camera-mount-design-guide'],
     },
     {
       type: 'category',

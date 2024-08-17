@@ -199,7 +199,7 @@ def detect_timelapse(self, print_id):
             req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
             req.raise_for_status()
             detections = req.json()['detections']
-            update_prediction_with_detections(last_prediction, detections)
+            update_prediction_with_detections(last_prediction, detections, _print.printer)
             predictions.append(last_prediction)
 
             if is_failing(last_prediction, 1, escalating_factor=1):

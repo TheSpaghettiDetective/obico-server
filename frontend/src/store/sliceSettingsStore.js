@@ -18,8 +18,10 @@ const state = {
 
 
   // Profile Presets
-  profilePreset: {},   // Preset values for the selected print profile. Should not be modified.
-  profileOverwrites: {}, // User-modified values for the selected print profile. Should be used to generate the final print profile.
+  profilePreset: {},   // Preset values for the selected print process. Should not be modified.
+  profileOverwrites: {}, // User-modified values for the selected print process. Should be used to generate the final print process.
+  filamentProfilePreset: {},  // Preset values for the selected filament. Should not be modified.
+  filamentProfileOverwrites: {}, // User-modified values for the selected filament. Should be used to generate the final filament.
   selectedMachine: null,
   selectedFilament: null,
   selectedPrintProcess: null,
@@ -124,13 +126,6 @@ const mutations = {
      };
   },
 
-  UPDATE_PROFILE_PRESET_VALUE(state, { key, value }) {
-    state.profilePreset = {
-      ...state.profilePreset,
-      [key]: value,
-    };
-  },
-
   CLEAR_PROFILE_OVERWRITE_VALUE(state) {
     state.profileOverwrites = {}
   },
@@ -141,6 +136,22 @@ const mutations = {
       [key]: value,
     };
   },
+
+  SET_FILAMENT_PROFILE_PRESET(state, filamentProfilePreset) {
+    state.filamentProfilePreset = { ...filamentProfilePreset };
+  },
+
+  SET_FILAMENT_PROFILE_OVERWRITE_VALUE(state, { key, value }) {
+    state.filamentProfileOverwrites = {
+      ...state.filamentProfileOverwrites,
+      [key]: value,
+    };
+  },
+
+  CLEAR_FILAMENT_PROFILE_OVERWRITE_VALUE(state) {
+    state.filamentProfileOverwrites = {}
+  },
+
 
   SET_INITIAL_LOAD(state, value) {
     state.isInitialLoad = value;
@@ -241,7 +252,7 @@ const actions = {
 
   changeMachineAndRelatedPresets({ commit, state, dispatch }, machine) {
     commit('SET_SELECTED_MACHINE', machine);
-    commit('SET_SELECTED_FILAMENT', machine?.default_filament);
+    dispatch('changeFilamentAndLoadPreset', machine?.default_filament);
     dispatch('changePrintProcessAndLoadPreset', machine?.default_print_process);
 
     if (state.isInitialLoad) {
@@ -267,6 +278,20 @@ const actions = {
         .then((response) => {
           commit('SET_PROFILE_PRESET', response.data)
           commit('CLEAR_PROFILE_OVERWRITE_VALUE')
+        })
+      }
+  },
+
+
+  changeFilamentAndLoadPreset({ commit }, selectedFilament) {
+    commit('SET_SELECTED_FILAMENT', selectedFilament);
+
+    if (selectedFilament?.slicer_profile_url) {
+      axios
+        .get(selectedFilament?.slicer_profile_url)
+        .then((response) => {
+          commit('SET_FILAMENT_PROFILE_PRESET', response.data)
+          commit('CLEAR_FILAMENT_PROFILE_OVERWRITE_VALUE')
         })
       }
   },
@@ -321,11 +346,18 @@ const getters = {
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcess: (state) => state.selectedPrintProcess,
   profileOverwrites: (state) => state.profileOverwrites,
+  filamentProfileOverwrites: (state) => state.filamentProfileOverwrites,
   getProfileValue: (state) => (key) => {
     if (state.profileOverwrites[key]) {
       return state.profileOverwrites[key];
     }
     return state.profilePreset[key] || ''
+  },
+  getFilamentProfileValue: (state) => (key) => {
+    if (state.filamentProfileOverwrites[key]) {
+      return state.filamentProfileOverwrites[key];
+    }
+    return state.filamentProfilePreset[key] || ''
   },
   meshes: (state) => state.meshes,
 }

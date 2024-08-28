@@ -8,12 +8,13 @@ RUN apk -U add bash vim ffmpeg postgresql-libs git openjpeg tiff
 RUN apk add --virtual .build-deps g++ musl-dev postgresql-dev zlib-dev jpeg-dev libffi-dev openjpeg-dev tiff-dev openblas-dev \
     patch curl-dev python3-dev build-base freetype-dev lcms2-dev tk-dev tcl-dev  # Needed by /moonraker/scripts/moonraker-requirements.txt
 
+RUN pip install --upgrade pip
+
 # Checkout moonraker and lock the version so that we can use the metadata parser
 RUN git clone https://github.com/Arksine/moonraker.git /moonraker
-RUN git -C /moonraker checkout 55e852cd8792c9d158b8b5647bec530cbee1f43a
-ENV PYTHONPATH="${PYTHONPATH}:/moonraker/moonraker"
-
-RUN pip install --upgrade pip
+RUN git -C /moonraker checkout f735c0419444848b59342a98ad3532eef123ea46
+ENV PYTHONPATH="${PYTHONPATH}:/moonraker"
+RUN pip install importlib_metadata==8.2.0 # dependencies needed by moonraker file_metadata
 
 ADD requirements.txt .
 RUN CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install -r requirements.txt

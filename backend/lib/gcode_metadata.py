@@ -7,7 +7,7 @@ from io import BytesIO
 from typing import BinaryIO
 
 
-from components.file_manager.metadata import *
+from moonraker.components.file_manager.metadata import *
 
 
 def get_slicer(file_path: str, f: BinaryIO, size: int, encoding: str,) -> Tuple[BaseSlicer, Dict[str, str]]:

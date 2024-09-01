@@ -23,6 +23,12 @@ module.exports = {
     },
     {
       type: 'category',
+      label: 'Obico for Klipper',
+      link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
+      items: ['user-guides/klipper-setup-manual-link','user-guides/moonraker-obico/config','user-guides/moonraker-obico/webcam', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
+    },
+    {
+      type: 'category',
       label: 'Obico App (Mobile & Web)',
       items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/notification-settings', 'user-guides/enable-gcode-thumbnails', 'user-guides/orca-slicer-integration'],
     },
@@ -73,6 +79,7 @@ module.exports = {
           items: [
             'user-guides/webcam-feed-is-not-showing',
             'user-guides/webcam-feed-is-laggy',
+            'user-guides/webcam-install-janus',
             'user-guides/webcam-stream-stuck-at-1-10-fps',
             'user-guides/octoprint-webcam-not-streaming',
           ],
@@ -99,12 +106,6 @@ module.exports = {
           ],
         },
       ],
-    },
-    {
-      type: 'category',
-      label: 'Obico for Klipper',
-      link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
-      items: ['user-guides/klipper-setup-manual-link','user-guides/moonraker-obico/config','user-guides/moonraker-obico/webcam', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
     },
     'user-guides/contact-us-for-support',
   ],

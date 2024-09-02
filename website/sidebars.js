@@ -19,13 +19,30 @@ module.exports = {
       type: 'category',
       label: 'Getting Started',
       link: {type: 'doc', id: 'user-guides/getting-started'},
-      items: ['user-guides/octoprint-plugin-setup', 'user-guides/klipper-setup',],
+      items: ['user-guides/klipper-setup', 'user-guides/octoprint-plugin-setup'],
     },
     {
       type: 'category',
       label: 'Obico for Klipper',
       link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
       items: ['user-guides/klipper-setup-manual-link','user-guides/moonraker-obico/config','user-guides/moonraker-obico/webcam', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
+    },
+    {
+      type: 'category',
+      label: 'Obico for OctoPrint',
+      items: [
+        'user-guides/octoprint-plugin-setup-manual-link',
+        'user-guides/octoprint-tunneling',
+        {
+          type: 'category',
+          label: 'Webcam Settings',
+          items: [
+            'user-guides/multiple-cameras-octoprint',
+            'user-guides/webcam-streaming-resolution-framerate-octoprint',
+            'user-guides/octoprint-webcam-not-streaming',
+          ],
+        },
+      ],
     },
     {
       type: 'category',
@@ -88,23 +105,6 @@ module.exports = {
         'user-guides/turn-on-debug-logging',
         'user-guides/send-mobile-app-log-files',
         'user-guides/relink-printer',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Obico for OctoPrint',
-      items: [
-        'user-guides/octoprint-plugin-setup-manual-link',
-        'user-guides/octoprint-tunneling',
-        {
-          type: 'category',
-          label: 'Webcam Settings',
-          items: [
-            'user-guides/multiple-cameras-octoprint',
-            'user-guides/webcam-streaming-resolution-framerate-octoprint',
-            'user-guides/octoprint-webcam-not-streaming',
-          ],
-        },
       ],
     },
     'user-guides/contact-us-for-support',

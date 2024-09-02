@@ -10,12 +10,12 @@ const GroupedGuides = [
     Svg: require('../../../static/img/user-guides/home/getting-started.svg').default,
     links: [
       {
-        title: 'Set up Obico for OctoPrint',
-        route: '/docs/user-guides/octoprint-plugin-setup/',
-      },
-      {
         title: 'Set up Obico for Klipper',
         route: '/docs/user-guides/klipper-setup/',
+      },
+      {
+        title: 'Set up Obico for OctoPrint',
+        route: '/docs/user-guides/octoprint-plugin-setup/',
       },
       {
         title: 'Self-hosted Obico Server Guides',

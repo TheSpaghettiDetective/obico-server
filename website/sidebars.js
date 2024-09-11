@@ -32,27 +32,29 @@ module.exports = {
       label: 'Obico for OctoPrint',
       items: [
         'user-guides/octoprint-plugin-setup-manual-link',
-        'user-guides/octoprint-tunneling',
         {
           type: 'category',
           label: 'Webcam Settings',
           items: [
             'user-guides/multiple-cameras-octoprint',
             'user-guides/webcam-streaming-resolution-framerate-octoprint',
-            'user-guides/octoprint-webcam-not-streaming',
           ],
         },
+        'user-guides/octoprint-tunneling',
+        'user-guides/turn-on-debug-logging',
       ],
     },
     {
       type: 'category',
-      label: 'Obico App (Mobile & Web)',
-      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/notification-settings', 'user-guides/enable-gcode-thumbnails', 'user-guides/orca-slicer-integration'],
-    },
-    {
-      type: 'category',
       label: 'Failure Detection',
-      items: ['user-guides/how-to-test-failure-detection', 'user-guides/failure-detection-false-alarms', 'user-guides/optimal-camera-setup', 'user-guides/how-does-credits-work', 'user-guides/help-the-detective-improve', 'user-guides/detective-not-watching',],
+      items: [
+        'user-guides/how-to-test-failure-detection',
+        'user-guides/optimal-camera-setup',
+        'user-guides/failure-detection-false-alarms',
+        'user-guides/how-does-credits-work',
+        'user-guides/help-the-detective-improve',
+        'user-guides/detective-not-watching',
+      ],
     },
     {
       type: 'category',
@@ -64,21 +66,34 @@ module.exports = {
       label: 'Webcam Streaming',
       items: [
         'user-guides/webcam-streaming-for-human-eyes',
-        'user-guides/more-about-webcam-streaming',
-        'user-guides/optimal-camera-setup',
+        {
+          type: 'doc',
+          id: 'user-guides/moonraker-obico/webcam',
+          label: 'Obico for Klipper Webcam Configuration',
+        },
+        'user-guides/multiple-cameras-octoprint',
         'user-guides/webcam-streaming-resolution-framerate',
+        'user-guides/webcam-feed-is-not-showing',
         {
           type: 'category',
           label: 'More... ',
           items: [
-            'user-guides/check-webcam-streaming-mode',
+            'user-guides/webcam-feed-is-laggy',
+            'user-guides/webcam-install-janus',
+            'user-guides/webcam-stream-stuck-at-1-10-fps',
             'user-guides/internet-speed-requirement-premium-streaming',
             'user-guides/premium-streaming-raspberry-pi-connection-speed',
             'user-guides/premium-streaming-computer-phone-connection-speed',
             'user-guides/webcam-streaming-excessive-cpu',
+            'user-guides/check-webcam-streaming-mode',
           ],
         },
       ],
+    },
+    {
+      type: 'category',
+      label: 'Obico App (Mobile & Web)',
+      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/notification-settings', 'user-guides/enable-gcode-thumbnails', 'user-guides/orca-slicer-integration'],
     },
     {
       type: 'category',
@@ -90,19 +105,7 @@ module.exports = {
       label: 'Troubleshooting Guides',
       items: [
         'user-guides/troubleshoot-server-connection-issues',
-        {
-          type: 'category',
-          label: 'Webcam Streaming Troubleshooting',
-          items: [
-            'user-guides/webcam-feed-is-not-showing',
-            'user-guides/webcam-feed-is-laggy',
-            'user-guides/webcam-install-janus',
-            'user-guides/webcam-stream-stuck-at-1-10-fps',
-            'user-guides/octoprint-webcam-not-streaming',
-          ],
-        },
         'user-guides/connectivity-error-report',
-        'user-guides/turn-on-debug-logging',
         'user-guides/send-mobile-app-log-files',
         'user-guides/relink-printer',
       ],

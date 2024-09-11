@@ -14,14 +14,29 @@ Consider re-linking in one of the following cases:
 
 ## How to re-link? {#how-to-re-link}
 
-:::note
-Your printer can't be automatically identified during the re-linking process. 6-digit code is required to re-link your printer.
+:::caution
+If you are switching from self-hosted Obico server to the Obico cloud, or the other way around, you need to change the server address both in the Obico app and on your printer/Raspberry Pi.
 :::
 
-### Obico for OctoPrint {#obico-for-octoprint}
+### (Optionally) Change the Obico server address in the Obico app
 
-Follow [this guide](/docs/user-guides/octoprint-plugin-setup-manual-link/) to re-link OctoPrint-based printer.
+1. If you have logged in the Obico app, log out first.
+2. Click the wrench icon (**🔧**) located at the top-left corner of the screen.
+3. On the next screen, enter the server address, and press "Set & Relaunch". Or if you want to switch to using the Obico app, simply press "Reset to Obico Cloud".
+4. After the app restarts, login with the correct credential.
 
-### Obico for Klipper {#obico-for-klipper}
+![](/img/user-guides/helpdocs/change_obico_server_app.png)
 
-Follow [this guide](/docs/user-guides/klipper-setup-manual-link/) to re-link Klipper-based printer.
+
+### Re-link Obico for Klipper {#obico-for-klipper}
+
+1. (Optionally) Follow [this guide](/docs/user-guides/moonraker-obico/config/) to change the `url` configuration in the `[server]` section inside `moonraker-obico.cfg`.
+1. Follow [this guide](/docs/user-guides/klipper-setup-manual-link/) to re-link Klipper-based printer.
+
+### Re-link Obico for OctoPrint {#obico-for-octoprint}
+
+1. (Optionally) Change the Obico server address in Obico for OctoPrint.
+
+![](/img/user-guides/helpdocs/change_obico_server_address_octoprint.png)
+
+2. Follow [this guide](/docs/user-guides/octoprint-plugin-setup-manual-link/) to re-link OctoPrint-based printer.

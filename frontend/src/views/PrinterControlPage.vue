@@ -132,7 +132,7 @@
             </div>
           </div>
           <div class="webcam-main" :class="{ 'justify-center' : isAllWebcamSelected, 'webcam-more-than-two' : isAllWebcamSelected && webcams.length > 2 }">
-            <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" :class="isAllWebcamSelected ? (isAtleastOnePrinterPortrait ? 'two-webcam-portrait' : 'two-webcam-landscape') : (videoRotationDeg === 90 || videoRotationDeg === 270 ? 'single-webcam-portrait' : '')" v-show="isAllWebcamSelected ? true : (index === selectedWebcamIndex)">
+            <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" :class="isAllWebcamSelected ? (isAtleastOnePrinterPortrait ? 'two-webcam-portrait' : 'two-webcam-landscape') : (activeVideoRotationDeg === 90 || activeVideoRotationDeg === 270 ? 'single-webcam-portrait' : '')" v-show="isAllWebcamSelected ? true : (index === selectedWebcamIndex)">
               <streaming-box
                 :printer="printer"
                 :webrtc="printerComm.webrtcConnections.get(webcam.name)"
@@ -253,6 +253,15 @@ export default {
       const rotation = +(this.printer?.settings?.webcam_rotation ?? 0) + this.customRotationDeg
       return rotation % 360
     },
+    activeVideoRotationDeg() {
+      const activeWebcamId = this.selectedWebcam.stream_id
+      const customRotationData = this.customRotationData.find(custom => custom.streamId == activeWebcamId) || null
+      
+      const customRotation = customRotationData ? Number(customRotationData.customRotation) : 0
+      const rotation = +(this.selectedWebcam?.rotation ?? 0) + customRotation
+      
+      return rotation % 360
+    },
     selectedWebcam() {
       return this.webcams[this.selectedWebcamIndex];
     },
@@ -294,6 +303,9 @@ export default {
       deep: true,
     },
     videoRotationDeg() {
+      this.resizeStream()
+    },
+    activeVideoRotationDeg() {
       this.resizeStream()
     },
   },
@@ -346,6 +358,9 @@ export default {
                 }
               }
             }
+            this.customRotationData = this.webcams.map(webcam => {
+              return { streamId: webcam.stream_id, customRotation: getLocalPref('webcamRotationDeg', 0, `${this.printer?.id}_${webcam.stream_id}`) }
+            })
           }
         },
         onStatusReceived: (printerStatus) => {

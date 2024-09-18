@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
     <div
       v-show="slowLinkLoss > 50"
       ref="slowLinkWrapper"
@@ -83,10 +83,9 @@
       </div>
     </div>
     <div class="image-container">
-        <img
+      <img
         class="webcamImage"
-        :style="webcamStyle"
-        :src="require('@static/img/raspberry_pi.png')"
+        :src="require('@static/img/print-padded.png')"
       />
       <img
         v-if="taggedSrc"

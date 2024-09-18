@@ -269,23 +269,6 @@ export default {
         return this.webcams.find(webcam => webcam.stream_id == this.preferredWebcam)
       }
     },
-    isAtleastOnePrinterPortrait() {
-      let isPortrait = false
-      this.webcams.forEach(webcam => {
-        const id = webcam.stream_id
-        const customRotationData = this.customRotationData.find(custom => custom.streamId == id) || null
-
-        const customRotation = customRotationData ? Number(customRotationData.customRotation) : 0
-        const rotation = +(webcam.rotation ?? 0) + customRotation
-        const degree = rotation % 360
-
-        if (degree === 90 || degree === 270) {
-          isPortrait = true
-        }
-      })
-
-      return isPortrait
-    },
   },
 
   watch: {
@@ -637,23 +620,4 @@ export default {
       text-align: center
       margin-bottom: 1rem
 
-.two-webcam-landscape
-  @media (min-width: 1024px)
-    width: 50vh !important
-.two-webcam-portrait
-  @media (min-width: 1024px)
-    width: 40vh !important
-.single-webcam-portrait
-  @media (min-width: 1024px)
-    width: 80% !important
-    position: relative
-    left: 10%
-
-.justify-center
-  @media (min-width: 1024px)
-    justify-content: center
-
-.webcam-more-than-two
-  display: flex !important
-  gap: 10px
 </style>

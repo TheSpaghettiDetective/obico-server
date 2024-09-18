@@ -228,19 +228,6 @@ export default {
       const rotation = +(this.webcam?.rotation || 0) + this.customRotationDeg
       return rotation % 360
     },
-    webcamRotateClass() {
-      return `webcam_rotate_${this.videoRotationDeg}`
-    },
-    webcamRatioClass() {
-      switch (this.printer.settings.ratio169) {
-        case true:
-          return 'ratio169'
-        case false:
-          return 'ratio43'
-        default:
-          return 'ratio43'
-      }
-    },
     webcamVideoHeight() {
       switch (this.printer.settings.ratio169) {
         case true:
@@ -507,60 +494,6 @@ export default {
   position: absolute
   top: 0
   left: 0
-
-.webcam_container
-  width: 100%
-  position: relative
-  outline: none
-  background-color: rgb(0 0 0)
-
-  .webcam_rotate_90, .webcam_rotate_270
-    position: relative
-    width: 100%
-    padding-bottom: 100%
-
-    .webcam_fixed_ratio
-      display: flex
-      position: absolute
-      top: 0
-      bottom: 0
-      left: 0
-      right: 0
-
-      .webcam_fixed_ratio_inner
-        &.ontop
-          position: relative
-          top: 0
-
-  .webcam_rotate_0, .webcam_rotate_180
-    .webcam_fixed_ratio
-      width: 100%
-
-      padding-bottom: 100%
-      &.ratio43
-        padding-bottom: 75%
-
-      &.ratio169
-        padding-bottom: 56.25%
-
-      &.ratio1610
-        padding-bottom: 62.5%
-
-      position: relative
-
-      .webcam_fixed_ratio_inner
-        position: absolute
-        top: 0
-        bottom: 0
-        left: 0
-        right: 0
-
-  img, video
-    object-fit: contain
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1)
-    width: 100%
-    height: 100%
-    z-index: initial
 
 .centered-element
   position: absolute

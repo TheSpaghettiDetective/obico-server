@@ -1,5 +1,5 @@
 <template>
-  <div class="card-img-top webcam_container">
+  <div >
     <div
       v-show="slowLinkLoss > 50"
       ref="slowLinkWrapper"
@@ -82,37 +82,38 @@
         <a href="#" class="learn-more">{{ $t("Learn more...") }}</a>
       </div>
     </div>
-
-    <div :class="webcamRotateClass">
-      <div
-        class="webcam_fixed_ratio"
-        :class="webcamRatioClass"
-        :style="{ transform: imageTransformStyle }"
-      >
+    <div class="image-container">
         <img
-          v-if="taggedSrc"
-          style="position: absolute;"
-          :src="taggedSrc"
-          :alt="printer.name + ' current image'"
-        />
-        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
-          <img :src="mjpgSrc" />
-        </div>
-        <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop">
-          <video
-            ref="video"
-            class="remote-video"
-            width="960"
-            :height="webcamVideoHeight"
-            :poster="taggedSrc"
-            autoplay
-            muted
-            playsinline
-            @loadstart="onLoadStart()"
-            @canplay="onCanPlay()"
-          ></video>
-        </div>
-      </div>
+        class="webcamImage"
+        :style="webcamStyle"
+        :src="require('@static/img/raspberry_pi.png')"
+      />
+      <img
+        v-if="taggedSrc"
+        class="webcamImage stackedImage"
+        :style="webcamStyle"
+        :src="taggedSrc"
+        :alt="printer.name + ' current image'"
+      />
+      <img
+        :src="mjpgSrc"
+        v-show="showMJpeg"
+        class="webcamImage stackedImage"
+        :style="webcamStyle"
+      />
+      <video
+        v-show="showVideo"
+        ref="video"
+        class="webcamImage stackedImage"
+        :style="webcamStyle"
+        :poster="taggedSrc"
+        autoplay
+        muted
+        playsinline
+        @loadstart="onLoadStart()"
+        @canplay="onCanPlay()"
+      >
+      </video>
     </div>
 
     <div class="extra-controls">
@@ -217,6 +218,33 @@ export default {
   },
 
   computed: {
+    webcamStyle() {
+        const output = {
+            transform: this.generateTransform(
+                this.webcam?.flipH ?? false,
+                this.webcam?.flipV ?? false,
+                this.videoRotationDeg ?? 0
+            ),
+            aspectRatio: 16 / 9,
+            maxHeight: window.innerHeight - 155 + 'px',
+            maxWidth: 'auto',
+        }
+
+        if (this.webcam?.streamRatio) {
+            const [width, height] = this.webcam.streamRatio.split(':').map(Number)
+            output.aspectRatio = width / height
+            output.maxWidth = (window.innerHeight - 155) * output.aspectRatio + 'px'
+        }
+
+        if (this.webcam?.streamRatio && [90, 270].includes(this.videoRotationDeg)) {
+            if (output.transform === 'none') output.transform = ''
+            const scale = 1 / output.aspectRatio
+            output.transform += ' rotate(' + this.videoRotationDeg + 'deg) scale(' + scale + ')'
+        }
+
+        return output
+    },
+
     imageTransformStyle() {
       let style = ''
       if (this.webcam?.flipH) style += ' scaleX(-1)'
@@ -314,6 +342,20 @@ export default {
   },
 
   methods: {
+
+    generateTransform(flip_horizontal, flip_vertical, rotation) {
+        let transforms = ''
+        if (flip_horizontal) transforms += ' scaleX(-1)'
+        if (flip_vertical) transforms += ' scaleY(-1)'
+        if (rotation === 180) transforms += ' rotate(180deg)'
+
+        // return transform when exist
+        if (transforms.trimStart().length) return transforms.trimStart()
+
+        // return none as fallback
+        return 'none'
+    },
+
     initWebRTC() {
       if (this.webrtc) {
         this.webrtc.setCallbacks({
@@ -462,6 +504,21 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.image-container
+  position: relative
+  width: 100%
+  height: 100%
+
+.webcamImage
+  width: 100%
+  height: 100%
+  object-fit: contain
+
+.stackedImage
+  position: absolute
+  top: 0
+  left: 0
+
 .webcam_container
   width: 100%
   position: relative

@@ -131,17 +131,38 @@
               </div>
             </div>
           </div>
-          <div class="webcam-main" :class="{ 'justify-center' : isAllWebcamSelected, 'webcam-more-than-two' : isAllWebcamSelected && webcams.length > 2 }">
-            <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" :class="isAllWebcamSelected ? (isAtleastOnePrinterPortrait ? 'two-webcam-portrait' : 'two-webcam-landscape') : (videoRotationDeg === 90 || videoRotationDeg === 270 ? 'single-webcam-portrait' : '')" v-show="isAllWebcamSelected ? true : (index === selectedWebcamIndex)">
-              <streaming-box
-                :printer="printer"
-                :webrtc="printerComm.webrtcConnections.get(webcam.name)"
-                :autoplay="user.is_pro"
-                :webcam="webcam"
-                @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
-              />
-            </div>
-          </div>
+        <b-card-text v-if="webcams.length" class="px-0 py-0 content d-inline-block">
+            <b-row>
+                <b-col class="pb-0" style="position: relative">
+                <div v-if="webcams.length > 1">
+                  <b-container fluid>
+                  <b-row dense>
+                    <b-col v-for="(webcam, index) in webcams" :key="index" cols="6">
+                      <div class="d-flex justify-center webcamBackground">
+                        <streaming-box
+                          :printer="printer"
+                          :webrtc="printerComm.webrtcConnections.get(webcam.name)"
+                          :autoplay="user.is_pro"
+                          :webcam="webcam"
+                          @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
+                        />
+                      </div>
+                    </b-col>
+                  </b-row>
+                  </b-container>
+                </div>
+                <div v-else class="d-flex justify-center webcamBackground">
+                        <streaming-box
+                          :printer="printer"
+                          :webrtc="printerComm.webrtcConnections.get(webcam.name)"
+                          :autoplay="user.is_pro"
+                          :webcam="webcam"
+                          @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
+                        />
+                </div>
+              </b-col>
+            </b-row>
+        </b-card-text>
         </div>
       </div>
     </template>
@@ -591,6 +612,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.webcamBackground
+    position: relative
+
 // Navbar
 .printer-name
   font-size: 1rem

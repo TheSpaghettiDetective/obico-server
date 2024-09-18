@@ -15,7 +15,7 @@
                 <b-col class="pb-0" style="position: relative">
                   <b-container fluid class="p-0">
                     <b-row no-gutters>
-                      <b-col v-for="(webcam, index) in webcams" :key="index" cols="6">
+                      <b-col v-for="(webcam, index) in webcams" :key="index" :cols="webcams.length > 1 ? 6 : 12">
                         <div class="d-flex justify-center webcamBackground">
                           <streaming-box
                             :printer="printer"
@@ -111,6 +111,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.webcamBackground
+    position: relative
+    background: #000
+
 #printer-list-page
   margin-top: 1.5rem
 .printer-card

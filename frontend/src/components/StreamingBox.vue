@@ -1,5 +1,5 @@
 <template>
-  <div class="card-img-top webcam_container">
+  <div>
     <div
       v-show="slowLinkLoss > 50"
       ref="slowLinkWrapper"
@@ -82,37 +82,38 @@
         <a href="#" class="learn-more">{{ $t("Learn more...") }}</a>
       </div>
     </div>
-
-    <div :class="webcamRotateClass">
-      <div
-        class="webcam_fixed_ratio"
-        :class="webcamRatioClass"
-        :style="{ transform: imageTransformStyle }"
+    <div class="image-container">
+      <img
+        class="webcamImage"
+        :style="webcamStyle"
+        :src="require('@static/img/print-padded.png')"
+      />
+      <img
+        v-if="taggedSrc"
+        class="webcamImage stackedImage"
+        :style="webcamStyle"
+        :src="taggedSrc"
+        :alt="printer.name + ' current image'"
+      />
+      <img
+        :src="mjpgSrc"
+        v-show="showMJpeg"
+        class="webcamImage stackedImage"
+        :style="webcamStyle"
+      />
+      <video
+        v-show="showVideo"
+        ref="video"
+        class="webcamImage stackedImage"
+        :style="webcamStyle"
+        :poster="taggedSrc"
+        autoplay
+        muted
+        playsinline
+        @loadstart="onLoadStart()"
+        @canplay="onCanPlay()"
       >
-        <img
-          v-if="taggedSrc"
-          style="position: absolute;"
-          :src="taggedSrc"
-          :alt="printer.name + ' current image'"
-        />
-        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
-          <img :src="mjpgSrc" />
-        </div>
-        <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop">
-          <video
-            ref="video"
-            class="remote-video"
-            width="960"
-            :height="webcamVideoHeight"
-            :poster="taggedSrc"
-            autoplay
-            muted
-            playsinline
-            @loadstart="onLoadStart()"
-            @canplay="onCanPlay()"
-          ></video>
-        </div>
-      </div>
+      </video>
     </div>
 
     <div class="extra-controls">
@@ -217,14 +218,6 @@ export default {
   },
 
   computed: {
-    imageTransformStyle() {
-      let style = ''
-      if (this.webcam?.flipH) style += ' scaleX(-1)'
-      if (this.webcam?.flipV) style += ' scaleY(-1)'
-      style += `rotate(${this.videoRotationDeg}deg)`
-
-      return style
-    },
     showVideo() {
       return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
     },
@@ -234,19 +227,6 @@ export default {
     videoRotationDeg() {
       const rotation = +(this.webcam?.rotation || 0) + this.customRotationDeg
       return rotation % 360
-    },
-    webcamRotateClass() {
-      return `webcam_rotate_${this.videoRotationDeg}`
-    },
-    webcamRatioClass() {
-      switch (this.printer.settings.ratio169) {
-        case true:
-          return 'ratio169'
-        case false:
-          return 'ratio43'
-        default:
-          return 'ratio43'
-      }
     },
     webcamVideoHeight() {
       switch (this.printer.settings.ratio169) {
@@ -284,6 +264,32 @@ export default {
     },
     basicStreamingInWebrtc() {
       return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
+    },
+    webcamStyle() {
+        const output = {
+            transform: this.generateTransform(
+                this.webcam?.flipH ?? false,
+                this.webcam?.flipV ?? false,
+                this.videoRotationDeg ?? 0
+            ),
+            aspectRatio: 16 / 9,
+            maxHeight: window.innerHeight - 155 + 'px',
+            maxWidth: 'auto',
+        }
+
+        if (this.webcam?.streamRatio) {
+            const [width, height] = this.webcam.streamRatio.split(':').map(Number)
+            output.aspectRatio = width / height
+            output.maxWidth = (window.innerHeight - 155) * output.aspectRatio + 'px'
+        }
+
+        if (this.webcam?.streamRatio && [90, 270].includes(this.videoRotationDeg)) {
+            if (output.transform === 'none') output.transform = ''
+            const scale = 1 / output.aspectRatio
+            output.transform += ' rotate(' + this.videoRotationDeg + 'deg) scale(' + scale + ')'
+        }
+
+        return output
     },
   },
   watch: {
@@ -457,64 +463,37 @@ export default {
         showCloseButton: true,
       })
     },
+    generateTransform(flip_horizontal, flip_vertical, rotation) {
+        let transforms = ''
+        if (flip_horizontal) transforms += ' scaleX(-1)'
+        if (flip_vertical) transforms += ' scaleY(-1)'
+        if (rotation === 180) transforms += ' rotate(180deg)'
+
+        // return transform when exist
+        if (transforms.trimStart().length) return transforms.trimStart()
+
+        // return none as fallback
+        return 'none'
+    },
   },
 }
 </script>
 
 <style lang="sass" scoped>
-.webcam_container
-  width: 100%
+.image-container
   position: relative
-  outline: none
-  background-color: rgb(0 0 0)
+  width: 100%
+  height: 100%
 
-  .webcam_rotate_90, .webcam_rotate_270
-    position: relative
-    width: 100%
-    padding-bottom: 100%
+.webcamImage
+  width: 100%
+  height: 100%
+  object-fit: contain
 
-    .webcam_fixed_ratio
-      display: flex
-      position: absolute
-      top: 0
-      bottom: 0
-      left: 0
-      right: 0
-
-      .webcam_fixed_ratio_inner
-        &.ontop
-          position: relative
-          top: 0
-
-  .webcam_rotate_0, .webcam_rotate_180
-    .webcam_fixed_ratio
-      width: 100%
-
-      padding-bottom: 100%
-      &.ratio43
-        padding-bottom: 75%
-
-      &.ratio169
-        padding-bottom: 56.25%
-
-      &.ratio1610
-        padding-bottom: 62.5%
-
-      position: relative
-
-      .webcam_fixed_ratio_inner
-        position: absolute
-        top: 0
-        bottom: 0
-        left: 0
-        right: 0
-
-  img, video
-    object-fit: contain
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1)
-    width: 100%
-    height: 100%
-    z-index: initial
+.stackedImage
+  position: absolute
+  top: 0
+  left: 0
 
 .centered-element
   position: absolute

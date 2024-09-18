@@ -134,17 +134,9 @@
         <b-card-text v-if="webcams.length" class="px-0 py-0 content d-inline-block" style="width: 100%;">
             <b-row>
                 <b-col class="pb-0" style="position: relative">
-                  <streaming-box
-                    v-if="selectedWebcam"
-                    :printer="printer"
-                    :webrtc="printerComm.webrtcConnections.get(selectedWebcam.name)"
-                    :autoplay="user.is_pro"
-                    :webcam="selectedWebcam"
-                    @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, selectedWebcam.stream_id)"
-                  />
-                  <b-container v-else fluid class="p-0">
+                  <b-container fluid class="p-0">
                     <b-row no-gutters>
-                      <b-col v-for="(webcam, index) in webcams" :key="index" cols="6">
+                      <b-col v-for="(webcam, index) in webcams" :key="index" v-show="!preferredWebcam || webcam.stream_id === preferredWebcam" :cols="!preferredWebcam && webcams.length > 1 ? 6 : 12">
                         <div class="d-flex justify-center webcamBackground">
                           <streaming-box
                             :printer="printer"

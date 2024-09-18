@@ -85,6 +85,7 @@
     <div class="image-container">
       <img
         class="webcamImage"
+        :style="webcamStyle"
         :src="require('@static/img/print-padded.png')"
       />
       <img
@@ -217,41 +218,6 @@ export default {
   },
 
   computed: {
-    webcamStyle() {
-        const output = {
-            transform: this.generateTransform(
-                this.webcam?.flipH ?? false,
-                this.webcam?.flipV ?? false,
-                this.videoRotationDeg ?? 0
-            ),
-            aspectRatio: 16 / 9,
-            maxHeight: window.innerHeight - 155 + 'px',
-            maxWidth: 'auto',
-        }
-
-        if (this.webcam?.streamRatio) {
-            const [width, height] = this.webcam.streamRatio.split(':').map(Number)
-            output.aspectRatio = width / height
-            output.maxWidth = (window.innerHeight - 155) * output.aspectRatio + 'px'
-        }
-
-        if (this.webcam?.streamRatio && [90, 270].includes(this.videoRotationDeg)) {
-            if (output.transform === 'none') output.transform = ''
-            const scale = 1 / output.aspectRatio
-            output.transform += ' rotate(' + this.videoRotationDeg + 'deg) scale(' + scale + ')'
-        }
-
-        return output
-    },
-
-    imageTransformStyle() {
-      let style = ''
-      if (this.webcam?.flipH) style += ' scaleX(-1)'
-      if (this.webcam?.flipV) style += ' scaleY(-1)'
-      style += `rotate(${this.videoRotationDeg}deg)`
-
-      return style
-    },
     showVideo() {
       return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
     },
@@ -312,6 +278,32 @@ export default {
     basicStreamingInWebrtc() {
       return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
     },
+    webcamStyle() {
+        const output = {
+            transform: this.generateTransform(
+                this.webcam?.flipH ?? false,
+                this.webcam?.flipV ?? false,
+                this.videoRotationDeg ?? 0
+            ),
+            aspectRatio: 16 / 9,
+            maxHeight: window.innerHeight - 155 + 'px',
+            maxWidth: 'auto',
+        }
+
+        if (this.webcam?.streamRatio) {
+            const [width, height] = this.webcam.streamRatio.split(':').map(Number)
+            output.aspectRatio = width / height
+            output.maxWidth = (window.innerHeight - 155) * output.aspectRatio + 'px'
+        }
+
+        if (this.webcam?.streamRatio && [90, 270].includes(this.videoRotationDeg)) {
+            if (output.transform === 'none') output.transform = ''
+            const scale = 1 / output.aspectRatio
+            output.transform += ' rotate(' + this.videoRotationDeg + 'deg) scale(' + scale + ')'
+        }
+
+        return output
+    },
   },
   watch: {
     webrtc: {
@@ -341,20 +333,6 @@ export default {
   },
 
   methods: {
-
-    generateTransform(flip_horizontal, flip_vertical, rotation) {
-        let transforms = ''
-        if (flip_horizontal) transforms += ' scaleX(-1)'
-        if (flip_vertical) transforms += ' scaleY(-1)'
-        if (rotation === 180) transforms += ' rotate(180deg)'
-
-        // return transform when exist
-        if (transforms.trimStart().length) return transforms.trimStart()
-
-        // return none as fallback
-        return 'none'
-    },
-
     initWebRTC() {
       if (this.webrtc) {
         this.webrtc.setCallbacks({
@@ -497,6 +475,18 @@ export default {
         `,
         showCloseButton: true,
       })
+    },
+    generateTransform(flip_horizontal, flip_vertical, rotation) {
+        let transforms = ''
+        if (flip_horizontal) transforms += ' scaleX(-1)'
+        if (flip_vertical) transforms += ' scaleY(-1)'
+        if (rotation === 180) transforms += ' rotate(180deg)'
+
+        // return transform when exist
+        if (transforms.trimStart().length) return transforms.trimStart()
+
+        // return none as fallback
+        return 'none'
     },
   },
 }

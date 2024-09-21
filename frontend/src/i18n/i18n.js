@@ -2,10 +2,10 @@ import i18n from 'i18next';
 
 import baseEn from './locales/en.json';
 import baseZh from './locales/zh.json';
-import baseptbr from './locales/ptbr.json';
+import basePtbr from './locales/ptbr.json';
 import entBaseEn from './locales/ent_en.json';
 import entBaseZh from './locales/ent_zh.json';
-import entBaseptbr from './locales/ent_ptbr.sjon';
+import entBasePtbr from './locales/ent_ptbr.sjon';
 
 import {language} from '@src/lib/page-context'
 
@@ -30,7 +30,12 @@ const resources = {
       ...entBaseZh
     }
   },
-
+  'ptbr': {
+    translation: {
+      ...basePtbr,
+      ...entBasePtbr
+    }
+  },
 };
 
 i18n

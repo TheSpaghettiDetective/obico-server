@@ -16,7 +16,7 @@
                   <b-container fluid class="p-0">
                     <b-row no-gutters>
                       <b-col v-for="(webcam, index) in webcams" :key="index" :cols="webcams.length > 1 ? 6 : 12">
-                        <div class="d-flex justify-center webcamBackground">
+                        <div class="d-flex justify-content-center webcamBackground">
                           <streaming-box
                             :printer="printer"
                             :webrtc="printerComm.webrtcConnections.get(webcam.name)"

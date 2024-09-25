@@ -192,6 +192,10 @@ export default {
       type: Object,
       default: null,
     },
+    halfHeight: {
+      type: Boolean,
+      default: false,
+    },
     autoplay: {
       type: Boolean,
       required: true,
@@ -266,30 +270,31 @@ export default {
       return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
     },
     webcamStyle() {
-        const output = {
-            transform: this.generateTransform(
-                this.webcam?.flipH ?? false,
-                this.webcam?.flipV ?? false,
-                this.videoRotationDeg ?? 0
-            ),
-            aspectRatio: 16 / 9,
-            maxHeight: window.innerHeight - 155 + 'px',
-            maxWidth: 'auto',
-        }
+      const maxHeight = window.innerHeight / (this.halfHeight ? 2 : 1) - 75
+      const output = {
+          transform: this.generateTransform(
+              this.webcam?.flipH ?? false,
+              this.webcam?.flipV ?? false,
+              this.videoRotationDeg ?? 0
+          ),
+          aspectRatio: 16 / 9,
+          maxHeight: maxHeight + 'px',
+          maxWidth: 'auto',
+      }
 
-        if (this.webcam?.streamRatio) {
-            const [width, height] = this.webcam.streamRatio.split(':').map(Number)
-            output.aspectRatio = width / height
-            output.maxWidth = (window.innerHeight - 155) * output.aspectRatio + 'px'
-        }
+      if (this.webcam?.streamRatio) {
+          const [width, height] = this.webcam.streamRatio.split(':').map(Number)
+          output.aspectRatio = width / height
+          output.maxWidth = (window.innerHeight - 155) * output.aspectRatio + 'px'
+      }
 
-        if (this.webcam?.streamRatio && [90, 270].includes(this.videoRotationDeg)) {
-            if (output.transform === 'none') output.transform = ''
-            const scale = 1 / output.aspectRatio
-            output.transform += ' rotate(' + this.videoRotationDeg + 'deg) scale(' + scale + ')'
-        }
+      if (this.webcam?.streamRatio && [90, 270].includes(this.videoRotationDeg)) {
+          if (output.transform === 'none') output.transform = ''
+          const scale = 1 / output.aspectRatio
+          output.transform += ' rotate(' + this.videoRotationDeg + 'deg) scale(' + scale + ')'
+      }
 
-        return output
+      return output
     },
   },
   watch: {

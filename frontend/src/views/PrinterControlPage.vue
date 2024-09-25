@@ -136,13 +136,14 @@
                 <b-col class="pb-0" style="position: relative">
                   <b-container fluid class="p-0">
                     <b-row no-gutters style="flex-direction: column; align-items: center;">
-                      <b-col v-for="(webcam, index) in webcams" :key="index" v-show="isWebcamSelected(webcam)" :cols="!selectedWebcam && webcams.length > 1 ? 6 : 12">
+                      <b-col v-for="(webcam, index) in webcams" :key="index" v-show="isWebcamSelected(webcam)">
                         <div class="d-flex justify-content-center webcamBackground">
                           <streaming-box
                             :printer="printer"
                             :webrtc="printerComm.webrtcConnections.get(webcam.name)"
                             :autoplay="user.is_pro"
                             :webcam="webcam"
+                            :halfHeight="webcams.length > 1 && !selectedWebcam"
                             @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
                           />
                         </div>

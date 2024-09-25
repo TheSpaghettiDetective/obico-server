@@ -136,7 +136,7 @@
                 <b-col class="pb-0" style="position: relative">
                   <b-container fluid class="p-0">
                     <b-row no-gutters style="flex-direction: column; align-items: center;">
-                      <b-col v-for="(webcam, index) in webcams" :key="index" v-show="!preferredWebcam || webcam.stream_id === preferredWebcam" :cols="!preferredWebcam && webcams.length > 1 ? 6 : 12">
+                      <b-col v-for="(webcam, index) in webcams" :key="index" v-show="isWebcamSelected(webcam)" :cols="!selectedWebcam && webcams.length > 1 ? 6 : 12">
                         <div class="d-flex justify-content-center webcamBackground">
                           <streaming-box
                             :printer="printer"
@@ -268,7 +268,7 @@ export default {
       } else {
         return this.webcams.find(webcam => webcam.stream_id == this.preferredWebcam)
       }
-    },
+    }
   },
 
   watch: {
@@ -340,6 +340,17 @@ export default {
   },
 
   methods: {
+    isWebcamSelected(webcam) {
+      if (this.preferredWebcam === null) {
+        return true
+      }
+      // In case this.preferredWebcam is an old stream_id that no longer exists
+      const webcamExists = this.webcams.some(w => w.stream_id === this.preferredWebcam)
+      if (!webcamExists) {
+        return true
+      }
+      return this.preferredWebcam === webcam.stream_id
+    },
     handleRotateRightClicked(val, streamId) {
       const customRotationIndex = this.customRotationData.findIndex(custom => custom.streamId === streamId)
       if (customRotationIndex === -1) {

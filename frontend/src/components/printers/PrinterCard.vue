@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="px-0 py-0 content d-inline-block" style="width: 100%;">
-        <div class="d-flex justify-center webcamBackground">
+        <div class="d-flex justify-content-center webcamBackground">
         <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" :webcam="webcam" />
         </div>
       </div>

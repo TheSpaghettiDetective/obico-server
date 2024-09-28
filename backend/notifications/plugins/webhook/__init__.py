@@ -91,10 +91,13 @@ class WebhookNotificationPlugin(BaseNotificationPlugin):
             "img_url": context.img_url,
         }
 
-        self.execute_webhook(
-            url=webhook_URL,
-            eventData=data,
-        )
+        try:
+            self.execute_webhook(
+                url=webhook_URL,
+                eventData=data,
+            )
+        except:
+            pass # Ignore errors on webhook failures
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
 
@@ -132,10 +135,13 @@ class WebhookNotificationPlugin(BaseNotificationPlugin):
             data["print"] = printJob
             data["img_url"] = context.img_url
 
-        self.execute_webhook(
-            url=webhook_URL,
-            eventData=data,
-        )
+        try:
+            self.execute_webhook(
+                url=webhook_URL,
+                eventData=data,
+            )
+        except:
+            pass # Ignore errors on webhook failures
 
     def send_test_message(self, context: TestMessageContext) -> None:
         webhook_URL = self.get_webhook_URL_from_config(context.config)

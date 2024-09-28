@@ -12,7 +12,7 @@ def additional_context_export(request):
 
     platform = request.GET.get('platform', None)      # Allow get parameter to override for debugging purpose
     if not platform:
-        m = RE_TSD_APP_PLATFORM.match(request.headers.get('user-agent', ''))
+        m = RE_TSD_APP_PLATFORM.match(request.headers.get('X-TSD-Platform', '') or request.headers.get('user-agent', ''))
         platform = m.groupdict()['platform'] if m else ''
 
     syndicate_name = syndicate_from_request(request).name

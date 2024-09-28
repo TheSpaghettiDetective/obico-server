@@ -57,7 +57,7 @@ You need to use `docker-compose` instead of `docker compose` on older Docker ver
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
-4. There is no step 4. This is how easy it is to get Obico Server up and running (thanks to Docker and Docker-compose).
+4. If the Obico Server is running on `localhost`, there will be no step 4. If it is running on a different host, such as a VM in the cloud, go ahead to [configure the Django site](configure.md#django-site).
 
 ## 3. Test the server {#3-test-the-server}
 

@@ -56,15 +56,15 @@ export default function FeaturedGuides() {
         </div>
         <div className="row">
           <div className={clsx('col col--6')}>
-            <a href='/docs/user-guides/octoprint-plugin-setup/' className={clsx('guide-link', styles.guideLink)}>
-              <GetStartedIcon className={styles.linkIcon} alt='Set up Obico for OctoPrint' />
-              <div>Set up Obico for OctoPrint</div>
-            </a>
-          </div>
-          <div className={clsx('col col--6')}>
             <a href='/docs/user-guides/klipper-setup/' className={clsx('guide-link', styles.guideLink)}>
               <GetStartedIcon className={styles.linkIcon} alt='Set up Obico for Klipper' />
               <div>Set up Obico for Klipper</div>
+            </a>
+          </div>
+          <div className={clsx('col col--6')}>
+            <a href='/docs/user-guides/octoprint-plugin-setup/' className={clsx('guide-link', styles.guideLink)}>
+              <GetStartedIcon className={styles.linkIcon} alt='Set up Obico for OctoPrint' />
+              <div>Set up Obico for OctoPrint</div>
             </a>
           </div>
           <div className={clsx('col col--6')}>

@@ -9,7 +9,12 @@ ROLLING_WIN_LONG = 7200 # rolling window of 7200 samples (~20 hours). Approximat
 
 VISUALIZATION_THRESH = 0.2  # The thresh for a box to be drawn on the detective view
 
-def update_prediction_with_detections(prediction, detections):
+def update_prediction_with_detections(prediction, detections, printer):
+
+    if printer and printer.detection_bending_factor is not None: # Bend bend bend
+        for d in detections:
+            d[1] = d[1] * printer.detection_bending_factor
+
     p = sum_p_in_detections(detections)
     prediction.current_p = p
     prediction.current_frame_num += 1

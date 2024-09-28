@@ -45,7 +45,7 @@ import { syndicateTextConstant } from '@src/config/syndicateText'
 Vue.prototype.$syndicate = syndicate().name
 Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().name||'base'] || syndicateTextConstant.base
 
-export default (router, components) => {
+export default (store, routes, components) => {
   initTheme()
   setupSentry(Vue)
   Vue.use(VueRouter)
@@ -86,6 +86,11 @@ export default (router, components) => {
     },
   })
 
+  const router = new VueRouter({
+    mode: 'history',
+    routes,
+  })
+
   Vue.component('LoadingPlaceholder', LoadingPlaceholder)
   Vue.component('SyndicateAwareSVG', SyndicateAwareSVG)
 
@@ -114,6 +119,7 @@ export default (router, components) => {
 
   if (document.getElementById('app')) {
     new Vue({
+      store,
       router,
       components,
     }).$mount('#app')

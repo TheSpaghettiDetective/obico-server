@@ -21,7 +21,7 @@ module.exports = {
     // },
     announcementBar: {
       id: 'bttAnnouncement',
-      content: `<a target="_blank" rel="noopener noreferrer" href="https://biqu.equipment/products/bigtreetech-x-obico-bigtreetech-pi-2-ai">🎉🎉 BIG TREE TECH X OBICO PI 2 IS NOW AVAILABLE! 🎉🎉</a>`,
+      content: `<a target="_blank" rel="noopener noreferrer" href="https://obico.io/bigtreetech-btt-pi-2.html">🎉🎉 BIG TREE TECH X OBICO PI 2 IS NOW AVAILABLE! 🎉🎉</a>`,
       textColor: '#fff',
       isCloseable: false,
     },

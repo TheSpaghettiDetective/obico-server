@@ -14,6 +14,14 @@
     </template>
     <template #topBarRight>
       <div class="action-panel">
+        <a
+          v-if="canDownloadGcode"
+          @click.prevent="downloadGcode"
+          class="btn shadow-none icon-btn action-btn"
+          :title="$t('Download file')"
+        >
+          <i class="fas fa-download"></i>
+        </a>
         <!-- Rename -->
         <a
           v-if="isCloud"
@@ -41,21 +49,7 @@
           </template>
           <cascaded-dropdown
             ref="cascadedDropdown"
-            :menu-options="[
-              {
-                key: 'renameFile',
-                icon: 'fas fa-edit',
-                title: $t(`Rename file`),
-                callback: true,
-              },
-              {
-                key: 'deleteFile',
-                icon: 'fas fa-trash-alt',
-                customMenuOptionClass: 'text-danger',
-                title: $t(`Delete file`),
-                callback: true,
-              },
-            ]"
+            :menu-options="dropdownMenuOptions"
             @menuOptionClicked="onMenuOptionClicked"
           />
         </b-dropdown>
@@ -211,6 +205,37 @@ export default {
     isDeleted() {
       return !!this.gcode?.deleted
     },
+    dropdownMenuOptions() {
+      const menuOptions = [
+        {
+          key: 'renameFile',
+          icon: 'fas fa-edit',
+          title: this.$i18next.t(`Rename file`),
+          callback: true,
+        },
+        {
+          key: 'deleteFile',
+          icon: 'fas fa-trash-alt',
+          customMenuOptionClass: 'text-danger',
+          title: this.$i18next.t(`Delete file`),
+          callback: true,
+        },
+      ]
+
+      if (this.canDownloadGcode) {
+        menuOptions.unshift({
+          key: 'downloadGcode',
+          icon: 'fas fa-download',
+          title: this.$i18next.t(`Download file`),
+          callback: true,
+        })
+      }
+
+      return menuOptions
+    },
+    canDownloadGcode() {
+      return this.gcode?.url && this.gcode?.safe_filename
+    },
   },
 
   async created() {
@@ -228,6 +253,8 @@ export default {
         this.renameFile()
       } else if (menuOptionKey === 'deleteFile') {
         this.deleteFile()
+      } else if (menuOptionKey === 'downloadGcode') {
+        this.downloadGcode()
       }
     },
     getRouteParam(name) {
@@ -353,6 +380,23 @@ export default {
     onRefresh() {
       this.$router.go()
     },
+    async downloadGcode() {
+      const fileUrl = this.gcode.url
+
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = this.gcode.safe_filename
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      URL.revokeObjectURL(link.href);
+      document.body.removeChild(link);
+    }
   },
 }
 </script>

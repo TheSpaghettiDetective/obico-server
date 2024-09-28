@@ -10,15 +10,26 @@
             <div>{{ printer.name }}</div>
           </div>
 
-          <div class="webcam-main webcam-more-than-two">
-            <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner">
-              <streaming-box
-                :printer="printer"
-                :webrtc="printerComm.webrtcConnections.get(webcam.name)"
-                :autoplay="true"
-                :webcam="webcam"
-              />
-            </div>
+        <b-card-text v-if="webcams.length" class="px-0 py-0 content d-inline-block" style="width: 100%;">
+            <b-row>
+                <b-col class="pb-0" style="position: relative">
+                  <b-container fluid class="p-0">
+                    <b-row no-gutters>
+                      <b-col v-for="(webcam, index) in webcams" :key="index" :cols="webcams.length > 1 ? 6 : 12">
+                        <div class="d-flex justify-content-center webcamBackground">
+                          <streaming-box
+                            :printer="printer"
+                            :webrtc="printerComm.webrtcConnections.get(webcam.name)"
+                            :autoplay="true"
+                            :webcam="webcam"
+                          />
+                        </div>
+                      </b-col>
+                    </b-row>
+                  </b-container>
+              </b-col>
+            </b-row>
+        </b-card-text>
           </div>
           <div class="p-3 p-md-5">
             <p class="text-center">
@@ -100,18 +111,12 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.webcamBackground
+    position: relative
+    background: #000
+
 #printer-list-page
   margin-top: 1.5rem
 .printer-card
-  margin-bottom: 1.5rem
-.webcam-main
-  @media (min-width: 1024px)
-    display: grid
-    align-items: center
-.webcam-more-than-two
-  display: flex !important
-  flex-direction: column
-  gap: 10px
-.stream-inner
-  width: 100%
+  margin-bottom: 1.25rem
 </style>

@@ -115,7 +115,7 @@ def check_x_api(get_response):
         if token:
             user = None
             try:
-                access_token = AccessToken.objects.get(token=key)
+                access_token = AccessToken.objects.get(token=token)
                 if access_token.is_valid():
                     user = access_token.user
             except AccessToken.DoesNotExist:

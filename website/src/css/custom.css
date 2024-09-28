@@ -178,12 +178,6 @@ div[class^='announcementBar_'] {
 
   /* TODO: Will be removed later (FOR BTT)*/
   background: #01a299;
-  height: 45px;
+  height: fit-content;
   font-size: 21px;
-  @media (max-width: 590px) {
-    font-size: 15px;
-  }
-  @media (max-width: 450px) {
-    font-size: 13px;
-  }
 }

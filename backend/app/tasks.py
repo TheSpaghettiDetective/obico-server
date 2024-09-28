@@ -93,7 +93,7 @@ def compile_timelapse(print_id):
         subprocess.run(cmd.split(), check=True)
 
         with open(output_mp4, 'rb') as mp4_file:
-            _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER, _print.printer.user.syndicate.name)
+            _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
 
         _print.video_url = mp4_file_url
         _print.save(keep_deleted=True)
@@ -109,7 +109,7 @@ def compile_timelapse(print_id):
             local_pics[0].parent, ffmpeg_extra_options, output_mp4)
         subprocess.run(cmd.split(), check=True)
         with open(output_mp4, 'rb') as mp4_file:
-            _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER, _print.printer.user.syndicate.name)
+            _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
 
         json_files = list_dir(f'p/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
         local_jsons = download_files(json_files, to_dir)
@@ -132,7 +132,7 @@ def compile_timelapse(print_id):
         prediction_json_io = io.BytesIO()
         prediction_json_io.write(json.dumps(prediction_json).encode('UTF-8'))
         prediction_json_io.seek(0)
-        _, json_url = save_file_obj('private/{}_p.json'.format(_print.id), prediction_json_io, settings.TIMELAPSE_CONTAINER, _print.printer.user.syndicate.name)
+        _, json_url = save_file_obj('private/{}_p.json'.format(_print.id), prediction_json_io, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
 
         _print.tagged_video_url = mp4_file_url
         _print.prediction_json_url = json_url
@@ -148,13 +148,13 @@ def preprocess_timelapse(self, user_id, video_path, filename):
     converted_mp4_path = tmp_file_path + '.mp4'
     Path(tmp_file_path).parent.mkdir(parents=True, exist_ok=True)
     with open(tmp_file_path, 'wb') as file_obj:
-        retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.PICS_CONTAINER, long_term_storage=True)
+        retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.TIMELAPSE_CONTAINER, long_term_storage=True)
 
     subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
 
-    _print = Print.objects.create(user_id=user_id, filename=filename, uploaded_at=timezone.now())
+    _print = Print.objects.create(user_id=user_id, filename=filename, uploaded_at=timezone.now(), started_at=timezone.now(), finished_at=timezone.now())
     with open(converted_mp4_path, 'rb') as mp4_file:
-        _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER, _print.printer.user.syndicate.name)
+        _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
     _print.video_url = video_url
     _print.save(keep_deleted=True)
 
@@ -195,11 +195,11 @@ def detect_timelapse(self, print_id):
         jpg_abs_path = os.path.join(jpgs_dir, jpg_path)
         with open(jpg_abs_path, 'rb') as pic:
             pic_path = f'{_print.user.id}/{_print.id}/{jpg_path}'
-            internal_url, _ = save_file_obj(f'uploaded/{pic_path}', pic, settings.PICS_CONTAINER, _print.printer.user.syndicate.name, long_term_storage=False)
+            internal_url, _ = save_file_obj(f'uploaded/{pic_path}', pic, settings.PICS_CONTAINER, _print.user.syndicate.name, long_term_storage=False)
             req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
             req.raise_for_status()
             detections = req.json()['detections']
-            update_prediction_with_detections(last_prediction, detections)
+            update_prediction_with_detections(last_prediction, detections, _print.printer)
             predictions.append(last_prediction)
 
             if is_failing(last_prediction, 1, escalating_factor=1):
@@ -210,17 +210,17 @@ def detect_timelapse(self, print_id):
             overlay_detections(Image.open(jpg_abs_path), detections_to_visualize).save(os.path.join(tagged_jpgs_dir, jpg_path), "JPEG")
 
     predictions_json = serializers.serialize("json", predictions)
-    _, json_url = save_file_obj(f'private/{_print.id}_p.json', io.BytesIO(str.encode(predictions_json)), settings.TIMELAPSE_CONTAINER, _print.printer.user.syndicate.name)
+    _, json_url = save_file_obj(f'private/{_print.id}_p.json', io.BytesIO(str.encode(predictions_json)), settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
 
     mp4_filename = f'{_print.id}_tagged.mp4'
     output_mp4 = os.path.join(tmp_dir, mp4_filename)
     subprocess.run(
         f'ffmpeg -y -r 30 -pattern_type glob -i {tagged_jpgs_dir}/*.jpg -c:v libx264 -pix_fmt yuv420p -vf pad=ceil(iw/2)*2:ceil(ih/2)*2 {output_mp4}'.split(), check=True)
     with open(output_mp4, 'rb') as mp4_file:
-        _, mp4_file_url = save_file_obj(f'private/{mp4_filename}', mp4_file, settings.TIMELAPSE_CONTAINER, _print.printer.user.syndicate.name)
+        _, mp4_file_url = save_file_obj(f'private/{mp4_filename}', mp4_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
 
     with open(os.path.join(jpgs_dir, jpg_filenames[-1]), 'rb') as poster_file:
-        _, poster_file_url = save_file_obj(f'private/{_print.id}_poster.jpg', poster_file, settings.TIMELAPSE_CONTAINER, _print.printer.user.syndicate.name)
+        _, poster_file_url = save_file_obj(f'private/{_print.id}_poster.jpg', poster_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
 
     _print.tagged_video_url = mp4_file_url
     _print.prediction_json_url = json_url
@@ -277,7 +277,7 @@ def will_record_timelapse(_print):
     unrotated_jpg_url = copy_pic(
                             last_pic,
                             f'snapshots/{_print.printer.id}/latest_unrotated.jpg',
-                            _print.printer.user.syndicate.name,
+                            _print.user.syndicate.name,
                             rotated=False,
                             to_long_term_storage=False
                         )
@@ -291,8 +291,8 @@ def will_record_timelapse(_print):
     return True
 
 def send_timelapse_detection_done_email(_print):
-    syndicate = _print.user.syndicate
-    if syndicate and syndicate.name != 'base':
+    syndicate_name = _print.user.syndicate.name
+    if syndicate_name != 'base':
         return
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
@@ -304,7 +304,7 @@ def send_timelapse_detection_done_email(_print):
     ctx = {
         'print': _print,
         'unsub_url': 'https://app.obico.io/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
-        'prints_link': syndicate.build_full_url_for_syndicate('/prints/', _print.printer.user.syndicate.name),
+        'prints_link': syndicate.build_full_url_for_syndicate('/print_history/', syndicate_name),
     }
     emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
     message = get_template('email/upload_print_processed.html').render(ctx)
@@ -338,7 +338,7 @@ def select_print_shots_for_feedback(_print):
         rotated_jpg_url = copy_pic(
                             f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg',
                             f'ff_printshots/{_print.user.id}/{_print.id}/{ts}.jpg',
-                            _print.printer.user.syndicate.name,
+                            _print.user.syndicate.name,
                             rotated=True,
                             printer_settings=_print.printer.settings,
                             to_long_term_storage=False

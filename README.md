@@ -44,7 +44,7 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
-4. There is no step 4. This is how easy it is to get Obico up and running (thanks to Docker and Docker-compose).
+4. If the Obico Server is running on `localhost`, there will be no step 4. If it is running on a different host, such as a VM in the cloud, go ahead to [configure the Django site](https://www.obico.io/docs/server-guides/configure/#django-site).
 
 Open "http://localhost:3334" on the same computer. Voila - your self-hosted Obico Server is now up and running!
 

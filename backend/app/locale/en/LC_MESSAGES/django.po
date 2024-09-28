@@ -681,5 +681,6 @@ msgid "Change notification preferences"
 msgstr ""
 
 #: app/views/web_views.py:60
+#: app/forms.py:105
 msgid "A user is already registered with this email address."
 msgstr ""

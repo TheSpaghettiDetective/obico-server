@@ -102,6 +102,6 @@ class SyndicateSpecificAddEmailForm(AddEmailForm):
 
         # Check if a user with this email already exists in the same syndicate
         if User.objects.filter(emailaddress__email__iexact=email, syndicate=syndicate).exists():
-            raise forms.ValidationError(_("Email address already used in another account."))
+            raise forms.ValidationError(_("A user is already registered with this email address."))
 
         return email

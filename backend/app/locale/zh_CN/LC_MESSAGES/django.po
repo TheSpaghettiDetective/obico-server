@@ -733,6 +733,7 @@ msgid "Change notification preferences"
 msgstr "更改通知偏好设置"
 
 #: app/views/web_views.py:60
+#: app/forms.py:105
 msgid "A user is already registered with this email address."
 msgstr "用户已使用此电子邮件地址注册。"
 

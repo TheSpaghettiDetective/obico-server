@@ -31,7 +31,10 @@ from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
 from lib.syndicate import syndicate_from_request
+from allauth.account.views import EmailView
+
 from app.forms import SyndicateSpecificResetPasswordForm
+from app.forms import SyndicateSpecificAddEmailForm
 
 
 
@@ -61,6 +64,16 @@ class SocialAccountAwareSignupView(SignupView):
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
             return super(SocialAccountAwareSignupView, self).form_valid(form)
+
+
+class SyndicateSpecificEmailView(EmailView):
+    form_class = SyndicateSpecificAddEmailForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
 
 class SyndicateSpecificPasswordResetView(PasswordResetView):
     form_class = SyndicateSpecificResetPasswordForm

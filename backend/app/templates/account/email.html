@@ -61,10 +61,10 @@
         <br />
         <form method="post" action="{% url 'account_email' %}" class="add_email">
           {% csrf_token %}
-          {% for error in form.email.errors %}
-          {{ error|escape }}
-          {% endfor %}
           <input type="email" name="email" class="form-control" placeholder="E-mail address" required="" id="id_email">
+          {% for error in form.email.errors %}
+          <div class="text-danger">{{ error|escape }}</div>
+          {% endfor %}
           <button class="btn btn-primary mr-2 mt-2" name="action_add" type="submit">{% trans "Add E-mail" %}</button>
         </form>
       </div>

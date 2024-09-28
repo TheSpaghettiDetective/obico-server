@@ -4,7 +4,7 @@ import requests
 from django.db import models
 from django import forms
 from django.forms import ModelForm, Form, CharField, ChoiceField, Textarea, HiddenInput, BooleanField, ValidationError
-from allauth.account.forms import SignupForm, LoginForm
+from allauth.account.forms import SignupForm, LoginForm, AddEmailForm
 import allauth.account.views
 import phonenumbers
 from pushbullet import Pushbullet, PushbulletError
@@ -94,3 +94,14 @@ def filter_users_by_email_and_syndicate(email, syndicate):
     )
 
     return list(users)
+
+class SyndicateSpecificAddEmailForm(AddEmailForm):
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        syndicate = self.user.syndicate  # Assuming the user has a syndicate attribute
+
+        # Check if a user with this email already exists in the same syndicate
+        if User.objects.filter(emailaddress__email__iexact=email, syndicate=syndicate).exists():
+            raise forms.ValidationError(_("Email address already used in another account."))
+
+        return email

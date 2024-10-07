@@ -58,6 +58,10 @@ Twisted = {extras = ["tls", "http2"], version = "*" }
 django-oauth-toolkit = "==2.3.0"
 requests-toolbelt = "==1.0.0"
 prompt-toolkit = "==3.0.43"
+typing-extensions = "==4.11.0"
+aiohttp = "==3.9.1"
+pydantic = "==2.8.0"
+pydantic-core = "==2.20.0"
 
 [dev-packages]
 

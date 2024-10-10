@@ -621,7 +621,7 @@ a {
   color: var(--color-text-primary);
 }
 
-input, input.form-control, select.form-control {
+input, input.form-control, select.form-control, textarea.form-control {
   background-color: var(--color-input-background);
   border: 1px solid var(--color-input-background);
   border-radius: var(--border-radius-sm);

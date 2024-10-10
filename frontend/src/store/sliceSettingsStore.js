@@ -27,7 +27,10 @@ const state = {
   selectedPrintProcess: null,
 
   meshes: [], // Array to store mesh-specific data
-  selectedMeshIndex: 0 // Index of the currently selected mesh
+  selectedMeshIndex: 0, // Index of the currently selected mesh
+
+  // JusPrint Chat
+  jusprintCurrentChatId: null,
 }
 
 const mutations = {
@@ -137,6 +140,10 @@ const mutations = {
     };
   },
 
+  SET_PROFILE_OVERWRITE(state, profileOverwrites) {
+    state.profileOverwrites = profileOverwrites
+  },
+
   SET_FILAMENT_PROFILE_PRESET(state, filamentProfilePreset) {
     state.filamentProfilePreset = { ...filamentProfilePreset };
   },
@@ -152,11 +159,17 @@ const mutations = {
     state.filamentProfileOverwrites = {}
   },
 
+  SET_FILAMENT_PROFILE_OVERWRITE(state, filamentProfileOverwrites) {
+    state.filamentProfileOverwrites = filamentProfileOverwrites
+  },
 
   SET_INITIAL_LOAD(state, value) {
     state.isInitialLoad = value;
   },
 
+  SET_JUSPRINT_CURRENT_CHAT_ID(state, jusprintCurrentChatId) {
+    state.jusprintCurrentChatId = jusprintCurrentChatId;
+  },
 }
 
 const actions = {
@@ -360,6 +373,7 @@ const getters = {
     return state.filamentProfilePreset[key] || ''
   },
   meshes: (state) => state.meshes,
+  jusprintCurrentChatId: (state) => state.jusprintCurrentChatId,
 }
 
 export default {

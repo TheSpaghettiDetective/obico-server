@@ -6,7 +6,7 @@
       </div>
       <div class="ml-2">
         Sliced with Obico AI Assistant.
-        <a href="#" @click="$emit('change-presets')"> View the chat. </a>
+        <a href="#" @click="showChatHistory"> View the chat history. </a>
       </div>
     </div>
     <div class="feedback-question py-4">
@@ -50,6 +50,7 @@
 <script>
 import axios from 'axios'
 import urls from '@config/server-urls'
+import JusprintChatHistory from './JusprintChatHistory.vue'
 
 export default {
   name: 'JusPrintFeedback',
@@ -114,6 +115,19 @@ export default {
       axios.patch(urls.jusprintChats(this.chat.id), {
         user_feedback_text: this.textFeedback
       })
+    },
+    showChatHistory() {
+      this.$swal
+        .openModalWithComponent(
+          JusprintChatHistory,
+          {
+            messages: JSON.parse(this.chat?.messages)
+          },
+          {
+            title: 'Chat History',
+          showConfirmButton: false,
+        }
+      )
     },
   },
 }

@@ -286,13 +286,15 @@ const actions = {
     commit('SET_PRINT_PROCESS_SELECTION_OPEN', false);
 
     if (selectedPrintProcess?.slicer_profile_url) {
+      // Come on javascript, you still can't do better in 2024 can you?
+      const encodedUrl = encodeURI(selectedPrintProcess.slicer_profile_url).replace(/\+/g, '%2B');
       axios
-        .get(selectedPrintProcess?.slicer_profile_url)
+        .get(encodedUrl)
         .then((response) => {
           commit('SET_PROFILE_PRESET', response.data)
           commit('CLEAR_PROFILE_OVERWRITE_VALUE')
         })
-      }
+    }
   },
 
 
@@ -300,13 +302,15 @@ const actions = {
     commit('SET_SELECTED_FILAMENT', selectedFilament);
 
     if (selectedFilament?.slicer_profile_url) {
+      // Come on javascript, you still can't do better in 2024 can you?
+      const encodedUrl = encodeURI(selectedFilament.slicer_profile_url).replace(/\+/g, '%2B');
       axios
-        .get(selectedFilament?.slicer_profile_url)
+        .get(encodedUrl)
         .then((response) => {
           commit('SET_FILAMENT_PROFILE_PRESET', response.data)
           commit('CLEAR_FILAMENT_PROFILE_OVERWRITE_VALUE')
         })
-      }
+    }
   },
 
 

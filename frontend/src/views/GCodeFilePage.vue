@@ -89,7 +89,7 @@
 
             <!-- File details -->
             <g-code-details :file="gcode" :show-print-stats="true" :compact-view="false" />
-            <jusprint-feedback class="card-container jusprint-feedback" :g-code-file-id="gcode.id" />
+            <jusprint-feedback v-if="isCloud" class="card-container jusprint-feedback" :g-code-file-id="gcode.id" />
             <!-- Available printers -->
             <available-printers
               v-if="!isDeleted"

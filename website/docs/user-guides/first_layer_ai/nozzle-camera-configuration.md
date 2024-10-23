@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 This guide will walk you through how to install a nozzle camera on your 3D printer. We recommend the cameras:
 
 - Any [USB endoscope camera](https://www.amazon.com/Seesi-Endoscope-Waterproof-Inspection-Semi-Rigid/dp/B07PBF6DX5/) with at least 720P. There are many printable mounts for a variety of USB endoscope cameras for many different 3D printers. Find a mount and endoscope combination that works for you or design your own mount for your USB endoscope of choice.
-- The 4K Nozzle Camera from 3DO is an awesome high-quality camera designed specifically to be used as a nozzle camera. There are ready-made mounts for a variety of [3D printers](https://github.com/3DO-EU/nozzle-camera/tree/main/printers). If you are in the US or Canada, you can get a 3DO nozzle camera from [KB3D](https://kb-3d.com/store/electronics/779-3do-nozzle-camera-kit.html) or [Fabreeko](https://kb-3d.com/store/electronics/779-3do-nozzle-camera-kit.html). If you are in Europe, you can get it from [3DO](https://3do.eu/59-nozzle-camera) directly.
+- The 4K Nozzle Camera from 3DO is an awesome high-quality camera designed specifically to be used as a nozzle camera. There are ready-made mounts for a variety of [3D printers](https://github.com/3DO-EU/nozzle-camera/tree/main/printers). If you are in the US or Canada, you can get a 3DO nozzle camera from [KB3D](https://kb-3d.com/store/electronics/779-3do-nozzle-camera-kit.html) or [Fabreeko](https://kb-3d.com/store/electronics/779-3do-nozzle-camera-kit.html). If you are in Europe, you can get it from [3DO](https://3do.dk/en/3do-camera/2681-3do-nozzle-camera-kit-v2-sony-4k-for-3d-printers.html) directly.
 
 We have detailed guides for the Prusa Mini and the Voron StealthBurner as well as some recommendations for other printers. We will add additional detailed printer guides in the future.
 
@@ -169,12 +169,7 @@ This guide will walk you through installing the 3DO 4K nozzle camera on your Vor
 ![](/img/blogs/nozzle-camera-stealthburner/001.png)
 
 1. Voron 2.4 with StealthBurner
-2. 3DO 4K nozzle camera kit (distributed by [3DO](https://3do.eu/nozzle-camera/763-1162-3do-nozzle-camera.html) for EU and [KB3D](https://kb-3d.com/store/electronics/779-7659-pre-order-3do-nozzle-camera-kit-multiple-styles.html#/914-resolution-4k) or [Fabreeko](https://www.fabreeko.com/products/nozzle-camera-by-3d0?variant=43751816593663) for U.S.)
-- The kit includes
-  - 4K Camera
-  - 2\*10mm SHCS screws (for PCB mounting) -4x
-  - [5050 SK6812 WWCW 6000K LED](https://3do.eu/nozzle-camera/804-3do-5050-wwcw-sk6812-led-2pcs.html) - 2x
-  - [1x High-quality high-temperature USB cable (FEP + Silicone)](https://kb-3d.com/store/wiring-connectors/780-7660-pre-order-3do-usb-cable-for-nozzle-camera-usb-a-to-5p-multiple-styles.html#/915-length-07_meters)
+2. 3DO 4K nozzle camera kit (distributed by [3DO](https://3do.dk/en/3do-camera/2681-3do-nozzle-camera-kit-v2-sony-4k-for-3d-printers.html) for EU and [KB3D](https://kb-3d.com/store/electronics/779-7659-pre-order-3do-nozzle-camera-kit-multiple-styles.html#/914-resolution-4k) or [Fabreeko](https://www.fabreeko.com/products/nozzle-camera-by-3d0?variant=43751816593663) for U.S.)
 
 
 ## Printed Parts
@@ -307,7 +302,7 @@ Nozzle camera options for other specific printers
 
 While we have specific guides for Prusa Mini and Voron printers, there are many working nozzle camera mounts and guides out there. Below, we will list some that we have come across. Although there is not a detailed guide for these mounts, installation is similar to installation on the Prusa mini or Voron, but of course there will be some specific differences based on your 3D printer.
 
-The [3DO nozzle camera](https://3do.eu/59-nozzle-camera) currently has ready to print mounts for the following 3D printers.
+The [3DO nozzle camera](https://3do.dk/en/3do-camera/2681-3do-nozzle-camera-kit-v2-sony-4k-for-3d-printers.html) currently has ready to print mounts for the following 3D printers.
 
 - [EVA 2.4](https://github.com/3DO-EU/nozzle-camera/tree/main/printers/EVA_2_4)
 - [Eva 3](https://github.com/3DO-EU/nozzle-camera/tree/main/printers/EVA_3)

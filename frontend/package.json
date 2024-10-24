@@ -31,7 +31,7 @@
     "patch-package": "^6.5.0",
     "postinstall-postinstall": "^2.1.0",
     "semver": "^7.3.5",
-    "vue": "^2.6.11",
+    "vue": "^3.0.0",
     "vue-click-outside": "^1.1.0",
     "vue-loading-overlay": "^3.3.2",
     "vue-moment": "^4.1.0",

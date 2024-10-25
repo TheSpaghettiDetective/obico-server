@@ -19,7 +19,16 @@ export const settings = () => {
 }
 
 export const syndicate = () => {
-  return pageContext()['syndicate']
+  let syndicate
+
+  // TODO: JusPrin syndicate hack so that we can set branding without add a syndicate to the DB
+  if (navigator.userAgent.startsWith("JusPrin")) {
+    syndicate = { name: 'jusprin' }
+  } else {
+    syndicate = pageContext()['syndicate']
+  }
+
+  return syndicate
 }
 
 export const language = () => {

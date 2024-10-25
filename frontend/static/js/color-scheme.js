@@ -167,7 +167,18 @@ const shadows = [
 
 
 // Get theme value (exclude "System")
-function currentThemeValue(theme) {
+function currentThemeValue(theme, syndicate) {
+  const singleThemeSyndicates = {
+    jusprin: Themes.Light,
+    yumi: Themes.Light,
+    kingroon: Themes.Light,
+    mintion: Themes.Light,
+  }
+
+  if (syndicate && singleThemeSyndicates[syndicate]) {
+    return singleThemeSyndicates[syndicate]
+  }
+
   // Get system settings
   if (theme.value === Themes.System) {
     if (window.matchMedia('(prefers-color-scheme)').media !== 'not all' && window.matchMedia('(prefers-color-scheme: light)').matches) {

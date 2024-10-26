@@ -1,7 +1,7 @@
 @import 'theme';
 
 #logreg-forms{
-    margin:10vh auto;
+    margin:3vh auto;
     padding: 0em 1.5em;
     background-color: var(--color-surface-secondary);
     box-shadow: 0 7px 7px rgba(0, 0, 0, 0.12), 0 12px 40px rgba(0,0,0,0.24);
@@ -32,6 +32,7 @@
             border: 1px solid var(--color-surface-secondary);
             color: white;
         }
+        border: 1px solid var(--color-surface-secondary);
     }
     .form-control:focus {
         z-index: 2;
@@ -43,17 +44,25 @@
     }
 
     .social-login{
-        margin-bottom: 14px;
+        margin-top: 20px;
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        gap:10px;
+        justify-content: center;
+        gap: 20px;
     }
     .social-btn{
-        font-weight: 100;
-        color:white;
-        font-size: 0.9rem;
-        flex:1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: white;
+        font-size: 18px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: scale(1.1);
+        }
     }
 
     a{
@@ -84,19 +93,29 @@
         }
     }
 
-    .form-signup .social-btn{ width:210px; }
-
-    .form-signup input { margin-bottom: 2px;}
-
-    .form-signup .social-login{
-        width:210px !important;
-        margin: 0 auto;
-    }
-
     .submit{
         background: -webkit-linear-gradient(0deg,  #2dfbff 0%, #3c96ff 100%);
         border-radius: 25px;
         color: #fff;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--color-divider);
+    }
+    .divider span {
+      padding: 0 10px;
+      color: var(--color-text-primary);
+      font-size: 14px;
     }
 }
   /* Mobile */
@@ -106,27 +125,18 @@
         padding: 0em 0.75em;
 
        .social-login{
-          margin:0 auto;
-          margin-bottom: 10px;
-          flex-direction: column;
+          flex-direction: row;
+          justify-content: center;
       }
       .social-btn{
-          font-size: 1.3rem;
-          font-weight: 100;
-          color:white;
-      }
-      .social-btn:nth-child(1){
-          margin-bottom: 5px;
+          font-size: 16px;
       }
       .social-btn span{
           display: none;
       }
-       .facebook-btn:after{
-          content:'Facebook';
-      }
-
-       .google-btn:after{
-          content:'Google';
+       .facebook-btn:after,
+       .google-btn:after {
+          content: none;
       }
     }
   }

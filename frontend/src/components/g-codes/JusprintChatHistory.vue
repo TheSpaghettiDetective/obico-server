@@ -8,7 +8,7 @@
         <div class="message-content">
           <VueMarkdown :key="message.content">{{ message.content }}</VueMarkdown>
           <div v-if="Object.keys(changedParams(message)).length > 0" class="pt-2">
-            <div>I have changed the following parameters:</div>
+            <div>{{ $t('I have changed the following parameters:') }}</div>
             <div v-for="(value, key) in changedParams(message)" :key="key">
               - {{ key }}: {{ value }}
             </div>
@@ -92,4 +92,3 @@ export default {
     color: white
 
 </style>
-

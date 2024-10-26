@@ -5,8 +5,8 @@
         <font-awesome-icon :icon="['fas', 'wand-magic-sparkles']" />
       </div>
       <div class="ml-2">
-        Sliced with Obico AI Assistant.
-        <a href="#" @click="showChatHistory"> View the chat history. </a>
+        {{ $t('Sliced with Obico AI Assistant.') }}
+        <a href="#" @click="showChatHistory"> {{ $t('View the chat history.') }} </a>
       </div>
     </div>
     <div class="feedback-question py-4">
@@ -124,9 +124,9 @@ export default {
             messages: JSON.parse(this.chat?.messages)
           },
           {
-            title: 'Chat History',
-          showConfirmButton: false,
-        }
+            title: $t('Chat History'),
+            showConfirmButton: false,
+          }
       )
     },
   },
@@ -184,4 +184,3 @@ export default {
 .fade-enter, .fade-leave-to
   opacity: 0
 </style>
-

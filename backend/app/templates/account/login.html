@@ -5,8 +5,6 @@
 {% load widget_tweaks %}
 {% load account socialaccount %}
 
-{% block head_title %}{% trans "SIGN IN" %}{% endblock %}
-
 {% block content %}
 {% get_providers as socialaccount_providers %}
 {% trans 'Email address' as email_placeholder %}
@@ -85,7 +83,7 @@
           {% if redirect_field_value %}
           <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
           {% endif %}
-          <button type="submit" class="btn btn-primary btn-block">{% trans "SIGN IN" %}</button>
+          <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
           <!-- Modal -->
           <div class="modal fade" id="loginHelpMessage" tabindex="-1" role="dialog" aria-labelledby="loginHelpMessageTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -99,7 +97,7 @@
                 <div class="modal-body text-left">
                   <ul>
                     <li>{% trans "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the mobile app, you can use the same to sign in here." %}</li>
-                    <li>{% blocktrans %}"Sign in with Apple" is not available in the web app. If you want to use the web app, please sign up for a different account and<a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/relink-printer/">re-link your printer"</a> {% endblocktrans %}.</li>
+                    <li>{% blocktrans %}"Sign in with Apple" is not available in the web app. If you want to use the web app, please sign up for a different account and <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/relink-printer/">re-link your printer</a>{% endblocktrans %}.</li>
                     <li>{% trans "Even if you previously signed up an account using Google or Facebook, you can still" %} <a class="link" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> {% trans "using the same email address." %}</li>
                     <li class="text-warning">{% trans "If you can't sign in the mobile app, re-install the mobile app and try it again." %}</li>
                     <li><a class="link" href="mailto:support@obico.io">{% trans "Contact us" %}</a> {% trans "if you have tried everything else." %}</li>
@@ -122,7 +120,7 @@
           {% if socialaccount_providers %}
           <div class="text-center mt-3">
             <div class="divider">
-              <span class="text-muted">Or</span>
+              <span class="text-muted">{% trans "Or" %}</span>
             </div>
 
             <p class="text-center my-2">{% trans "Continue with social media" %}</p>
@@ -130,13 +128,13 @@
               {% for provider in socialaccount_providers %}
                 {% if provider.id == "facebook" %}
                 <a href="{% provider_login_url "facebook" method="oauth2" %}" class="social-btn facebook-btn"
-                  role="button" aria-label="Login with Facebook">
+                  role="button" aria-label="{% trans 'Login with Facebook' %}">
                   <i class="fab fa-facebook-f"></i>
                 </a>
                 {% endif %}
                 {% if provider.id == "google" %}
                 <a href="{% provider_login_url "google" method="oauth2" %}" class="social-btn google-btn"
-                  role="button" aria-label="Login with Google">
+                  role="button" aria-label="{% trans 'Login with Google' %}">
                   <i class="fab fa-google"></i>
                 </a>
                 {% endif %}

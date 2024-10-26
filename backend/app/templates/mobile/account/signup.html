@@ -121,7 +121,7 @@
           <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
           {% endif %}
           <button type="submit" class="btn btn-primary btn-block">{% trans "Sign Up" %}</button>
-          <div class="text-center pt-3 w-100">
+          <div class="text-center pt-4 pb-2 w-100">
             {% trans "Already have an account?" %} <a class="link" href="{% url 'mobile_auth_login' %}?{{request.GET.urlencode}}">
               {% trans "Sign In" %}
             </a>

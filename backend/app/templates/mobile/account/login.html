@@ -112,7 +112,7 @@
             </div>
           </div>
           {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
-          <div class="text-center pt-3 w-100">
+          <div class="text-center pt-4 pb-2 w-100">
             {% trans "Don't have an account?" %} <a class="link" href="{% url 'mobile_auth_signup' %}?{{request.GET.urlencode}}">{% trans "Sign Up Now" %}</a>
           </div>
           {% endif %}

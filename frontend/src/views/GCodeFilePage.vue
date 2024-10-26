@@ -89,7 +89,7 @@
 
             <!-- File details -->
             <g-code-details :file="gcode" :show-print-stats="true" :compact-view="false" />
-            <jusprint-feedback v-if="isCloud" class="card-container jusprint-feedback" :g-code-file-id="gcode.id" />
+            <jusprin-feedback v-if="isCloud" class="card-container jusprin-feedback" :g-code-file-id="gcode.id" />
             <!-- Available printers -->
             <available-printers
               v-if="!isDeleted"
@@ -151,7 +151,7 @@ import {
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
-import JusprintFeedback from '@src/components/g-codes/JusprintFeedback.vue'
+import JusprinFeedback from '@src/components/g-codes/JusprinFeedback.vue'
 
 export default {
   name: 'GCodeFilePage',
@@ -164,7 +164,7 @@ export default {
     PrintHistoryItem,
     CascadedDropdown,
     GCodeDetails,
-    JusprintFeedback,
+    JusprinFeedback,
   },
 
   props: {
@@ -408,7 +408,7 @@ export default {
   margin-bottom: var(--gap-between-blocks)
 
 .available-printers,
-.jusprint-feedback
+.jusprin-feedback
   margin-top: var(--gap-between-blocks)
   &.full-width
     margin-top: 15px

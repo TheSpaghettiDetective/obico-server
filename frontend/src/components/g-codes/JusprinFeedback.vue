@@ -1,5 +1,5 @@
 <template>
-  <div v-if="chat" class="jusprint-feedback">
+  <div v-if="chat" class="jusprin-feedback">
     <div class="d-flex align-items-center">
       <div>
         <font-awesome-icon :icon="['fas', 'wand-magic-sparkles']" />
@@ -50,7 +50,7 @@
 <script>
 import axios from 'axios'
 import urls from '@config/server-urls'
-import JusprintChatHistory from './JusprintChatHistory.vue'
+import JusprinChatHistory from './JusprinChatHistory.vue'
 
 export default {
   name: 'JusPrintFeedback',
@@ -85,11 +85,11 @@ export default {
   },
   methods: {
     async fetchChat() {
-      if (!urls.jusprintChats) {
-        return  // No Jusprint chat API endpoint on the server
+      if (!urls.jusprinChats) {
+        return  // No Jusprin chat API endpoint on the server
       }
       try {
-        const response = await axios.get(urls.jusprintChats(), {
+        const response = await axios.get(urls.jusprinChats(), {
           params: { g_code_file_id: this.gCodeFileId }
         })
         this.chat = response.data[0]
@@ -105,26 +105,26 @@ export default {
       // Show text feedback input after submitting initial feedback
       this.showTextFeedback = true
 
-      axios.patch(urls.jusprintChats(this.chat.id), {
+      axios.patch(urls.jusprinChats(this.chat.id), {
         user_feedback: feedback
       })
     },
 
     submitFeedbackText() {
       this.showTextFeedback = false
-      axios.patch(urls.jusprintChats(this.chat.id), {
+      axios.patch(urls.jusprinChats(this.chat.id), {
         user_feedback_text: this.textFeedback
       })
     },
     showChatHistory() {
       this.$swal
         .openModalWithComponent(
-          JusprintChatHistory,
+          JusprinChatHistory,
           {
             messages: JSON.parse(this.chat?.messages)
           },
           {
-            title: $t('Chat History'),
+            title: this.$t('Chat History'),  // Use this.$t instead of just $t
             showConfirmButton: false,
           }
       )
@@ -134,7 +134,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.jusprint-feedback
+.jusprin-feedback
   svg
     width: 1.5em
     height: 1.5em
@@ -184,3 +184,4 @@ export default {
 .fade-enter, .fade-leave-to
   opacity: 0
 </style>
+

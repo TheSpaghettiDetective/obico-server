@@ -36,8 +36,8 @@ export default {
   methods: {
     changedParams(message) {
       return {
-        ...message.params?.filament_json,
-        ...message.params?.print_process_json,
+        ...(message.slicing_profiles?.filament_overrides?.[0] ?? {}),
+        ...message.slicing_profiles?.print_process_overrides,
       }
     },
   },

@@ -19,4 +19,9 @@ export const syndicateTextConstant = {
     docRoot: 'https://docs.kingroon.com/docs',
     appRoot: 'https://app.kingroon.com',
   },
+  jusprin:{
+    brandName: 'JusPrin',
+    docRoot: 'https://www.obico.io/docs',
+    appRoot: 'https://app.obico.io',
+  },
 };

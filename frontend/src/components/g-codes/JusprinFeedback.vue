@@ -50,7 +50,7 @@
 <script>
 import axios from 'axios'
 import urls from '@config/server-urls'
-import JusprinChatHistory from './JusprinChatHistory.vue'
+import JusPrinChatHistory from './JusprinChatHistory.vue'
 
 export default {
   name: 'JusPrintFeedback',
@@ -86,7 +86,7 @@ export default {
   methods: {
     async fetchChat() {
       if (!urls.jusprinChats) {
-        return  // No Jusprin chat API endpoint on the server
+        return  // No JusPrin chat API endpoint on the server
       }
       try {
         const response = await axios.get(urls.jusprinChats(), {
@@ -119,7 +119,7 @@ export default {
     showChatHistory() {
       this.$swal
         .openModalWithComponent(
-          JusprinChatHistory,
+          JusPrinChatHistory,
           {
             messages: JSON.parse(this.chat?.messages)
           },

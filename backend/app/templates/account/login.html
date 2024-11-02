@@ -29,7 +29,11 @@
           </svg>
           {% endif %}
         </div>
-
+        {% if page_context.syndicate.name == 'jusprin' %}
+        <div class="text-center">
+          Note: JusPrin is a project built by <a class="link" target="_blank" href="https://www.obico.io">Obico</a>. If you have an Obico account, you can use the same account to sign in here.
+        </div>
+        {% endif %}
         <form class="login form-signin" method="POST">
           {% if form.errors %}
           <div style="padding-bottom: 0.5em">

@@ -37,20 +37,31 @@
             <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox">
 
             {% if page_context.syndicate.name == 'base' %}
-            {% blocktrans with brand_name=page_context.syndicate.display_name %}
-            By signing up, I agree to the {{ brand_name }} app's
-            <a class="link" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" href="https://www.obico.io/privacy.html">PrivacyPolicy</a>
-            {% endblocktrans %}
-            {% else %}
-            {% blocktrans with brand_name=page_context.syndicate.display_name privacy_link=page_context.syndicate.privacy_link tos_link=page_context.syndicate.tos_link %}
-            By signing up, I agree to the {{ brand_name }} app's
-            <a class="link" href="{{ tos_link }}">Terms of Use</a> and <a class="link" href="{{ privacy_link }}">PrivacyPolicy</a>
-            {% endblocktrans %}
+              {% blocktrans with brand_name=page_context.syndicate.display_name %}
+              By signing up, I agree to the {{ brand_name }} app's
+              <a class="link" target="_blank" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" target="_blank" href="https://www.obico.io/privacy.html">PrivacyPolicy</a>
+              {% endblocktrans %}
+            {% elif page_context.syndicate.name == 'jusprin' %}
+              {% blocktrans with brand_name=page_context.syndicate.display_name %}
+              JusPrin is a project built by <a class="link" target="_blank" href="https://www.obico.io">Obico</a>. By signing up, I agree to Obico's
+              <a class="link" target="_blank" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" target="_blank" href="https://www.obico.io/privacy.html">PrivacyPolicy</a>
+              {% endblocktrans %}
+            {% elif page_context.syndicate.tos_link and page_context.syndicate.privacy_link %}
+              {% blocktrans with brand_name=page_context.syndicate.display_name privacy_link=page_context.syndicate.privacy_link tos_link=page_context.syndicate.tos_link %}
+              By signing up, I agree to the {{ brand_name }} app's
+              <a class="link" target="_blank" href="{{ tos_link }}">Terms of Use</a> and <a class="link" target="_blank" href="{{ privacy_link }}">PrivacyPolicy</a>
+              {% endblocktrans %}
             {% endif %}
 
             </label>
           </div>
         </div>
+
+        {% if page_context.syndicate.name == 'jusprin' %}
+        <div class="text-center">
+          Important: If you have an Obico account, do NOT sign up again. Use your Obico account to <a class="link" href="{% url 'account_login' %}?{{request.GET.urlencode}}">Sign In</a> instead.
+        </div>
+        {% endif %}
         {% for error in form.non_field_errors %}
         <div class="text-danger">{{ error }}</div>
         {% endfor %}

@@ -351,7 +351,8 @@ export default {
               query: {
                 ...this.$route.query,
               }
-            });
+            })
+            .catch((error) => {}) // There are NavigationDuplicated errors. Suspect it's because the setInterval is not super clean and occasionally results in multiple calls to this.
           }
         }
       })

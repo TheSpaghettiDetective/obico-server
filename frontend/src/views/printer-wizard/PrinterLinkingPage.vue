@@ -372,12 +372,12 @@ export default {
         <p><ul>
         <li style="margin: 10px 0;">${this.$i18next.t("You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click")} <a href="/printers/wizard/">here</a> ${this.$i18next.t("to walk through the process again.")}</li>
         <li style="margin: 10px 0;">${this.$i18next.t("The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to")} <b>1.5.0</b> ${this.$i18next.t("or later.")}</li>
-        <li style="margin: 10px 0;">${this.$i18next.t("Still no dice? Check out the step-by-step")} <a target="_blank" href=${getDocUrl('/user-guides/octoprint-plugin-setup/')}">${this.$i18next.t("set up guide")}</a>.</li>
+        <li style="margin: 10px 0;">${this.$i18next.t("Still no dice? Check out the step-by-step")} <a target="_blank" href=${this.getDocUrl('/user-guides/octoprint-plugin-setup/')}">${this.$i18next.t("set up guide")}</a>.</li>
         </ul></p>`
 
       if (!this.targetOctoPrint) {
         html = `<p>${this.$i18next.t("The 6-digit code needs to be entered to the Obico for Klipper installation script.")}</p>
-        <p>${this.$i18next.t("Check")} <a target="_blank" href=${getDocUrl('/user-guides/klipper-setup/')}"${this.$i18next.t("this set up guide")}</a> ${this.$i18next.t("for detailed instructions.")}</p>`
+        <p>${this.$i18next.t("Check")} <a target="_blank" href=${this.getDocUrl('/user-guides/klipper-setup/')}> ${this.$i18next.t("this set up guide")}</a> ${this.$i18next.t("for detailed instructions.")}</p>`
       }
 
       this.$swal.fire({

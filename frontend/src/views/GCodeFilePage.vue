@@ -151,7 +151,7 @@ import {
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
-import JusPrinFeedback from '@src/components/g-codes/JusprinFeedback.vue'
+import JusprinFeedback from '@src/components/g-codes/JusprinFeedback.vue'
 
 export default {
   name: 'GCodeFilePage',
@@ -164,7 +164,7 @@ export default {
     PrintHistoryItem,
     CascadedDropdown,
     GCodeDetails,
-    JusPrinFeedback,
+    JusprinFeedback,
   },
 
   props: {

@@ -37,7 +37,7 @@ export default {
     changedParams(message) {
       return {
         ...(message.slicing_profiles?.filament_overrides?.[0] ?? {}),
-        ...message.slicing_profiles?.print_process_overrides,
+        ...message.slicing_profiles?.print_process_overrides ?? {},
       }
     },
   },

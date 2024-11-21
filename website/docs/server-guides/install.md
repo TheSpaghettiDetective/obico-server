@@ -55,6 +55,10 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 You need to use `docker-compose` instead of `docker compose` on older Docker versions.
 :::
 
+:::tip
+docker-compose.yaml use [healthchecks](https://docs.docker.com/reference/compose-file/services/#healthcheck). If you want to customize it, please go to [Common tasks for operating self-hosted server](https://www.obico.io/docs/server-guides/ops/#customize-healthchecks).
+:::
+
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
 4. If the Obico Server is running on `localhost`, there will be no step 4. If it is running on a different host, such as a VM in the cloud, go ahead to [configure the Django site](configure.md#django-site).

@@ -35,3 +35,18 @@ docker image prune
 ```
 
 *Note: if you are on linux you _may_ need to run the last line as `sudo` (ex. `sudo docker...`)*
+
+## Customize healthchecks {#customize-healthchecks}
+
+Using healthchecks in `docker-compose.yaml` to monitor and ensure the reliability of self-hosted services running in Docker Compose is a great way to maintain uptime and quickly react to failures.
+
+Short explanation of healthcheck parameters :
+
+- `test` : The command to run to check the health inside the container (you shouldn't have to change it).
+- `start_period` : The time to wait after the container starts before health checks begin.
+- `interval` : The time to wait between health checks.
+- `timeout` : The time to wait before considering the health check to have failed
+- `retries` : The number of consecutive failures needed to consider a container as unhealthly
+
+Feel free to customize them as you wish.
+

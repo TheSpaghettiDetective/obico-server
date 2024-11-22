@@ -17,13 +17,13 @@ export default function BlogSidebar({sidebar, tags}) {
   return (
     <>
       <div className={styles.nozzleNinzaBlock}>
-        <h1>NOZZLE NINJA</h1>
-        <h3>First Layer AI Error Detection for OctoPrint & Klipper <span className={styles.obicoAccent}>Now Available!</span></h3>
+        <h1>DISCOVER PRINT TALK</h1>
+        <h3>Your Go-To Podcast for All Things 3D Printing</h3>
         <div className={styles.nozzleNizaBadgeImage}>
-          <img src='/img/OBICO_NOZZLE_NINJA_COMPATIBLE_BADGE.png' alt='OBICO_NOZZLE_NINJA_COMPATIBLE_BADGE'/>
+          <img src='/img/print_talk_podcast_logo.png' alt='print_talk_podcast_logo'/>
         </div>
         <div>
-          <a href='https://www.mintion.net/products/mintion-nozzle-camera?variant=48352784089398'>
+          <a href='https://bit.ly/494tl4n'>
             <button className={styles.learnMoreButton}>Learn More</button>
           </a>
         </div>

@@ -106,7 +106,7 @@ In this case, the easiest way is to add the site in Django Admin.
 This method works no matter if your Obico Server is running on the localhost. This is especially useful for cases such as running your Obico Server in the cloud.
 
 ```
-cd obico-server && docker compose run web ./manage.py site --add xxxx # xxxx is the Django site determined in the previous step.
+cd obico-server && docker compose run web ./manage.py site --add server_ip_address:server_port # server_ip_address:server_port is the Django site determined in the previous step.
 ```
 
 Replace xxxx in the command with the Django site determined in the previous step.

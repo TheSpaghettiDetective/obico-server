@@ -26,7 +26,7 @@ export const jusprin = {
     },
     {
       name: 'surface-secondary',
-      values: {[Themes.Light]: '#f3f4f6', [Themes.Dark]: '#f3f4f6'},
+      values: {[Themes.Light]: '#9ca3af', [Themes.Dark]: '#9ca3af'},
     },
   ],
 }

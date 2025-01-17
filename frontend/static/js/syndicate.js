@@ -149,7 +149,7 @@ export const yumi = {
 
     {
       name: 'input-background',
-      values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#42566B'},
+      values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#212224'},
     },
     {
       name: 'input-placeholder',

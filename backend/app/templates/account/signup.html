@@ -31,6 +31,7 @@
           {% endif %}
         </div>
 
+        {% if page_context.syndicate.name == 'base' or page_context.syndicate.name == 'jusprin' %}
         <div style="margin-bottom: 1rem; padding-left: 24px;">
           <div class="custom-control custom-checkbox form-check-inline">
             <input type="checkbox" class="custom-control-input" id="tos-checkbox" checked>
@@ -52,11 +53,10 @@
               <a class="link" target="_blank" href="{{ tos_link }}">Terms of Use</a> and <a class="link" target="_blank" href="{{ privacy_link }}">PrivacyPolicy</a>
               {% endblocktrans %}
             {% endif %}
-
             </label>
           </div>
         </div>
-
+        {% endif %}
         {% if page_context.syndicate.name == 'jusprin' %}
         <div class="text-center">
           Important: If you have an Obico account, do NOT sign up again. Use your Obico account to <a class="link" href="{% url 'account_login' %}?{{request.GET.urlencode}}">Sign In</a> instead.

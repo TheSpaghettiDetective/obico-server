@@ -40,8 +40,6 @@ urlpatterns = [
 
     re_path('^g_code_folders/', web_views.g_code_folders),
     re_path('^g_code_files/', web_views.g_code_files),
-    # Compatible with mobile app versions <= 1.73
-    path('gcodes/', web_views.g_code_folders),
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
     path('slack_oauth_callback/', web_views.slack_oauth_callback, name='slack_oauth_callback'),

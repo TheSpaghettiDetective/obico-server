@@ -11,7 +11,6 @@ router.register(r'printers', viewsets.PrinterViewSet, 'Printer')
 router.register(r'prints', viewsets.PrintViewSet, 'Print')
 router.register(r'g_code_files', viewsets.GCodeFileViewSet, 'GCodeFile')
 router.register(r'g_code_folders', viewsets.GCodeFolderViewSet, 'GCodeFolder')
-router.register(r'gcodes', viewsets.GCodeFileViewSet, 'GCodeFile') # Compatible with mobile app versions <= 1.73
 router.register(
     r'printshotfeedbacks',
     viewsets.PrintShotFeedbackViewSet,

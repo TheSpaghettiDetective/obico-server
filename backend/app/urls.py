@@ -12,6 +12,7 @@ urlpatterns = [
     path('', web_views.index, name='index'),
     path('accounts/login/', web_views.SocialAccountAwareLoginView.as_view(), name="account_login"),
     path('accounts/signup/', web_views.SocialAccountAwareSignupView.as_view(), name="account_signup"),
+    path('accounts/email/', web_views.SyndicateSpecificEmailView.as_view(), name='account_email'),
     path('accounts/password/reset/', web_views.SyndicateSpecificPasswordResetView.as_view(), name='account_reset_password'),
     path('media/<path:file_path>', web_views.serve_jpg_file),  # semi hacky solution to serve image files
     path('printers/', web_views.printers, name='printers'),
@@ -39,8 +40,6 @@ urlpatterns = [
 
     re_path('^g_code_folders/', web_views.g_code_folders),
     re_path('^g_code_files/', web_views.g_code_files),
-    # Compatible with mobile app versions <= 1.73
-    path('gcodes/', web_views.g_code_folders),
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
     path('slack_oauth_callback/', web_views.slack_oauth_callback, name='slack_oauth_callback'),

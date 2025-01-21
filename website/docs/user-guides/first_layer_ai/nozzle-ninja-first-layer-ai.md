@@ -52,7 +52,7 @@ Once configured, nozzle ninja will watch your prints during the first layer. At 
 First, you’ll need a compatible nozzle camera:
 
 - [Mintion Nozzle Camera](https://www.mintion.net/products/mintion-nozzle-camera)
-- [3DO Nozzle Camera](https://3do.eu/59-3do-camera)
+- [3DO Nozzle Camera](https://3do.dk/3do-camera/2681-1913-3do-nozzle-camera-kit-v2-sony-4k-for-3d-printers.html)
 
 Once you have a compatible camera, configure your nozzle camera for Nozzle Ninja first layer AI:
 

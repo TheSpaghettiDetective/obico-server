@@ -118,7 +118,7 @@ export default (store, routes, components) => {
   Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 
   if (document.getElementById('app')) {
-    new Vue({
+    window.app = new Vue({
       store,
       router,
       components,

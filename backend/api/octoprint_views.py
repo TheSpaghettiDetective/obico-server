@@ -23,8 +23,6 @@ import os
 import logging
 from ipware import get_client_ip
 from binascii import hexlify
-from ipware.utils import (
-    cleanup_ip, is_valid_ip, is_public_ip)
 
 from .utils import report_validationerror
 from lib.printer_discovery import (

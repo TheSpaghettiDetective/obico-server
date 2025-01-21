@@ -54,6 +54,12 @@ services:
       # ML_API_TOKEN:
     tty: true
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://ml_api:3333/hc/"]
+      start_period: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   web:
     <<: *web-defaults
@@ -63,12 +69,30 @@ services:
     depends_on:
       - ml_api
     command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://web:3334/hc/"]
+      start_period: 30s
+      interval: 90s
+      timeout: 20s
+      retries: 3
 
   tasks:
     <<: *web-defaults
     hostname: tasks
     command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A config inspect ping"]
+      start_period: 15s
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   redis:
     restart: unless-stopped
     image: redis:7.2-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping" ]
+      start_period: 15s
+      interval: 15s
+      timeout: 10s
+      retries: 20

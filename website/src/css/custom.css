@@ -164,8 +164,7 @@ html[data-theme=dark] .obico-button {
 
 /* Announcement block */
 div[class^='announcementBar_'] {
-  /* TODO: Will be uncommented later (FOR BTT) */
-  /* --site-announcement-bar-stripe-color1: #bcf8f5;
+  --site-announcement-bar-stripe-color1: #bcf8f5;
   --site-announcement-bar-stripe-color2: #e3fffe;
   background: repeating-linear-gradient(
     35deg,
@@ -173,11 +172,6 @@ div[class^='announcementBar_'] {
     var(--site-announcement-bar-stripe-color1) 20px,
     var(--site-announcement-bar-stripe-color2) 10px,
     var(--site-announcement-bar-stripe-color2) 40px
-  ); */
+  );
   font-weight: bold;
-
-  /* TODO: Will be removed later (FOR BTT)*/
-  background: #01a299;
-  height: fit-content;
-  font-size: 21px;
 }

@@ -212,5 +212,5 @@ export default {
 
 .btn
   max-width: 100%
-</style>import { _ } from 'core-js'
+</style>
 

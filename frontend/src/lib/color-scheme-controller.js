@@ -10,12 +10,12 @@ export const theme = Vue.observable({
   value: defaultTheme,
 })
 
-export function currentThemeValue() {
-  return themeValue(theme)
+export function currentThemeValue(syndicate) {
+  return themeValue(theme, syndicate)
 }
 
 export function initTheme() {
-  return init(currentThemeValue(), Vue.prototype.$syndicate)
+  return init(currentThemeValue(Vue.prototype.$syndicate), Vue.prototype.$syndicate)
 }
 
 export function setTheme(newTheme) {

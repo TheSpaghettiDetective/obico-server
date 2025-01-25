@@ -49,6 +49,30 @@ LOGGER = logging.getLogger(__name__)
 IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 90
 
+import ipaddress
+
+def cleanup_ip(ip_str):
+    try:
+        ip = ipaddress.ip_address(ip_str)
+        return str(ip)
+    except ValueError:
+        # Handle the case where the IP address is invalid
+        return None
+
+def is_valid_ip(ip_str):
+    try:
+        ipaddress.ip_address(ip_str)
+        return True
+    except ValueError:
+        return False
+
+def is_public_ip(ip_str):
+    try:
+        ip = ipaddress.ip_address(ip_str)
+        return not ip.is_private
+    except ValueError:
+        # Handle the case where the IP address is invalid
+        return False
 
 def send_failure_alert(printer: Printer, img_url, is_warning: bool, print_paused: bool) -> None:
     if not printer.current_print:

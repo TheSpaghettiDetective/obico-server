@@ -25,6 +25,7 @@ const state = {
   selectedMachine: null,
   selectedFilament: null,
   selectedPrintProcess: null,
+  suggestedPrintProcess: null,
 
   meshes: [], // Array to store mesh-specific data
   selectedMeshIndex: 0, // Index of the currently selected mesh
@@ -119,6 +120,10 @@ const mutations = {
 
   SET_SELECTED_PRINT_PROCESS(state, selectedPrintProcess) {
     state.selectedPrintProcess = selectedPrintProcess;
+  },
+
+  SET_SUGGESTED_PRINT_PROCESS(state, suggestedPrintProcess) {
+    state.suggestedPrintProcess = suggestedPrintProcess;
   },
 
   SET_PROFILE_PRESET(state, profilePreset) {
@@ -362,6 +367,7 @@ const getters = {
   selectedMachine: (state) => state.selectedMachine,
   selectedFilament: (state) => state.selectedFilament,
   selectedPrintProcess: (state) => state.selectedPrintProcess,
+  suggestedPrintProcess: (state) => state.suggestedPrintProcess,
   profileOverwrites: (state) => state.profileOverwrites,
   filamentProfileOverwrites: (state) => state.filamentProfileOverwrites,
   getProfileValue: (state) => (key) => {

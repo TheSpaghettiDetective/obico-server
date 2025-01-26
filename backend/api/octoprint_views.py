@@ -21,6 +21,7 @@ import json
 import io
 import os
 import logging
+from python_ipware import IpWare
 from ipware import get_client_ip
 from binascii import hexlify
 
@@ -287,8 +288,11 @@ class OctoPrinterDiscoveryView(APIView):
         messages = []
         device_info = request.data
 
-        device_info['host_or_ip'] = cleanup_ip(device_info['host_or_ip'])
-        if is_valid_ip(device_info['host_or_ip']) and not is_public_ip(device_info['host_or_ip']):
+        device_host_or_ip, _ = IpWare().get_client_ip({'REMOTE_ADDR': device_info['host_or_ip']}) # Tricky IPWare into returning an IP address without request.META
+
+        if device_host_or_ip and device_host_or_ip.is_private:
+            device_info['host_or_ip'] = str(device_host_or_ip)
+
             update_presence_for_device(
                 client_ip=client_ip,
                 device_id=device_info['device_id'],

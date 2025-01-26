@@ -21,6 +21,7 @@ import json
 import io
 import os
 import logging
+from python_ipware import IpWare
 from ipware import get_client_ip
 from binascii import hexlify
 
@@ -49,30 +50,6 @@ LOGGER = logging.getLogger(__name__)
 IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 90
 
-import ipaddress
-
-def cleanup_ip(ip_str):
-    try:
-        ip = ipaddress.ip_address(ip_str)
-        return str(ip)
-    except ValueError:
-        # Handle the case where the IP address is invalid
-        return None
-
-def is_valid_ip(ip_str):
-    try:
-        ipaddress.ip_address(ip_str)
-        return True
-    except ValueError:
-        return False
-
-def is_public_ip(ip_str):
-    try:
-        ip = ipaddress.ip_address(ip_str)
-        return not ip.is_private
-    except ValueError:
-        # Handle the case where the IP address is invalid
-        return False
 
 def send_failure_alert(printer: Printer, img_url, is_warning: bool, print_paused: bool) -> None:
     if not printer.current_print:
@@ -311,8 +288,11 @@ class OctoPrinterDiscoveryView(APIView):
         messages = []
         device_info = request.data
 
-        device_info['host_or_ip'] = cleanup_ip(device_info['host_or_ip'])
-        if is_valid_ip(device_info['host_or_ip']) and not is_public_ip(device_info['host_or_ip']):
+        device_host_or_ip, _ = IpWare().get_client_ip({'REMOTE_ADDR': device_info['host_or_ip']}) # Tricky IPWare into returning an IP address without request.META
+
+        if device_host_or_ip and device_host_or_ip.is_private:
+            device_info['host_or_ip'] = str(device_host_or_ip)
+
             update_presence_for_device(
                 client_ip=client_ip,
                 device_id=device_info['device_id'],

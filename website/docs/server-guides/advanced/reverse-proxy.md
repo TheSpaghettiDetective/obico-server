@@ -144,3 +144,71 @@ server {
 1. Restart the Obico Server with `docker compose restart`
 
 1. You should now be able to browse to `spaghetti.your.domain`
+
+
+## IIS {#IIS}
+
+:::warning
+
+This is a community-contributed guide. And this guide involves editing the source code of Obico. This may not be suitable for everyone.
+:::
+
+IIS & Windows can also reverse proxy to Obico. See the below example `web.config` definition using `obico.mydomain.com` as the external address and `192.168.1.100:3334` as the internal address; replace with the appropriate values.
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.webServer>
+        <rewrite>
+            <rules>
+                <rule name="ReverseProxyInboundRule1" stopProcessing="true">
+                    <match url="(.*)" />
+                    <action type="Rewrite" url="http://192.168.1.100:3334/{R:1}" />
+                    <serverVariables>
+                        <set name="HTTP_X_ORIGINAL_ACCEPT_ENCODING" value="{HTTP_ACCEPT_ENCODING}" />
+                        <set name="HTTP_ACCEPT_ENCODING" value="" />
+                        <set name="HTTP_SEC_WEBSOCKET_EXTENSIONS" value="0" />
+                    </serverVariables>
+                </rule>
+            </rules>
+            <outboundRules>
+                <rule name="ReverseProxyOutboundRule1" preCondition="ResponseIsHtml1">
+                    <match filterByTags="A, Form, Img" pattern="^http(s)?://192.168.1.100:3334/(.*)" />
+                    <action type="Rewrite" value="http{R:1}://obico.mydomain.com/{R:2}" />
+                </rule>
+                <rule name="RestoreAcceptEncoding" preCondition="NeedsRestoringAcceptEncoding">
+                    <match serverVariable="HTTP_ACCEPT_ENCODING" pattern="^(.*)" />
+                    <action type="Rewrite" value="{HTTP_X_ORIGINAL_ACCEPT_ENCODING}" />
+                </rule>
+                <preConditions>
+                    <preCondition name="ResponseIsHtml1">
+                        <add input="{RESPONSE_CONTENT_TYPE}" pattern="^text/html" />
+                    </preCondition>
+                     <preCondition name="NeedsRestoringAcceptEncoding">
+                        <add input="{HTTP_X_ORIGINAL_ACCEPT_ENCODING}" pattern=".+" />
+                    </preCondition>
+                </preConditions>
+            </outboundRules>
+        </rewrite>
+    </system.webServer>
+</configuration>
+```
+You will also need to edit your `applicationHost.config` file (default location of \Windows\System32\inetsrv\config) to allow IIS to edit the necessary headers. Replace `Obico reverse proxy` with your IIS site name defintion.
+```
+     <location path="Obico reverse proxy">
+        <system.webServer>
+            <rewrite>
+                <allowedServerVariables>
+                    <add name="HTTP_ACCEPT_ENCODING" />
+                    <add name="HTTP_X_ORIGINAL_ACCEPT_ENCODING" />
+                    <add name="HTTP_SEC_WEBSOCKET_EXTENSIONS" />
+                </allowedServerVariables>
+            </rewrite>
+        </system.webServer>
+    </location>
+```
+Finally, on your Obico server, you will need to specify the fully qualified domain name for which you want Obico to issue cookies. There is likely some mechanism to make this work automatically (as Obico/Django should be able to detect the domain under which it is being accessed and refer to that value) but it is possible that the above IIS proxy configuration is not relaying the necessary informaiton for it to do that. A workaround is to manually specify the FQDN in `/backend/config/settings.py`. Add these two lines in the `SESSION_COOKIE` section near the beginning of the file, replacing `obico.mydomain.com` with your FQDN:
+```
+SESSION_COOKIE_DOMAIN = "obico.mydomain.com"
+CSRF_COOKIE_DOMAIN = "obico.mydomain.com"
+```

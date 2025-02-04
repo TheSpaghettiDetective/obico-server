@@ -84,7 +84,8 @@ def settings_dict(printer_settings):
 
 def update_current_print_if_needed(msg, printer):
     if not msg.get('current_print_ts'):  # Absence of current_print_ts means OctoPrint/Moonraker has lost the connection to the printer, and hence printing status unknown.
-        LOGGER.warn(f'current_print_ts not present. Received status: {msg}')
+        if msg:
+            LOGGER.warn(f'Status received but current_print_ts is missing. Received status: {msg}')
         return
 
     # Backward compatibility: octoprint_event is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier

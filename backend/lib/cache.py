@@ -58,14 +58,8 @@ def pic_post_throttle_key(printer_id):
     return 'thr:{}:{}'.format(printer_id, datetime.now().minute)
 
 def printer_status_set(printer_id, mapping, ex):
-    if isinstance(mapping, dict):  #TODO: retire this part after 7/1/2023
-        cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
-        prefix = printer_key_prefix(printer_id) + 'status'
-        REDIS.hmset(prefix, cleaned_mapping)
-        REDIS.expire(prefix, ex)
-    else:
-        prefix = printer_key_prefix(printer_id) + 'status_str'
-        REDIS.setex(prefix, ex, mapping)
+    prefix = printer_key_prefix(printer_id) + 'status_str'
+    REDIS.setex(prefix, ex, mapping)
 
 
 def printer_status_get(printer_id, key=None):
@@ -77,18 +71,6 @@ def printer_status_get(printer_id, key=None):
             return results.get(key)
         else:
             return results
-
-    prefix = printer_key_prefix(printer_id) + 'status'
-    if key:
-        v = REDIS.hget(prefix, key)
-        if not v:
-            return None
-        return json.loads(v)
-    else:
-        status_data = REDIS.hgetall(prefix)
-        for k, v in status_data.items():
-            status_data[k] = json.loads(v)
-        return status_data
 
 
 def printer_status_delete(printer_id):

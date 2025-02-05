@@ -8,7 +8,7 @@ from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
 from asgiref.sync import async_to_sync
 import logging
-from sentry_sdk import capture_exception, capture_message
+from sentry_sdk import capture_exception, capture_message, isolation_scope
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 import newrelic.agent
@@ -69,7 +69,7 @@ def report_error(
                             user_info = {'id': printer.user.id}
 
                     if user_info:
-                        with sentry_sdk.isolation_scope() as scope:
+                        with isolation_scope() as scope:
                             scope.set_user(user_info)
                             capture_exception()
                     else:

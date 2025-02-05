@@ -60,19 +60,21 @@ def report_error(
                     if hasattr(self, 'scope') and 'user' in self.scope:
                         user = self.scope['user']
                         if user.is_authenticated:
-                            user_info = {'id': user.id, 'email': user.email}
+                            user_info = {'id': user.id}
                     elif hasattr(self, 'user') and self.user:
-                        user_info = {'id': self.user.id, 'email': self.user.email}
+                        user_info = {'id': self.user.id}
                     elif hasattr(self, 'get_printer'):
                         printer = self.get_printer()
                         if printer:
-                            user_info = {'id': printer.user.id, 'email': printer.user.email}
+                            user_info = {'id': printer.user.id}
 
                     if user_info:
-                        with sentry_sdk.configure_scope() as scope:
+                        with sentry_sdk.isolation_scope() as scope:
                             scope.set_user(user_info)
+                            capture_exception()
+                    else:
+                        capture_exception()
 
-                    capture_exception()
                 if close:
                     self.close()
                 return

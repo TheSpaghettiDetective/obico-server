@@ -57,16 +57,12 @@ def report_error(
                 if sentry:
                     # Get user info if available
                     user_info = None
-                    if hasattr(self, 'scope') and 'user' in self.scope:
-                        user = self.scope['user']
-                        if user.is_authenticated:
-                            user_info = {'id': user.id}
-                    elif hasattr(self, 'user') and self.user:
+                    if hasattr(self, 'scope') and 'user' in self.scope and self.scope['user'].is_authenticated:
+                        user_info = {'id': self.scope['user'].id}
+                    elif hasattr(self, 'user') and self.user and self.user.is_authenticated:
                         user_info = {'id': self.user.id}
-                    elif hasattr(self, 'get_printer'):
-                        printer = self.get_printer()
-                        if printer:
-                            user_info = {'id': printer.user.id}
+                    elif hasattr(self, 'get_printer') and self.get_printer():
+                        user_info = {'id': self.get_printer().user.id}
 
                     if user_info:
                         with isolation_scope() as scope:

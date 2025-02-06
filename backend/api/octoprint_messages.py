@@ -35,7 +35,7 @@ def process_printer_status(printer: Printer, msg: Dict) -> None:
     elif (printer_status or {}).get('_ts'):
         cache.printer_status_set(printer.id, json.dumps((printer_status or {})), ex=STATUS_TTL_SECONDS)
     else:
-        raise Exception('printer_status present but no _ts. Received status: {msg}')
+        LOGGER.warn(f'printer_status present but no _ts. Received status: {msg}')
 
     update_current_print_if_needed(msg, printer)
 

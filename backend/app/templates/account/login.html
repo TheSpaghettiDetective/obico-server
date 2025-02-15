@@ -72,7 +72,14 @@
                 <i class="fas fa-lock"></i>
               </span>
             </div>
-            {% render_field form.password class="form-control" style="border-radius: 0 50px 50px 0;" placeholder=password_placeholder %}
+            {% render_field form.password class="form-control" style="border-radius: 0;" placeholder=password_placeholder %}
+            <div class="input-group-append">
+              <span class="input-group-text form-control" style="border-radius: 0 50% 50% 0;">
+                <a href="#" onclick="togglePasswordVisibility(event)">
+                  <i class="fas fa-lg fa-eye"></i>
+                </a>
+              </span>
+            </div>
           </div>
           <div class="mt-1 d-flex justify-content-between">
             <div class="custom-control custom-checkbox form-check-inline">
@@ -152,3 +159,24 @@
   </div>
 </div>
 {% endblock %}
+
+{% block page_js %}
+{{ block.super }}
+<script>
+function togglePasswordVisibility(e) {
+  e.preventDefault();
+  const passwordInput = document.querySelector('input[name="password"]');
+  const eyeIcon = e.currentTarget.querySelector('i');
+
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    eyeIcon.classList.remove('fa-eye');
+    eyeIcon.classList.add('fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    eyeIcon.classList.remove('fa-eye-slash');
+    eyeIcon.classList.add('fa-eye');
+  }
+}
+</script>
+{% endblock page_js %}

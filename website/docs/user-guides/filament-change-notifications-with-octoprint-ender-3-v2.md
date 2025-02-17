@@ -36,7 +36,7 @@ First,  lets install all of the necessary programs. All of these programs have M
 
 3. Find the configuration.h and configuration.adv files for your the Creality Ender 3V2.
 
-:::Note
+:::tip
 
 If you don't have a Creality Ender 3V2, go to our general guide for 32 bit boards
 

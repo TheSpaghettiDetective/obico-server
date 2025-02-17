@@ -40,19 +40,17 @@ export default function BlogSidebar({sidebar, tags}) {
             Tags
           </div>
           <ul className={styles.sidebarItemList}>
-            {tags.map((item) => {
-              return (
-                <li key={item.permalink} className={styles.sidebarItem}>
-                  <Link
-                    isNavLink
-                    to={item.permalink}
-                    className={styles.sidebarItemLink}
-                    activeClassName={styles.sidebarItemLinkActive}>
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
+            {tags.map((item, index) => (
+              <li key={`tag-${item.permalink}-${index}`} className={styles.sidebarItem}>
+                <Link
+                  isNavLink
+                  to={item.permalink}
+                  className={styles.sidebarItemLink}
+                  activeClassName={styles.sidebarItemLinkActive}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       )}
@@ -68,19 +66,17 @@ export default function BlogSidebar({sidebar, tags}) {
           {sidebar.title}
         </div>
         <ul className={styles.sidebarItemList}>
-          {sidebar.items.map((item) => {
-            return (
-              <li key={item.permalink} className={styles.sidebarItem}>
-                <Link
-                  isNavLink
-                  to={item.permalink}
-                  className={styles.sidebarItemLink}
-                  activeClassName={styles.sidebarItemLinkActive}>
-                  {item.title}
-                </Link>
-              </li>
-            );
-          })}
+          {sidebar.items.map((item, index) => (
+            <li key={`sidebar-${item.permalink}-${index}`} className={styles.sidebarItem}>
+              <Link
+                isNavLink
+                to={item.permalink}
+                className={styles.sidebarItemLink}
+                activeClassName={styles.sidebarItemLinkActive}>
+                {item.title}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
     </>

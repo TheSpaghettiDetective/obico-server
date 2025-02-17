@@ -42,7 +42,6 @@ function BlogPostItem(props) {
     children,
     frontMatter = {},
     metadata = {},
-    truncated,
     isBlogPostPage = false,
   } = props;
 
@@ -58,6 +57,7 @@ function BlogPostItem(props) {
     readingTime,
     title,
     editUrl,
+    hasTruncateMarker,
   } = metadata;
 
   const {
@@ -119,7 +119,7 @@ function BlogPostItem(props) {
         <div className="markdown">
           <MDXProvider components={MDXComponents}>{children}</MDXProvider>
         </div>
-        {(truncated) && (
+        {hasTruncateMarker && (
           <footer
             className={clsx('row docusaurus-mt-lg', {
               [styles.blogPostDetailsFull]: isBlogPostPage,
@@ -150,7 +150,7 @@ function BlogPostItem(props) {
               </div>
             )}
 
-            {!isBlogPostPage && truncated && (
+            {!isBlogPostPage && hasTruncateMarker && (
               <div className="col text--right">
                 <Link
                   to={metadata.permalink}
@@ -159,7 +159,7 @@ function BlogPostItem(props) {
                     <Translate
                       id="theme.blog.post.readMore"
                       description="The label used in blog post item excerpts to link to full blog posts">
-                      Read More
+                      Read More &nbsp; &gt;&gt;&gt;
                     </Translate>
                   </b>
                 </Link>

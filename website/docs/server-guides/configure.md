@@ -164,7 +164,5 @@ The Obico Server is designed to be backward compatible, not forward compatible. 
 The clients here include the Obico mobile app, Obico for OctoPrint and Obico for Klipper
 
 :::caution
-
-Always [upgrade your self-hosted Obico Server](ops.md/#upgrade-obico-server) before you upgrade the Obico mobile app, Obico for OctoPrint or Obico for Klipper to a new version.
-
+Always [upgrade your self-hosted Obico Server](../ops/#upgrade-obico-server) before you upgrade the Obico mobile app, Obico for OctoPrint or Obico for Klipper to a new version.
 :::

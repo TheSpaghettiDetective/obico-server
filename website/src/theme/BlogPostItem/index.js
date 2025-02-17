@@ -40,11 +40,16 @@ function BlogPostItem(props) {
   const readingTimePlural = useReadingTimePlural();
   const {
     children,
-    frontMatter,
-    metadata,
+    frontMatter = {},
+    metadata = {},
     truncated,
     isBlogPostPage = false,
   } = props;
+
+  if (!metadata) {
+    return null;
+  }
+
   const {
     date,
     formattedDate,
@@ -54,11 +59,15 @@ function BlogPostItem(props) {
     title,
     editUrl,
   } = metadata;
-  const {author, image, keywords} = frontMatter;
-  const authorURL = frontMatter.author_url || frontMatter.authorURL;
-  const authorTitle = frontMatter.author_title || frontMatter.authorTitle;
-  const authorImageURL =
-    frontMatter.author_image_url || frontMatter.authorImageURL;
+
+  const {
+    author,
+    image,
+    keywords,
+    author_url: authorURL = frontMatter.authorURL,
+    author_image_url: authorImageURL = frontMatter.authorImageURL,
+    author_title: authorTitle = frontMatter.authorTitle,
+  } = frontMatter;
 
   const renderPostHeader = () => {
     const TitleHeading = isBlogPostPage ? 'h1' : 'h2';

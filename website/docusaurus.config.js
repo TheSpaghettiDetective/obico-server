@@ -360,21 +360,44 @@ module.exports = {
       }, // Optional, if provided by Algolia
       placeholder: 'Search help doc'
     },
-    themeConfig: {
-      imageZoom: {
-        // CSS selector to apply the plugin to, defaults to '.markdown img'
-        selector: '.markdown img',
-        // Optional medium-zoom options
-        // see: https://www.npmjs.com/package/medium-zoom#options
-        options: {
-          margin: 24,
-          background: '#BADA55',
-          scrollOffset: 0,
-          container: '#zoom-container',
-          template: '#zoom-template',
+    imageZoom: {
+      // CSS selector to apply the plugin to, defaults to '.markdown img'
+      selector: '.markdown img',
+      // Optional medium-zoom options
+      // see: https://www.npmjs.com/package/medium-zoom#options
+      options: {
+        margin: 24,
+        background: '#BADA55',
+        scrollOffset: 0,
+        container: '#zoom-container',
+        template: '#zoom-template',
+      },
+    },
+    metadata: [{name: 'og:title', content: 'Obico'}],
+    structuredData: {
+      excludedRoutes: [], // Optional: Array of routes to exclude from schema generation
+      authors: {          // Default author configuration
+        default: {
+          name: 'Obico Team',
+          url: 'https://www.obico.io/team.html',
         },
       },
-      metadata: [{name: 'og:title', content: 'Obico'}],
+      organization: {
+        name: 'Obico',
+        url: 'https://www.obico.io',
+        logo: 'https://www.obico.io/img/logo.svg',
+        sameAs: [
+          'https://github.com/TheSpaghettiDetective',
+          'https://twitter.com/thespaghettispy',
+          'https://www.youtube.com/channel/UCbAJcR6t5lrdZ1JXjPPRjGA'
+        ]
+      },
+      website: {
+        type: 'WebSite',
+        name: 'Obico',
+        description: 'Open-Source, Community-Built Smart 3D Printing Platform',
+        url: 'https://www.obico.io'
+      }
     },
   },
   presets: [
@@ -411,5 +434,6 @@ module.exports = {
       },
     ],
     'plugin-image-zoom',
+    '@stackql/docusaurus-plugin-structured-data'
   ],
 };

@@ -11,7 +11,7 @@ import Translate, {translate} from '@docusaurus/Translate';
 import Link from '@docusaurus/Link';
 import {usePluralForm} from '@docusaurus/theme-common';
 import MDXComponents from '@theme/MDXComponents';
-import Seo from '@theme/Seo';
+import Head from '@docusaurus/Head';
 import EditThisPage from '@theme/EditThisPage';
 import styles from './styles.module.css'; // Very simple pluralization: probably good enough for now
 
@@ -100,12 +100,10 @@ function BlogPostItem(props) {
 
   return (
     <>
-      <Seo
-        {...{
-          keywords,
-          image,
-        }}
-      />
+      <Head>
+        {keywords && <meta name="keywords" content={keywords.join(',')} />}
+        {image && <meta property="og:image" content={image} />}
+      </Head>
 
       <article className={!isBlogPostPage ? 'margin-bottom--xl' : undefined}>
         {renderPostHeader()}

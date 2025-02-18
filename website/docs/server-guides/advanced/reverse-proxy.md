@@ -1,5 +1,6 @@
 ---
 title: Configure Obico to work with a reverse proxy
+description: Learn how to configure Obico to work with a reverse proxy.
 ---
 
 :::danger

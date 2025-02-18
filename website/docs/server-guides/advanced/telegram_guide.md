@@ -1,5 +1,6 @@
 ---
 title: Telegram Setup Guide
+description: Learn how to set up Telegram for Obico.
 ---
 
 :::note

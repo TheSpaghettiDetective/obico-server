@@ -1,5 +1,6 @@
 ---
 title: Webcam stream is only 0.1 FPS
+description: Learn how to fix the webcam stream that is stuck at 0.1 FPS.
 ---
 
 import Tabs from '@theme/Tabs';

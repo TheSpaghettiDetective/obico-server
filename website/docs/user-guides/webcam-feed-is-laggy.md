@@ -38,7 +38,7 @@ Look for log messages similar to:
 WARNING  obico.webcam_stream - No ffmpeg found, or ffmpeg does NOT support h264_omx/h264_v4l2m2m encoding.
 ```
 
-Currently only Raspberry Pi supports H.264 encoding. But more and more hardware, such as BTT Pi 2 (in their next OS release), are adding this capability.
+Currently only Raspberry Pi and BTT Pi 2/CB2 (https://biqu.equipment/collections/control-board/products/bigtreetech-pi-2-cb2) support H.264 encoding. But more and more hardware are adding this capability.
 
 ## Webcam is buffering or dropping frames {#2-look-for-warning-messages}
 

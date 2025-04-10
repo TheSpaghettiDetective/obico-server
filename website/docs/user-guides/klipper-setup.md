@@ -21,7 +21,7 @@ This guide is for users who installed Klipper themselves. If you have a printer 
 - [Qidi X Series](https://obico.io/blog/qidi-tech-x-series-klipper-remote-access-and-ai/)
 - [Creality Sonic Pad](https://www.obico.io/blog/sonic-pad-remote-access-ai/)
 - [Sovol SV08 Series](https://obico.io/blog/sovol-svo7-series-klipper-remote-access-ai/)
-:::tip
+:::
 
 :::info
 This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.

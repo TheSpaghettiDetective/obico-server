@@ -5,7 +5,7 @@ sidebar_label: Connect OrcaSlicer
 
 Connect OrcaSlicer, your favorite slicer, to your Obico printer!
 
-## Select Obico printer and retrieve API key to OrcaSlicer
+## Select Obico printer and retrieve API key to OrcaSlicer {#select-obico-printer-and-retrieve-api-key-to-orcaslicer}
 
 1. In the "Prepare" tab, click the 🛜 icon next to the printer dropdown.
 

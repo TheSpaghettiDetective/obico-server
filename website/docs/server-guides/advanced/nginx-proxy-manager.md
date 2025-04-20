@@ -119,4 +119,4 @@ A second proxy host needs to be created for the main site **obico.domain.com** w
 
 ![](/img/server-guides/nginx-proxy-manager/new-proxy-host-3.jpg)
 
-Once these are created you should now be able to access your self-hosted Obico server from the url https://obico.domain.com and activate the tunnel to your printer WebUI.
+Once these are created you should now be able to access your self-hosted Obico Server from the url https://obico.domain.com and activate the tunnel to your printer WebUI.

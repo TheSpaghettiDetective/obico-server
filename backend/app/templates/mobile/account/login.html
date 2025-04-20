@@ -7,8 +7,6 @@
 {% block navbar %}
 {% endblock navbar %}
 
-{% block head_title %}{% trans "SIGN IN" %}{% endblock %}
-
 {% block content %}
 {% get_providers as socialaccount_providers %}
 {% trans 'Email address' as email_placeholder %}
@@ -18,29 +16,21 @@
   <div class="row justify-content-center logreg">
     <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
       <div id="logreg-forms" class="my-3 pt-3">
-        <h2 class="text-center py-2">{% trans "SIGN IN" %}</h2>
-        {% if socialaccount_providers %}
-        <div class="social-login">
-          {% for provider in socialaccount_providers %}
-            {% if provider.id == "facebook" %}
-            <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
-              role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign In with Facebook" %}</span> </a>
+        <div class="d-flex justify-content-center w-100 py-4">
+          {% if page_context.syndicate.name != 'base' %}
+            {% if page_context.syndicate.logo_full %}
+              <img src="{{ page_context.syndicate.logo_full }}" alt="Obico Logo" style="max-width: 150px;">
+            {% else %}
+              <svg width="150" height="45">
+                <use href="#{{ page_context.syndicate.name }}-svg-logo-full" />
+              </svg>
             {% endif %}
-            {% if provider.id == "google" %}
-            <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
-              role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign In with Google" %}</span> </a>
-            {% endif %}
-          {% endfor %}
-        </div>
-          {% if page_context.app_platform == 'ios' and page_context.syndicate.name == "base" %}
-          <div class="social-login">
-            <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
-              role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>{% trans "Sign in with Apple" %}</span> </a>
-          </div>
+          {% else %}
+          <svg width="150" height="45">
+            <use href="#svg-logo-full" />
+          </svg>
           {% endif %}
-        {% endif %}
-
-        <div style="width: 100%; height: 20px; border-bottom: 1px solid var(--color-divider);"></div>
+        </div>
 
         <form class="login form-signin" method="POST">
           {% if form.errors %}
@@ -59,64 +49,107 @@
           {% endif %}
           {% csrf_token %}
           {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
-          <div class="input-group mb-2">
-            {% render_field form.login class="form-control" placeholder=email_placeholder %}
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text form-control" style="border-radius: 50% 0 0 50%;">
+                <i class="fas fa-envelope"></i>
+              </span>
+            </div>
+            {% render_field form.login class="form-control rounded-0" placeholder=email_placeholder %}
+            <div class="input-group-append">
+              <span class="input-group-text form-control" style="border-radius: 0 50% 50% 0;">
+                <a href="#" data-toggle="modal" data-target="#loginHelpMessage">
+                  <i class="fas fa-lg fa-question-circle"></i>
+                </a>
+              </span>
+            </div>
           </div>
-          <div class="input-group">
-            {% render_field form.password class="form-control" placeholder=password_placeholder %}
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text form-control" style="border-radius: 50% 0 0 50%;">
+                <i class="fas fa-lock"></i>
+              </span>
+            </div>
+            {% render_field form.password class="form-control" style="border-radius: 0 50px 50px 0;" placeholder=password_placeholder %}
           </div>
-          <div style="padding-top: 0.5rem;">
+          <div class="mt-1 d-flex justify-content-between">
             <div class="custom-control custom-checkbox form-check-inline">
               <input type="checkbox" checked name="remember" class="custom-control-input" id="remember-checkbox">
               <label class="custom-control-label" style="font-size: 16px;" for="remember-checkbox">{% trans "Remember me" %}</label>
+            </div>
+            <div>
+              <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
             </div>
           </div>
           {% endwith %}
           {% if redirect_field_value %}
           <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
           {% endif %}
-          <button type="submit" class="btn btn-primary btn-block">{% trans "SIGN IN" %}</button>
-          <div class="pt-2">
-            <div class="row">
-              <div class="col">
-                <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-              </div>
-              <div class="col text-right">
-                <a class="button secondaryAction" href="#" data-toggle="modal" data-target="#loginHelpMessage">{% trans "Having Trouble?" %}</a>
+          <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
 
-                <!-- Modal -->
-                <div class="modal fade" id="loginHelpMessage" tabindex="-1" role="dialog" aria-labelledby="loginHelpMessageTitle" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">{% trans "Having trouble?" %}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body text-left">
-                        <ul>
-                          <li>{% trans "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the web app, you can use the same to sign in here." %}</li>
-                          <li>{% trans "Even if you previously signed up an account using Google or Facebook, you can still" %} <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> {% trans "using the same email address." %}</li>
-                          <li class="text-warning">{% trans "If you can't sign in the mobile app, re-install the mobile app and try it again." %}</li>
-                          <li><a class="link" href="mailto:support@obico.io">{% trans "Contact us" %}</a> {% trans "if you have tried everything else." %}</li>
-                        </ul>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Close" %}</button>
-                      </div>
-                    </div>
-                  </div>
+          <!-- Modal -->
+          <div class="modal fade" id="loginHelpMessage" tabindex="-1" role="dialog" aria-labelledby="loginHelpMessageTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">{% trans "Having trouble?" %}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body text-left">
+                  <ul>
+                    <li>{% trans "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the web app, you can use the same to sign in here." %}</li>
+                    <li>{% trans "Even if you previously signed up an account using Google or Facebook, you can still" %} <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> {% trans "using the same email address." %}</li>
+                    <li class="text-warning">{% trans "If you can't sign in the mobile app, re-install the mobile app and try it again." %}</li>
+                    <li><a class="link" href="mailto:support@obico.io">{% trans "Contact us" %}</a> {% trans "if you have tried everything else." %}</li>
+                  </ul>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Close" %}</button>
                 </div>
               </div>
             </div>
           </div>
           {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
-          <div class="text-center pt-3 w-100">
-            <div class="font-weight-light text-muted">- OR -</div>
-            <a class="btn" href="{% url 'mobile_auth_signup' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "SIGN UP" %}</a>
+          <div class="text-center pt-4 pb-2 w-100">
+            {% trans "Don't have an account?" %} <a class="link" href="{% url 'mobile_auth_signup' %}?{{request.GET.urlencode}}">{% trans "Sign Up Now" %}</a>
           </div>
           {% endif %}
+
+          {% if socialaccount_providers %}
+          {% trans "Or" as or_text %}
+          <div class="text-center mt-3">
+            <div class="divider">
+              <span class="text-muted">{% trans "Or" %}</span>
+            </div>
+
+            <p class="text-center my-2">{% trans "Continue with social media" %}</p>
+            <div class="social-login">
+              {% for provider in socialaccount_providers %}
+                {% if provider.id == "facebook" %}
+                <a href="{% provider_login_url "facebook" method="oauth2" %}" class="social-btn facebook-btn"
+                  role="button" aria-label="{% trans 'Login with Facebook' %}">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                {% endif %}
+                {% if provider.id == "google" %}
+                <a href="{% provider_login_url "google" method="oauth2" %}" class="social-btn google-btn"
+                  role="button" aria-label="{% trans 'Login with Google' %}">
+                  <i class="fab fa-google"></i>
+                </a>
+                {% endif %}
+              {% endfor %}
+              {% if page_context.app_platform == 'ios' and page_context.syndicate.name == "base" %}
+              <a href="{% provider_login_url "apple" method="oauth2" %}" class="social-btn apple-btn"
+                role="button" aria-label="{% trans 'Login with Apple' %}">
+                <i class="fab fa-apple fa-lg"></i>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+
         </form>
       </div>
     </div>

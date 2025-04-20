@@ -16,15 +16,15 @@
         <form action="{% url 'account_email' %}" class="email_list" method="post">
           {% csrf_token %}
           <fieldset>
-
             {% for emailaddress in user.emailaddress_set.all %}
             <div class="ctrlHolder custom-control custom-radio form-check-inline">
-              <input id="email_radio_{{forloop.counter}}" class="custom-control-input" type="radio" name="email"
+              <input id="email_radio_{{forloop.counter}}" class="custom-control-input email-radio" type="radio" name="email"
                 {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked" {%endif %}
-                value="{{emailaddress.email}}" />
+                value="{{emailaddress.email}}"
+                data-primary="{{emailaddress.primary|lower}}"
+                onchange="updateButtons()" />
               <label for="email_radio_{{forloop.counter}}"
                 class="custom-control-label {% if emailaddress.primary %}primary_email{%endif%}">
-
                 {{ emailaddress.email }}
                 {% if emailaddress.primary %}<span class="primary"> ({% trans "Primary" %})</span>{% endif %}
                 {% if emailaddress.verified %}
@@ -37,14 +37,13 @@
             {% endfor %}
 
             <div>
-              <button class="secondaryAction btn btn-primary mr-2 mt-2" type="submit"
+              <button id="make_primary_button" class="secondaryAction btn btn-primary mr-2 mt-2" type="submit"
                 name="action_primary">{% trans 'Make Primary' %}</button>
-              <button class="secondaryAction btn btn-primary mr-2 mt-2" type="submit"
+              <button id="resend_button" class="secondaryAction btn btn-primary mr-2 mt-2" type="submit"
                 name="action_send">{% trans 'Re-send Verification' %}</button>
-              <button class="primaryAction btn btn-danger mr-2 mt-2" type="submit"
+              <button id="remove_button" class="primaryAction btn btn-danger mr-2 mt-2" type="submit"
                 name="action_remove">{% trans 'Remove' %}</button>
             </div>
-
           </fieldset>
         </form>
 
@@ -52,7 +51,6 @@
         <p><strong>{% trans 'Warning:'%}</strong>
           {% trans "You currently do not have any e-mail address set up. You should really add an e-mail address so you can receive notifications, reset your password, etc." %}
         </p>
-
         {% endif %}
 
         <br />
@@ -61,16 +59,34 @@
         <br />
         <form method="post" action="{% url 'account_email' %}" class="add_email">
           {% csrf_token %}
-          {% for error in form.email.errors %}
-          {{ error|escape }}
-          {% endfor %}
           <input type="email" name="email" class="form-control" placeholder="E-mail address" required="" id="id_email">
+          {% for error in form.email.errors %}
+          <div class="text-danger">{{ error|escape }}</div>
+          {% endfor %}
           <button class="btn btn-primary mr-2 mt-2" name="action_add" type="submit">{% trans "Add E-mail" %}</button>
         </form>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+function updateButtons() {
+  const selectedEmail = document.querySelector('input[name="email"]:checked');
+  const makePrimaryButton = document.getElementById('make_primary_button');
+  const removeButton = document.getElementById('remove_button');
+  const totalEmails = document.querySelectorAll('input[name="email"]').length;
+
+  if (selectedEmail) {
+    const isPrimary = selectedEmail.dataset.primary === 'true';
+    makePrimaryButton.disabled = isPrimary;
+    removeButton.disabled = isPrimary || totalEmails === 1;
+  }
+}
+
+// Initial update
+updateButtons();
+</script>
 {% endblock %}
 
 {% block extra_body %}

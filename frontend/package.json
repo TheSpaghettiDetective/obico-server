@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "npx eslint --ext .js,vue src/ --fix",
-    "i18n:extract": "npx i18next-parser --config i18next-parser.config.mjs",
+    "i18n:extract": "rm -rf node_modules/.cache/ && npx i18next-parser --config i18next-parser.config.mjs",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -31,9 +31,11 @@
     "patch-package": "^6.5.0",
     "postinstall-postinstall": "^2.1.0",
     "semver": "^7.3.5",
+    "three": "^0.167.0",
     "vue": "^2.6.11",
     "vue-click-outside": "^1.1.0",
     "vue-loading-overlay": "^3.3.2",
+    "vue-markdown": "^2.2.4",
     "vue-moment": "^4.1.0",
     "vue-mugen-scroll": "^0.2.6",
     "vue-onoff-toggle": "^1.1.1",
@@ -49,6 +51,7 @@
     "vue2-canvas-gauges": "^0.0.0",
     "vue2-dropzone": "^3.6.0",
     "vuedraggable": "^2.24.3",
+    "vuex": "3",
     "webrtc-adapter": "^8.0.0"
   },
   "devDependencies": {
@@ -63,6 +66,9 @@
     "sass-loader": "^8.0.0",
     "vue-template-compiler": "^2.6.11",
     "webpack-bundle-tracker": "^2.0.1"
+  },
+  "resolutions": {
+    "sweetalert2": "9.17.3"
   },
   "browserslist": [
     "> 1%",

@@ -31,7 +31,10 @@ from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
 from lib.syndicate import syndicate_from_request
+from allauth.account.views import EmailView
+
 from app.forms import SyndicateSpecificResetPasswordForm
+from app.forms import SyndicateSpecificAddEmailForm
 
 
 
@@ -61,6 +64,16 @@ class SocialAccountAwareSignupView(SignupView):
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
             return super(SocialAccountAwareSignupView, self).form_valid(form)
+
+
+class SyndicateSpecificEmailView(EmailView):
+    form_class = SyndicateSpecificAddEmailForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
 
 class SyndicateSpecificPasswordResetView(PasswordResetView):
     form_class = SyndicateSpecificResetPasswordForm
@@ -226,7 +239,7 @@ def upload_print(request):
     if request.method == 'POST':
         _, file_extension = os.path.splitext(request.FILES['file'].name)
         video_path = f'{request.user.id}/{str(timezone.now().timestamp())}{file_extension}'
-        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER, request.user.syndicate.name, long_term_storage=True)
+        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.TIMELAPSE_CONTAINER, request.user.syndicate.name, long_term_storage=True)
         preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
 
         return JsonResponse(dict(status='Ok'))

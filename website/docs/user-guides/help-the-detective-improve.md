@@ -30,6 +30,6 @@ Once you are on the upload page, drop as many time-lapse video files as you want
 
 No. The time The Detective spends on looking at your uploaded time-lapse videos is completely on the house. :)
 
-#### I am running my own private Obico server. Do the time-lapse videos on my server get uploaded to Obico cloud automatically? {#i-am-running-my-own-private-tsd-server-do-the-time-lapse-videos-on-my-server-get-uploaded-to-tsd-cloud-automatically}
+#### I am running my own private Obico Server. Do the time-lapse videos on my server get uploaded to Obico cloud automatically? {#i-am-running-my-own-private-tsd-server-do-the-time-lapse-videos-on-my-server-get-uploaded-to-tsd-cloud-automatically}
 
 No! We understand that nobody wants to get their videos uploaded without a proper consent. The time-lapse videos will safely stay in your private server. Of course, if you want to get back to Obico community by uploading these videos, you are always welcome!

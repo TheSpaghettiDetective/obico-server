@@ -118,7 +118,7 @@
               <b-dropdown v-if="webcams.length > 1" class="webcam-dropdown" block size="sm" variant="link" toggle-class="text-decoration-none" no-caret>
                 <template #button-content>
                   <i class="fa fa-camera" aria-hidden="true"></i>
-                  {{ isAllWebcamSelected ? 'All' : selectedWebcam.name || 'Primary' }}
+                  {{ !!selectedWebcam ? (selectedWebcam.name || 'Primary') : 'All' }}
                   <i class="fa fa-chevron-down" aria-hidden="true"></i>
                 </template>
                 <b-dropdown-text class="small text-secondary">{{ $t("WEBCAM SELECTION") }}</b-dropdown-text>
@@ -131,17 +131,28 @@
               </div>
             </div>
           </div>
-          <div class="webcam-main" :class="{ 'justify-center' : isAllWebcamSelected, 'webcam-more-than-two' : isAllWebcamSelected && webcams.length > 2 }">
-            <div v-for="(webcam, index) in webcams" :key="index" ref="streamInner" class="stream-inner" :class="isAllWebcamSelected ? (isAtleastOnePrinterPortrait ? 'two-webcam-portrait' : 'two-webcam-landscape') : (videoRotationDeg === 90 || videoRotationDeg === 270 ? 'single-webcam-portrait' : '')" v-show="isAllWebcamSelected ? true : (index === selectedWebcamIndex)">
-              <streaming-box
-                :printer="printer"
-                :webrtc="webcam.webrtc"
-                :autoplay="user.is_pro"
-                :webcam="webcam"
-                @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
-              />
-            </div>
-          </div>
+        <b-card-text v-if="webcams.length" class="px-0 py-0 content d-inline-block" style="width: 100%;">
+            <b-row>
+                <b-col class="pb-0" style="position: relative">
+                  <b-container fluid class="p-0">
+                    <b-row no-gutters style="flex-direction: column; align-items: center;">
+                      <b-col v-for="(webcam, index) in webcams" :key="index" v-show="isWebcamSelected(webcam)">
+                        <div class="d-flex justify-content-center webcamBackground">
+                          <streaming-box
+                            :printer="printer"
+                            :webrtc="printerComm.webrtcConnections.get(webcam.name)"
+                            :autoplay="user.is_pro"
+                            :webcam="webcam"
+                            :halfHeight="webcams.length > 1 && !selectedWebcam"
+                            @onRotateRightClicked="(deg) => handleRotateRightClicked(deg, webcam.stream_id)"
+                          />
+                        </div>
+                      </b-col>
+                    </b-row>
+                  </b-container>
+              </b-col>
+            </b-row>
+        </b-card-text>
         </div>
       </div>
     </template>
@@ -156,7 +167,7 @@ import { isLocalStorageSupported } from '@static/js/utils'
 import { normalizedPrinter, normalizedPrint } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
 import { printerCommManager } from '@src/lib/printer-comm'
-import WebRTCConnection from '@src/lib/webrtc'
+import WebRTCConnection, {DataChannelOnlyWebRTCConnection} from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
 import { user } from '@src/lib/page-context'
 import CascadedDropdown from '@src/components/CascadedDropdown'
@@ -230,13 +241,12 @@ export default {
       printerId: null,
       printer: null,
       webcams: [],
-      selectedWebcamIndex: 0,
       currentBitrate: null,
       lastPrint: null,
       lastPrintFetchCounter: 0,
       widgetsConfig: null,
       customRotationDeg: 0,
-      isAllWebcamSelected: false,
+      preferredWebcam: null,
       customRotationData: [],
     }
   },
@@ -254,32 +264,18 @@ export default {
       return rotation % 360
     },
     selectedWebcam() {
-      return this.webcams[this.selectedWebcamIndex];
-    },
-    isAtleastOnePrinterPortrait() {
-      let isPortrait = false
-      this.webcams.forEach(webcam => {
-        const id = webcam.stream_id
-        const customRotationData = this.customRotationData.find(custom => custom.streamId == id) || null
-
-        const customRotation = customRotationData ? Number(customRotationData.customRotation) : 0
-        const rotation = +(webcam.rotation ?? 0) + customRotation
-        const degree = rotation % 360
-
-        if (degree === 90 || degree === 270) {
-          isPortrait = true
-        }
-      })
-
-      return isPortrait
-    },
+      if (this.preferredWebcam === null) {
+        return undefined
+      } else {
+        return this.webcams.find(webcam => webcam.stream_id == this.preferredWebcam)
+      }
+    }
   },
 
   watch: {
     printer: {
       handler(newValue, oldValue) {
         if (newValue && oldValue === null) {
-          this.$nextTick(this.resizeStream)
           this.widgetsConfig = this.restoreWidgets()
         } else {
           if (
@@ -293,9 +289,6 @@ export default {
       },
       deep: true,
     },
-    videoRotationDeg() {
-      this.resizeStream()
-    },
   },
 
   created() {
@@ -303,6 +296,7 @@ export default {
     this.user = user()
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.fetchLastPrint()
+    this.preferredWebcam = getLocalPref('preferredWebcam', null, this.printerId)
 
     this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printerId,
@@ -310,43 +304,25 @@ export default {
       {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
-          if (this.webcams.length === 0 && (this.printer?.settings?.webcams || []).length > 0) {
-            const webcams = this.printer?.settings?.webcams
 
-            let dataChannelFound = false
-            for (const webcam of webcams) {
-              webcam.webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+          if (this.printer?.settings?.data_channel_id && !this.printerComm.webrtcConnections.has(null)) { // null means it's data channel only
+            const dataChannelOnlyWebrtc = DataChannelOnlyWebRTCConnection([parseInt(this.printer.settings.data_channel_id)]);
+            dataChannelOnlyWebrtc.openForPrinter(this.printer.id, this.printer.auth_token);
+            this.printerComm.setWebRTCConnection(null, dataChannelOnlyWebrtc);
+          }
+
+          if ((this.printer?.settings?.webcams || []).length > 0) {
+            const webcamsDeepCopy = JSON.parse(JSON.stringify(this.printer?.settings?.webcams)) // Probably a good idea to deep copy as we will change the objects and keep them around
+
+            for (const webcam of webcamsDeepCopy) {
+              if (this.printerComm.webrtcConnections.has(webcam.name)) {
+                  continue;
+              }
               this.webcams.push(webcam)
+              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              this.printerComm.setWebRTCConnection(webcam.name, webrtc);
               // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
-              webcam.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-              if (webcam.data_channel_available) {
-                this.printerComm.setWebRTC(webcam.webrtc)
-                dataChannelFound = true
-              }
-            }
-
-            // Backward compatibility for agent versions that don't set data_channel_available
-            if (!dataChannelFound) {
-              const primaryWebcam = this.webcams.find(webcam => webcam.is_primary_camera === true);
-              if (primaryWebcam) {
-                this.printerComm.setWebRTC(primaryWebcam.webrtc);
-              }
-            }
-
-            if (this.webcams.length > 0) {
-              this.selectedWebcamIndex = this.webcams.findIndex(webcam => webcam.is_primary_camera === true);
-            }
-            // Set Preferred Webcam
-            const preferredWebcam = getLocalPref('preferredWebcam', null, this.printer.id)
-            if (preferredWebcam) {
-              if (preferredWebcam === 'all') {
-                this.isAllWebcamSelected = true
-              } else {
-                const preferredWebcamIndex = this.webcams.findIndex(webcam => webcam.stream_id == preferredWebcam)
-                if (preferredWebcamIndex !== -1) {
-                  this.selectedWebcamIndex = preferredWebcamIndex
-                }
-              }
+              webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             }
           }
         },
@@ -362,10 +338,20 @@ export default {
 
   mounted() {
     document.querySelector('body').style.paddingBottom = 0
-    addEventListener('resize', this.resizeStream)
   },
 
   methods: {
+    isWebcamSelected(webcam) {
+      if (this.preferredWebcam === null) {
+        return true
+      }
+      // In case this.preferredWebcam is an old stream_id that no longer exists
+      const webcamExists = this.webcams.some(w => w.stream_id === this.preferredWebcam)
+      if (!webcamExists) {
+        return true
+      }
+      return this.preferredWebcam === webcam.stream_id
+    },
     handleRotateRightClicked(val, streamId) {
       const customRotationIndex = this.customRotationData.findIndex(custom => custom.streamId === streamId)
       if (customRotationIndex === -1) {
@@ -378,12 +364,11 @@ export default {
     },
     chooseWebcam(value, streamId = 'all') {
       if (value == 'all') {
-        this.isAllWebcamSelected = true
+        this.preferredWebcam = null
       } else {
-        this.selectedWebcamIndex = value
-        this.isAllWebcamSelected = false
+        this.preferredWebcam = streamId
       }
-      setLocalPref('preferredWebcam', streamId, this.printer.id)
+      setLocalPref('preferredWebcam', this.preferredWebcam, this.printer.id)
     },
     onMenuOptionClicked(menuOptionKey) {
       if (menuOptionKey === 'share') {
@@ -485,51 +470,6 @@ export default {
         })
     },
 
-    resizeStream() {
-      const streamInners = this.$refs.streamInner
-      if (!streamInners) return
-
-      for (const streamInner of streamInners) {
-        const streamContainer = streamInner.parentElement
-
-        const style = window.getComputedStyle(streamContainer)
-        const position = style.getPropertyValue('position')
-        if (position !== 'fixed') {
-          streamInner.style.width = '100%'
-          streamInner.style.height = 'auto'
-          return
-        }
-
-        const streamContainerRect = streamContainer.getBoundingClientRect()
-        const streamContainerWidth = streamContainerRect.width
-        const streamContainerHeight = streamContainerRect.height
-
-        const isVertical = this.videoRotationDeg % 180 !== 0
-        const isRatio169 = this.printer.settings.ratio169
-        const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
-
-        // 1. calc width as 100% of parent
-        let innerWidth = streamContainerWidth
-
-        // 2. calc height based on width, ratio and rotation
-        let innerHeight = innerWidth * multiplier
-
-        // 3. if height is bigger than parent height, calc height as 100% of parent
-        if (innerHeight > streamContainerHeight) {
-          innerHeight = streamContainerHeight
-          innerWidth = innerHeight / multiplier
-        }
-
-        // hack to make StreamBox fit container
-        if (isVertical) {
-          innerWidth = Math.max(innerWidth, innerHeight)
-          innerHeight = Math.max(innerWidth, innerHeight)
-        }
-
-        streamInner.style.width = innerWidth + 'px'
-        streamInner.style.height = innerHeight + 'px'
-      }
-    },
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
         title: `${this.$i18next.t('Noted!')}`,
@@ -593,6 +533,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.webcamBackground
+    position: relative
+
 // Navbar
 .printer-name
   font-size: 1rem
@@ -626,18 +569,10 @@ export default {
   position: fixed
   right: var(--gap-between-blocks)
   top: calc(50px + var(--gap-between-blocks))
-  height: calc(100vh - 50px - var(--gap-between-blocks)*2)
   width: calc(100vw - 100px - var(--gap-between-blocks)*3 - var(--widget-width))
-  background-color: #000
   border-radius: var(--border-radius-md)
   overflow: hidden
-  .webcam-main
-    @media (min-width: 1024px)
-      height: calc(100vh - 50px - var(--gap-between-blocks)*2 - 33px)
-
-    @media (min-width: 1024px)
-      display: grid
-      align-items: center
+  background-color: #000
 
   .header-container
     display: flex
@@ -697,23 +632,4 @@ export default {
       text-align: center
       margin-bottom: 1rem
 
-.two-webcam-landscape
-  @media (min-width: 1024px)
-    width: 50vh !important
-.two-webcam-portrait
-  @media (min-width: 1024px)
-    width: 40vh !important
-.single-webcam-portrait
-  @media (min-width: 1024px)
-    width: 80% !important
-    position: relative
-    left: 10%
-
-.justify-center
-  @media (min-width: 1024px)
-    justify-content: center
-
-.webcam-more-than-two
-  display: flex !important
-  gap: 10px
 </style>

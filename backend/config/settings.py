@@ -314,7 +314,7 @@ if RECAPTCHA_SITE_KEY:
     ACCOUNT_FORMS = {'signup': 'app.forms.RecaptchaSignupForm'}
 
 OAUTH2_PROVIDER = {
-    'ACCESS_TOKEN_EXPIRE_SECONDS': None,
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365 * 100,  # 100 years
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
     'PKCE_REQUIRED': False,
 }

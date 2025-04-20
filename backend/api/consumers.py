@@ -376,69 +376,6 @@ class JanusSharedWebConsumer(JanusWebConsumer):
             share_token=self.scope['url_route']['kwargs']['share_token']
         ).printer
 
-    @newrelic.agent.background_task()
-    @report_error
-    def receive(self, text_data=None, bytes_data=None):
-        # we are going to disable datachannel for shared printer connections
-        # by tampering janus offer/answer messages
-
-        msg = json.loads(text_data)
-        if 'jsep' in msg and msg['jsep']['type'] == 'answer':
-            sdp = msg['jsep']['sdp']
-
-            if 'BUNDLE video\r\n' not in sdp:
-                # frontend should request only video,
-                # if thats's not the case, then something went wrong
-                # with patching the offer (bellow)
-                capture_message(
-                    'bad sdp bundle',
-                    extras={'sdp': sdp}
-                )
-                return
-
-        channels.send_msg_to_printer(self.printer.id, {'janus': text_data})
-
-    @newrelic.agent.background_task()
-    @report_error
-    def janus_message(self, message):
-        # we are going to disable datachannel for shared printer connections
-        # by tampering janus offer/answer messages
-
-        msg = json.loads(message['msg'])
-        if 'jsep' in msg and msg['jsep']['type'] == 'offer':
-            sdp = msg['jsep']['sdp']
-
-            if 'BUNDLE video data\r\n' not in sdp:
-                # only valid case here is when video is disabled in the plugin,
-                # "BUNDLE data"
-                # ... in that case no need to continue negotiation, as plugin
-                # has nothing to offer.
-
-                # all other cases are unexpected,
-                # no need to let them go through.
-                return
-
-            # removing data from bundle
-            sdp = sdp.replace('BUNDLE video data', 'BUNDLE video')
-
-            # datachannel related parts are at the end of sdp,
-            # this is the starting position
-            delete_from = sdp.find('m=application')
-
-            if delete_from < 0:
-                # too strange, ignoring message
-                capture_message(
-                    'missing application from sdp bundle',
-                    extras={'sdp': sdp}
-                )
-                return
-
-            sdp = sdp[:delete_from]
-
-            msg['jsep']['sdp'] = sdp
-
-        self.send(text_data=json.dumps(msg))
-
 
 class OctoprintTunnelWebConsumer(WebsocketConsumer):
 

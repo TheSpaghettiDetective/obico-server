@@ -30,7 +30,7 @@
 
 
             if (hashParams['access_token']) {
-                if (navigator.userAgent.match(RegExp('BBL-Slicer', 'i'))) {
+                if (navigator.userAgent.match(RegExp('BBL-Slicer', 'i')) || navigator.userAgent.match(RegExp('JusPrin', 'i'))) {
                     window.wx.postMessage(JSON.stringify({
                         command: 'login_token',
                         data: {

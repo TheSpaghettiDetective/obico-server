@@ -9,7 +9,28 @@
           <div class="card-header">
             <div>{{ printer.name }}</div>
           </div>
-          <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="true" />
+
+        <b-card-text v-if="webcams.length" class="px-0 py-0 content d-inline-block" style="width: 100%;">
+            <b-row>
+                <b-col class="pb-0" style="position: relative">
+                  <b-container fluid class="p-0">
+                    <b-row no-gutters>
+                      <b-col v-for="(webcam, index) in webcams" :key="index" :cols="webcams.length > 1 ? 6 : 12">
+                        <div class="d-flex justify-content-center webcamBackground">
+                          <streaming-box
+                            :printer="printer"
+                            :webrtc="printerComm.webrtcConnections.get(webcam.name)"
+                            :autoplay="true"
+                            :webcam="webcam"
+                          />
+                        </div>
+                      </b-col>
+                    </b-row>
+                  </b-container>
+              </b-col>
+            </b-row>
+        </b-card-text>
+          </div>
           <div class="p-3 p-md-5">
             <p class="text-center">
               {{$t("You are viewing an awesome 3D print your friend shared specifically with you on")}}
@@ -54,8 +75,8 @@ export default {
       shareToken: null,
       videoAvailable: {},
       loading: true,
+      webcams: [],
       isWebrtcOpened: false,
-      webrtc: WebRTCConnection(),
     }
   },
   created() {
@@ -68,11 +89,20 @@ export default {
           this.printer = normalizedPrinter(data, this.printer)
           this.loading = false
 
-          if (!this.isWebrtcOpened) {
-            this.webrtc.openForShareToken(this.shareToken)
-            this.isWebrtcOpened = true
+          if ((this.printer?.settings?.webcams || []).length > 0) {
+            const webcamsDeepCopy = JSON.parse(JSON.stringify(this.printer?.settings?.webcams)) // Probably a good idea to deep copy as we will change the objects and keep them around
+            for (const webcam of webcamsDeepCopy) {
+              if (this.printerComm.webrtcConnections.has(webcam.name)) {
+                  continue;
+              }
+              this.webcams.push(webcam)
+              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              this.printerComm.setWebRTCConnection(webcam.name, webrtc);
+              // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
+              webrtc.openForShareToken(this.shareToken)
+            }
           }
-        },
+       },
       }
     )
     this.printerComm.connect()
@@ -81,8 +111,12 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.webcamBackground
+    position: relative
+    background: #000
+
 #printer-list-page
   margin-top: 1.5rem
 .printer-card
-  margin-bottom: 1.5rem
+  margin-bottom: 1.25rem
 </style>

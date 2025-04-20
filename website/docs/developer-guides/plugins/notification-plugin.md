@@ -145,7 +145,7 @@ This method is optional if your plugin supports all features.
 
 #### `send_failure_alert` {#send_failure_alert}
 
-The method the Obico server will call when a possible failure is detected.
+The method the Obico Server will call when a possible failure is detected.
 
 This method is optional if your plugin doesn't support the `Feature.notify_on_failure_alert` feature.
 
@@ -169,7 +169,7 @@ This method is optional if your plugin doesn't support the `Feature.notify_on_fa
 
 #### `send_printer_notification` {#send_printer_notification}
 
-The method the Obico server will call when a printer notification needs to be sent, in general but not always when a printer event happens.
+The method the Obico Server will call when a printer notification needs to be sent, in general but not always when a printer event happens.
 
 This method is optional if your plugin doesn't support **any** of the following features.
 
@@ -201,7 +201,7 @@ This method is optional if your plugin doesn't support **any** of the following 
 
 #### `send_test_message` {#send_test_message}
 
-The method the Obico server will call when the user press the "Test notification" button on the plugin's preference page.
+The method the Obico Server will call when the user press the "Test notification" button on the plugin's preference page.
 
 ##### Signature {#signature-5}
 

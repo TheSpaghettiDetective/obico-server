@@ -4,6 +4,33 @@ const Themes = {
   System: 'System',
 }
 
+
+export const jusprin = {
+  // only light theme is supported for now
+  colors: [
+    {
+      name: 'primary',
+      values: {[Themes.Light]: '#694b7c', [Themes.Dark]: '#694b7c'},
+    },
+    {
+      name: 'primary-hover',
+      values: {[Themes.Light]: '#7d5c93', [Themes.Dark]: '#7d5c93'},
+    },
+    {
+      name: 'background',
+      values: {[Themes.Light]: '#f3f4f6', [Themes.Dark]: '#f3f4f6'},
+    },
+    {
+      name: 'surface-primary',
+      values: {[Themes.Light]: '#f3f4f6', [Themes.Dark]: '#f3f4f6'},
+    },
+    {
+      name: 'surface-secondary',
+      values: {[Themes.Light]: '#9ca3af', [Themes.Dark]: '#9ca3af'},
+    },
+  ],
+}
+
 export const yumi = {
   // only light theme is supported for now
   colors: [
@@ -122,7 +149,7 @@ export const yumi = {
 
     {
       name: 'input-background',
-      values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#42566B'},
+      values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#212224'},
     },
     {
       name: 'input-placeholder',

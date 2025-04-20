@@ -5,8 +5,6 @@
 {% load widget_tweaks %}
 {% load account socialaccount %}
 
-{% block head_title %}{% trans "Signup" %}{% endblock %}
-
 {% block content %}
 {% get_providers as socialaccount_providers %}
 {% trans 'Email address' as email_placeholder %}
@@ -17,43 +15,53 @@
   <div class="row justify-content-center logreg">
     <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
       <div id="logreg-forms">
-        <h1 class="text-center">{% trans "SIGN UP" %}</h1>
+        <div class="d-flex justify-content-center w-100 py-4">
+          {% if page_context.syndicate.name != 'base' %}
+            {% if page_context.syndicate.logo_full %}
+              <img src="{{ page_context.syndicate.logo_full }}" alt="Obico Logo" style="max-width: 150px;">
+            {% else %}
+              <svg width="150" height="45">
+                <use href="#{{ page_context.syndicate.name }}-svg-logo-full" />
+              </svg>
+            {% endif %}
+          {% else %}
+          <svg width="150" height="45">
+            <use href="#svg-logo-full" />
+          </svg>
+          {% endif %}
+        </div>
+
+        {% if page_context.syndicate.name == 'base' or page_context.syndicate.name == 'jusprin' %}
         <div style="margin-bottom: 1rem; padding-left: 24px;">
           <div class="custom-control custom-checkbox form-check-inline">
             <input type="checkbox" class="custom-control-input" id="tos-checkbox" checked>
             <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox">
-            
-            {% if page_context.syndicate.name == 'base' %}
-            {% blocktrans with brand_name=page_context.syndicate.display_name %}
-            By signing up, I agree to the {{ brand_name }} app's 
-            <a class="link" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" href="https://www.obico.io/privacy.html">PrivacyPolicy</a>
-            {% endblocktrans %}
-            {% else %}
-            {% blocktrans with brand_name=page_context.syndicate.display_name privacy_link=page_context.syndicate.privacy_link tos_link=page_context.syndicate.tos_link %}
-            By signing up, I agree to the {{ brand_name }} app's 
-            <a class="link" href="{{ tos_link }}">Terms of Use</a> and <a class="link" href="{{ privacy_link }}">PrivacyPolicy</a>
-            {% endblocktrans %}
-            {% endif %}
 
+            {% if page_context.syndicate.name == 'base' %}
+              {% blocktrans with brand_name=page_context.syndicate.display_name %}
+              By signing up, I agree to the {{ brand_name }} app's
+              <a class="link" target="_blank" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" target="_blank" href="https://www.obico.io/privacy.html">PrivacyPolicy</a>
+              {% endblocktrans %}
+            {% elif page_context.syndicate.name == 'jusprin' %}
+              {% blocktrans with brand_name=page_context.syndicate.display_name %}
+              JusPrin is a project built by <a class="link" target="_blank" href="https://www.obico.io">Obico</a>. By signing up, I agree to Obico's
+              <a class="link" target="_blank" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" target="_blank" href="https://www.obico.io/privacy.html">PrivacyPolicy</a>
+              {% endblocktrans %}
+            {% elif page_context.syndicate.tos_link and page_context.syndicate.privacy_link %}
+              {% blocktrans with brand_name=page_context.syndicate.display_name privacy_link=page_context.syndicate.privacy_link tos_link=page_context.syndicate.tos_link %}
+              By signing up, I agree to the {{ brand_name }} app's
+              <a class="link" target="_blank" href="{{ tos_link }}">Terms of Use</a> and <a class="link" target="_blank" href="{{ privacy_link }}">PrivacyPolicy</a>
+              {% endblocktrans %}
+            {% endif %}
             </label>
           </div>
         </div>
-        {% if socialaccount_providers %}
-        <div class="social-login">
-          {% for provider in socialaccount_providers %}
-            {% if provider.id == "facebook" %}
-            <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
-              role="button"><span><i class="fab fa-facebook-f mr-1"></i> {% trans "Sign up with Facebook" %}</span> </a>
-            {% endif %}
-            {% if provider.id == "google" %}
-            <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
-              role="button"><span><i class="fab fa-google mr-1"></i> {% trans "Sign up with Google" %}</span> </a>
-            {% endif %}
-          {% endfor %}
+        {% endif %}
+        {% if page_context.syndicate.name == 'jusprin' %}
+        <div class="text-center">
+          Important: If you have an Obico account, do NOT sign up again. Use your Obico account to <a class="link" href="{% url 'account_login' %}?{{request.GET.urlencode}}">Sign In</a> instead.
         </div>
         {% endif %}
-
-        <div style="width: 100%; height: 20px; border-bottom: 1px solid var(--color-divider); margin-bottom: 16px;"></div>
         {% for error in form.non_field_errors %}
         <div class="text-danger">{{ error }}</div>
         {% endfor %}
@@ -61,8 +69,15 @@
           {% csrf_token %}
           <input type="hidden" name="recaptcha_token" id='recaptcha'>
           {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
-          <div class="form-group">
-            {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder=email_placeholder %}
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text form-control" style="border-radius: 50% 0 0 50%;">
+                <i class="fas fa-envelope"></i>
+              </span>
+            </div>
+            {% render_field form.email class="form-control" style="border-radius: 0 50px 50px 0;" aria-describedby="emailHelp" placeholder=email_placeholder %}
+          </div>
+          <div class="mb-3">
             {% if form.email.errors %}
             <small id="emailHelp" class="text-danger">
               {% for error in form.email.errors %}
@@ -73,8 +88,15 @@
             <small id="emailHelp" class="form-text">{% trans "We'll never share your email with anyone else." %}</small>
             {% endif %}
           </div>
-          <div class="form-group">
-            {% render_field form.password1 class="form-control" aria-describedby="password1Help" placeholder=password_placeholder %}
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text form-control" style="border-radius: 50% 0 0 50%;">
+                <i class="fas fa-lock"></i>
+              </span>
+            </div>
+            {% render_field form.password1 class="form-control" style="border-radius: 0 50px 50px 0;" aria-describedby="password1Help" placeholder=password_placeholder %}
+          </div>
+          <div class="mb-3">
             {% if form.password1.errors %}
             <small id="password1Help" class="text-danger">
               {% for error in form.password1.errors %}
@@ -85,8 +107,15 @@
             <small id="password1Help" class="form-text">{% trans "At least 6 characters. And be secure, please." %}</small>
             {% endif %}
           </div>
-          <div class="form-group">
-            {% render_field form.password2 class="form-control" aria-describedby="password2Help" placeholder=password_again_placeholder %}
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text form-control" style="border-radius: 50% 0 0 50%;">
+                <i class="fas fa-lock"></i>
+              </span>
+            </div>
+            {% render_field form.password2 class="form-control" style="border-radius: 0 50px 50px 0;" aria-describedby="password2Help" placeholder=password_again_placeholder %}
+          </div>
+          <div class="mb-3">
             {% if form.password2.errors %}
             <small id="password2Help" class="text-danger">
               {% for error in form.password2.errors %}
@@ -99,13 +128,36 @@
           {% if redirect_field_value %}
           <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
           {% endif %}
-          <button type="submit" class="btn btn-primary btn-block">{% trans "SIGN UP" %}</button>
-          <div class="text-center pt-3 w-100">
-            <div class="font-weight-light text-muted">- {% trans "OR" %} -</div>
-            <a class="btn" href="{% url 'account_login' %}?{{request.GET.urlencode}}">
-              {% trans "SIGN IN" %}
+          <button type="submit" class="btn btn-primary btn-block">{% trans "Sign Up" %}</button>
+          <div class="text-center pt-4 pb-2 w-100">
+            {% trans "Already have an account?" %} <a class="link" href="{% url 'account_login' %}?{{request.GET.urlencode}}">
+              {% trans "Sign In" %}
             </a>
           </div>
+          {% if socialaccount_providers %}
+          <div class="text-center mt-3">
+            <div class="divider">
+              <span class="text-muted">{% trans "Or" %}</span>
+            </div>
+            <p class="text-center my-2">{% trans "Continue with social media" %}</p>
+            <div class="social-login">
+              {% for provider in socialaccount_providers %}
+                {% if provider.id == "facebook" %}
+                <a href="{% provider_login_url "facebook" method="oauth2" %}" class="social-btn facebook-btn"
+                  role="button" aria-label="{% trans 'Login with Facebook' %}">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                {% endif %}
+                {% if provider.id == "google" %}
+                <a href="{% provider_login_url "google" method="oauth2" %}" class="social-btn google-btn"
+                  role="button" aria-label="{% trans 'Login with Google' %}">
+                  <i class="fab fa-google"></i>
+                </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
         </form>
       </div>
     </div>

@@ -115,7 +115,7 @@ def check_x_api(get_response):
         if token:
             user = None
             try:
-                access_token = AccessToken.objects.get(token=key)
+                access_token = AccessToken.objects.get(token=token)
                 if access_token.is_valid():
                     user = access_token.user
             except AccessToken.DoesNotExist:
@@ -178,7 +178,7 @@ class TopDomainMatchingCurrentSiteMiddleware(CurrentSiteMiddleware):
             except Site.DoesNotExist:
                 # For situations when site is not found by domain, such as load balancer health checks.
                 if DEFAULT_SITE is None:
-                    DEFAULT_SITE = Site.objects.get(id=1)
+                    DEFAULT_SITE = Site.objects.first()
                 site = DEFAULT_SITE
 
             request.site = site

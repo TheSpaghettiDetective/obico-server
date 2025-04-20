@@ -1,5 +1,5 @@
 ---
-title: Advanced Server Configurations
+title: Advanced Topics
 ---
 
 ## Configure Obico Server using `.env` {#configure-obico-server-using-env}
@@ -20,6 +20,7 @@ The `.env` file name is NOT a typo. Please don't name the file `env`. Otherwise 
 2. Open `.env` using your favorite editor.
 
 3. Go through the lines in the file, and remove the leading `#` on the lines that you intend to change. Please do NOT remove the leading `#` on any line that you don't understand or don't intend to change. It may cause unexpected server behaviors.
+
 
 ## Other advanced server setups {#other-advanced-server-setups}
 

@@ -134,3 +134,4 @@ docker-compose.override.yml
 frontend/webpack-stats.json
 
 .idea/
+.anima/

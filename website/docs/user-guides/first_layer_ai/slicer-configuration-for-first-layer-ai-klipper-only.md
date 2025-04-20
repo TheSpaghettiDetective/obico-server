@@ -10,13 +10,13 @@ Slicer configuration is only needed for Klipper. If you are running OctoPrint, y
 
 
 
-## Configure Layer Scanning: 
+## Configure Layer Scanning: {#configure-layer-scanning}
 
 In addition to colllecting images while the first layer prints, you can use a layer scan macro to have Obico's first layer Ai scan the print after the first layer finishes to get a better analysis of the first layer as a whole. 
 
 Follow these steps to configure your setup for first layer scanning. After configuring it, layer scanning can be easily enabled or disabled in the Obico web app: 
 
-## Update the moonraker-obico plugin to version 2.0 if you haven't already 
+## Update the moonraker-obico plugin to version 2.0 if you haven't already {#update-the-moonraker-obico-plugin-to-version-20-if-you-havent-already}
 First, update the Obico plugin to the latest version. When you update the moonraker-obico plugin, we will automatically make two adjustments to your klipper setup:
 1. Add ```moonraker_obico_macros.cfg``` to your Config Files. This file contains the layer scan macro. 
 2. Add ```[include moonraker_obico_macros.cfg]``` to your ```printer.cfg``` file.
@@ -91,7 +91,7 @@ At this time, we do not support first layer scanning in Cura. It's custom g-code
 
 Layer scanning is currently not supported for Cura. It may be added in the future.
 
-## Layer Scanning Configuration Options
+## Layer Scanning Configuration Options {#layer-scanning-configuration-options}
 
 ![](/img/user-guides/first-layer-scan-configuration-settings.png)
 
@@ -103,7 +103,7 @@ The following options are available to be configured in the [Celestrius Alpha En
 3. **Scan Height**: The Z-height that the scan will run at. The default value is 4mm. If your camera is out of focus while doing the first layer scan, adjust the height so your camera is in focus. 
 4. **Cooldown temperature**: Cools down the hotend to this temperature before performing the first layer scan. Cooling down the hotend helps reduce filament oozing during the first layer scan.
 
-### Configuring Retraction value
+### Configuring Retraction value {#configuring-retraction-value}
 
 When your first layer finishes, Obico will pause the print and retract the value that is set. This will ensure that the filament is not leaking out of the nozzle as the first layer is scanned. Depending on your setup, you may find that the default value is not sufficient. 
 
@@ -111,7 +111,7 @@ If the filament is leaking out of your nozzle during the scan, increase the valu
 
 If you run into any issues with your nozzle clogging after the first layer is scanned, reduce the retraction value so that the filament is pulled back a shorter distance. 
 
-### Configuring Scan Height
+### Configuring Scan Height {#configuring-scan-height}
 
 The first layer scan will happen at Z=4mm by default, but if this height doesn't produce a clear focused image, you can adjust the scan height so the images are more in focus. To find the optimal scan height, do the following:
 
@@ -122,14 +122,14 @@ The first layer scan will happen at Z=4mm by default, but if this height doesn't
 
 In the example below, you can see that the z-height of 4mm is clearly more focused than 2mm. At 2mm, the space in between the nozzle and the camera is more out of focus, while it is more focused at 4mm. 
 
-#### Z-height = 2mm
+#### Z-height = 2mm {#z-height--2mm}
 ![](/img/user-guides/z2.png)
 
-#### Z-height = 4mm
+#### Z-height = 4mm {#z-height--4mm}
 ![](/img/user-guides/z4.png)
 
 
-### Configuring Cooldown Extruder Temperature
+### Configuring Cooldown Extruder Temperature {#configuring-cooldown-extruder-temperature}
 
 The cooldown extrudeer temperature is the temperature that will be set for the first layer scan. After the first layer, the temperature will be lowered to avoid filament oozing out of the nozzle during the scan. 
 

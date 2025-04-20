@@ -38,7 +38,11 @@
           </b-dropdown>
         </div>
       </div>
-      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" :webcam="webcam" />
+      <div class="px-0 py-0 content d-inline-block" style="width: 100%;">
+        <div class="d-flex justify-content-center webcamBackground">
+        <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" :webcam="webcam" />
+        </div>
+      </div>
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -371,7 +375,7 @@ export default {
             if (this.webcam) {
               this.webrtc = WebRTCConnection(this.webcam.stream_mode, this.webcam.stream_id)
               this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-              this.printerComm.setWebRTC(this.webrtc)
+              this.printerComm.setWebRTCConnection(this.webcam.name, this.webrtc)
             }
           }
         },
@@ -565,6 +569,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.webcamBackground
+    position: relative
+    background: #000
+
 .card
   border-radius: var(--border-radius-lg)
   overflow: hidden

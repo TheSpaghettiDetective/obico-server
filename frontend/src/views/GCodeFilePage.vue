@@ -14,6 +14,14 @@
     </template>
     <template #topBarRight>
       <div class="action-panel">
+        <a
+          v-if="canDownloadGcode"
+          @click.prevent="downloadGcode"
+          class="btn shadow-none icon-btn action-btn"
+          :title="$t('Download file')"
+        >
+          <i class="fas fa-download"></i>
+        </a>
         <!-- Rename -->
         <a
           v-if="isCloud"
@@ -41,21 +49,7 @@
           </template>
           <cascaded-dropdown
             ref="cascadedDropdown"
-            :menu-options="[
-              {
-                key: 'renameFile',
-                icon: 'fas fa-edit',
-                title: $t(`Rename file`),
-                callback: true,
-              },
-              {
-                key: 'deleteFile',
-                icon: 'fas fa-trash-alt',
-                customMenuOptionClass: 'text-danger',
-                title: $t(`Delete file`),
-                callback: true,
-              },
-            ]"
+            :menu-options="dropdownMenuOptions"
             @menuOptionClicked="onMenuOptionClicked"
           />
         </b-dropdown>
@@ -95,7 +89,7 @@
 
             <!-- File details -->
             <g-code-details :file="gcode" :show-print-stats="true" :compact-view="false" />
-
+            <jusprin-feedback v-if="isCloud" class="card-container jusprin-feedback" :g-code-file-id="gcode.id" />
             <!-- Available printers -->
             <available-printers
               v-if="!isDeleted"
@@ -157,6 +151,7 @@ import {
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
+import JusprinFeedback from '@src/components/g-codes/JusprinFeedback.vue'
 
 export default {
   name: 'GCodeFilePage',
@@ -169,6 +164,7 @@ export default {
     PrintHistoryItem,
     CascadedDropdown,
     GCodeDetails,
+    JusprinFeedback,
   },
 
   props: {
@@ -211,6 +207,37 @@ export default {
     isDeleted() {
       return !!this.gcode?.deleted
     },
+    dropdownMenuOptions() {
+      const menuOptions = [
+        {
+          key: 'renameFile',
+          icon: 'fas fa-edit',
+          title: this.$i18next.t(`Rename file`),
+          callback: true,
+        },
+        {
+          key: 'deleteFile',
+          icon: 'fas fa-trash-alt',
+          customMenuOptionClass: 'text-danger',
+          title: this.$i18next.t(`Delete file`),
+          callback: true,
+        },
+      ]
+
+      if (this.canDownloadGcode) {
+        menuOptions.unshift({
+          key: 'downloadGcode',
+          icon: 'fas fa-download',
+          title: this.$i18next.t(`Download file`),
+          callback: true,
+        })
+      }
+
+      return menuOptions
+    },
+    canDownloadGcode() {
+      return this.gcode?.url && this.gcode?.safe_filename
+    },
   },
 
   async created() {
@@ -228,6 +255,8 @@ export default {
         this.renameFile()
       } else if (menuOptionKey === 'deleteFile') {
         this.deleteFile()
+      } else if (menuOptionKey === 'downloadGcode') {
+        this.downloadGcode()
       }
     },
     getRouteParam(name) {
@@ -353,6 +382,23 @@ export default {
     onRefresh() {
       this.$router.go()
     },
+    async downloadGcode() {
+      const fileUrl = this.gcode.url
+
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = this.gcode.safe_filename
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      URL.revokeObjectURL(link.href);
+      document.body.removeChild(link);
+    }
   },
 }
 </script>
@@ -361,7 +407,8 @@ export default {
 .warning-block
   margin-bottom: var(--gap-between-blocks)
 
-.available-printers
+.available-printers,
+.jusprin-feedback
   margin-top: var(--gap-between-blocks)
   &.full-width
     margin-top: 15px

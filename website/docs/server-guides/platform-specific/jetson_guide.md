@@ -1,5 +1,5 @@
 ---
-title: Run Obico server on NVIDIA Jetson Nano
+title: Run Obico Server on NVIDIA Jetson Nano
 ---
 
 
@@ -43,7 +43,7 @@ cd obico-server
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
-4. There is no step 4. This is how easy it is to get the Obico server up and running (thanks to Docker and Docker-compose).
+4. There is no step 4. This is how easy it is to get the Obico Server up and running (thanks to Docker and Docker-compose).
 
 ## Continue to [server configuration the main documentation](../../configure) {#continue-to-server-configuration-the-main-documentation}
 

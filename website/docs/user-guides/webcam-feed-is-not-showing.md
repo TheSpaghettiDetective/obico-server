@@ -1,83 +1,88 @@
 ---
 id: webcam-feed-is-not-showing
-title: Troubleshoot the webcam streaming issues
+title: Troubleshoot webcam streaming issues
 ---
 
-Follow this guide if you are experiencing any of these webcam streaming issues:
+In most cases, Obico will automatically figure out how to stream the webcam to the Obico app, such as the resolution, framerate, the bandwidth requirements, etc. However, in case you run into webcam streaming issues, follow this troubleshooting guide to solve the issues.
 
-* Webcam stream is stuck (buffering), or video frames dropped.
-* Choppy/jerky webcam stream.
-* No webcam stream at all.
+The first step is to check which webcam streaming issue you are experiencing:
 
-## 1. Determine if you are eligible for the Premium Streaming {#1-determine-if-you-are-eligible-for-the-premium-streaming}
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} />
+
+## Webcam only refreshes once about every 10 seconds (0.1FPS webcam stream)
+
+The most common cause for this problem is that [Janus is not installed on your printer or SBC](/docs/user-guides/webcam-install-janus/). When this is the case, you will also see a warning in the Obico app:
+
+![Janus Not Found](/img/user-guides/helpdocs/janus-not-found-warning.png)
+
+The solution is to install Janus on your printer or SBC. [Follow this guide for details](/docs/user-guides/webcam-install-janus/).
+
+If you are running a self-hosted Obico server, it's also possible that Janus is installed but the WebRTC connection can't be established due to your network configurations (firewall, routing, NAT configuration in your router, etc). To check if this is the case, [re-link your printer to the Obico cloud](/docs/user-guides/relink-printer/). If the issue is gone, the problem is with the settings of your server or its network configuration.
+
+Follow [this guide](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/) for other less common problems that may cause the webcam to stream at only 0.1FPS.
+
+## Webcam stream is choppy
+
+The most common reason why your webcam stream appears choppy is because you don't have an Obico Pro subscription.
 
 * You are eligible for the Premium Streaming (25 frames-per-second) if you are currently a Pro plan subscriber or in the free 1-month Pro trial.
-* You are eligible for only the Basic Streaming if you are on the Free plan. In this case, the webcam stream is up to 5 frames-per-second. Also it's throttled for 30 seconds every minutes.
+* You are eligible for only the Basic Streaming if you are on the Free plan. In this case, the webcam stream is up to 5 frames-per-second, which can appear to be quite choppy. Also it's throttled for 30 seconds every minutes.
 
-If you are not sure, [follow this guide](/docs/user-guides/check-type-of-your-account) to find out if you are currently on a Free plan or a Pro plan.
+Visit [your Obico account subscription page](https://app.obico.io/user_preferences/subscription/) if you are not sure.
 
 :::info
 Learn more about [Premium Streaming vs Basic Streaming](/docs/user-guides/webcam-streaming-for-human-eyes).
 :::
 
-## 2. Check the current streaming mode {#2-check-the-current-streaming-mode}
+If you already have a Pro subscription but your webcam stream is still choppy, follow [this complete troubleshooting guide](/docs/user-guides/webcam-feed-is-laggy/).
 
-Follow [this guide](/docs/user-guides/check-webcam-streaming-mode) to find out the current webcam streaming mode.
+## No webcam in the Obico app
 
-* If you are eligible for the Premium Streaming, the streaming mode should be "**Premium (advanced)**" or "**Premium (compatibility)**".
-* If you are eligible for the Premium Streaming, the streaming mode should be "**Basic**".
-
-If the streaming mode is "**0.1 FPS**", [follow this troubleshooting guide](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/).
-
-## 3. Check if you get any stream at all {#3-check-if-you-get-any-stream-at-all}
-
-After you open the Obico mobile app or web app, wait for up to 5 seconds for the webcam live stream to load.
-
-![](/img/user-guides/helpdocs/webcam-streaming-not-showing.png)
-
-If the webcam stream is coming in (left in the screenshot above) but the stream is choppy/jerky, [follow this guide](/docs/user-guides/webcam-feed-is-laggy) to fix it.
-
-If you don't see any webcam stream (right), continue to the next step.
-
-## 4. Check for server connection issues {#4-check-for-server-connection-issues}
-
-Server connection issues are the most common root causes for not having a webcam stream. [Follow this troubleshooting guide](/docs/user-guides/troubleshoot-server-connection-issues) to check if it's the case, and if it is, how to fix it.
-
-## 5. Open the troubleshooting page. {#5-open-the-troubleshooting-page}
-
-The Obico plugin has a powerful troubleshooting page to help you diagnose the webcam streaming problems.
-
-You can access this troubleshooting page by:
-
-1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
-1. Scroll down the navigation bar on the left side.
-1. Click "Obico for OctoPrint" tab.
-1. Click the "Troubleshooting" button.
-
-![](/img/user-guides/helpdocs/open-troubleshooting-page.gif)
-
-
-## 6. Examine connection status on the troubleshooting page {#6-examine-connection-status-on-the-troubleshooting-page}
-
-In the "Plugin Status" column, look for:
-
-* The "Connection to server" status, and
-* The "Connection to webcam" statuses
-
-### 6.1 If the server connection has issues {#61-if-the-server-connection-has-issues}
-
-When the plugin has problems connecting to the Obico server, the webcam stream won't come through either.
-
-Follow [this guide](/docs/user-guides/troubleshoot-server-connection-issues) to fix the server connection problem first. Come back to this guide if the webcam streaming still doesn't work after the server connection problem is fixed.
-
-:::note
-You can still get a decent webcam stream even if there are occasional server connection errors, e.g., the error rate is lower than 5%.
+:::tip
+After you open the Obico mobile app or web app, wait for up to 5 seconds for the webcam stream to load.
 :::
 
-### 6.2 If the webcam connection shows "Error" {#62-if-the-webcam-connection-shows-error}
+By default, Obico will automatically stream the webcam(s) configured in Klipper (Mainsail/Fluidd) or OctoPrint. If there is no webcam stream in the Obico app, check if the webcam stream works correctly in Klipper (Mainsail/Fluidd) or OctoPrint.
 
-This usually means the webcam streaming in OctoPrint is not working. [Follow this troubleshoot guide](/docs/user-guides/octoprint-webcam-not-streaming/) to figure out why and fix it.
+If the webcam stream works in Klipper (Mainsail/Fluidd) or OctoPrint, but is missing or a black screen in the Obico app, you may have to manually configure webcam(s) in Obico.
 
-## 7. None of the above solves the problem? {#7-none-of-the-above-solves-the-problem}
+- [Configure webcam in Obico for Klipper](/docs/user-guides/moonraker-obico/webcam/)
+- [Configure webcam in Obico for OctoPrint](/docs/user-guides/multiple-cameras-octoprint/)
 
-[Get help from a human](/docs/user-guides/contact-us-for-support).
+If you are sure the webcam is configured correctly in Obico, you can set the logging level to verbose to check for errors. Here is how you can [do it in Obico for Klipper](/docs/user-guides/moonraker-obico/logging-file/) or [in Obico for OctoPrint](/docs/user-guides/turn-on-debug-logging/). Look for log messages similar to:
+
+```
+2024-09-01 11:42:19,461     ERROR  backoff - Giving up capture_jpeg(...) after 3 tries (urllib.error.HTTPError: HTTP Error 502: Bad Gateway)
+2024-09-01 11:42:19,462     ERROR  obico.webcam_stream - Failed to connect to webcam to retrieve resolution. Using default.
+Traceback (most recent call last):
+  File "/home/pi/moonraker-obico.ssh/moonraker_obico/webcam_stream.py", line 59, in get_webcam_resolution
+    (_, img_w, img_h) = get_image_info(capture_jpeg(webcam_config, force_stream_url=True))
+  File "/home/pi/.local/lib/python3.9/site-packages/backoff/_sync.py", line 94, in retry
+    ret = target(*args, **kwargs)
+  File "/home/pi/.local/lib/python3.9/site-packages/backoff/_sync.py", line 43, in retry
+    ret = target(*args, **kwargs)
+  File "/home/pi/moonraker-obico.ssh/moonraker_obico/webcam_capture.py", line 51, in capture_jpeg
+    with closing(urlopen(stream_url)) as res:
+  File "/usr/lib/python3.9/urllib/request.py", line 214, in urlopen
+    return opener.open(url, data, timeout)
+  File "/usr/lib/python3.9/urllib/request.py", line 523, in open
+    response = meth(req, response)
+  File "/usr/lib/python3.9/urllib/request.py", line 632, in http_response
+    response = self.parent.error(
+  File "/usr/lib/python3.9/urllib/request.py", line 561, in error
+    return self._call_chain(*args)
+  File "/usr/lib/python3.9/urllib/request.py", line 494, in _call_chain
+    result = func(*args)
+  File "/usr/lib/python3.9/urllib/request.py", line 641, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+```
+
+If you see errors that seem to be related to webcam streaming, but you can't figure out what's causing them, [get help from a human](/docs/user-guides/contact-us-for-support).
+
+
+## Get help from a human  {#6-if-none-of-the-above-worked}
+
+If your issue is not listed above, or you have exhausted the troubleshooting guide but still can't get the issue resolved, [get help from a human](/docs/user-guides/contact-us-for-support).

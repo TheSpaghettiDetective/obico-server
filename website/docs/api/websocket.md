@@ -2,7 +2,7 @@
 title: Websocket
 ---
 
-##  General message schema
+##  General message schema {#general-message-schema}
 
 ```json
 {
@@ -156,17 +156,17 @@ title: Websocket
 }
 ```
 
-## Sections of the websocket message
+## Sections of the websocket message {#sections-of-the-websocket-message}
 
-### `current_print_ts` **Required**
+### `current_print_ts` **Required** {#current_print_ts-required}
 
 Timestamp for when current print job starts. This value must maintain consistent for the entire print. Otherwise the server will identify the current print job as a new one.
 
-### `event` **Optional**
+### `event` **Optional** {#event-optional}
 
 - **`event_type`**: **Required**. Type of event occurring. One of these values: `PrintStarted|PrintResumed|PrintPaused|PrintDone|PrintFailed`.
 
-### `settings` **Optional**
+### `settings` **Optional** {#settings-optional}
 
 - **`webcams`**: **Optional** List of webcam settings
   - **`name`**: **Required** Name of the webcam
@@ -184,7 +184,7 @@ Timestamp for when current print job starts. This value must maintain consistent
   - **`name`**: **Required** Name of the agent
   - **`version`**: **Required** Version of the agent software
 
-### `status` **Required**
+### `status` **Required** {#status-required}
 
 - **`_ts`**: **Required** Timestamp of when the status is collected. This is used to de-dup the status message on the server side, and make sure the latest status message will always win, even if an out-of-date status message is sent to the server later because of transition delays.
 
@@ -283,7 +283,7 @@ Timestamp for when current print job starts. This value must maintain consistent
     - **`lastPrintTime`**: **Optional** Last recorded print time
 
 
-## Example when a printer is printing
+## Example when a printer is printing {#example-when-a-printer-is-printing}
 
 ```json
 {
@@ -400,9 +400,9 @@ Timestamp for when current print job starts. This value must maintain consistent
 }
 ```
 
-## Printing state transition
+## Printing state transition {#printing-state-transition}
 
-### Printer transitions from idle to printing
+### Printer transitions from idle to printing {#printer-transitions-from-idle-to-printing}
 
 ```json
 {
@@ -456,7 +456,7 @@ Timestamp for when current print job starts. This value must maintain consistent
 }
   ```
 
-### Printer transitions from printing to canceled
+### Printer transitions from printing to canceled {#printer-transitions-from-printing-to-canceled}
 
 ```json
 {

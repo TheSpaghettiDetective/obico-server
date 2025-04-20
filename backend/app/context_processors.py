@@ -12,10 +12,16 @@ def additional_context_export(request):
 
     platform = request.GET.get('platform', None)      # Allow get parameter to override for debugging purpose
     if not platform:
-        m = RE_TSD_APP_PLATFORM.match(request.headers.get('user-agent', ''))
+        m = RE_TSD_APP_PLATFORM.match(request.headers.get('X-TSD-Platform', '') or request.headers.get('user-agent', ''))
         platform = m.groupdict()['platform'] if m else ''
 
-    syndicate_name = syndicate_from_request(request).name
+    # TODO: JusPrin syndicate hack so that we can set branding without add a syndicate to the DB
+    user_agent = request.META.get('HTTP_USER_AGENT', 'Not provided')
+    if user_agent.startswith("JusPrin"):
+        syndicate_name = 'jusprin'
+    else:
+        syndicate_name = syndicate_from_request(request).name
+
     syndicate_settings = settings_for_syndicate(syndicate_name)
     syndicate_settings['name'] = syndicate_name
 

@@ -183,7 +183,6 @@ class PrintViewSet(
         queryset = Print.objects.all_with_deleted() if with_deleted else Print.objects
         queryset = queryset.filter(
             user=self.request.user,
-            uploaded_at__isnull=True,
             )
 
         filter = self.request.GET.get('filter', 'none')

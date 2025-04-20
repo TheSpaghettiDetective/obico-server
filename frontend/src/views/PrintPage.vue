@@ -81,7 +81,7 @@
                 :show-open-button="canOpenFile"
               />
               <!-- Printer -->
-              <div class="card-container printer">
+              <div v-if="print.printer" class="card-container printer">
                 <div class="icon">
                   <svg width="1em" height="1em" style="margin-bottom: 5px">
                     <use href="#svg-3d-printer" />
@@ -123,6 +123,10 @@
                   </button>
                 </div>
               </div>
+              <div v-else="print.printer" class="card-container printer">
+                <p>Unknown Printer</p>
+              </div>
+
             </div>
           </b-col>
           <b-col lg="7">
@@ -557,7 +561,7 @@ export default {
       try {
         const printResponse = await axios.get(urls.print(this.currentPrintId))
         this.print = normalizedPrint(printResponse.data)
-        
+
         this.prepareFirstLayerReport(printResponse.data.firstlayerinspection_set.length ? printResponse.data.firstlayerinspection_set[0] : {})
 
         if (this.print.prediction_json_url) {
@@ -594,6 +598,7 @@ export default {
           })
       } catch (error) {
         console.log(error)
+        this.isLoading = false
       }
     },
     prepareFirstLayerReport(firstLayerInspectionData) {

@@ -42,7 +42,7 @@ In Cura, there are two options for enabling thumbnails.
 2. Click *Add a script*. Click *Create Thumbnail*.
 3. Enter `32x32` for the value.
 4. Repeat steps two and three to create a thumbnail with size `400x300`.
-5. Save the chan
+5. Save the changes.
 
 **In Cura 4.7+, you can install Cura2Moonraker**
 

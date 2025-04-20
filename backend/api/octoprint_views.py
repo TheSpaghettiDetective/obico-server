@@ -21,10 +21,9 @@ import json
 import io
 import os
 import logging
+from python_ipware import IpWare
 from ipware import get_client_ip
 from binascii import hexlify
-from ipware.utils import (
-    cleanup_ip, is_valid_ip, is_public_ip)
 
 from .utils import report_validationerror
 from lib.printer_discovery import (
@@ -142,7 +141,7 @@ class OctoPrintPicView(APIView):
         if settings.DEBUG:
             LOGGER.info(f'Detections: {detections}')
 
-        update_prediction_with_detections(prediction, detections)
+        update_prediction_with_detections(prediction, detections, printer)
         prediction.save()
 
         if prediction.current_p > settings.THRESHOLD_LOW * 0.2:  # Select predictions high enough for focused feedback
@@ -289,8 +288,11 @@ class OctoPrinterDiscoveryView(APIView):
         messages = []
         device_info = request.data
 
-        device_info['host_or_ip'] = cleanup_ip(device_info['host_or_ip'])
-        if is_valid_ip(device_info['host_or_ip']) and not is_public_ip(device_info['host_or_ip']):
+        device_host_or_ip, _ = IpWare().get_client_ip({'REMOTE_ADDR': device_info['host_or_ip']}) # Tricky IPWare into returning an IP address without request.META
+
+        if device_host_or_ip and device_host_or_ip.is_private:
+            device_info['host_or_ip'] = str(device_host_or_ip)
+
             update_presence_for_device(
                 client_ip=client_ip,
                 device_id=device_info['device_id'],

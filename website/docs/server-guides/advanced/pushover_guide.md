@@ -6,7 +6,7 @@ title: Pushover Notifications Setup Guide
 This is a community-contributed guide. This guide is based on certain Obico community members' own setup and hence may not work for you.
 :::
 
-This tutorial walks you through the steps to configure Pushover notifications on your self-hosted Obico server.
+This tutorial walks you through the steps to configure Pushover notifications on your self-hosted Obico Server.
 
 ## 1. Create a Pushover app and obtain its API Token and your User Key {#1-create-a-pushover-app-and-obtain-its-api-token-and-your-user-key}
 

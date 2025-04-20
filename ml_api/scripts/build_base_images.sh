@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+## !!! NOTE: SET DOCKER ENGINE TO 8GB MEMORY !!! otherwise grpcio will fail to build !!!
+
 VERSION=
 PREFIX=thespaghettidetective
 INSECURE=

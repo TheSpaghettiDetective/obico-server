@@ -3,6 +3,7 @@ import time
 import json
 import functools
 from typing import Callable, Optional, Union, Tuple
+from urllib.parse import parse_qs
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
@@ -14,6 +15,7 @@ from django.utils.timezone import now
 import newrelic.agent
 from channels_presence.models import Room
 from channels_presence.models import Presence
+from oauth2_provider.models import AccessToken
 
 from lib import cache
 from lib import channels
@@ -334,6 +336,25 @@ class JanusWebConsumer(WebsocketConsumer):
             return Printer.objects.get(
                 auth_token=self.scope['url_route']['kwargs']['token'],
             )
+
+        # OAuth2 token in query string parameter 'oauth_token'
+        query_params = parse_qs(self.scope['query_string'].decode('utf-8'))
+        oauth_token_list = query_params.get('oauth_token')
+
+        if oauth_token_list:
+            token_str = oauth_token_list[0]
+            try:
+                access_token = AccessToken.objects.get(token=token_str, expires__gt=now())
+                # User is authenticated via OAuth token. Now get the printer for this user.
+                printer_id = self.scope['url_route']['kwargs']['printer_id']
+                return Printer.objects.get(user=access_token.user, id=printer_id)
+            except AccessToken.DoesNotExist:
+                # Invalid or expired OAuth token, proceed to next auth method
+                pass
+            except Printer.DoesNotExist:
+                # OAuth token was valid, but printer_id doesn't match or printer doesn't belong to user.
+                # This is an authorization failure for this specific printer.
+                raise
 
         # Mobileraker wants to use tunnel credential to connect janus websocket
         try:

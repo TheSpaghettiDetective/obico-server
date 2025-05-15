@@ -307,6 +307,11 @@ class OctoPrintConsumer(WebsocketConsumer):
             channels.send_message_to_web(self.printer.id, data)
         else:
             self.printer.refresh_from_db()
+            if self.printer.deleted:
+                # Printer deleted. Close the connection.
+                self.close()
+                return
+
             process_printer_status(self.printer, data)
 
     @newrelic.agent.background_task()

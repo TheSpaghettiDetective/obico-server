@@ -116,11 +116,5 @@ class JusPrinContactSupportRequestViewSet(viewsets.ViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-def embedded_chat_v03(request):
-    return render(request, 'jusprin/v0.3/embedded_chat.html')
-
-def embedded_chat_v04(request):
-    return render(request, 'jusprin/v0.4/embedded_chat.html')
-
 def embedded_chat_v10(request):
     return render(request, 'jusprin/v1.0/embedded_chat.html')

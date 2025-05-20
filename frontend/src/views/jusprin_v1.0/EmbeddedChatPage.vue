@@ -192,7 +192,7 @@ import { callAgentAction, getAgentActionResponse, setAgentActionRetVal } from '.
 import ContactSupportForm from './components/ContactSupportForm'
 
 export default {
-  name: 'EmbeddedChatV10Page',
+  name: 'EmbeddedChatPage',
   components: {
     VueMarkdown,
     QuickButtonComponent,

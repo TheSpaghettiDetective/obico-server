@@ -18,7 +18,6 @@ from enum import Enum
 import sentry_sdk
 from django.core.mail import EmailMessage
 
-from app.models import GCodeFile  # Make sure to import the GCodeFile model
 from api.authentication import CsrfExemptSessionAuthentication
 from .serializers import JusPrinChatSerializer
 from .models import JusPrinChat
@@ -55,13 +54,6 @@ class JusPrinChatViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
-        # Check if g_code_file_id is provided in the query parameters
-        g_code_file_id = request.query_params.get('g_code_file_id')
-
-        if g_code_file_id:
-            queryset = queryset.filter(g_code_file_id=g_code_file_id)
-
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 

@@ -10,7 +10,6 @@ class JusPrinChat(models.Model):
     filament_name = models.TextField(null=True, blank=True)
     print_process_name = models.TextField(null=True, blank=True)
     slicing_settings_json = models.TextField(null=True, blank=True)
-    g_code_file = models.ForeignKey(GCodeFile, on_delete=models.SET_NULL, null=True, blank=True)
     user_feedback = models.CharField(max_length=16, null=True, blank=True)
     user_feedback_text = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

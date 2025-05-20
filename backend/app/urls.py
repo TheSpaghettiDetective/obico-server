@@ -65,6 +65,8 @@ urlpatterns = [
     path('mobile/auth/apple/', mobile_views.apple_login),
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
+
+    path('jusprin/', include('app.jusprin.urls')),
 ]
 
 if settings.DEBUG:

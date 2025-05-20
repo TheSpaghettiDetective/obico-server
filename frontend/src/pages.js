@@ -23,6 +23,7 @@ import UserPreferencesPage from '@src/views/UserPreferencesPage.vue'
 import PrinterEventsPage from '@src/views/PrinterEventsPage.vue'
 import PrinterTerminalPage from '@src/views/PrinterTerminalPage.vue'
 import FirstLayerInspectionImagePage from '@src/views/FirstLayerInspectionImagePage.vue'
+import EmbeddedChatV10Page from '@src/views/jusprin_v1.0/EmbeddedChatPage.vue'
 
 
   const routes = [
@@ -66,6 +67,10 @@ import FirstLayerInspectionImagePage from '@src/views/FirstLayerInspectionImageP
       path: route,
       component: UserPreferencesPage,
     })),
+    {
+      path: '/jusprin/embedded_chat/',
+      component: EmbeddedChatV10Page,
+    },
   ]
 
 const components = {
@@ -88,6 +93,7 @@ const components = {
   PrinterEventsPage,
   PrinterTerminalPage,
   FirstLayerInspectionImagePage,
+  EmbeddedChatV10Page,
 }
 
 export { routes, components }

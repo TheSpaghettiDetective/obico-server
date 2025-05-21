@@ -50,4 +50,10 @@ export default {
   gcodeFileBulkDelete: () => '/api/v1/g_code_files/bulk_delete/',
   gcodeFolderBulkMove: () => '/api/v1/g_code_folders/bulk_move/',
   gcodeFileBulkMove: () => '/api/v1/g_code_files/bulk_move/',
+
+  // JusPrin
+  jusprinChats: (chatId) => (chatId ? `/jusprin/api/chats/${chatId}/` : `/jusprin/api/chats/`),
+  jusprinChatMessages: (chat_id) => `/jusprin/api/chats/messages/`,
+  jusprinPlateAnalysisProcess: () => '/jusprin/api/plate_analysis/',
+  jusprinContactSupport: () => '/jusprin/api/contact_support/',
 }

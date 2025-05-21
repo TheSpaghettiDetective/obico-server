@@ -501,4 +501,10 @@ SYNDICATES = {
     'from_email': DEFAULT_FROM_EMAIL,
     'docRoot': 'https://www.obico.io/docs/',
   },
+  'jusprin': {
+    'display_name': 'JusPrin',
+    'from_email': 'JusPrin Support <support@obico.io>',
+    'docRoot': 'https://www.obico.io/docs/',
+    'logo_full': '/static/jusprin/img/jusprin-svg-logo-full.png',
+  },
 }

@@ -126,6 +126,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'notifications/plugins/email/templates/'),
+            os.path.join(BASE_DIR, 'app/jusprin/templates/'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {

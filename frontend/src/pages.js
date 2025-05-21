@@ -67,10 +67,6 @@ import EmbeddedChatV10Page from '@src/views/jusprin_v1.0/EmbeddedChatPage.vue'
       path: route,
       component: UserPreferencesPage,
     })),
-    {
-      path: '/jusprin/embedded_chat/',
-      component: EmbeddedChatV10Page,
-    },
   ]
 
 const components = {

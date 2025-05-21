@@ -318,6 +318,7 @@ OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365 * 100,  # 100 years
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
     'PKCE_REQUIRED': False,
+    'ALLOWED_REDIRECT_URI_SCHEMES': ['http', 'https'],  # http to allow self-hosted servers
 }
 
 # Layout

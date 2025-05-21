@@ -964,8 +964,7 @@ export default {
       const supportMsgIndex = this.messages.findIndex(
         (message) =>
           message.role === 'assistant' &&
-          message.agent_action &&
-          message.agent_action.name === 'contact_support'
+          message.agent_actions?.some(action => action.name === 'contact_support')
       )
 
       // Remove the message if found

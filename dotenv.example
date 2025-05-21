@@ -68,3 +68,5 @@
 # https://api.slack.com/legacy/oauth
 
 # SLACK_CLIENT_SECRET=
+
+# OPENAI_API_KEY=

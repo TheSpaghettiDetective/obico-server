@@ -41,6 +41,7 @@ x-web-defaults: &web-defaults
     DJANGO_SECRET_KEY: '${DJANGO_SECRET_KEY-}'
     SYNDICATE: '${SYNDICATE-}'
     VERSION:
+    OPENAI_API_KEY: '${OPENAI_API_KEY-}'
 
 services:
   ml_api:

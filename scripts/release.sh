@@ -7,7 +7,7 @@ fi
 
 git checkout pre-release && git merge master
 
-cd frontend && yarn && yarn build && cd ..
+cd frontend && nvm use && yarn && yarn build && cd ..
 
 git add frontend/builds && git commit -m "Check in built bundles"
 

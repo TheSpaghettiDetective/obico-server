@@ -1,7 +1,6 @@
 from django.db import models
 
 from app.models import User
-from app_ent.models import GCodeFile
 
 class JusPrinChat(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)

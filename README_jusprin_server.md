@@ -4,7 +4,7 @@
 
 This guide provides instructions for setting up a self-hosted server for the [JusPrin client](https://github.com/TheSpaghettiDetective/JusPrin).
 
-**JusPrin is fully open source**—not only to empower makers and developers, but also to serve as a real-world learning resource for those interested in **how Generative AI can power practical applications**. Whether you’re self-hosting for production use or diving into the architecture for educational purposes, this guide will help you get started.
+**JusPrin is fully open source**—not only to empower makers and developers, but also to serve as a real-world learning resource for those interested in **how Generative AI can power practical applications**.
 
 ---
 
@@ -20,14 +20,14 @@ This guide provides instructions for setting up a self-hosted server for the [Ju
 
 Once your Obico server is up and running, follow these steps to register an OAuth application for JusPrin:
 
-1. Log in to your Obico server's admin interface, `http://http://your_server_ip:3334/admin/`.
+1. Log in to your Obico server's admin interface, e.g., `http://your_server_ip:3334/admin/`.
 2. Go to the **OAuth Applications** section (typically found under: Home › OAuth2_Provider › Applications).
 3. Click **“Add application”** to create a new entry.
 4. Fill in the fields as follows:
 
    - **Client id**: `JusPrin`
    - **User**: Select your admin user (e.g., `1 - root@example.com`)
-   - **Redirect URIs**: Add your authorized redirect URI (e.g., `https://app.stg.obico.io/orca_slicer/authorized/`)
+   - **Redirect URIs**: Add your authorized redirect URI, e.g., `http://your_server_ip:3334/orca_slicer/authorized/`.
      - You may include multiple URIs separated by spaces.
      - Replace this with your domain in production.
    - **Client type**: `Public`
@@ -45,7 +45,7 @@ Once your Obico server is up and running, follow these steps to register an OAut
 
 After setting up the OAuth app, open JusPrin client's settings dialog, and update JusPrin server configuration to:
 
-- Your server’s base URL: `http://http://your_server_ip:3334/`
+- Your server’s base URL, e.g., `http://your_server_ip:3334/`
 
 ---
 

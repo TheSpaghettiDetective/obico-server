@@ -6,6 +6,8 @@ This repo is everything you need to run a self-hosted Obico Server.
 
 The AI failure detection in this project is based on a Deep Learning model. [See how the model works on real data](https://app.obico.io/ent_pub/publictimelapses/).
 
+> **Note:** If you are looking for information about setting up self-hosted server for [JusPrin](https://github.com/TheSpaghettiDetective/JusPrin), please see [README_jusprin_server.md](README_jusprin_server.md) for specific instructions.
+
 # Install and run the server
 
 *Note: For more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/).*

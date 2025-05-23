@@ -10,7 +10,7 @@ The AI failure detection in this project is based on a Deep Learning model. [See
 
 # Install and run the server
 
-*Note: For more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/).*
+> **Note:** For more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/).*
 
 ## Prerequisites
 
@@ -73,7 +73,7 @@ It is also recommended that a static IP is set to avoid issues with changing IP'
 
 1. Open Django admin page at `http://your_server_ip:3334/admin/`.
 
-*Note: If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up.*
+> **Note:** If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up.*
 
 2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but are highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
 
@@ -85,7 +85,7 @@ It is also recommended that a static IP is set to avoid issues with changing IP'
 
 ![Site configuration](website/static/img/server-guides/site_config.png)
 
-*Note: If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](https://www.obico.io/docs/server-guides/advanced/reverse-proxy/) for details.*
+> **Note:** If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](https://www.obico.io/docs/server-guides/advanced/reverse-proxy/) for details.*
 
 That's it! You now have a fully-functional Obico Server that your OctoPrint can talk to. We hope setting up the server has not been overwhelming.
 

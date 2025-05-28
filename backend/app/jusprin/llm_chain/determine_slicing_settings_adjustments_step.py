@@ -64,7 +64,6 @@ class FilamentParamOverride(BaseModel):
     temperature_vitrification: Optional[List[int]] = Field(default=None, min_length=1, max_length=1)
     nozzle_temperature_range_low: Optional[List[int]] = Field(default=None, min_length=1, max_length=1)
     nozzle_temperature_range_high: Optional[List[int]] = Field(default=None, min_length=1, max_length=1)
-    compatible_printers: Optional[List[str]] = Field(default=None, min_length=1, max_length=1)
     additional_cooling_fan_speed: Optional[List[int]] = Field(default=None, min_length=1, max_length=1)
     required_nozzle_HRC: Optional[List[int]] = Field(default=None, min_length=1, max_length=1)
     filament_is_support: Optional[List[bool]] = Field(default=None, min_length=1, max_length=1)
@@ -122,7 +121,6 @@ class PrintProcessParamOverride(BaseModel):
     bridge_flow: Optional[float] = None
     bridge_speed: Optional[float] = None
     brim_width: Optional[float] = None
-    compatible_printers: Optional[List[str]] = None
     print_sequence: Optional[Literal['by layer', 'by object']] = None
     default_acceleration: Optional[float] = None
     bridge_no_support: Optional[bool] = None
@@ -186,7 +184,6 @@ class PrintProcessParamOverride(BaseModel):
     bottom_shell_layers: Optional[int] = None
     bottom_shell_thickness: Optional[float] = None
     brim_object_gap: Optional[float] = None
-    compatible_printers_condition: Optional[str] = None
     top_surface_acceleration: Optional[float] = None
     draft_shield: Optional[Literal['disabled', 'enabled']] = None
     enable_arc_fitting: Optional[bool] = None

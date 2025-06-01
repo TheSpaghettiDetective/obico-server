@@ -32,17 +32,10 @@ def process_printer_status(printer: Printer, msg: Dict) -> None:
 
     if not printer_status:
         cache.printer_status_delete(printer.id)
-    elif (printer_status or {}).get('_ts'):   # data format for plugin 1.6.0 and higher
+    elif (printer_status or {}).get('_ts'):
         cache.printer_status_set(printer.id, json.dumps((printer_status or {})), ex=STATUS_TTL_SECONDS)
-    else: # TODO: retire this part after 7/1/2023
-        octoprint_data: Dict = dict()
-        set_as_str_if_present(octoprint_data, (printer_status or {}), 'state')
-        set_as_str_if_present(octoprint_data, (printer_status or {}), 'progress')
-        set_as_str_if_present(octoprint_data, (printer_status or {}), 'file_metadata')
-        set_as_str_if_present(octoprint_data, (printer_status or {}), 'currentZ')
-        set_as_str_if_present(octoprint_data, (printer_status or {}), 'job')
-        set_as_str_if_present(octoprint_data, (printer_status or {}), 'temperatures')
-        cache.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
+    else:
+        LOGGER.warn(f'printer_status present but no _ts. Received status: {msg}')
 
     update_current_print_if_needed(msg, printer)
 
@@ -91,7 +84,8 @@ def settings_dict(printer_settings):
 
 def update_current_print_if_needed(msg, printer):
     if not msg.get('current_print_ts'):  # Absence of current_print_ts means OctoPrint/Moonraker has lost the connection to the printer, and hence printing status unknown.
-        LOGGER.warn(f'current_print_ts not present. Received status: {msg}')
+        if msg:
+            LOGGER.warn(f'Status received but current_print_ts is missing. Received status: {msg}')
         return
 
     # Backward compatibility: octoprint_event is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier

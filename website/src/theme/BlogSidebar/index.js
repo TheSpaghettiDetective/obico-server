@@ -17,14 +17,14 @@ export default function BlogSidebar({sidebar, tags}) {
   return (
     <>
       <div className={styles.nozzleNinzaBlock}>
-        <h1>NOZZLE NINJA</h1>
-        <h3>First Layer AI Error Detection for OctoPrint & Klipper <span className={styles.obicoAccent}>Now Available!</span></h3>
+        <h2>JusPrin 1.0</h2>
+        <h3>The First GenAI 3D Printing Experience <span className={styles.obicoAccent}>Now Available!</span></h3>
         <div className={styles.nozzleNizaBadgeImage}>
-          <img src='/img/OBICO_NOZZLE_NINJA_COMPATIBLE_BADGE.png' alt='OBICO_NOZZLE_NINJA_COMPATIBLE_BADGE'/>
+          <img src='/img/JUSPRIN_BANNER.png' alt='JusPrin Logo'/>
         </div>
         <div>
-          <a href='https://www.mintion.net/products/mintion-nozzle-camera?variant=48352784089398'>
-            <button className={styles.learnMoreButton}>Learn More</button>
+          <a href='https://github.com/TheSpaghettiDetective/JusPrin/releases/latest'>
+            <button className={styles.learnMoreButton}>Try JusPrin Now</button>
           </a>
         </div>
       </div>
@@ -40,19 +40,17 @@ export default function BlogSidebar({sidebar, tags}) {
             Tags
           </div>
           <ul className={styles.sidebarItemList}>
-            {tags.map((item) => {
-              return (
-                <li key={item.permalink} className={styles.sidebarItem}>
-                  <Link
-                    isNavLink
-                    to={item.permalink}
-                    className={styles.sidebarItemLink}
-                    activeClassName={styles.sidebarItemLinkActive}>
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
+            {tags.map((item, index) => (
+              <li key={`tag-${item.permalink}-${index}`} className={styles.sidebarItem}>
+                <Link
+                  isNavLink
+                  to={item.permalink}
+                  className={styles.sidebarItemLink}
+                  activeClassName={styles.sidebarItemLinkActive}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       )}
@@ -68,19 +66,17 @@ export default function BlogSidebar({sidebar, tags}) {
           {sidebar.title}
         </div>
         <ul className={styles.sidebarItemList}>
-          {sidebar.items.map((item) => {
-            return (
-              <li key={item.permalink} className={styles.sidebarItem}>
-                <Link
-                  isNavLink
-                  to={item.permalink}
-                  className={styles.sidebarItemLink}
-                  activeClassName={styles.sidebarItemLinkActive}>
-                  {item.title}
-                </Link>
-              </li>
-            );
-          })}
+          {sidebar.items.map((item, index) => (
+            <li key={`sidebar-${item.permalink}-${index}`} className={styles.sidebarItem}>
+              <Link
+                isNavLink
+                to={item.permalink}
+                className={styles.sidebarItemLink}
+                activeClassName={styles.sidebarItemLinkActive}>
+                {item.title}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
     </>

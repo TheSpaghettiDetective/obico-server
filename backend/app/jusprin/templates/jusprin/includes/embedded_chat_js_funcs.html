@@ -1,0 +1,51 @@
+<script>
+  var CHAT_COMPONENT_NAME = 'EmbeddedChatPage'
+
+  window.findVueComponentByName = function (root, name) {
+    if (root.$options.name === name) {
+      return root
+    }
+    for (let child of root.$children) {
+      const found = window.findVueComponentByName(child, name)
+      if (found) {
+        return found
+      }
+    }
+    return null
+  }
+
+  window.updateJusPrinEmbeddedChatState = function (dataPropertyName, newValue) {
+    if (window.app) {
+      const componentInstance = window.findVueComponentByName(window.app, CHAT_COMPONENT_NAME)
+      if (componentInstance) {
+        componentInstance[dataPropertyName] = newValue
+      } else {
+        console.error(`Component ${CHAT_COMPONENT_NAME} not found.`)
+      }
+    } else {
+      console.error('Vue app instance not found.')
+    }
+  }
+
+  window.callJusPrinEmbeddedChatMethod = function (methodName, ...parameters) {
+    if (window.app) {
+      const componentInstance = window.findVueComponentByName(window.app, CHAT_COMPONENT_NAME)
+      if (componentInstance) {
+        if (typeof componentInstance[methodName] === 'function') {
+          componentInstance[methodName](...parameters)
+        } else {
+          console.error(`Method ${methodName} not found on component ${CHAT_COMPONENT_NAME}`)
+        }
+      } else {
+        console.error(`Component ${CHAT_COMPONENT_NAME} not found.`)
+      }
+    } else {
+      console.error('Vue app instance not found.')
+    }
+  }
+
+  window.setJusPrinEmbeddedChatOauthAccessToken = function (token) {
+    window.updateJusPrinEmbeddedChatState('oauthAccessToken', token)
+  }
+
+</script>

@@ -3,7 +3,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: 'Obico Knowledge Base', // Title for your website.
+  title: 'Obico', // Title for your website.
   tagline: 'Open-Source, Community-Built Smart 3D Printing Platform',
   url: 'https://www.obico.io', // Your website URL
   baseUrl: '/', // Base URL for your project */
@@ -374,6 +374,7 @@ module.exports = {
           template: '#zoom-template',
         },
       },
+      metadata: [{name: 'og:title', content: 'Obico'}],
     },
   },
   presets: [
@@ -382,12 +383,12 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
           editUrl:
           'https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/edit/master/website/',
         },
         blog: {
           showReadingTime: true,
+          onInlineAuthors: 'ignore'
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

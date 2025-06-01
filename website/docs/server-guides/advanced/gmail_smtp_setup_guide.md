@@ -44,7 +44,7 @@ EMAIL_USE_TLS=True
 ```
 
 :::tip
-If you can't find the `.env` file, check out [this guide](../configure.md/#email-smtp).
+If you can't find the `.env` file, check out [this guide](../../configure/#email-smtp).
 :::
 
 ## 4. Restart the server. {#4-restart-the-server}
@@ -53,4 +53,4 @@ If you can't find the `.env` file, check out [this guide](../configure.md/#email
 
 ## 5. Send a test email {#5-send-a-test-email}
 
-Follow [this guide](email_guide.md/#test-if-your-email-server-configuration-works) to send a test email.
+Follow [this guide](../../configure/#email-smtp) to configure email settings and [this guide](../email_guide/#test-if-your-email-server-configuration-works) to send a test email.

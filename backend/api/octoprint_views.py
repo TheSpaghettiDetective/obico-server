@@ -78,6 +78,12 @@ class OctoPrintPicView(APIView):
         printer = request.auth
         user = request.user
 
+        try:
+            printer.refresh_from_db()  # Connection is keep-alive, which means printer object can be stale.
+        except Printer.DoesNotExist:
+            # refresh_from_db() may throw DoesNotExist if the printer has been deleted. https://sentry.obico.io/organizations/sentry/issues/19101/?project=8&project=9&project=4&project=2&query=is%3Aunresolved&referrer=issue-stream&sort=new&statsPeriod=90d
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         is_primary_camera = request.POST.get('is_primary_camera', 'true').lower() == 'true' # if not specified, it's from a legacy agent and hence is primary camera
         is_nozzle_camera = request.POST.get('is_nozzle_camera', 'false').lower() == 'true'
         camera_name = request.POST.get('camera_name', '') # If camera_name is not provided, it's from a legacy agent.
@@ -88,8 +94,6 @@ class OctoPrintPicView(APIView):
 
         if settings.PIC_POST_LIMIT_PER_MINUTE and cache.pic_post_over_limit(printer.id, settings.PIC_POST_LIMIT_PER_MINUTE):
             return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
-
-        printer.refresh_from_db()  # Connection is keep-alive, which means printer object can be stale.
 
         if not request.FILES.get('pic'):
             return Response(status=status.HTTP_400_BAD_REQUEST)

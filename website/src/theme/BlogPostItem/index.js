@@ -11,7 +11,7 @@ import Translate, {translate} from '@docusaurus/Translate';
 import Link from '@docusaurus/Link';
 import {usePluralForm} from '@docusaurus/theme-common';
 import MDXComponents from '@theme/MDXComponents';
-import Seo from '@theme/Seo';
+import Head from '@docusaurus/Head';
 import EditThisPage from '@theme/EditThisPage';
 import styles from './styles.module.css'; // Very simple pluralization: probably good enough for now
 
@@ -40,11 +40,15 @@ function BlogPostItem(props) {
   const readingTimePlural = useReadingTimePlural();
   const {
     children,
-    frontMatter,
-    metadata,
-    truncated,
+    frontMatter = {},
+    metadata = {},
     isBlogPostPage = false,
   } = props;
+
+  if (!metadata) {
+    return null;
+  }
+
   const {
     date,
     formattedDate,
@@ -53,12 +57,17 @@ function BlogPostItem(props) {
     readingTime,
     title,
     editUrl,
+    hasTruncateMarker,
   } = metadata;
-  const {author, image, keywords} = frontMatter;
-  const authorURL = frontMatter.author_url || frontMatter.authorURL;
-  const authorTitle = frontMatter.author_title || frontMatter.authorTitle;
-  const authorImageURL =
-    frontMatter.author_image_url || frontMatter.authorImageURL;
+
+  const {
+    author,
+    image,
+    keywords,
+    author_url: authorURL = frontMatter.authorURL,
+    author_image_url: authorImageURL = frontMatter.authorImageURL,
+    author_title: authorTitle = frontMatter.authorTitle,
+  } = frontMatter;
 
   const renderPostHeader = () => {
     const TitleHeading = isBlogPostPage ? 'h1' : 'h2';
@@ -100,19 +109,17 @@ function BlogPostItem(props) {
 
   return (
     <>
-      <Seo
-        {...{
-          keywords,
-          image,
-        }}
-      />
+      <Head>
+        {keywords && <meta name="keywords" content={keywords.join(',')} />}
+        {image && <meta property="og:image" content={image} />}
+      </Head>
 
       <article className={!isBlogPostPage ? 'margin-bottom--xl' : undefined}>
         {renderPostHeader()}
         <div className="markdown">
           <MDXProvider components={MDXComponents}>{children}</MDXProvider>
         </div>
-        {(truncated) && (
+        {hasTruncateMarker && (
           <footer
             className={clsx('row docusaurus-mt-lg', {
               [styles.blogPostDetailsFull]: isBlogPostPage,
@@ -143,7 +150,7 @@ function BlogPostItem(props) {
               </div>
             )}
 
-            {!isBlogPostPage && truncated && (
+            {!isBlogPostPage && hasTruncateMarker && (
               <div className="col text--right">
                 <Link
                   to={metadata.permalink}
@@ -152,7 +159,7 @@ function BlogPostItem(props) {
                     <Translate
                       id="theme.blog.post.readMore"
                       description="The label used in blog post item excerpts to link to full blog posts">
-                      Read More
+                      Read More &nbsp; &gt;&gt;&gt;
                     </Translate>
                   </b>
                 </Link>

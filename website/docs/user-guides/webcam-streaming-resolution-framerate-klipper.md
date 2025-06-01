@@ -6,7 +6,7 @@ title: Webcam streaming resolution and frame rate (Klipper)
 Raising resolution above 640x480 may cause potential issues:
 
 - Excessive amount of CPU usage and [potentially print quality issues](webcam-streaming-excessive-cpu.md).
-- The webcam stream [may be buffering](webcam-feed-is-laggy.md/#buffering) a lot when the resolution is set too high. Raspberry Pi has a weak CPU so it can't handle the load of encoding high-resolution streams.
+- The webcam stream [may be buffering](../webcam-feed-is-laggy/#buffering) a lot when the resolution is set too high. Raspberry Pi has a weak CPU so it can't handle the load of encoding high-resolution streams.
 
 Most Raspberry Pi 4 users have reported they can set the resolution to 800x600 without any noticeable print quality or webcam streaming issues. Use caution when you go above 800x600.
 :::

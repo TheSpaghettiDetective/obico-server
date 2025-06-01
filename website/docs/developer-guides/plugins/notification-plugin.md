@@ -19,19 +19,19 @@ A notification plugin consists of 3 parts. 2 are required and 1 optional.
 - **[The frontend for the plugin preference page](#the-plugin-frontend) (required).** The frontend is written in Vue.js. It will become a section on the user preference page. The frontend is responsible for taking user's input. For instance, a Telegram plugin will need the user to authorize it to send notifications to the user's telegram account. Hence a Telegram plugin's frontend will need to show a "Link Telegram" button to the user.
 - **[The environment variables](#the-environment-variables) (optional).** Some notification plugins will need some server-side configuration. For instance, a Pushover plugin will need an *Pushover App Token* in order to send a notification through the Pushover server. These configurations are done via *the environment variables*. Some notification plugins, such as the Discord plugin, don't need any server-side configurations. Hence this part is optional.
 
-A notification plugin should also have a unique ID so that the Obico Server can tell it apart from other plugins. In this document, this ID will be represented as `{plugin_id}`.
+A notification plugin should also have a unique ID so that the Obico Server can tell it apart from other plugins. In this document, this ID will be represented as `\{plugin_id\}`.
 
 ## The plugin backend {#the-plugin-backend}
 
 ### Directory structure {#directory-structure}
 
-All plugin backend files should be located in the folder `backend/notifications/plugins/{plugin_id}`.
+All plugin backend files should be located in the folder `backend/notifications/plugins/\{plugin_id\}`.
 
-#### `backend/notifications/plugins/{plugin_id}/__init__.py` {#backendnotificationspluginsplugin_id__init__py}
+#### `backend/notifications/plugins/\{plugin_id\}/__init__.py` {#backendnotificationspluginsplugin_id__init__py}
 
 Required. This is the entry point for the plugin backend.
 
-#### Other python files in `backend/notifications/plugins/{plugin_id}/` {#other-python-files-in-backendnotificationspluginsplugin_id}
+#### Other python files in `backend/notifications/plugins/\{plugin_id\}/` {#other-python-files-in-backendnotificationspluginsplugin_id}
 
 Optional. If present, they must be imported in the `__init__.py`. Otherwise they won't be loaded successfully.
 
@@ -41,10 +41,12 @@ The base class from which the plugin backend needs to extend from.
 
 Example:
 
-    from notifications.plugin import BaseNotificationPlugin
+```python
+from notifications.plugin import BaseNotificationPlugin
 
-    class PushOverNotificationPlugin(BaseNotificationPlugin):
+class PushOverNotificationPlugin(BaseNotificationPlugin):
     ...
+```
 
 `BaseNotificationPlugin` defines the following methods that can be overridden by the plugin class. Most of them have a reasonable default and hence they are not optional in the plugin class.
 
@@ -96,18 +98,20 @@ This method is optional if your plugin doesn't require any environment variables
 
 Example:
 
+```python
     def env_vars(self) -> Dict:
-        return {
-            'SLACK_CLIENT_ID': {
+        return \{
+            'SLACK_CLIENT_ID': \{
                 'is_required': True,
                 'is_set': 'SLACK_CLIENT_ID' in os.environ,
                 'value': os.environ.get('SLACK_CLIENT_ID'),
-            },
-            'SLACK_CLIENT_SECRET': {
+            \},
+            'SLACK_CLIENT_SECRET': \{
                 'is_required': True,
                 'is_set': 'SLACK_CLIENT_SECRET' in os.environ,
-            },
-        }
+            \},
+        \}
+```
 
 
 :::danger
@@ -378,9 +382,11 @@ The `{plugin_id}` should match the value used in the [plugin backend](#the-plugi
 
 #### Add a section to `frontend/src/notifications/plugins.js` {#add-a-section-to-frontendsrcnotificationspluginsjs}
 
-    {plugin_id}: {
+```javascript
+    \{plugin_id\}: \{
         displayName: 'Plugin name',
-    },
+    \},
+```
 
 :::caution
 The `{plugin_id}` should match the value used in the [plugin backend](#the-plugin-backend). Otherwise the plugin's preference page can't be displayed correctly.

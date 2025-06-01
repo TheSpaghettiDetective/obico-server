@@ -1,0 +1,34 @@
+{% extends "vue_layout.html" %}
+{% load static %}
+
+{% block header_ext %}
+{{ block.super }}
+{% include "jusprin/includes/embedded_chat_js_funcs.html" %}
+<!-- Add Microsoft Clarity tracking code -->
+<script type="text/javascript">
+  if (window.location.hostname === 'app.obico.io') {
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "ou1vci1pk7");
+  }
+</script>
+{% endblock %}
+
+{% block vue_content %}
+  <embedded-chat-v1-0-page></embedded-chat-v1-0-page>
+{% endblock vue_content %}
+
+{% block body_bottom_ext %}
+{{ block.super }}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.wx && window.wx.postMessage) {
+      window.wx.postMessage({ action: 'refresh_oauth_token' });
+      window.wx.postMessage({ action: 'refresh_presets' });
+      window.wx.postMessage({ action: 'refresh_plater_config' });
+    }
+  });
+</script>
+{% endblock body_bottom_ext %}

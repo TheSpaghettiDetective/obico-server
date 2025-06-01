@@ -159,12 +159,14 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         ctx['layout_template_path'] = layout_template_path
         ctx['user'] = user
+        # Strip any trailing slashes from mailing_list to prevent URL parsing issues
+        clean_mailing_list = mailing_list.rstrip('/')
         unsub_url = syndicate.build_full_url_for_syndicate(
-            f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}', user.syndicate_name)
+            f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={clean_mailing_list}', user.syndicate_name)
         ctx['unsub_url'] = unsub_url
 
         headers = {
-            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{mailing_list}>'
+            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{clean_mailing_list}>'
         }
 
         if img_url:

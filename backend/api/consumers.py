@@ -8,7 +8,7 @@ from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
 from asgiref.sync import async_to_sync
 import logging
-from sentry_sdk import capture_exception, capture_message
+from sentry_sdk import capture_exception, capture_message, isolation_scope
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 import newrelic.agent
@@ -55,7 +55,22 @@ def report_error(
                 traceback.print_exc()
                 LOGGER.exception(msg or f'{exc.__class__.__name__} in {fn.__module__}.{fn.__qualname__}')
                 if sentry:
-                    capture_exception()
+                    # Get user info if available
+                    user_info = None
+                    if hasattr(self, 'scope') and 'user' in self.scope and self.scope['user'].is_authenticated:
+                        user_info = {'id': self.scope['user'].id}
+                    elif hasattr(self, 'user') and self.user and self.user.is_authenticated:
+                        user_info = {'id': self.user.id}
+                    elif hasattr(self, 'get_printer') and self.get_printer():
+                        user_info = {'id': self.get_printer().user.id}
+
+                    if user_info:
+                        with isolation_scope() as scope:
+                            scope.set_user(user_info)
+                            capture_exception()
+                    else:
+                        capture_exception()
+
                 if close:
                     self.close()
                 return
@@ -292,6 +307,11 @@ class OctoPrintConsumer(WebsocketConsumer):
             channels.send_message_to_web(self.printer.id, data)
         else:
             self.printer.refresh_from_db()
+            if self.printer.deleted:
+                # Printer deleted. Close the connection.
+                self.close()
+                return
+
             process_printer_status(self.printer, data)
 
     @newrelic.agent.background_task()

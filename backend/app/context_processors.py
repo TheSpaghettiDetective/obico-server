@@ -25,13 +25,13 @@ def additional_context_export(request):
     syndicate_settings = settings_for_syndicate(syndicate_name)
     syndicate_settings['name'] = syndicate_name
 
-    language = translation.get_language_from_request(request).split('-')[0] # ISO 639-1 standard is language_code-country_code
+    accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', 'en-US')
 
     return {
         'page_context': {
             'app_platform': platform,
             'syndicate': syndicate_settings,
-            'language': language,
+            'language': accept_language,
         }
     }
 

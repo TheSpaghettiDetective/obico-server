@@ -1,9 +1,11 @@
 import i18n from 'i18next';
 
 import baseEn from './locales/en.json';
-import baseZh from './locales/zh.json';
+import baseZhCN from './locales/zh-CN.json';
+import baseZhTW from './locales/zh-TW.json';
 import entBaseEn from './locales/ent_en.json';
-import entBaseZh from './locales/ent_zh.json';
+import entBaseZhCN from './locales/ent_zh-CN.json';
+import entBaseZhTW from './locales/ent_zh-TW.json';
 
 import {language} from '@src/lib/page-context'
 
@@ -22,13 +24,18 @@ const resources = {
       ...entBaseEn
     }
   },
-  'zh': {
+  'zh-CN': {
     translation: {
-      ...baseZh,
-      ...entBaseZh
+      ...baseZhCN,
+      ...entBaseZhCN
     }
   },
-
+  'zh-TW': {
+    translation: {
+      ...baseZhTW,
+      ...entBaseZhTW
+    }
+  },
 };
 
 i18n

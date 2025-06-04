@@ -412,4 +412,8 @@ module.exports = {
     ],
     'plugin-image-zoom',
   ],
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'de-DE'],
+  },
 };

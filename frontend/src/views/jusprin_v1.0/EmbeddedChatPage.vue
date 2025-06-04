@@ -83,7 +83,7 @@
         <div v-if="thinking" class="message assistant">
           <div class="message-block align-items-center">
             <div class="message-content thinking-animation">
-              <VueMarkdown>{{ $t("_Thinking..._") }}</VueMarkdown>
+              <VueMarkdown>_{{ $t("Thinking...") }}_</VueMarkdown>
             </div>
           </div>
         </div>

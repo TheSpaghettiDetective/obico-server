@@ -8,13 +8,13 @@
           class="custom-control-input"
           type="checkbox"
         />
-        <label class="custom-control-label" for="dont-show-checkbox"> Pop up on errors </label>
+        <label class="custom-control-label" for="dont-show-checkbox"> {{ $t("Pop up on errors") }} </label>
       </div>
     </div>
     <div class="header-actions">
       <button
         class="header-button"
-        title="Contact Support"
+        :title="$t('Contact Support')"
         @click="$emit('show-contact-support-form')"
       >
         <i class="mdi mdi-message-question-outline large-icon"></i>
@@ -24,7 +24,7 @@
       <button
         v-if="curChatPanelViewMode !== 'large'"
         class="header-button"
-        title="Large Chat Window"
+        :title="$t('Large Chat Window')"
         @click="changeChatPanelViewMode('large', true)"
       >
         <i class="mdi mdi-arrow-expand large-icon"></i>
@@ -33,13 +33,13 @@
       <button
         v-if="curChatPanelViewMode !== 'small'"
         class="header-button"
-        title="Small Chat Window"
+        :title="$t('Small Chat Window')"
         @click="changeChatPanelViewMode('small', true)"
       >
         <i class="mdi mdi-arrow-collapse large-icon"></i>
       </button>
 
-      <button class="header-button" title="Close" @click="changeChatPanelVisibility(false)">
+      <button class="header-button" :title="$t('Close')" @click="changeChatPanelVisibility(false)">
         <i class="mdi mdi-close large-icon"></i>
       </button>
     </div>

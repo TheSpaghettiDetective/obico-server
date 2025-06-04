@@ -22,7 +22,7 @@
                   message.per_override_explanations && message.per_override_explanations.length > 0
                 "
               >
-                <div class="pt-2 pb-1">Detailed explanations:</div>
+                <div class="pt-2 pb-1">{{ $t("Detailed explanations:") }}</div>
                 <div v-for="(explanation, index) in message.per_override_explanations" :key="index">
                   <div>
                     <b>{{ explanation.parameter }}:</b> {{ explanation.explanation }}
@@ -37,13 +37,13 @@
           >
             <div class="message-content">
               <gradient-fadable-container>
-                <div class="pt-2 pb-1">I have applied the following settings:</div>
+                <div class="pt-2 pb-1">{{ $t("I have applied the following settings:") }}</div>
                 <div v-if="message.slicing_profiles.use_print_process_preset">
-                  - Process preset: <b>{{ message.slicing_profiles.use_print_process_preset }}</b>
+                  {{ $t("- Process preset:") }} <b>{{ message.slicing_profiles.use_print_process_preset }}</b>
                 </div>
                 <div>
-                  - Additional slicing parameters:
-                  <b v-if="Object.keys(changedParams(message)).length === 0">None</b>
+                  {{ $t("- Additional slicing parameters:") }}
+                  <b v-if="Object.keys(changedParams(message)).length === 0">{{ $t("None") }}</b>
                   <div v-for="(value, key) in changedParams(message)" :key="key">
                     &nbsp;&nbsp;&nbsp;&nbsp;- {{ key }}:
                     <span class="font-weight-bold">{{ value }}</span>
@@ -52,7 +52,7 @@
               </gradient-fadable-container>
               <div v-if="index !== messages.length - 1" class="quick-button pt-2">
                 <quick-button-component
-                  message="Re-apply settings"
+                  :message="$t('Re-apply settings')"
                   @click="applySettingsInMessage(message)"
                 />
               </div>
@@ -60,13 +60,13 @@
           </div>
           <div v-if="message.suggested_printing_method" class="message-block mt-2">
             <div class="message-content">
-              <div class="pt-2 pb-1">I suggest the following to achieve the best results:</div>
+              <div class="pt-2 pb-1">{{ $t("I suggest the following to achieve the best results:") }}</div>
               <VueMarkdown>{{ message.suggested_printing_method }}</VueMarkdown>
             </div>
           </div>
           <div v-if="message.jusprinNotification" class="message-block mt-2">
             <div class="message-content">
-              <div class="pt-2 pb-1">Oh no! My slicing algorithm lord just said:</div>
+              <div class="pt-2 pb-1">{{ $t("Oh no! My slicing algorithm lord just said:") }}</div>
               <div class="notification-text" :class="message.jusprinNotification.level">
                 <i
                   :class="
@@ -83,7 +83,7 @@
         <div v-if="thinking" class="message assistant">
           <div class="message-block align-items-center">
             <div class="message-content thinking-animation">
-              <VueMarkdown>{{ '_Thinking..._' }}</VueMarkdown>
+              <VueMarkdown>{{ $t("_Thinking..._") }}</VueMarkdown>
             </div>
           </div>
         </div>
@@ -101,8 +101,8 @@
               <p>
                 {{
                   slicingProgress.overrun
-                    ? 'It seems to be taking awfully long to slice. Maybe something went wrong...? You can start over, or continue waiting.'
-                    : slicingProgress.text || 'Slicing in progress...'
+                    ? $t('It seems to be taking awfully long to slice. Maybe something went wrong...? You can start over, or continue waiting.')
+                    : slicingProgress.text || $t('Slicing in progress...')
                 }}
               </p>
               <div class="slicing-progress-container">
@@ -169,7 +169,7 @@
             class="btn btn-primary"
             @click="() => callAgentAction('show_login')"
           >
-            Sign Up/Sign In to Get Started
+            {{ $t("Sign Up/Sign In to Get Started") }}
           </button>
         </div>
       </div>
@@ -524,18 +524,18 @@ export default {
         const presets = await getAgentActionResponse('get_presets')
         this.messages.push({
           role: 'assistant',
-          content: `I have not set any slicing parameters for you. Do you want me to slice your model with these?\n- Filament: **${
+          content: `${this.$t("I have not set any slicing parameters for you. Do you want me to slice your model with these?")}\n${this.$t("- Filament:")} **${
             this.selectedPreset('filament', presets)?.name
-          }**\n- Process preset: **${this.selectedPreset('printProcess', presets)?.name}**`,
+          }**\n${this.$t("- Process preset:")} **${this.selectedPreset('printProcess', presets)?.name}**`,
         })
 
         this.pushQuickButtons([
           {
-            message: 'Yes',
+            message: this.$t('Yes'),
             onClick: () => this.doSlice(),
           },
           {
-            message: 'No',
+            message: this.$t('No'),
             onClick: () => this.popQuickButtons(),
           },
         ])
@@ -575,7 +575,7 @@ export default {
       }, 100)
       this.messages.push({
         role: 'assistant',
-        content: 'Models auto-arranged.',
+        content: this.$t('Models auto-arranged.'),
       })
       this.populateQuickButtons()
       this.setQuickButtons([this.cannedActions.undoAutoArrange, ...this.quickButtons])
@@ -685,7 +685,7 @@ export default {
           this.messages.push({
             role: 'assistant',
             content:
-              'I notice some of your models have overhangs. I can try to auto-orient them to minimize the need for supports.',
+              this.$t('I notice some of your models have overhangs. I can try to auto-orient them to minimize the need for supports.'),
           })
         }
         const quickButtons = [this.cannedActions.autoOrient, this.cannedActions.enableSupport]
@@ -713,11 +713,11 @@ export default {
 
       this.autoOrientInProgress = false
       if (event.data?.status === 'completed') {
-        let msg = 'Models auto-oriented.'
+        let msg = this.$t('Models auto-oriented.')
         let quickButtons = [this.cannedActions.undoAutoOrient]
         if (this.modelObjectsWithOverhang(currentModelObjects).length > 0) {
           msg +=
-            ' However, some models still have overhangs. I recommend enabling support to make sure they can be printed successfully.'
+            ` ${this.$t('However, some models still have overhangs. I recommend enabling support to make sure they can be printed successfully.')}`
           quickButtons.push(this.cannedActions.enableSupport)
         }
 
@@ -756,7 +756,7 @@ export default {
       if (this.slicingProgress.errors && this.slicingProgress.errors.length > 0) {
         this.messages.push({
           role: 'assistant',
-          content: `My slicing algorithm lord just said:\n *"${this.slicingProgress.errors.join(
+          content: `${this.$t("My slicing algorithm lord just said:")}\n *"${this.slicingProgress.errors.join(
             '\n'
           )}"*`,
         })
@@ -902,7 +902,7 @@ export default {
       const lastMessage = this.messages[this.messages.length - 1]
       this.messages.push({
         role: 'user',
-        content: `Please set the slicing settings based on the suggested strategy:\n\n${lastMessage.suggested_printing_method}`,
+        content: `${this.$t("Please set the slicing settings based on the suggested strategy:")}\n\n${lastMessage.suggested_printing_method}`,
       })
       this.sendUserQuery()
     },
@@ -924,7 +924,7 @@ export default {
 
       const plateAnalysisMessage = this.messages.pop()
       this.clearQuickButtons()
-      this.userInput = `Please set the slicing settings based on the suggested strategy:\n\n${plateAnalysisMessage.suggested_printing_method}`
+      this.userInput = `${this.$t("Please set the slicing settings based on the suggested strategy:")}\n\n${plateAnalysisMessage.suggested_printing_method}`
     },
 
     handleChatScroll() {
@@ -1006,10 +1006,10 @@ export default {
       }
     },
     confirmPrintTroubleshootingFlow() {
-      const startTroubleshootingMsg = 'Troubleshoot settings in current project'
-      const startTroubleshootingOtherProjectMsg = 'Troubleshoot settings in other project'
-      const startTroubleshootingFromGCodeMsg = 'Troubleshoot settings from G-Code file'
-      const dontWantTroubleshootingMsg = "I don't want troubleshooting"
+      const startTroubleshootingMsg = this.$t('Troubleshoot settings in current project')
+      const startTroubleshootingOtherProjectMsg = this.$t('Troubleshoot settings in other project')
+      const startTroubleshootingFromGCodeMsg = this.$t('Troubleshoot settings from G-Code file')
+      const dontWantTroubleshootingMsg = this.$t("I don't want troubleshooting")
       this.setQuickButtons([
         {
           message: startTroubleshootingMsg,
@@ -1024,7 +1024,7 @@ export default {
             this.messages.push({
               role: 'assistant',
               content:
-                'Please close this project and open the project for the print that you want to troubleshoot.',
+                this.$t('Please close this project and open the project for the print that you want to troubleshoot.'),
             })
           },
         },
@@ -1033,12 +1033,12 @@ export default {
           onClick: () => {
             this.messages.push({
               role: 'user',
-              content: 'I want to do troubleshooting from a G-Code file.',
+              content: this.$t('I want to do troubleshooting from a G-Code file.'),
             })
             this.messages.push({
               role: 'assistant',
               content:
-                'Go to the [3D Printing AI Tools](https://www.3dp-ai.tools/troubleshooting) website to troubleshoot your G-Code file.',
+                this.$t('Go to the [3D Printing AI Tools](https://www.3dp-ai.tools/troubleshooting) website to troubleshoot your G-Code file.'),
             })
           },
         },

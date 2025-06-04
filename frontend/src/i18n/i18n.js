@@ -10,12 +10,10 @@ import entBaseZhTW from './locales/ent_zh-TW.json';
 import {language} from '@src/lib/page-context'
 
 const getCurrentLanguage = () => {
-  return language()
+  return language().replace(/_/g, '-');
 };
 
-
 const currentLanguage = getCurrentLanguage()
-
 
 const resources = {
   'en': {

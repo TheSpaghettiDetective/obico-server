@@ -25,13 +25,14 @@ def additional_context_export(request):
     syndicate_settings = settings_for_syndicate(syndicate_name)
     syndicate_settings['name'] = syndicate_name
 
-    accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', 'en-US')
+    language = request.GET.get('lang') or request.META.get('HTTP_ACCEPT_LANGUAGE', 'en-US')
+
 
     return {
         'page_context': {
             'app_platform': platform,
             'syndicate': syndicate_settings,
-            'language': accept_language,
+            'language': language,
         }
     }
 

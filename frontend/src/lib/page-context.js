@@ -1,7 +1,5 @@
 export const pageContext = () => {
-  const context = JSON.parse(document.querySelector('#page-context-json').text)
-  console.log('DEBUG: Full page context:', context)
-  return context
+  return JSON.parse(document.querySelector('#page-context-json').text)
 }
 
 export const mobilePlatform = () => {
@@ -25,7 +23,5 @@ export const syndicate = () => {
 }
 
 export const language = () => {
-  const lang = pageContext()['language']
-  console.log('DEBUG: Language from page context:', lang)
-  return lang
+  return pageContext()['language']
 }

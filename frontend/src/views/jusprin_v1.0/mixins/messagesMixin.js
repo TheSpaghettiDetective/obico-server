@@ -1,4 +1,5 @@
 import pluralize from 'pluralize'
+import i18next from '@src/i18n/i18n.js'
 
 export default {
   computed: {
@@ -34,10 +35,14 @@ export default {
         }),
         currentModelObjects: (modelObjectCount) => ({
           role: 'assistant',
-          content: `You have ${modelObjectCount} ${pluralize(
-            'model',
-            modelObjectCount
-          )} on your plate.`,
+          content:
+            modelObjectCount === 1
+              ? this.$i18next.t('You have {num} model on your plate.', {
+                  num: modelObjectCount,
+                })
+              : this.$i18next.t('You have {num} models on your plate.', {
+                  num: modelObjectCount,
+                }),
         }),
         newModelObjects: (newModelObjects) => {
           let content = ''

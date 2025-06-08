@@ -543,6 +543,8 @@
   "Type your message here...": "Type your message here...",
   "Select printer, filament, and add models first": "Select printer, filament, and add models first",
   "Sign Up/Sign In to Get Started": "Sign Up/Sign In to Get Started",
+  "You have {num} model on your plate.": "You have {{num}} model on your plate.",
+  "You have {num} models on your plate.": "You have {{num}} models on your plate.",
   "Welcome To": "Welcome To",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Your 30-Day {localizedDom} Free Trial Has Started!",
   "Pro Plan": "Pro Plan",

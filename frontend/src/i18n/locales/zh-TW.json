@@ -543,6 +543,8 @@
   "Type your message here...": "請在此輸入您的訊息...",
   "Select printer, filament, and add models first": "請先選擇印表機、耗材並新增模型",
   "Sign Up/Sign In to Get Started": "註冊/登入以開始",
+  "You have {num} model on your plate.": "您有 {{num}} 個模型在您的板上。",
+  "You have {num} models on your plate.": "您有 {{num}} 個模型在您的板上。",
   "Welcome To": "欢迎來到",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "您的30天 {localizedDom} 免費試用已開始！",
   "Pro Plan": "專業計劃",

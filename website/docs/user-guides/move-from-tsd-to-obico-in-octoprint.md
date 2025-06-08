@@ -59,7 +59,7 @@ You will need to manually link your OctoPrint to your Obico account.
 <img src="/img/user-guides/obico-migration/settings-run-setup-wizard.png" style={{maxWidth: "450px"}} alt=""></img>
 <img src="/img/user-guides/obico-migration/settings-rerun-setup-wizard.jpg" style={{maxWidth: "450px"}} alt=""></img>
 
-3. Follow <a href="https://www.obico.io/docs/octoprint-plugin-setup-manual-link/">this guide</a> to link OctoPrint to your Obico account.
+3. Follow <a href="https://www.obico.io/docs/user-guides/octoprint-plugin-setup-manual-link/">this guide</a> to link OctoPrint to your Obico account.
 
 ### I got the error <span className="text--danger">"The Obico plugin failed to start because "Access Anywhere - The Spaghetti Detective" plugin is still installed and enabled"</span> {#i-got-the-error-span-classnametext--dangerthe-obico-plugin-failed-to-start-because-access-anywhere---the-spaghetti-detective-plugin-is-still-installed-and-enabledspan}
 

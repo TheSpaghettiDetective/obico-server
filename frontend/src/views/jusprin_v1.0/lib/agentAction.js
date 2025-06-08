@@ -2,6 +2,8 @@
 window.stubAgentActionResponse = new Map()
 window.agentActionCallMap = {}
 
+import i18next from '@src/i18n/i18n.js'
+
 // Helper functions
 export function setAgentActionRetVal({ refId, retVal = null, error = null }) {
   window.agentActionCallMap[refId] = { retVal, error }
@@ -35,7 +37,10 @@ export function getAgentActionResponse(action, payload = {}, timeout = 10000) {
 
     const timeoutId = setTimeout(() => {
       if (refId in window.agentActionCallMap) {
-        reject(new Error(`Timeout: No response for action "${action}" within ${timeout}ms`))
+        reject(new Error(i18next.t('Timeout: No response for action "{action}" within {timeout}ms', {
+          action,
+          timeout
+        })))
         delete window.agentActionCallMap[refId] // Clean up
       }
     }, timeout)

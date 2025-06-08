@@ -1,4 +1,5 @@
 import { callAgentAction, getAgentActionResponse } from '../lib/agentAction'
+import i18next from '@src/i18n/i18n.js'
 
 export default {
   data() {
@@ -13,94 +14,94 @@ export default {
     cannedActions() {
       return {
         addPrinters: {
-          message: 'Add printer',
+          message: this.$i18next.t('Add printer'),
           onClick: () => {
             this.popQuickButtons()
             this.callLongRunningAgentActionThenRefreshPresets('add_printers')
           },
         },
         addFilaments: {
-          message: 'Add filament',
+          message: this.$i18next.t('Add filament'),
           onClick: () => {
             this.popQuickButtons()
             this.callLongRunningAgentActionThenRefreshPresets('add_filaments')
           },
         },
         changePrinter: {
-          message: 'Change printer',
+          message: this.$i18next.t('Change printer'),
           onClick: () => this.showPresetOptions('printer'),
         },
         changeFilament: {
-          message: 'Change filament',
+          message: this.$i18next.t('Change filament'),
           onClick: () => this.showPresetOptions('filament'),
         },
         moreOptions: {
-          message: 'More options',
+          message: this.$i18next.t('More options'),
           onClick: () => this.showMoreOptions(),
         },
         cancel: {
-          message: 'Cancel',
+          message: this.$i18next.t('Cancel'),
           onClick: () => this.popQuickButtons(),
         },
         sliceWithCurrentSettings: {
-          message: 'Slice with current settings',
+          message: this.$i18next.t('Slice with current settings'),
           onClick: () => this.doSliceWithCurrentSettings(),
         },
         endTroubleshooting: {
-          message: 'End troubleshooting',
+          message: this.$i18next.t('End troubleshooting'),
           onClick: () => {
             this.current_workflow = null
-            this.onUserQueryQuickButton('I want to end troubleshooting')
+            this.onUserQueryQuickButton(this.$i18next.t('I want to end troubleshooting'))
           },
         },
         stayInTroubleshooting: {
-          message: 'Stay in troubleshooting',
+          message: this.$i18next.t('Stay in troubleshooting'),
           onClick: () => {
-            this.onUserQueryQuickButton('I want to continue troubleshooting')
+            this.onUserQueryQuickButton(this.$i18next.t('I want to continue troubleshooting'))
           },
         },
         startOver: {
-          message: 'Start over',
+          message: this.$i18next.t('Start over'),
           onClick: () => this.startOver(),
         },
         exportGCode: {
-          message: 'Export G-code',
+          message: this.$i18next.t('Export G-code'),
           onClick: () => this.callAgentAction('export_gcode'),
         },
         switchToPreview: {
-          message: 'Switch to preview',
+          message: this.$i18next.t('Switch to preview'),
           onClick: () => this.callAgentAction('switch_to_preview'),
         },
         autoOrient: {
-          message: 'Auto-orient models',
+          message: this.$i18next.t('Auto-orient models'),
           onClick: () => {
             this.autoOrientAllObjects()
           },
         },
         undoAutoOrient: {
-          message: 'Undo auto-orient',
+          message: this.$i18next.t('Undo auto-orient'),
           onClick: () => {
             callAgentAction('plater_undo')
             this.messages.push({
               role: 'assistant',
-              content: 'Got it! Auto-orient is undone.',
+              content: this.$i18next.t('Got it! Auto-orient is undone.'),
             })
             this.removeQuickButtons([this.cannedActions.undoAutoOrient])
           },
         },
         undoAutoArrange: {
-          message: 'Undo auto-arrange',
+          message: this.$i18next.t('Undo auto-arrange'),
           onClick: () => {
             callAgentAction('plater_undo')
             this.messages.push({
               role: 'assistant',
-              content: 'Got it! Auto-arrange is undone.',
+              content: this.$i18next.t('Got it! Auto-arrange is undone.'),
             })
             this.removeQuickButtons([this.cannedActions.undoAutoArrange])
           },
         },
         enableSupport: {
-          message: 'Enable support',
+          message: this.$i18next.t('Enable support'),
           onClick: async () => {
             await getAgentActionResponse(
               'apply_config',
@@ -108,14 +109,14 @@ export default {
             )
             this.messages.push({
               role: 'assistant',
-              content: 'Support enabled.',
+              content: this.$i18next.t('Support enabled.'),
             })
             this.removeQuickButtons([this.cannedActions.enableSupport])
             this.setQuickButtons([this.cannedActions.undoEnableSupport, ...this.quickButtons])
           },
         },
         undoEnableSupport: {
-          message: 'Undo enable support',
+          message: this.$i18next.t('Undo enable support'),
           onClick: async () => {
             await getAgentActionResponse(
               'apply_config',
@@ -123,13 +124,13 @@ export default {
             )
             this.messages.push({
               role: 'assistant',
-              content: 'Got it! Support is now disabled.',
+              content: this.$i18next.t('Got it! Support is now disabled.'),
             })
             this.removeQuickButtons([this.cannedActions.undoEnableSupport])
           },
         },
         tellMeWhatNotificationMeans: {
-          message: 'Explain it to me',
+          message: this.$i18next.t('Explain it to me'),
           onClick: () => {
             // Find the last assistant message that contains a notification
             const lastErrorMessage = [...this.messages]
@@ -143,41 +144,43 @@ export default {
             }
 
             // Format the new message
-            const newMessage = `JusPrin displays this message: *"${originalErrorMessage}"* Explain it to me.`
+            const newMessage = this.$i18next.t('JusPrin displays this message: *"{originalErrorMessage}"* Explain it to me.', {
+              originalErrorMessage
+            })
 
             // Send the message
             this.onUserQueryQuickButton(newMessage)
           },
         },
         acknowledgeError: {
-          message: 'Okay',
+          message: this.$i18next.t('Okay'),
           onClick: () => {
             this.messages.pop()
             this.popQuickButtons()
           },
         },
         commonPrintingPrompts: {
-          message: 'Common printing prompts',
+          message: this.$i18next.t('Common printing prompts'),
           onClick: () => this.showCommonPrintingPrompts(),
         },
         testRender: {
-          message: 'Test render',
+          message: this.$i18next.t('Test render'),
           onClick: () => this.renderPlateForAnalysis(),
         },
         analyseModel: {
-          message: '✨ Do your magic!',
+          message: this.$i18next.t('✨ Do your magic!'),
           onClick: () => this.getAnalysisResult(),
         },
         plateAnalysisLooksGoodToMe: {
-          message: 'Looks good to me',
+          message: this.$i18next.t('Looks good to me'),
           onClick: () => this.queryWithSuggestedPrintingMethod(),
         },
         plateAnalysisIsNotGood: {
-          message: 'You got it wrong. Scratch that.',
+          message: this.$i18next.t('You got it wrong. Scratch that.'),
           onClick: () => this.removePlateAnalysis(),
         },
         editPlateAnalysis: {
-          message: 'Let me change it',
+          message: this.$i18next.t('Let me change it'),
           onClick: () => this.editPlateAnalysis(),
         },
       }
@@ -215,10 +218,10 @@ export default {
     },
     initUserQueryHintButtons() {
       const initQueryHints = [
-        'Just do a standard print. Nothing special.',
-        'I want to do a fast print. Draft quality.',
-        'Print a strong part.',
-        'My last print did not stick to the bed. Help me fix it.',
+        this.$i18next.t('Just do a standard print. Nothing special.'),
+        this.$i18next.t('I want to do a fast print. Draft quality.'),
+        this.$i18next.t('Print a strong part.'),
+        this.$i18next.t('My last print did not stick to the bed. Help me fix it.'),
       ]
 
       return initQueryHints.map((hint) => ({
@@ -244,7 +247,9 @@ export default {
       }))
       this.messages.push({
         role: 'assistant',
-        content: `Select a ${presetType}. If the ${presetType} is not listed, use the "Add ${presetType}" button to add it first.`,
+        content: this.$i18next.t('Select a {presetType}. If the {presetType} is not listed, use the "Add {presetType}" button to add it first.', {
+          presetType
+        }),
       })
       this.pushQuickButtons([
         ...options,

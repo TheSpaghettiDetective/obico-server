@@ -192,6 +192,7 @@ USE_TZ = True
 LANGUAGES = [
     ('en', 'English'),
     ('zh-cn', 'Simplified Chinese'),
+    ('pt-BR', 'Português Brasileiro'),
 ]
 
 

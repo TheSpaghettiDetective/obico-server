@@ -67,7 +67,7 @@ def load_net(config_path, meta_path, weights_path=None):
 
     model_dir = path.join(path.dirname(path.realpath(__file__)), '..', 'model')
     net_config_priority = [
-            dict(weigths_path=path.join(model_dir, 'model-weights.rknn'), use_gpu=False),
+            dict(weights_path=path.join(model_dir, 'model-weights.rknn'), use_gpu=False),
             dict(weights_path=path.join(model_dir, 'model-weights.darknet'), use_gpu=True),
             dict(weights_path=path.join(model_dir, 'model-weights.onnx'), use_gpu=True),
             dict(weights_path=path.join(model_dir, 'model-weights.onnx'), use_gpu=False),

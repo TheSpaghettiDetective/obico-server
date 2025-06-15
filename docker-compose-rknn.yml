@@ -1,0 +1,11 @@
+version: '2.4'
+
+services:
+  ml_api:
+    build:
+      context: ml_api
+      dockerfile: Dockerfile.rknn
+    devices:
+      - '/dev/dri/'
+    security_opt:
+      - syspaths=unconfined

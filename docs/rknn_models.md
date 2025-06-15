@@ -33,20 +33,12 @@ docker run --rm -it -v $PWD/model:/model:rw some-registry.example/rknn-toolkit:l
 ```
 
 ## Using with the provided Docker-Compose
-1. Before building, ensure that the correct RKNN model for your target hardware is present at `model/model-weights.rknn`
-2. Modify the ml_api compose configuration to change the dockerfile used when building
-    ```diff
-         restart: unless-stopped
-         build:
-           context: ml_api
-    +      dockerfile: Dockerfile.rknn
-    ```
-3. docker-compose build ml_api
+Whenever using docker-compose, provide both `docker-compose.yml` and `docker-compose-rknn.yml`.
+e.g. `docker-compose -f docker-compose.yml -f docker-compose-rknn.yml up -d`
 
-If you are going to run on the same machine, see the note below about arguments for docker/podman about arguments.
 
 ## Running in Docker
-Note that the RKNN library reads the firmware device tree to determine what hardware is in use.
+The RKNN Runtime interacts with the NPU via DRI, and determines what hardware is present by reading the devicetree.
 
 Docker needs: `--device /dev/dri --security-opt systempaths=unconfined`
 

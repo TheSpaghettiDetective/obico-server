@@ -62,7 +62,7 @@ class RKNNNet(object):
         )[0]
 
     @staticmethod
-    def _checked_call(c: Callable, wrapped_name: Optional[str] = None, *args, **kwargs) -> None:
+    def _checked_call(c: Callable, *args, wrapped_name: Optional[str] = None, **kwargs) -> None:
         """
         A wrapper for callables that return zero (or other falsey) upon success.
         :param c: The callable to call

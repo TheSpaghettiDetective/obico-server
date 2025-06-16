@@ -8,4 +8,6 @@ services:
     devices:
       - '/dev/dri/'
     security_opt:
-      - syspaths=unconfined
+      # The below are needed because the runtime reads /sys/firmware/devicetree/base/compatible
+      - systempaths=unconfined
+      - apparmor=unconfined

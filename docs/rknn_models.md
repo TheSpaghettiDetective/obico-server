@@ -81,12 +81,12 @@ Podman needs: `--device /dev/dri --security-opt unmask=/sys/firmware`
 8. Install software that will be needed to launch obico
     ```shell
     sudo apt-get update
-    sudo apt-get install git docker.io
+    sudo apt-get install git docker.io apparmor-utils
     ``` 
 9. Install docker compose 2
     ```shell
     curl -L\# -o /tmp/docker-compose https://github.com/docker/compose/releases/download/v2.37.1/docker-compose-linux-$(arch)
-    sudo mkdir -pf /usr/local/lib/docker/cli-plugins
+    sudo mkdir -p /usr/local/lib/docker/cli-plugins
     sudo install -m 755 /tmp/docker-compose /usr/local/lib/docker/cli-plugins
     ```
 10. Grant your user access to manage docker resources
@@ -103,7 +103,7 @@ Podman needs: `--device /dev/dri --security-opt unmask=/sys/firmware`
 12. Build the base image for the ml_api rknn container
     (this is currently not available on docker hub, when it is, this step may be skipped)
     ```shell
-    docker build ml_api -f Dockerfile.base_arm64_rknn -t thespaghettidetective/ml_api_base_rknn:latest
+    docker build ml_api -f ml_api/Dockerfile.base_arm64_rknn -t thespaghettidetective/ml_api_base_rknn:latest
     ```
 13. Build and launch the obico stack
     ```shell

@@ -140,7 +140,7 @@ txaio==23.1.1 ; python_version >= '3.7'
 typing-extensions==4.11.0
 tzdata==2024.2 ; python_version >= '2'
 uritemplate==4.1.1 ; python_version >= '3.6'
-urllib3==2.3.0 ; python_version >= '3.9'
+urllib3==2.5.0 ; python_version >= '3.9'
 vine==5.1.0 ; python_version >= '3.6'
 wcwidth==0.2.13
 websocket-client==1.8.0 ; python_version >= '3.8'

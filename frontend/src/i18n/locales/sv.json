@@ -581,7 +581,7 @@
   "Undo enable support": "Ångra aktivering av support",
   "Got it! Support is now disabled.": "Okej! Supporten är nu inaktiverad.",
   "Explain it to me": "Förklara det för mig",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin visar detta meddelande: *\"{originalErrorMessage}\"* Förklara det för mig.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin visar detta meddelande: *\"{{originalErrorMessage}}\"* Förklara det för mig.",
   "Okay": "Okej",
   "Common printing prompts": "Vanliga utskriftsuppmaningar",
   "Test render": "Testrendering",

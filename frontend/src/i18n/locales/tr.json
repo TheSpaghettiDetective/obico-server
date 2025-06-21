@@ -581,7 +581,7 @@
   "Undo enable support": "Etkinleştirme desteğini geri al",
   "Got it! Support is now disabled.": "Anladım! Destek artık devre dışı.",
   "Explain it to me": "Bana açıkla",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin şu mesajı gösteriyor: *\"{originalErrorMessage}\"* Bana açıkla.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin şu mesajı gösteriyor: *\"{{originalErrorMessage}}\"* Bana açıkla.",
   "Okay": "Tamam",
   "Common printing prompts": "Yaygın yazdırma istemleri",
   "Test render": "Test oluşturma",

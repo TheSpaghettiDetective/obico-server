@@ -581,7 +581,7 @@
   "Undo enable support": "Отменить включение поддержки",
   "Got it! Support is now disabled.": "Понятно! Поддержка отключена.",
   "Explain it to me": "Объясни мне это",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin отображает это сообщение: *\"{originalErrorMessage}\"* Объясните мне.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin отображает это сообщение: *\"{{originalErrorMessage}}\"* Объясните мне.",
   "Okay": "Хорошо",
   "Common printing prompts": "Общие подсказки для печати",
   "Test render": "Тестовый рендер",

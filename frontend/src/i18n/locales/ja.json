@@ -581,7 +581,7 @@
   "Undo enable support": "元に戻すサポートを有効にする",
   "Got it! Support is now disabled.": "了解しました。サポートは無効になりました。",
   "Explain it to me": "説明してください",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin は次のメッセージを表示します: *\"{originalErrorMessage}\"* 説明してください。",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin は次のメッセージを表示します: *\"{{originalErrorMessage}}\"* 説明してください。",
   "Okay": "わかった",
   "Common printing prompts": "一般的な印刷プロンプト",
   "Test render": "テストレンダリング",

@@ -581,7 +581,7 @@
   "Undo enable support": "Undo enable support",
   "Got it! Support is now disabled.": "Got it! Support is now disabled.",
   "Explain it to me": "Explain it to me",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin displays this message: *\"{{originalErrorMessage}}\"* Explain it to me.",
   "Okay": "Okay",
   "Common printing prompts": "Common printing prompts",
   "Test render": "Test render",

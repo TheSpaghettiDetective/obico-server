@@ -581,7 +581,7 @@
   "Undo enable support": "Desfer l'activació de l'assistència",
   "Got it! Support is now disabled.": "Entès! L'assistència ara està desactivada.",
   "Explain it to me": "Explica-m'ho",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin mostra aquest missatge: *\"{originalErrorMessage}\"* Explica-m'ho.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin mostra aquest missatge: *\"{{originalErrorMessage}}\"* Explica-m'ho.",
   "Okay": "D'acord",
   "Common printing prompts": "Indicacions d'impressió habituals",
   "Test render": "Renderització de prova",

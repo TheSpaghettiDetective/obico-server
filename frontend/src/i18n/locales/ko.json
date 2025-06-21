@@ -581,7 +581,7 @@
   "Undo enable support": "지원 활성화 취소",
   "Got it! Support is now disabled.": "알겠습니다! 지원이 비활성화되었습니다.",
   "Explain it to me": "나에게 설명해줘",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin에서 다음 메시지가 표시됩니다: *\"{originalErrorMessage}\"* 설명해 주세요.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin에서 다음 메시지가 표시됩니다: *\"{{originalErrorMessage}}\"* 설명해 주세요.",
   "Okay": "좋아요",
   "Common printing prompts": "일반적인 인쇄 프롬프트",
   "Test render": "테스트 렌더링",

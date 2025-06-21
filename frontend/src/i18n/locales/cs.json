@@ -581,7 +581,7 @@
   "Undo enable support": "Podpora povolení zpět",
   "Got it! Support is now disabled.": "Rozumím! Podpora je nyní deaktivována.",
   "Explain it to me": "Vysvětli mi to",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin zobrazí tuto zprávu: *\"{originalErrorMessage}\"* Vysvětlete mi to.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin zobrazí tuto zprávu: *\"{{originalErrorMessage}}\"* Vysvětlete mi to.",
   "Okay": "Dobře",
   "Common printing prompts": "Běžné výzvy k tisku",
   "Test render": "Testovací renderování",

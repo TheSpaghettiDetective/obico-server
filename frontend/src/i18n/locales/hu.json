@@ -581,7 +581,7 @@
   "Undo enable support": "Támogatás engedélyezésének visszavonása",
   "Got it! Support is now disabled.": "Értem! A támogatás mostantól le van tiltva.",
   "Explain it to me": "Magyarázd el nekem",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin ezt az üzenetet jeleníti meg: *\"{originalErrorMessage}\"* Magyarázd el nekem.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin ezt az üzenetet jeleníti meg: *\"{{originalErrorMessage}}\"* Magyarázd el nekem.",
   "Okay": "Rendben",
   "Common printing prompts": "Gyakori nyomtatási kérdések",
   "Test render": "Teszt renderelés",

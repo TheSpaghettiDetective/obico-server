@@ -581,7 +581,7 @@
   "Undo enable support": "Ondersteuning ongedaan maken",
   "Got it! Support is now disabled.": "Begrepen! Ondersteuning is nu uitgeschakeld.",
   "Explain it to me": "Leg het me uit",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin geeft dit bericht weer: *\"{originalErrorMessage}\"* Leg het mij eens uit.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin geeft dit bericht weer: *\"{{originalErrorMessage}}\"* Leg het mij eens uit.",
   "Okay": "Oké",
   "Common printing prompts": "Veelvoorkomende afdrukprompts",
   "Test render": "Testweergave",

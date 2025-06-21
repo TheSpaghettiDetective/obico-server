@@ -581,7 +581,7 @@
   "Undo enable support": "Cofnij włączenie wsparcia",
   "Got it! Support is now disabled.": "Rozumiem! Wsparcie jest teraz wyłączone.",
   "Explain it to me": "Wyjaśnij mi to",
-  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin wyświetla ten komunikat: *\"{originalErrorMessage}\"* Wyjaśnij mi to.",
+  "JusPrin displays this message: *\"{originalErrorMessage}\"* Explain it to me.": "JusPrin wyświetla ten komunikat: *\"{{originalErrorMessage}}\"* Wyjaśnij mi to.",
   "Okay": "Dobra",
   "Common printing prompts": "Typowe monity dotyczące drukowania",
   "Test render": "Test render",

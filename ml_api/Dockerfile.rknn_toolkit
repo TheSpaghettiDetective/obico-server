@@ -1,0 +1,11 @@
+FROM docker.io/bitnami/minideb:bookworm
+ARG rknn_toolkit_whl=https://github.com/airockchip/rknn-toolkit2/raw/refs/heads/master/rknn-toolkit2/packages/x86_64/rknn_toolkit2-2.3.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+RUN \
+    install_packages python3.11 python3.11-venv &&\
+    python3 -m venv --upgrade-deps /opt/rknn &&\
+    /opt/rknn/bin/pip3 install "$rknn_toolkit_whl" &&\
+    /opt/rknn/bin/pip3 uninstall -y opencv-python &&\
+    /opt/rknn/bin/pip3 install opencv-python-headless &&\
+    /opt/rknn/bin/pip3 cache purge
+ENV PATH="/opt/rknn/bin:$PATH"
+ADD scripts/make_rknn_images.py /usr/local/bin

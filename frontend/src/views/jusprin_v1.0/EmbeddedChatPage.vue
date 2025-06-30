@@ -6,6 +6,23 @@
       :should-popup-chat-panel="Boolean(oauthAccessToken)"
       @show-contact-support-form="showContactSupportForm"
     />
+
+    <!-- Upgrade Modal -->
+    <upgrade-modal
+      :show="showUpgradeModal"
+      :user-info="userInfo"
+      :credits="credits"
+      @close="closeUpgradeModal"
+      @upgrade="handleUpgrade"
+    />
+
+    <!-- Test button for upgrade modal - always visible for testing -->
+    <div style="position: absolute; top: 10px; right: 10px; z-index: 100;">
+      <button @click="openUpgradeModal()" style="background: var(--color-primary); color: var(--color-on-primary); border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+        Test Upgrade Modal
+      </button>
+    </div>
+
     <div v-if="oauthAccessToken" class="chat-container mt-3">
       <div ref="chatMessageContainer" class="chat-messages" @scroll="handleChatScroll">
         <div
@@ -190,6 +207,7 @@ import ChatPanelHeader from './components/ChatPanelHeader.vue'
 import userNotificationMixin from './mixins/userNotificationMixin'
 import { callAgentAction, getAgentActionResponse, setAgentActionRetVal } from './lib/agentAction'
 import ContactSupportForm from './components/ContactSupportForm'
+import UpgradeModal from './components/UpgradeModal'
 
 export default {
   name: 'EmbeddedChatPage',
@@ -199,6 +217,7 @@ export default {
     GradientFadableContainer,
     ChatPanelHeader,
     ContactSupportForm,
+    UpgradeModal,
   },
   mixins: [QuickButtonsMixin, MessagesMixin, SlicingParamFixerMixin, userNotificationMixin],
   data() {
@@ -216,6 +235,16 @@ export default {
       showScrollButton: false,
       slicingProgress: null,
       current_workflow: null,
+      showUpgradeModal: false,
+      userInfo: {
+        name: 'Kenneth Jiang',
+        email: 'kenneth.jiang@gmail.com'
+      },
+      credits: {
+        available: 60,
+        total: 90,
+        purchased: 0
+      },
     }
   },
   computed: {
@@ -1070,6 +1099,19 @@ export default {
       ])
     },
     // End of methods for handling the print troubleshooting flow
+
+    // Modal methods
+    openUpgradeModal() {
+      this.showUpgradeModal = true
+    },
+    closeUpgradeModal() {
+      this.showUpgradeModal = false
+    },
+    handleUpgrade() {
+      // Open upgrade link in new window
+      window.open('https://googoe.com', '_blank')
+      this.closeUpgradeModal()
+    },
   },
 }
 </script>

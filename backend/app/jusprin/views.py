@@ -25,6 +25,7 @@ from .models import JusPrinChat
 from .llm_chain import run_chain_on_chat
 from .plate_analysis_llm_module.analyse_plate_step import analyse_plate_step
 from .ai_credits import consume_credit_for_pipeline
+from django.conf import settings
 
 
 def require_ai_credits(view_func):
@@ -36,12 +37,21 @@ def require_ai_credits(view_func):
             return Response({
                 'error': credit_result['message'],
                 'credits_info': {
-                    'remaining_credits': credit_result['remaining_credits'],
                     'used_credits': credit_result['used_credits'],
                     'monthly_limit': credit_result['monthly_limit']
                 }
             }, status=status.HTTP_402_PAYMENT_REQUIRED)
-        return view_func(self, request, *args, **kwargs)
+
+        # Execute the view function
+        response = view_func(self, request, *args, **kwargs)
+
+        if isinstance(response.data, dict):
+            response.data['jusprint_credits'] = {
+                'used_credits': credit_result['used_credits'],
+                'monthly_limit': credit_result['monthly_limit']
+            }
+
+        return response
     return wrapper
 
 class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):

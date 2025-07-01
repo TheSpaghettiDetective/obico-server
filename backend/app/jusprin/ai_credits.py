@@ -32,28 +32,7 @@ def get_monthly_free_credits_limit() -> int:
         return 0
 
 
-def get_remaining_credits(user_id: int) -> int:
-    """Get remaining AI credits for the current month.
 
-    Args:
-        user_id: User ID
-
-    Returns:
-        Number of remaining credits for this month (-1 for unlimited)
-    """
-    # If not configured, return unlimited
-    if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is None:
-        return -1
-
-    monthly_limit = get_monthly_free_credits_limit()
-    if monthly_limit <= 0:
-        return 0
-
-    key = _get_current_month_key(user_id)
-    used_credits = int(REDIS.get(key) or 0)
-    remaining = max(0, monthly_limit - used_credits)
-
-    return remaining
 
 
 def get_used_credits(user_id: int) -> int:
@@ -92,7 +71,6 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
         Dictionary with operation result:
         {
             'success': bool,
-            'remaining_credits': int,
             'used_credits': int,
             'monthly_limit': int,
             'message': str
@@ -102,7 +80,6 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
     if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is None:
         return {
             'success': True,
-            'remaining_credits': -1,  # -1 indicates unlimited
             'used_credits': 0,
             'monthly_limit': -1,  # -1 indicates unlimited
             'message': 'Credits not configured - unlimited usage allowed'
@@ -113,7 +90,6 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
     if monthly_limit <= 0:
         return {
             'success': False,
-            'remaining_credits': 0,
             'used_credits': 0,
             'monthly_limit': 0,
             'message': 'AI credits configured but set to 0 - usage blocked'
@@ -144,17 +120,13 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
         REDIS.decrby(key, 1)
         return {
             'success': False,
-            'remaining_credits': max(0, monthly_limit - old_used),
             'used_credits': old_used,
             'monthly_limit': monthly_limit,
             'message': 'Monthly AI credit limit exceeded'
         }
 
-    remaining = monthly_limit - new_used
-
     return {
         'success': True,
-        'remaining_credits': remaining,
         'used_credits': new_used,
         'monthly_limit': monthly_limit,
         'message': 'Credit consumed successfully'
@@ -174,7 +146,6 @@ def reset_monthly_credits(user_id: int) -> dict:
     if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is None:
         return {
             'success': True,
-            'remaining_credits': -1,  # -1 indicates unlimited
             'used_credits': 0,
             'monthly_limit': -1,  # -1 indicates unlimited
             'message': 'Credits not configured - unlimited usage allowed'
@@ -183,11 +154,12 @@ def reset_monthly_credits(user_id: int) -> dict:
     key = _get_current_month_key(user_id)
     REDIS.delete(key)
 
+    monthly_limit = get_monthly_free_credits_limit()
+
     return {
         'success': True,
-        'remaining_credits': get_monthly_free_credits_limit(),
         'used_credits': 0,
-        'monthly_limit': get_monthly_free_credits_limit(),
+        'monthly_limit': monthly_limit,
         'message': 'Monthly credits reset successfully'
     }
 
@@ -206,19 +178,16 @@ def get_credits_info(user_id: int) -> dict:
         return {
             'monthly_limit': -1,  # -1 indicates unlimited
             'used_credits': 0,
-            'remaining_credits': -1,  # -1 indicates unlimited
             'credits_enabled': False,  # Not enabled/configured
             'can_use_ai': True  # Always allowed when unlimited
         }
 
     monthly_limit = get_monthly_free_credits_limit()
     used = get_used_credits(user_id)
-    remaining = get_remaining_credits(user_id)
 
     return {
         'monthly_limit': monthly_limit,
         'used_credits': used,
-        'remaining_credits': remaining,
         'credits_enabled': monthly_limit > 0,
-        'can_use_ai': remaining > 0
+        'can_use_ai': used < monthly_limit
     }

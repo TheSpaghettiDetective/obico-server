@@ -16,30 +16,32 @@
       </div>
 
       <div class="body-section">
-        <img src="/static/img/jusprin-credit.png" alt="JusPrin Credit Icon" class="d-inline-block align-middle mr-2" style="width: 2em; height: 2em;" />
-        <h4 class="modal-section-title mb-4 d-inline-block align-middle">{{ $t("AI Credits") }}</h4>
+        <div class="ai-credits-header">
+          <img src="/static/img/jusprin-credit.png" alt="JusPrin Credit Icon" class="credit-icon" />
+          <h4 class="modal-section-title">{{ $t("AI Credits") }}</h4>
+        </div>
         <div class="progress-bar-container">
           <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
         </div>
         <div class="progress-info">
-          <span class="usage-text">{{ $t("You've used {used} AI Credits of {total} this month", { used: creditsUsed, total: credits.total }) }}</span>
+          <span class="usage-text">{{ $t("You've used {used} AI credits of {total} this month", { used: creditsUsed, total: credits.total }) }}</span>
           <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: "July 1st" }) }}</span>
         </div>
       </div>
 
       <div class="text-muted small">
-       {{ $t("\"AI credit\" is the currency for using JusPrin AI. Every time you can ask JusPrin to determine the best way to slice the model, you will use 1 AI credit.") }}
+       {{ $t("\"AI credit\" is the currency for using JusPrin AI. Every time you ask JusPrin to determine the best way to slice the model, you will use 1 AI credit.") }}
        <br>
-       {{ $t("We set a limit on the number of AI Credits per month for free users because OpenAI charges us for each API call.") }}
+       {{ $t("We set a limit on the number of AI credits per month for free users because OpenAI charges us for each API call.") }}
       </div>
 
       <muted-alert class="mt-2 feature-notice">
-        {{ $t("AI Credits limit is reset at the beginning of each month.") }}
+        {{ $t("AI credit limit is reset at the beginning of each month.") }}
       </muted-alert>
 
       <div class="body-section">
         <h4 class="modal-section-title">{{ $t("Get More AI Credits") }}</h4>
-        <div class="section-description">{{ $t("If you are running short on AI Credits, there are two ways to get more.") }}</div>
+        <div class="section-description">{{ $t("If you are running short on AI credits, there are two ways to get more.") }}</div>
         <div class="upgrade-option">
           <div class="upgrade-details">
             <div class="upgrade-title">
@@ -50,7 +52,7 @@
           <button class="btn btn-primary upgrade-button" @click="handleUpgrade">{{ $t("Upgrade") }}</button>
         </div>
         <div class="mt-4">
-          <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI Credits using your own OpenAI API key.')">
+          <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI credits using your own OpenAI API key.')">
             <template #hostYourOwnLink>
               <a href="https://github.com/TheSpaghettiDetective/JusPrin" target="_blank">{{ $t("host your own JusPrin server") }}</a>
             </template>
@@ -221,6 +223,19 @@ export default {
 
     @include respond-below(md) {
       margin-bottom: 1.5rem;
+    }
+
+    .ai-credits-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+
+      .credit-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        flex-shrink: 0;
+      }
     }
 
     .ai-asks-header {

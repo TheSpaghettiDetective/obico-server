@@ -15,26 +15,23 @@
         <span class="plan-badge">{{ $t("FREE Plan") }}</span>
       </div>
 
-      <div class="ai-asks-section">
-        <div class="ai-asks-header">
-          <i class="mdi mdi-star ai-asks-icon"></i>
-          <span class="ai-asks-title">{{ $t("AI Asks") }}</span>
-        </div>
+      <div class="body-section">
         <div class="progress-bar-container">
           <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
         </div>
         <div class="progress-info">
-          <span class="usage-text">{{ $t("You've used {used} AI Asks of {total} this week", { used: creditsUsed, total: credits.total }) }}</span>
+          <span class="usage-text">{{ $t("You've used {used} AI Asks of {total} this month", { used: creditsUsed, total: credits.total }) }}</span>
           <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: "July 1st" }) }}</span>
         </div>
       </div>
 
       <muted-alert class="feature-notice">
-        {{ $t("Image uploading is a premium feature available exclusively on our Pro plan. Upgrade to Pro to upload your own images and create personalized designs.") }}
+        {{ $t("AI Asks are the number of times you can ask JusPrin to determine the best way to slice the model. We set a limit on the number of AI Asks per month for free users because OpenAI charges us for each API call. The limit is reset at the beginning of each month.") }}
       </muted-alert>
 
-      <div class="upgrade-section">
-        <h4 class="section-title">{{ $t("Get credits") }}</h4>
+      <div class="body-section">
+        <h4 class="section-title">{{ $t("Get More AI Asks") }}</h4>
+        <div class="section-description">{{ $t("If you are running short on AI asks, there are two ways to get more.") }}</div>
         <div class="upgrade-option">
           <div class="upgrade-details">
             <div class="upgrade-title">
@@ -166,11 +163,12 @@ export default {
   .user-info {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 2rem;
 
-    @include respond-below(md) {
+    @media (max-width: 400px) {
       flex-direction: column;
+      align-items: flex-start;
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
@@ -205,7 +203,7 @@ export default {
     }
   }
 
-  .ai-asks-section {
+  .body-section {
     margin-bottom: 2rem;
 
     @include respond-below(md) {
@@ -258,8 +256,9 @@ export default {
       justify-content: space-between;
       align-items: center;
       margin-top: 0.5rem;
+      gap: 1rem;
 
-      @include respond-below(md) {
+      @media (max-width: 400px) {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.25rem;
@@ -269,6 +268,8 @@ export default {
         color: var(--color-text-primary);
         font-size: 0.875rem;
         font-weight: 500;
+        flex: 1;
+        min-width: 0;
       }
 
       .reset-date {
@@ -276,16 +277,22 @@ export default {
         font-size: 0.75rem;
         font-weight: 400;
         flex-shrink: 0;
+        white-space: nowrap;
       }
     }
-  }
 
-  .upgrade-section {
     .section-title {
       color: var(--color-text-primary);
       font-size: 1.125rem;
       font-weight: 600;
-      margin: 0 0 1rem 0;
+      margin-bottom: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .section-description {
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
     }
 
     .upgrade-option {

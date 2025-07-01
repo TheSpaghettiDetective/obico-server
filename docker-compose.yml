@@ -42,6 +42,7 @@ x-web-defaults: &web-defaults
     SYNDICATE: '${SYNDICATE-}'
     VERSION:
     OPENAI_API_KEY: '${OPENAI_API_KEY-}'
+    JUSPRIN_FREE_CREDITS_PER_MONTH: '${JUSPRIN_FREE_CREDITS_PER_MONTH-}'
 
 services:
   ml_api:

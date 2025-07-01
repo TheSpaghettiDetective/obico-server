@@ -24,7 +24,7 @@ from .serializers import JusPrinChatSerializer
 from .models import JusPrinChat
 from .llm_chain import run_chain_on_chat
 from .plate_analysis_llm_module.analyse_plate_step import analyse_plate_step
-from .ai_credits import consume_credit_for_pipeline
+from .ai_credits import consume_credit_for_pipeline, get_credits_info
 from django.conf import settings
 
 
@@ -34,22 +34,30 @@ def require_ai_credits(view_func):
     def wrapper(self, request, *args, **kwargs):
         credit_result = consume_credit_for_pipeline(request.user.id)
         if not credit_result['success']:
+            # Get full credit info for error response
+            credits_info = get_credits_info(request.user.id)
             return Response({
                 'error': credit_result['message'],
-                'credits_info': {
-                    'used_credits': credit_result['used_credits'],
-                    'monthly_limit': credit_result['monthly_limit']
-                }
+                'jusprint_credits': credits_info
             }, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         # Execute the view function
         response = view_func(self, request, *args, **kwargs)
 
-        if isinstance(response.data, dict):
-            response.data['jusprint_credits'] = {
-                'used_credits': credit_result['used_credits'],
-                'monthly_limit': credit_result['monthly_limit']
-            }
+        # Only inject credit info when credits are enabled (not unlimited)
+        if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is not None:
+            # Get updated credit info after consumption
+            credits_info = get_credits_info(request.user.id)
+
+            # Handle both dict and list responses
+            if isinstance(response.data, dict):
+                response.data['jusprint_credits'] = credits_info
+            elif isinstance(response.data, list):
+                # Wrap list in object with credit info
+                response.data = {
+                    'data': response.data,
+                    'jusprint_credits': credits_info
+                }
 
         return response
     return wrapper

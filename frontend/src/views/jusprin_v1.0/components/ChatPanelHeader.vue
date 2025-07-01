@@ -11,6 +11,19 @@
         <label class="custom-control-label" for="dont-show-checkbox"> {{ $t("Pop up on errors") }} </label>
       </div>
     </div>
+
+    <!-- Credit Display -->
+    <div
+      v-if="creditsInfo && creditsInfo.monthly_limit > 0"
+      class="credit-display"
+      :class="creditStatusClass"
+      @click="$emit('show-upgrade-modal')"
+      :title="$t('Click to see upgrade options')"
+    >
+      <img src="/static/img/jusprin-credit.png" alt="Credits" class="credit-icon" />
+      <span class="credit-text">{{ remainingCredits }}/{{ creditsInfo.monthly_limit }}</span>
+    </div>
+
     <div class="header-actions">
       <button
         class="header-button"
@@ -56,6 +69,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    creditsInfo: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
@@ -91,6 +108,29 @@ export default {
         this.preferredChatPanelViewModeValue = newViewMode
         localStorage.setItem('jusprin.preferredChatPanelViewMode', newViewMode)
       },
+    },
+    remainingCredits() {
+      if (!this.creditsInfo || this.creditsInfo.monthly_limit <= 0) {
+        return 0
+      }
+      return Math.max(0, this.creditsInfo.monthly_limit - (this.creditsInfo.used_credits || 0))
+    },
+    creditStatusClass() {
+      if (!this.creditsInfo || this.creditsInfo.monthly_limit <= 0) {
+        return ''
+      }
+
+      const remaining = this.remainingCredits
+      const total = this.creditsInfo.monthly_limit
+      const ratio = remaining / total
+
+      if (remaining === 0) {
+        return 'credit-exhausted'
+      } else if (ratio < 1/3) {
+        return 'credit-warning'
+      } else {
+        return 'credit-success'
+      }
     },
   },
   async mounted() {
@@ -198,6 +238,36 @@ export default {
 .custom-control-label
   cursor: pointer
   font-size: 14px
+
+.credit-display
+  display: flex
+  align-items: center
+  gap: 6px
+  padding: 4px 8px
+  border-radius: var(--border-radius-sm)
+  cursor: pointer
+  transition: opacity 0.2s
+  font-size: 14px
+  font-weight: 500
+
+  &:hover
+    opacity: 0.8
+
+  .credit-icon
+    width: 16px
+    height: 16px
+
+  .credit-text
+    color: white
+
+  &.credit-success
+    background-color: var(--color-success)
+
+  &.credit-warning
+    background-color: var(--color-warning)
+
+  &.credit-exhausted
+    background-color: var(--color-danger)
   margin-bottom: 0
 
 .custom-control-label::before

@@ -5,23 +5,18 @@
       @action="callAgentAction"
       :should-popup-chat-panel="Boolean(oauthAccessToken)"
       @show-contact-support-form="showContactSupportForm"
+      @show-upgrade-modal="openUpgradeModal"
+      :credits-info="creditsInfo"
     />
 
     <!-- Upgrade Modal -->
     <upgrade-modal
       :show="showUpgradeModal"
-      :user-info="userInfo"
-      :credits="credits"
       @close="closeUpgradeModal"
       @upgrade="handleUpgrade"
     />
 
-    <!-- Test button for upgrade modal - always visible for testing -->
-      <div style="position: absolute; top: 10px; right: 10px; z-index: 100;">
-      <button @click="openUpgradeModal()" style="background: var(--color-primary); color: var(--color-on-primary); border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">
-          Test Upgrade Modal
-        </button>
-      </div>
+
 
     <div v-if="oauthAccessToken" class="chat-container mt-3">
       <div ref="chatMessageContainer" class="chat-messages" @scroll="handleChatScroll">
@@ -236,15 +231,7 @@ export default {
       slicingProgress: null,
       current_workflow: null,
       showUpgradeModal: false,
-      userInfo: {
-        name: 'Kenneth Jiang',
-        email: 'kenneth.jiang@gmail.com'
-      },
-      credits: {
-        available: 60,
-        total: 90,
-        purchased: 0
-      },
+      creditsInfo: null, // Will be populated from API responses
     }
   },
   computed: {
@@ -415,6 +402,12 @@ export default {
           chat_id: currentChatId,
         })
         this.thinking = false
+
+        // Extract credit information from API response if present
+        if (response.data.jusprint_credits) {
+          this.creditsInfo = response.data.jusprint_credits
+        }
+
         this.processChatResponse(response.data, presets)
       } catch (error) {
         window.Sentry?.captureException(error)
@@ -893,6 +886,11 @@ export default {
       this.messages.push(response.message)
       this.thinking = false
 
+      // Extract credit information from API response if present
+      if (response.jusprint_credits) {
+        this.creditsInfo = response.jusprint_credits
+      }
+
       const payload = {
         messages: JSON.stringify(this.messages),
       }
@@ -1108,8 +1106,7 @@ export default {
       this.showUpgradeModal = false
     },
     handleUpgrade() {
-      // Open upgrade link in new window
-      window.open('https://googoe.com', '_blank')
+      // Close the upgrade modal - upgrade link handling will be implemented later
       this.closeUpgradeModal()
     },
   },

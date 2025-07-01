@@ -25,8 +25,14 @@
         </div>
       </div>
 
-      <muted-alert class="feature-notice">
-        {{ $t("AI Asks are the number of times you can ask JusPrin to determine the best way to slice the model. We set a limit on the number of AI Asks per month for free users because OpenAI charges us for each API call. The limit is reset at the beginning of each month.") }}
+      <div class="text-muted small">
+       {{ $t("AI Asks are the number of times you can ask JusPrin to determine the best way to slice the model.") }}
+       <br>
+       {{ $t("We set a limit on the number of AI Asks per month for free users because OpenAI charges us for each API call.") }}
+      </div>
+
+      <muted-alert class="mt-2 feature-notice">
+        {{ $t("The limit is reset at the beginning of each month.") }}
       </muted-alert>
 
       <div class="body-section">
@@ -35,12 +41,18 @@
         <div class="upgrade-option">
           <div class="upgrade-details">
             <div class="upgrade-title">
-              {{ $t("Upgrade to Pro") }}
-              <span class="discount">{{ $t("-{percent}%", { percent: 25 }) }}</span>
+              {{ $t("Upgrade to Unlimited Plan") }}
             </div>
-            <div class="upgrade-description">{{ $t("Unlock features and earn {credits} credits", { credits: 1200 }) }}</div>
+            <div class="text-muted small">{{ $t("Note: If your account is an Obico Pro account, you can a 30% discount on the upgrade.") }}</div>
           </div>
           <button class="btn btn-primary upgrade-button" @click="handleUpgrade">{{ $t("Upgrade") }}</button>
+        </div>
+        <div class="mt-4">
+          <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI Asks using your own OpenAI API key.')">
+            <template #hostYourOwnLink>
+              <a href="https://github.com/TheSpaghettiDetective/JusPrin" target="_blank">{{ $t("host your own JusPrin server") }}</a>
+            </template>
+          </i18next>
         </div>
       </div>
     </div>
@@ -193,10 +205,10 @@ export default {
     }
 
     .plan-badge {
-      background-color: var(--color-primary);
-      color: var(--color-on-primary);
+      color: var(--color-text-primary);
       padding: 0.25rem 0.75rem;
       border-radius: var(--border-radius-lg);
+      border: 1px solid var(--color-divider);
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
@@ -204,7 +216,7 @@ export default {
   }
 
   .body-section {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 
     @include respond-below(md) {
       margin-bottom: 1.5rem;
@@ -283,7 +295,7 @@ export default {
 
     .section-title {
       color: var(--color-text-primary);
-      font-size: 1.125rem;
+      font-size: 1.5rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
       margin-top: 2rem;
@@ -304,7 +316,7 @@ export default {
       justify-content: space-between;
       gap: 1rem;
 
-      @include respond-below(md) {
+      @media (max-width: 400px) {
         flex-direction: column;
         align-items: stretch;
         gap: 1rem;
@@ -313,19 +325,21 @@ export default {
 
       .upgrade-details {
         flex: 1;
+        min-width: 0; // Allow text to wrap if needed
+
+        // Prevent excessive shrinking on medium screens
+        @media (min-width: 401px) {
+          min-width: 200px;
+        }
 
         .upgrade-title {
           color: var(--color-text-primary);
-          font-size: 1rem;
+          font-size: 1.2rem;
           font-weight: 500;
           margin-bottom: 0.25rem;
           display: flex;
           align-items: center;
           gap: 0.5rem;
-
-          @include respond-below(md) {
-            flex-wrap: wrap;
-          }
 
           .discount {
             background-color: var(--color-primary);
@@ -336,11 +350,6 @@ export default {
             font-weight: 600;
           }
         }
-
-        .upgrade-description {
-          color: var(--color-text-secondary);
-          font-size: 0.875rem;
-        }
       }
 
       .upgrade-button {
@@ -348,8 +357,9 @@ export default {
         font-size: 0.875rem;
         font-weight: 600;
         white-space: nowrap;
+        flex-shrink: 0; // Prevent button from shrinking
 
-        @include respond-below(md) {
+        @media (max-width: 400px) {
           width: 100%;
           white-space: normal;
         }

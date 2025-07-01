@@ -17,11 +17,11 @@
     />
 
     <!-- Test button for upgrade modal - always visible for testing -->
-    <div style="position: absolute; top: 10px; right: 10px; z-index: 100;">
+      <div style="position: absolute; top: 10px; right: 10px; z-index: 100;">
       <button @click="openUpgradeModal()" style="background: var(--color-primary); color: var(--color-on-primary); border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">
-        Test Upgrade Modal
-      </button>
-    </div>
+          Test Upgrade Modal
+        </button>
+      </div>
 
     <div v-if="oauthAccessToken" class="chat-container mt-3">
       <div ref="chatMessageContainer" class="chat-messages" @scroll="handleChatScroll">

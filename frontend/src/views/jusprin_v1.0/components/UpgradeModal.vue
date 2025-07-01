@@ -16,6 +16,8 @@
       </div>
 
       <div class="body-section">
+        <img src="/static/img/jusprin-credit.png" alt="JusPrin Credit Icon" class="d-inline-block align-middle mr-2" style="width: 2em; height: 2em;" />
+        <h4 class="modal-section-title mb-4 d-inline-block align-middle">{{ $t("AI Asks") }}</h4>
         <div class="progress-bar-container">
           <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
         </div>
@@ -36,7 +38,7 @@
       </muted-alert>
 
       <div class="body-section">
-        <h4 class="section-title">{{ $t("Get More AI Asks") }}</h4>
+        <h4 class="modal-section-title">{{ $t("Get More AI Asks") }}</h4>
         <div class="section-description">{{ $t("If you are running short on AI asks, there are two ways to get more.") }}</div>
         <div class="upgrade-option">
           <div class="upgrade-details">
@@ -176,7 +178,6 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
 
     @media (max-width: 400px) {
       flex-direction: column;
@@ -293,12 +294,13 @@ export default {
       }
     }
 
-    .section-title {
+    .modal-section-title {
       color: var(--color-text-primary);
       font-size: 1.5rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
       margin-top: 2rem;
+      text-decoration: none;
     }
 
     .section-description {

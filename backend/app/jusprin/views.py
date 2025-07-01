@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 import os
 import json
+from functools import wraps
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
@@ -23,11 +24,31 @@ from .serializers import JusPrinChatSerializer
 from .models import JusPrinChat
 from .llm_chain import run_chain_on_chat
 from .plate_analysis_llm_module.analyse_plate_step import analyse_plate_step
+from .ai_credits import consume_credit_for_pipeline
+
+
+def require_ai_credits(view_func):
+    """Decorator to check and consume AI credits before pipeline execution."""
+    @wraps(view_func)
+    def wrapper(self, request, *args, **kwargs):
+        credit_result = consume_credit_for_pipeline(request.user.id)
+        if not credit_result['success']:
+            return Response({
+                'error': credit_result['message'],
+                'credits_info': {
+                    'remaining_credits': credit_result['remaining_credits'],
+                    'used_credits': credit_result['used_credits'],
+                    'monthly_limit': credit_result['monthly_limit']
+                }
+            }, status=status.HTTP_402_PAYMENT_REQUIRED)
+        return view_func(self, request, *args, **kwargs)
+    return wrapper
 
 class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
 
+    @require_ai_credits
     @observe(capture_input=False, capture_output=True)
     def create(self, request):
         api_key = os.environ.get('OPENAI_API_KEY')
@@ -39,6 +60,7 @@ class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):
         )
         chat = request.data
         response = analyse_plate_step(chat, openai_client)
+
         return Response(response, status=status.HTTP_201_CREATED)
 
 class JusPrinChatViewSet(viewsets.ModelViewSet):
@@ -58,6 +80,7 @@ class JusPrinChatViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])
+    @require_ai_credits
     @observe(capture_input=False, capture_output=True)
     def messages(self, request):
         api_key = os.environ.get('OPENAI_API_KEY')
@@ -70,6 +93,7 @@ class JusPrinChatViewSet(viewsets.ModelViewSet):
 
         chat = request.data
         response = run_chain_on_chat(chat, openai_client)
+
         return Response(response, status=200)
 
 class JusPrinContactSupportRequestViewSet(viewsets.ViewSet):

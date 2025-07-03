@@ -51,7 +51,7 @@
               <span class="usage-text">
                 You've used {{ credits.ai_credit_used_current_month }} AI credits of {{ isUnlimitedPlan ? 'unlimited' : credits.ai_credit_free_monthly_quota }} this month
               </span>
-              <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: 'Next month' }) }}</span>
+              <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: nextMonthResetDate }) }}</span>
             </div>
           </div>
 
@@ -153,6 +153,14 @@ export default {
       if (!this.userInfo) return ''
       const fullName = `${this.userInfo.first_name || ''} ${this.userInfo.last_name || ''}`.trim()
       return fullName || this.userInfo.username || this.userInfo.email || 'User'
+    },
+    nextMonthResetDate() {
+      const now = new Date()
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+      return nextMonth.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric'
+      })
     }
   },
   watch: {

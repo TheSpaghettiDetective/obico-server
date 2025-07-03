@@ -1,6 +1,6 @@
 name: Build Docker Images
 on:
-  workflow-dispatch:
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -11,9 +11,7 @@ env:
   PLATFORMS: linux/amd64,linux/arm64
 jobs:
   build_and_publish_docker:
-    runs-on: ${{inputs.runner}}
-    outputs:
-      version: ${{ steps.version.outputs.version }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -47,7 +45,7 @@ jobs:
           push: true
           tags: ${{ steps.base_meta.outputs.tags }}
           labels: ${{ steps.base_meta.outputs.labels }}
-          platforms: ${{ inputs.platforms }}
+          platforms: ${{ env.PLATFORMS }}
           file: ml_api/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max

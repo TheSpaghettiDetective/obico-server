@@ -46,7 +46,7 @@
             </div>
             <div class="progress-info">
               <span class="usage-text">
-                {{ $t("You've used {used} AI credits of {total} this month", { used: credits.used, total: credits.total }) }}
+                You've used {{ credits.used }} AI credits of {{ credits.total }} this month
               </span>
               <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: credits.reset_date || "Next month" }) }}</span>
             </div>

@@ -12,6 +12,7 @@
     <!-- Upgrade Modal -->
     <upgrade-modal
       :show="showUpgradeModal"
+      :oauth-access-token="oauthAccessToken"
       @close="closeUpgradeModal"
       @upgrade="handleUpgrade"
     />
@@ -102,6 +103,7 @@
         <contact-support-form
           v-if="showContactSupport"
           :messages="messages"
+          :oauth-access-token="oauthAccessToken"
           @form-dismissed="handleContactSupportFormDismissed"
         />
         <div v-if="slicingProgress" class="message assistant">
@@ -232,6 +234,7 @@ export default {
       current_workflow: null,
       showUpgradeModal: false,
       creditsInfo: null, // Will be populated from API responses
+      userInfo: null, // Will be populated from /jusprin/api/me/
     }
   },
   computed: {
@@ -273,10 +276,20 @@ export default {
   },
   mounted() {
     this.initMessagesAndQuickButtons()
+    this.fetchUserData()
   },
   methods: {
     callAgentAction,
     setAgentActionRetVal, // For JusPrin CallEmbeddedChatMethod
+    async fetchUserData() {
+      if (!this.oauthAccessToken) {
+        return
+      }
+
+      const response = await api.get(urls.jusprinMe(), this.oauthAccessToken)
+      this.creditsInfo = response.data.ai_credits
+      this.userInfo = response.data.user
+    },
     async callLongRunningAgentActionThenRefreshPresets(action, payload = null) {
       await getAgentActionResponse(action, payload, 1000 * 60 * 60 * 24) // Make timeout super long as it's hard to know how long it takes user to finish things like adding a printer
       this.refreshSelectedPresets()

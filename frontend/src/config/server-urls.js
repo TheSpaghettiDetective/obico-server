@@ -52,6 +52,7 @@ export default {
   gcodeFileBulkMove: () => '/api/v1/g_code_files/bulk_move/',
 
   // JusPrin
+  jusprinMe: () => '/jusprin/api/me/',
   jusprinChats: (chatId) => (chatId ? `/jusprin/api/chats/${chatId}/` : `/jusprin/api/chats/`),
   jusprinChatMessages: (chat_id) => `/jusprin/api/chats/messages/`,
   jusprinPlateAnalysisProcess: () => '/jusprin/api/plate_analysis/',

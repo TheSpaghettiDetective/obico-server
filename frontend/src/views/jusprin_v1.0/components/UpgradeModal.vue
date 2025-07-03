@@ -7,56 +7,78 @@
 
       <h2 class="modal-title">{{ $t("Your JusPrin Account") }}</h2>
 
-      <div class="user-info">
-        <div class="user-details">
-          <h3 class="user-name">{{ userInfo.name }}</h3>
-          <div class="user-email">{{ userInfo.email }}</div>
-        </div>
-        <span class="plan-badge">{{ $t("FREE Plan") }}</span>
+      <div v-if="loading" class="text-center">
+        <i class="mdi mdi-loading mdi-spin"></i> {{ $t("Loading...") }}
       </div>
 
-      <div class="body-section">
-        <div class="ai-credits-header">
-          <img src="/static/img/jusprin-credit.png" alt="JusPrin Credit Icon" class="credit-icon" />
-          <h4 class="modal-section-title">{{ $t("AI Credits") }}</h4>
-        </div>
-        <div class="progress-bar-container">
-          <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
-        </div>
-        <div class="progress-info">
-          <span class="usage-text">{{ $t("You've used {used} AI credits of {total} this month", { used: creditsUsed, total: credits.total }) }}</span>
-          <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: "July 1st" }) }}</span>
-        </div>
-      </div>
-
-      <div class="text-muted small">
-       {{ $t("\"AI credit\" is the currency for using JusPrin AI. Every time you ask JusPrin to determine the best way to slice the model, you will use 1 AI credit.") }}
-       <br>
-       {{ $t("We set a limit on the number of AI credits per month for free users because OpenAI charges us for each API call.") }}
-      </div>
-
-      <muted-alert class="mt-2 feature-notice">
-        {{ $t("AI credit limit is reset at the beginning of each month.") }}
-      </muted-alert>
-
-      <div class="body-section">
-        <h4 class="modal-section-title">{{ $t("Get More AI Credits") }}</h4>
-        <div class="section-description">{{ $t("If you are running short on AI credits, there are two ways to get more.") }}</div>
-        <div class="upgrade-option">
-          <div class="upgrade-details">
-            <div class="upgrade-title">
-              {{ $t("Upgrade to Unlimited Plan") }}
-            </div>
-            <div class="text-muted small">{{ $t("Note: If your account is an Obico Pro account, you can a 30% discount on the upgrade.") }}</div>
+      <div v-else>
+        <div class="user-info">
+          <div class="user-details">
+            <h3 class="user-name">{{ userInfo.name }}</h3>
+            <div class="user-email">{{ userInfo.email }}</div>
           </div>
-          <button class="btn btn-primary upgrade-button" @click="handleUpgrade">{{ $t("Upgrade") }}</button>
+          <span class="plan-badge" :class="{ 'pro-badge': userInfo.has_active_subscription }">
+            {{ userInfo.has_active_subscription ? $t("{plan} Plan", { plan: userInfo.subscription_plan || 'Pro' }) : $t("FREE Plan") }}
+          </span>
         </div>
-        <div class="mt-4">
-          <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI credits using your own OpenAI API key.')">
-            <template #hostYourOwnLink>
-              <a href="https://github.com/TheSpaghettiDetective/JusPrin" target="_blank">{{ $t("host your own JusPrin server") }}</a>
-            </template>
-          </i18next>
+
+        <div class="body-section">
+          <div class="ai-credits-header">
+            <img src="/static/img/jusprin-credit.png" alt="JusPrin Credit Icon" class="credit-icon" />
+            <h4 class="modal-section-title">{{ $t("AI Credits") }}</h4>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
+          </div>
+          <div class="progress-info">
+            <span class="usage-text">You've used {{ credits.used }} AI credits of {{ credits.total }} this month</span>
+            <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: credits.reset_date || "Next month" }) }}</span>
+          </div>
+        </div>
+
+        <div class="text-muted small">
+         {{ $t("\"AI credit\" is the currency for using JusPrin AI. Every time you ask JusPrin to determine the best way to slice the model, you will use 1 AI credit.") }}
+         <br>
+         {{ $t("We set a limit on the number of AI credits per month for free users because OpenAI charges us for each API call.") }}
+        </div>
+
+        <muted-alert class="mt-2 feature-notice">
+          {{ $t("AI credit limit is reset at the beginning of each month.") }}
+        </muted-alert>
+
+        <div class="body-section" v-if="!userInfo.has_active_subscription">
+          <h4 class="modal-section-title">{{ $t("Get More AI Credits") }}</h4>
+          <div class="section-description">{{ $t("If you are running short on AI credits, there are two ways to get more.") }}</div>
+          <div class="upgrade-option">
+            <div class="upgrade-details">
+              <div class="upgrade-title">
+                {{ $t("Upgrade to Unlimited Plan") }}
+                <span v-if="userInfo.has_active_subscription" class="discount">{{ $t("30% OFF") }}</span>
+              </div>
+              <div class="text-muted small">{{ $t("Note: If your account is an Obico Pro account, you can get a 30% discount on the upgrade.") }}</div>
+            </div>
+            <button class="btn btn-primary upgrade-button" @click="handleUpgrade">{{ $t("Upgrade") }}</button>
+          </div>
+          <div class="mt-4">
+            <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI credits using your own OpenAI API key.')">
+              <template #hostYourOwnLink>
+                <a href="https://github.com/TheSpaghettiDetective/JusPrin" target="_blank">{{ $t("host your own JusPrin server") }}</a>
+              </template>
+            </i18next>
+          </div>
+        </div>
+
+        <div class="body-section" v-else>
+          <h4 class="modal-section-title">{{ $t("Your Active Subscription") }}</h4>
+          <div class="subscription-info">
+            <div class="subscription-details">
+              <div class="subscription-plan">
+                <i class="mdi mdi-crown"></i>
+                {{ $t("You have an active {plan} subscription", { plan: userInfo.subscription_plan || 'Pro' }) }}
+              </div>
+              <div class="text-muted small">{{ $t("Your subscription gives you access to enhanced features and higher AI credit limits.") }}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -65,6 +87,8 @@
 
 <script>
 import MutedAlert from '@src/components/MutedAlert.vue'
+import api from '../lib/api'
+import urls from '@config/server-urls'
 
 export default {
   name: 'UpgradeModal',
@@ -76,31 +100,78 @@ export default {
       type: Boolean,
       default: false
     },
-    userInfo: {
-      type: Object,
-      default: () => ({
-        name: 'Kenneth Jiang',
-        email: 'kenneth.jiang@gmail.com'
-      })
-    },
-    credits: {
-      type: Object,
-      default: () => ({
-        available: 90,
-        total: 90,
+    oauthAccessToken: {
+      type: String,
+      default: null
+    }
+  },
+  data() {
+    return {
+      loading: false,
+      userInfo: {
+        name: '',
+        email: '',
+        username: '',
+        has_active_subscription: false,
+        subscription_plan: null
+      },
+      credits: {
+        total: 0,
+        used: 0,
+        available: 0,
+        monthly_limit: 0,
+        credits_enabled: false,
+        can_use_ai: false,
+        reset_date: '',
         purchased: 0
-      })
+      },
+      error: null
     }
   },
   computed: {
     creditsUsed() {
-      return this.credits.total - this.credits.available
+      return this.credits.used
     },
     progressPercentage() {
-      return ((this.credits.total - this.credits.available) / this.credits.total) * 100
+      if (this.credits.total === 0) return 0
+      if (this.credits.total === 999999) return 0 // Unlimited case
+      return Math.min(100, (this.credits.used / this.credits.total) * 100)
+    }
+  },
+  watch: {
+    show(newValue) {
+      if (newValue) {
+        this.fetchAICreditsData()
+      }
+    }
+  },
+  mounted() {
+    if (this.show) {
+      this.fetchAICreditsData()
     }
   },
   methods: {
+    async fetchAICreditsData() {
+      if (!this.oauthAccessToken) {
+        return
+      }
+
+      this.loading = true
+      this.error = null
+
+      const response = await api.get(urls.jusprinMe(), this.oauthAccessToken)
+      if (response.data) {
+        this.userInfo = {
+          name: response.data.user.name,
+          email: response.data.user.email,
+          username: response.data.user.username,
+          has_active_subscription: false, // Will be set by enterprise data if available
+          subscription_plan: null
+        }
+        this.credits = response.data.ai_credits
+      }
+      this.loading = false
+    },
     closeModal() {
       this.$emit('close')
     },
@@ -215,6 +286,12 @@ export default {
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
+
+      &.pro-badge {
+        background-color: var(--color-primary);
+        color: var(--color-on-primary);
+        border-color: var(--color-primary);
+      }
     }
   }
 
@@ -235,31 +312,6 @@ export default {
         width: 1.5rem;
         height: 1.5rem;
         flex-shrink: 0;
-      }
-    }
-
-    .ai-asks-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-
-      .ai-asks-icon {
-        background-color: var(--color-primary);
-        color: var(--color-on-primary);
-        border-radius: 50%;
-        width: 1.5rem;
-        height: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.875rem;
-      }
-
-      .ai-asks-title {
-        color: var(--color-text-primary);
-        font-size: 1.125rem;
-        font-weight: 600;
       }
     }
 
@@ -342,9 +394,8 @@ export default {
 
       .upgrade-details {
         flex: 1;
-        min-width: 0; // Allow text to wrap if needed
+        min-width: 0;
 
-        // Prevent excessive shrinking on medium screens
         @media (min-width: 401px) {
           min-width: 200px;
         }
@@ -374,7 +425,7 @@ export default {
         font-size: 0.875rem;
         font-weight: 600;
         white-space: nowrap;
-        flex-shrink: 0; // Prevent button from shrinking
+        flex-shrink: 0;
 
         @media (max-width: 400px) {
           width: 100%;
@@ -383,6 +434,29 @@ export default {
 
         &:hover {
           background-color: var(--color-primary-hover);
+        }
+      }
+    }
+
+    .subscription-info {
+      border: 1px solid var(--color-primary);
+      border-radius: var(--border-radius-md);
+      padding: 1rem;
+      background-color: var(--color-surface-primary);
+
+      .subscription-details {
+        .subscription-plan {
+          color: var(--color-primary);
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          i {
+            color: var(--color-primary);
+          }
         }
       }
     }

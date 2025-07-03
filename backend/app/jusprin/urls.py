@@ -6,6 +6,7 @@ from . import views as jusprin_views
 
 router = DefaultRouter()
 
+router.register(r'me', jusprin_views.JusPrinMeViewSet, 'JusPrinMeViewSet')
 router.register(r'chats', jusprin_views.JusPrinChatViewSet, 'JusPrinChatViewSet')
 router.register(r'plate_analysis', jusprin_views.JusPrinPlateAnalysisViewSet, 'JusPrinPlateAnalysisViewSet')
 router.register(r'contact_support', jusprin_views.JusPrinContactSupportRequestViewSet, 'JusPrinContactSupportRequestViewSet')

@@ -25,8 +25,6 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
         }
     """
     with transaction.atomic():
-        user = User.objects.get(id=user_id)
-        ai_credit = JusPrinAICredit.objects.get(user=user)
 
         monthly_limit = ai_credit.ai_credit_free_monthly_quota
 
@@ -70,9 +68,7 @@ def get_credits_info(user_id: int) -> dict:
     Returns:
         Dictionary with all credit information
     """
-    user = User.objects.get(id=user_id)
-    ai_credit = JusPrinAICredit.objects.get(user=user)
-
+    ai_credit, created = JusPrinAICredit.objects.get_or_create(user_id=user_id)
     monthly_limit = ai_credit.ai_credit_free_monthly_quota
     used = ai_credit.ai_credit_used_current_month
 

@@ -20,8 +20,8 @@ import sentry_sdk
 from django.core.mail import EmailMessage
 
 from api.authentication import CsrfExemptSessionAuthentication
-from .serializers import JusPrinChatSerializer
-from .models import JusPrinChat
+from .serializers import JusPrinChatSerializer, JusPrinAICreditSerializer, UserAICreditInfoSerializer, JusPrinMeSerializer
+from .models import JusPrinChat, JusPrinAICredit
 from .llm_chain import run_chain_on_chat
 from .plate_analysis_llm_module.analyse_plate_step import analyse_plate_step
 from .ai_credits import consume_credit_for_pipeline, get_credits_info
@@ -59,6 +59,20 @@ def require_ai_credits(view_func):
 
         return response
     return wrapper
+
+class JusPrinMeViewSet(viewsets.ViewSet):
+    """
+    Consolidated ViewSet for user info and AI credits.
+    """
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+
+    def list(self, request):
+        """
+        Get current user's info and AI credits in a single call.
+        """
+        serializer = JusPrinMeSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)

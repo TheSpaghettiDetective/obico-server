@@ -25,7 +25,7 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
         }
     """
     with transaction.atomic():
-
+        ai_credit, created = JusPrinAICredit.objects.get_or_create(user_id=user_id)
         monthly_limit = ai_credit.ai_credit_free_monthly_quota
 
         # If quota is -1 (unlimited), allow usage

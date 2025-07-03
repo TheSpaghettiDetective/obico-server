@@ -414,10 +414,8 @@ export default {
         })
         this.thinking = false
 
-        // Extract credit information from API response if present
-        if (response.data.ai_credits) {
-          this.creditsInfo = response.data.ai_credits
-        }
+        // Refresh user data after credit consumption
+        await this.fetchUserData()
 
         this.processChatResponse(response.data, presets)
       } catch (error) {
@@ -890,17 +888,15 @@ export default {
       this.clearQuickButtons()
 
       const analysisResponse = await this.callPlateAnalysis()
-      this.processAnalysisResponse(analysisResponse)
+      await this.processAnalysisResponse(analysisResponse)
     },
 
-    processAnalysisResponse(response) {
+    async processAnalysisResponse(response) {
       this.messages.push(response.message)
       this.thinking = false
 
-      // Extract credit information from API response if present
-      if (response.ai_credits) {
-        this.creditsInfo = response.ai_credits
-      }
+      // Refresh user data after credit consumption
+      await this.fetchUserData()
 
       const payload = {
         messages: JSON.stringify(this.messages),

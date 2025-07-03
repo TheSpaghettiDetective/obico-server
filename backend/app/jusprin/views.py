@@ -34,32 +34,12 @@ def require_ai_credits(view_func):
     def wrapper(self, request, *args, **kwargs):
         credit_result = consume_credit_for_pipeline(request.user.id)
         if not credit_result['success']:
-            # Get raw AI credit object for error response
-            ai_credit, _ = JusPrinAICredit.objects.get_or_create(user=request.user)
-            serializer = JusPrinAICreditSerializer(ai_credit)
             return Response({
-                'error': credit_result['message'],
-                'ai_credits': serializer.data
+                'error': credit_result['message']
             }, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         # Execute the view function
-        response = view_func(self, request, *args, **kwargs)
-
-        # Get updated raw AI credit object after consumption
-        ai_credit, _ = JusPrinAICredit.objects.get_or_create(user=request.user)
-        serializer = JusPrinAICreditSerializer(ai_credit)
-
-        # Handle both dict and list responses
-        if isinstance(response.data, dict):
-            response.data['ai_credits'] = serializer.data
-        elif isinstance(response.data, list):
-            # Wrap list in object with credit info
-            response.data = {
-                'data': response.data,
-                'ai_credits': serializer.data
-            }
-
-        return response
+        return view_func(self, request, *args, **kwargs)
     return wrapper
 
 class JusPrinMeViewSet(viewsets.ViewSet):

@@ -7,6 +7,12 @@
 
       <h2 class="modal-title">{{ $t("Your JusPrin Account") }}</h2>
 
+      <!-- Red banner for zero credits -->
+      <div v-if="!loading && !isUnlimitedPlan && remainingCredits <= 0" class="credit-exhausted-banner">
+        <i class="mdi mdi-alert-circle"></i>
+        <span>{{ $t("You have run out of AI credits!") }}</span>
+      </div>
+
       <div v-if="loading" class="text-center">
         <i class="mdi mdi-loading mdi-spin"></i> {{ $t("Loading...") }}
       </div>
@@ -78,8 +84,6 @@
               </div>
               <a
                 href="/ent/jusprin/pricing/"
-                target="_blank"
-                rel="noopener noreferrer"
                 class="btn btn-primary upgrade-button"
               >
                 {{ $t('Upgrade') }}
@@ -505,6 +509,47 @@ export default {
           }
         }
       }
+    }
+  }
+
+  .credit-exhausted-banner {
+    background-color: var(--color-danger);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    justify-content: center;
+    border: 2px solid var(--color-danger);
+    animation: pulse-danger 2s ease-in-out infinite;
+
+    i {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    span {
+      font-weight: 700;
+    }
+
+    @media (max-width: 400px) {
+      font-size: 0.875rem;
+      padding: 0.875rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  @keyframes pulse-danger {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(var(--color-danger-rgb, 220, 53, 69), 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(var(--color-danger-rgb, 220, 53, 69), 0);
     }
   }
 }

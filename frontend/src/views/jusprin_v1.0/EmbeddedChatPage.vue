@@ -294,7 +294,14 @@ export default {
         const remainingCredits = Math.max(0, this.creditsInfo.ai_credit_free_monthly_quota - (this.creditsInfo.ai_credit_used_current_month || 0))
         if (remainingCredits <= 0) {
           this.openUpgradeModal()
-          return
+          return {
+            data: {
+              message: {
+                role: 'assistant',
+                content: this.$t("You're on a free plan and your account has run out of AI credits.")
+              }
+            }
+          }
         }
       }
 
@@ -309,7 +316,14 @@ export default {
         // Catch 402 errors and show UpgradeModal
         if (error.response && error.response.status === 402) {
           this.openUpgradeModal()
-          return
+          return {
+            data: {
+              message: {
+                role: 'assistant',
+                content: this.$t("You're on a free plan and your account has run out of AI credits.")
+              }
+            }
+          }
         }
 
         // Let all other errors bubble up to Sentry
@@ -857,6 +871,12 @@ export default {
             payload
           )
         })
+
+                // Handle credit response structure - if it's a credit message, restructure it for processAnalysisResponse
+        if (response.data && response.data.message && response.data.message.role === 'assistant') {
+          return { message: response.data.message }
+        }
+
         return response.data
       } catch (error) {
         console.error('Error calling plate analysis:', error)

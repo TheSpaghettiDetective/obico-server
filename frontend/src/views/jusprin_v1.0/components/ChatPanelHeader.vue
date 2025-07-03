@@ -18,7 +18,7 @@
       class="credit-display"
       :class="creditStatusClass"
       @click="$emit('show-upgrade-modal')"
-      :title="$t('Click to see upgrade options')"
+      :title="creditTooltipText"
     >
       <i v-if="creditsInfo.ai_credit_free_monthly_quota === -1" class="mdi mdi-crown credit-icon"></i>
       <img v-else src="/static/img/jusprin-credit.png" alt="Credits" class="credit-icon" />
@@ -135,6 +135,13 @@ export default {
       } else {
         return 'credit-success'
       }
+    },
+    creditTooltipText() {
+      if (this.creditsInfo.ai_credit_free_monthly_quota === -1) {
+        return this.$i18next.t('Unlimited AI credits')
+      }
+
+      return this.$i18next.t('You are on a free plan, which has limited AI credits. Click to see upgrade options.')
     },
   },
   async mounted() {

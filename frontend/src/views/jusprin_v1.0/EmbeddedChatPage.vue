@@ -284,10 +284,9 @@ export default {
       if (!this.oauthAccessToken) {
         return
       }
-
       const response = await api.get(urls.jusprinMe(), this.oauthAccessToken)
-      this.creditsInfo = response.data.ai_credits
       this.userInfo = response.data.user
+      this.creditsInfo = response.data.ai_credits
     },
     async callLongRunningAgentActionThenRefreshPresets(action, payload = null) {
       await getAgentActionResponse(action, payload, 1000 * 60 * 60 * 24) // Make timeout super long as it's hard to know how long it takes user to finish things like adding a printer
@@ -416,8 +415,8 @@ export default {
         this.thinking = false
 
         // Extract credit information from API response if present
-        if (response.data.jusprint_credits) {
-          this.creditsInfo = response.data.jusprint_credits
+        if (response.data.ai_credits) {
+          this.creditsInfo = response.data.ai_credits
         }
 
         this.processChatResponse(response.data, presets)
@@ -899,8 +898,8 @@ export default {
       this.thinking = false
 
       // Extract credit information from API response if present
-      if (response.jusprint_credits) {
-        this.creditsInfo = response.jusprint_credits
+      if (response.ai_credits) {
+        this.creditsInfo = response.ai_credits
       }
 
       const payload = {

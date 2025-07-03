@@ -14,7 +14,7 @@
       <div v-else>
         <div class="user-info">
           <div class="user-details">
-            <h3 class="user-name">{{ userInfo.name }}</h3>
+            <h3 class="user-name">{{ userDisplayName }}</h3>
             <div class="user-email">{{ userInfo.email }}</div>
           </div>
           <span class="plan-badge" :class="{ 'pro-badge': isUnlimitedPlan }">
@@ -49,9 +49,9 @@
             </div>
             <div class="progress-info">
               <span class="usage-text">
-                You've used {{ credits.used }} AI credits of {{ credits.total }} this month
+                You've used {{ credits.ai_credit_used_current_month }} AI credits of {{ isUnlimitedPlan ? 'unlimited' : credits.ai_credit_free_monthly_quota }} this month
               </span>
-              <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: credits.reset_date || "Next month" }) }}</span>
+              <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: 'Next month' }) }}</span>
             </div>
           </div>
 
@@ -135,37 +135,24 @@ export default {
   data() {
     return {
       loading: false,
-      userInfo: {
-        name: '',
-        email: '',
-        username: '',
-        has_active_subscription: false,
-        subscription_plan: null
-      },
-      credits: {
-        total: 0,
-        used: 0,
-        available: 0,
-        monthly_limit: 0,
-        credits_enabled: false,
-        can_use_ai: false,
-        reset_date: '',
-        purchased: 0
-      },
+      userInfo: null,
+      credits: null,
       error: null
     }
   },
   computed: {
-    creditsUsed() {
-      return this.credits.used
-    },
     progressPercentage() {
-      if (this.credits.total === 0) return 0
-      if (this.credits.total === 999999) return 100 // Unlimited case, show full progress bar
-      return Math.min(100, (this.credits.used / this.credits.total) * 100)
+      if (!this.credits || this.credits.ai_credit_free_monthly_quota === -1) return 100
+      if (this.credits.ai_credit_free_monthly_quota === 0) return 0
+      return Math.min(100, (this.credits.ai_credit_used_current_month / this.credits.ai_credit_free_monthly_quota) * 100)
     },
     isUnlimitedPlan() {
-      return this.credits.total === 999999
+      return this.credits?.ai_credit_free_monthly_quota === -1
+    },
+    userDisplayName() {
+      if (!this.userInfo) return ''
+      const fullName = `${this.userInfo.first_name || ''} ${this.userInfo.last_name || ''}`.trim()
+      return fullName || this.userInfo.username || this.userInfo.email || 'User'
     }
   },
   watch: {
@@ -185,19 +172,11 @@ export default {
       if (!this.oauthAccessToken) {
         return
       }
-
       this.loading = true
       this.error = null
-
       const response = await api.get(urls.jusprinMe(), this.oauthAccessToken)
       if (response.data) {
-        this.userInfo = {
-          name: response.data.user.name,
-          email: response.data.user.email,
-          username: response.data.user.username,
-          has_active_subscription: false, // Will be set by enterprise data if available
-          subscription_plan: null
-        }
+        this.userInfo = response.data.user
         this.credits = response.data.ai_credits
       }
       this.loading = false

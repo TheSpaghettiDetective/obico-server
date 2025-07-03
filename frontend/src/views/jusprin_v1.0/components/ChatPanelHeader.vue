@@ -14,18 +14,18 @@
 
     <!-- Credit Display -->
     <div
-      v-if="creditsInfo && creditsInfo.monthly_limit !== 0"
+      v-if="creditsInfo && creditsInfo.ai_credit_free_monthly_quota !== 0"
       class="credit-display"
       :class="creditStatusClass"
       @click="$emit('show-upgrade-modal')"
       :title="$t('Click to see upgrade options')"
     >
       <img src="/static/img/jusprin-credit.png" alt="Credits" class="credit-icon" />
-      <span class="credit-text" v-if="creditsInfo.monthly_limit === -1">
+      <span class="credit-text" v-if="creditsInfo.ai_credit_free_monthly_quota === -1">
         {{ $t('Unlimited') }}
       </span>
       <span class="credit-text" v-else>
-        {{ remainingCredits }}/{{ creditsInfo.monthly_limit }}
+        {{ remainingCredits }}/{{ creditsInfo.ai_credit_free_monthly_quota }}
       </span>
     </div>
 
@@ -115,20 +115,18 @@ export default {
       },
     },
     remainingCredits() {
-      if (!this.creditsInfo || this.creditsInfo.monthly_limit <= 0) {
+      if (!this.creditsInfo || this.creditsInfo.ai_credit_free_monthly_quota <= 0) {
         return 0
       }
-      return Math.max(0, this.creditsInfo.monthly_limit - (this.creditsInfo.used_credits || 0))
+      return Math.max(0, this.creditsInfo.ai_credit_free_monthly_quota - (this.creditsInfo.ai_credit_used_current_month || 0))
     },
     creditStatusClass() {
-      if (!this.creditsInfo || this.creditsInfo.monthly_limit <= 0) {
+      if (!this.creditsInfo || this.creditsInfo.ai_credit_free_monthly_quota <= 0) {
         return ''
       }
-
       const remaining = this.remainingCredits
-      const total = this.creditsInfo.monthly_limit
-      const ratio = remaining / total
-
+      const total = this.creditsInfo.ai_credit_free_monthly_quota
+      const ratio = total === 0 ? 0 : remaining / total
       if (remaining === 0) {
         return 'credit-exhausted'
       } else if (ratio < 1/3) {

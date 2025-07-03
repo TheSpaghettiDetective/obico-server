@@ -20,7 +20,7 @@ import sentry_sdk
 from django.core.mail import EmailMessage
 
 from api.authentication import CsrfExemptSessionAuthentication
-from .serializers import JusPrinChatSerializer, JusPrinAICreditSerializer, UserAICreditInfoSerializer, JusPrinMeSerializer
+from .serializers import JusPrinChatSerializer, JusPrinAICreditSerializer, JusPrinMeSerializer
 from .models import JusPrinChat, JusPrinAICredit
 from .llm_chain import run_chain_on_chat
 from .plate_analysis_llm_module.analyse_plate_step import analyse_plate_step
@@ -34,27 +34,29 @@ def require_ai_credits(view_func):
     def wrapper(self, request, *args, **kwargs):
         credit_result = consume_credit_for_pipeline(request.user.id)
         if not credit_result['success']:
-            # Get full credit info for error response
-            credits_info = get_credits_info(request.user.id)
+            # Get raw AI credit object for error response
+            ai_credit, _ = JusPrinAICredit.objects.get_or_create(user=request.user)
+            serializer = JusPrinAICreditSerializer(ai_credit)
             return Response({
                 'error': credit_result['message'],
-                'jusprint_credits': credits_info
+                'ai_credits': serializer.data
             }, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         # Execute the view function
         response = view_func(self, request, *args, **kwargs)
 
-        # Get updated credit info after consumption
-        credits_info = get_credits_info(request.user.id)
+        # Get updated raw AI credit object after consumption
+        ai_credit, _ = JusPrinAICredit.objects.get_or_create(user=request.user)
+        serializer = JusPrinAICreditSerializer(ai_credit)
 
         # Handle both dict and list responses
         if isinstance(response.data, dict):
-            response.data['jusprint_credits'] = credits_info
+            response.data['ai_credits'] = serializer.data
         elif isinstance(response.data, list):
             # Wrap list in object with credit info
             response.data = {
                 'data': response.data,
-                'jusprint_credits': credits_info
+                'ai_credits': serializer.data
             }
 
         return response

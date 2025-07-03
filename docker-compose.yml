@@ -47,14 +47,15 @@ services:
   ml_api:
     hostname: ml_api
     restart: unless-stopped
-    build:
-      context: ml_api
+    image: ghcr.io/d-mcknight/ml_api:latest
+      #build:
+      #context: ml_api
     environment:
       DEBUG: 'True'
       FLASK_APP: 'server.py'
       # ML_API_TOKEN:
     tty: true
-    command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+      #command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://ml_api:3333/hc/"]
       start_period: 30s

@@ -42,7 +42,7 @@ jobs:
         id: base_meta
         uses: docker/metadata-action@v2
         with:
-          images: ${{ env.REGISTRY }}/ml_api
+          images: ${{ env.REGISTRY }}/${{github.repository_owner}}/ml_api
           tags: |
             type=ref,event=branch
             type=raw,value=latest

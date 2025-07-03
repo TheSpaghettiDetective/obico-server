@@ -288,6 +288,34 @@ export default {
       this.userInfo = response.data.user
       this.creditsInfo = response.data.ai_credits
     },
+    async withCreditCheck(apiCall) {
+      // Check if balance is 0 before making the call
+      if (this.creditsInfo && this.creditsInfo.ai_credit_free_monthly_quota !== -1) {
+        const remainingCredits = Math.max(0, this.creditsInfo.ai_credit_free_monthly_quota - (this.creditsInfo.ai_credit_used_current_month || 0))
+        if (remainingCredits <= 0) {
+          this.openUpgradeModal()
+          throw new Error('Insufficient credits')
+        }
+      }
+
+      try {
+        const result = await apiCall()
+
+        // Refresh user data after successful call
+        await this.fetchUserData()
+
+        return result
+      } catch (error) {
+        // Catch 402 errors and show UpgradeModal
+        if (error.response && error.response.status === 402) {
+          this.openUpgradeModal()
+          throw error
+        }
+
+        // Let all other errors bubble up to Sentry
+        throw error
+      }
+    },
     async callLongRunningAgentActionThenRefreshPresets(action, payload = null) {
       await getAgentActionResponse(action, payload, 1000 * 60 * 60 * 24) // Make timeout super long as it's hard to know how long it takes user to finish things like adding a printer
       this.refreshSelectedPresets()
@@ -400,22 +428,21 @@ export default {
         }
 
         const currentChatId = await this.getCurrentChatId()
-        const response = await api.post(urls.jusprinChatMessages(), this.oauthAccessToken, {
-          messages: this.messages,
-          current_workflow: this.current_workflow,
-          slicing_profiles: {
-            filament_presets: [this.selectedPreset('filament', presets)],
-            print_process_presets: presets.printProcessPresets,
-            filament_overrides: this.overridesFromEditedPreset('filament', editedPresets),
-            print_process_overrides: this.overridesFromEditedPreset('printProcess', editedPresets),
-          },
-          plates: plates,
-          chat_id: currentChatId,
+        const response = await this.withCreditCheck(async () => {
+          return api.post(urls.jusprinChatMessages(), this.oauthAccessToken, {
+            messages: this.messages,
+            current_workflow: this.current_workflow,
+            slicing_profiles: {
+              filament_presets: [this.selectedPreset('filament', presets)],
+              print_process_presets: presets.printProcessPresets,
+              filament_overrides: this.overridesFromEditedPreset('filament', editedPresets),
+              print_process_overrides: this.overridesFromEditedPreset('printProcess', editedPresets),
+            },
+            plates: plates,
+            chat_id: currentChatId,
+          })
         })
         this.thinking = false
-
-        // Refresh user data after credit consumption
-        await this.fetchUserData()
 
         this.processChatResponse(response.data, presets)
       } catch (error) {
@@ -887,16 +914,13 @@ export default {
       this.thinking = true
       this.clearQuickButtons()
 
-      const analysisResponse = await this.callPlateAnalysis()
+      const analysisResponse = await this.withCreditCheck(() => this.callPlateAnalysis())
       await this.processAnalysisResponse(analysisResponse)
     },
 
     async processAnalysisResponse(response) {
       this.messages.push(response.message)
       this.thinking = false
-
-      // Refresh user data after credit consumption
-      await this.fetchUserData()
 
       const payload = {
         messages: JSON.stringify(this.messages),

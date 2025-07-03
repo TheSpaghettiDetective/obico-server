@@ -39,7 +39,6 @@ jobs:
 
       # ml_api image
       - name: Extract metadata for ml_api
-        id: base_meta
         uses: docker/metadata-action@v2
         with:
           images: ${{ env.REGISTRY }}/${{github.repository_owner}}/ml_api
@@ -56,5 +55,26 @@ jobs:
           labels: ${{ steps.base_meta.outputs.labels }}
           platforms: ${{ env.PLATFORMS }}
           file: ml_api/Dockerfile
+          # cache-from: type=gha
+          # cache-to: type=gha,mode=max
+
+      # obico_web image
+      - name: Extract metadata for obico_web
+        uses: docker/metadata-action@v2
+        with:
+          images: ${{ env.REGISTRY }}/${{github.repository_owner}}/obico_web
+          tags: |
+            type=ref,event=branch
+            type=raw,value=latest
+
+      - name: Build and push obico_web Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          push: true
+          tags: ${{ steps.base_meta.outputs.tags }}
+          labels: ${{ steps.base_meta.outputs.labels }}
+          platforms: ${{ env.PLATFORMS }}
+          file: backend/Dockerfile
           # cache-from: type=gha
           # cache-to: type=gha,mode=max

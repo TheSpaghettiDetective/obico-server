@@ -65,14 +65,13 @@ services:
 
   web:
     <<: *web-defaults
-    environment:
-      OBICO_CONTAINER: web
     hostname: web
     image: ghcr.io/d-mcknight/obico_web:latest
     ports:
       - "3334:3334"
     depends_on:
       - ml_api
+    command: [ "/bin/sh", "/app/run.sh", "web" ]
         # command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://web:3334/hc/"]
@@ -83,10 +82,9 @@ services:
 
   tasks:
     <<: *web-defaults
-    environment:
-      OBICO_CONTAINER: tasks
     hostname: tasks
     image: ghcr.io/d-mcknight/obico_web:latest
+    command: [ "/bin/sh", "/app/run.sh", "web" ]
       # command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
     healthcheck:
       test: ["CMD-SHELL", "celery -A config inspect ping"]

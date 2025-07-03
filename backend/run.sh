@@ -1,5 +1,6 @@
 #!/bin/sh
 
+OBICO_CONTAINER=${OBICO_CONTAINER:-$1}
 if [ "${OBICO_CONTAINER}" = "tasks" ]; then
   celery -A config worker --beat -l info -c 2 -Q realtime,celery
 elif [ "${OBICO_CONTAINER}" = "web" ]; then

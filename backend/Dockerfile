@@ -9,4 +9,4 @@ COPY backend /app
 COPY frontend /frontend
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["bash", "/app/run.sh"]
+CMD ["/bin/sh", "/app/run.sh"]

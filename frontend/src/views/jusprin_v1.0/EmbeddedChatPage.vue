@@ -294,7 +294,7 @@ export default {
         const remainingCredits = Math.max(0, this.creditsInfo.ai_credit_free_monthly_quota - (this.creditsInfo.ai_credit_used_current_month || 0))
         if (remainingCredits <= 0) {
           this.openUpgradeModal()
-          throw new Error('Insufficient credits')
+          return
         }
       }
 
@@ -309,7 +309,7 @@ export default {
         // Catch 402 errors and show UpgradeModal
         if (error.response && error.response.status === 402) {
           this.openUpgradeModal()
-          throw error
+          return
         }
 
         // Let all other errors bubble up to Sentry
@@ -850,11 +850,13 @@ export default {
       }
 
       try {
-        const response = await api.post(
-          urls.jusprinPlateAnalysisProcess(),
-          this.oauthAccessToken,
-          payload
-        )
+        const response = await this.withCreditCheck(async () => {
+          return api.post(
+            urls.jusprinPlateAnalysisProcess(),
+            this.oauthAccessToken,
+            payload
+          )
+        })
         return response.data
       } catch (error) {
         console.error('Error calling plate analysis:', error)
@@ -914,7 +916,7 @@ export default {
       this.thinking = true
       this.clearQuickButtons()
 
-      const analysisResponse = await this.withCreditCheck(() => this.callPlateAnalysis())
+      const analysisResponse = await this.callPlateAnalysis()
       await this.processAnalysisResponse(analysisResponse)
     },
 

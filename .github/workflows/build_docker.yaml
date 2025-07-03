@@ -72,7 +72,7 @@ jobs:
       - name: Build and push obico_web Docker image
         uses: docker/build-push-action@v5
         with:
-          context: backend
+          context: .
           push: true
           tags: ${{ steps.web_meta.outputs.tags }}
           labels: ${{ steps.web_meta.outputs.labels }}

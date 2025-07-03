@@ -45,7 +45,7 @@
               <h4 class="modal-section-title">{{ $t("AI Credits") }}</h4>
             </div>
             <div class="progress-bar-container">
-              <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
+              <div class="progress-bar" :class="creditStatusClass" :style="{ width: `${progressPercentage}%` }"></div>
             </div>
             <div class="progress-info">
               <span class="usage-text">
@@ -148,6 +148,27 @@ export default {
     },
     isUnlimitedPlan() {
       return this.credits?.ai_credit_free_monthly_quota === -1
+    },
+    remainingCredits() {
+      if (!this.credits || this.credits.ai_credit_free_monthly_quota <= 0) {
+        return 0
+      }
+      return Math.max(0, this.credits.ai_credit_free_monthly_quota - (this.credits.ai_credit_used_current_month || 0))
+    },
+    creditStatusClass() {
+      if (!this.credits || this.credits.ai_credit_free_monthly_quota <= 0) {
+        return ''
+      }
+      const remaining = this.remainingCredits
+      const total = this.credits.ai_credit_free_monthly_quota
+      const ratio = total === 0 ? 0 : remaining / total
+      if (remaining === 0) {
+        return 'credit-exhausted'
+      } else if (ratio < 1/3) {
+        return 'credit-warning'
+      } else {
+        return 'credit-success'
+      }
     },
     userDisplayName() {
       if (!this.userInfo) return ''
@@ -341,6 +362,18 @@ export default {
         background-color: var(--color-primary);
         border-radius: var(--border-radius-xs);
         transition: width 0.3s ease;
+
+        &.credit-success {
+          background-color: var(--color-success);
+        }
+
+        &.credit-warning {
+          background-color: var(--color-warning);
+        }
+
+        &.credit-exhausted {
+          background-color: var(--color-danger);
+        }
       }
     }
 

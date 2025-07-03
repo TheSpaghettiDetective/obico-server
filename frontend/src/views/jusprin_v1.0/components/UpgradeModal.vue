@@ -18,7 +18,7 @@
             <div class="user-email">{{ userInfo.email }}</div>
           </div>
           <span class="plan-badge" :class="{ 'pro-badge': isUnlimitedPlan }">
-            {{ isUnlimitedPlan ? $t('Unlimited Plan') : $t('FREE Plan') }}
+            {{ isUnlimitedPlan ? $t('Unlimited') : $t('FREE Plan') }}
           </span>
         </div>
 
@@ -74,7 +74,7 @@
                   {{ $t("Upgrade to Unlimited Plan") }}
                   <span v-if="userInfo.has_active_subscription" class="discount">{{ $t("30% OFF") }}</span>
                 </div>
-                <div class="text-muted small">{{ $t("Note: If your account is an Obico Pro account, you can get a 30% discount on the upgrade.") }}</div>
+                <div class="text-primary small">{{ $t("If your account is an Obico Pro account, you can get a 30% discount on the upgrade. Discount automatically applied at checkout.") }}</div>
               </div>
               <a
                 href="/ent/jusprin/pricing/"
@@ -295,16 +295,15 @@ export default {
     .plan-badge {
       color: var(--color-text-primary);
       padding: 0.25rem 0.75rem;
-      border-radius: var(--border-radius-lg);
-      border: 1px solid var(--color-divider);
+      border-radius: var(--border-radius-sm);
+      border: 1px dashed var(--color-divider);
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
 
       &.pro-badge {
-        background-color: var(--color-background);
         color: var(--color-primary);
-        border: 1px solid var(--color-primary);
+        border: 1px dashed var(--color-primary);
       }
     }
   }

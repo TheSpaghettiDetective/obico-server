@@ -20,9 +20,10 @@
       @click="$emit('show-upgrade-modal')"
       :title="$t('Click to see upgrade options')"
     >
-      <img src="/static/img/jusprin-credit.png" alt="Credits" class="credit-icon" />
+      <i v-if="creditsInfo.ai_credit_free_monthly_quota === -1" class="mdi mdi-crown credit-icon"></i>
+      <img v-else src="/static/img/jusprin-credit.png" alt="Credits" class="credit-icon" />
       <span class="credit-text" v-if="creditsInfo.ai_credit_free_monthly_quota === -1">
-        {{ $t('Unlimited') }}
+        {{ $t('Unlimited Account') }}
       </span>
       <span class="credit-text" v-else>
         {{ remainingCredits }}/{{ creditsInfo.ai_credit_free_monthly_quota }}
@@ -259,6 +260,11 @@ export default {
   .credit-icon
     width: 16px
     height: 16px
+
+    &.mdi-crown
+      font-size: 1.25rem
+      display: inline-flex
+      align-items: center
 
   .credit-text
     color: white

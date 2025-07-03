@@ -14,7 +14,6 @@
       :show="showUpgradeModal"
       :oauth-access-token="oauthAccessToken"
       @close="closeUpgradeModal"
-      @upgrade="handleUpgrade"
     />
 
 
@@ -1117,10 +1116,6 @@ export default {
     },
     closeUpgradeModal() {
       this.showUpgradeModal = false
-    },
-    handleUpgrade() {
-      // Close the upgrade modal - upgrade link handling will be implemented later
-      this.closeUpgradeModal()
     },
   },
 }

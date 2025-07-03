@@ -30,9 +30,12 @@
             <div class="unlimited-text" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;">
               {{ $t('Yay! You are on the Unlimited subscription plan!') }}
             </div>
-            <button class="btn btn-primary" @click="handleManageSubscription">
+            <a
+              href="/ent/jusprin/pricing/"
+              class="btn btn-primary upgrade-button"
+            >
               {{ $t('Manage Subscription') }}
-            </button>
+            </a>
           </div>
         </template>
         <template v-else>
@@ -73,7 +76,14 @@
                 </div>
                 <div class="text-muted small">{{ $t("Note: If your account is an Obico Pro account, you can get a 30% discount on the upgrade.") }}</div>
               </div>
-              <button class="btn btn-primary upgrade-button" @click="handleUpgrade">{{ $t("Upgrade") }}</button>
+              <a
+                href="/ent/jusprin/pricing/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-primary upgrade-button"
+              >
+                {{ $t('Upgrade') }}
+              </a>
             </div>
             <div class="mt-4">
               <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI credits using your own OpenAI API key.')">
@@ -194,12 +204,6 @@ export default {
     },
     closeModal() {
       this.$emit('close')
-    },
-    handleUpgrade() {
-      this.$emit('upgrade')
-    },
-    handleManageSubscription() {
-      // Implement the logic to manage the subscription
     }
   }
 }
@@ -311,9 +315,9 @@ export default {
       text-transform: uppercase;
 
       &.pro-badge {
-        background-color: var(--color-primary);
-        color: var(--color-on-primary);
-        border-color: var(--color-primary);
+        background-color: var(--color-background);
+        color: var(--color-primary);
+        border: 1px solid var(--color-primary);
       }
     }
   }

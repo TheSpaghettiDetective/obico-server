@@ -17,63 +17,73 @@
             <h3 class="user-name">{{ userInfo.name }}</h3>
             <div class="user-email">{{ userInfo.email }}</div>
           </div>
-          <span class="plan-badge" :class="{ 'pro-badge': userInfo.has_active_subscription }">
-            {{ userInfo.has_active_subscription ? $t("{plan} Plan", { plan: userInfo.subscription_plan || 'Pro' }) : $t("FREE Plan") }}
+          <span class="plan-badge" :class="{ 'pro-badge': isUnlimitedPlan }">
+            {{ isUnlimitedPlan ? $t('Unlimited Plan') : $t('FREE Plan') }}
           </span>
         </div>
 
-        <div class="body-section">
-          <div class="ai-credits-header">
-            <img src="/static/img/jusprin-credit.png" alt="JusPrin Credit Icon" class="credit-icon" />
-            <h4 class="modal-section-title">{{ $t("AI Credits") }}</h4>
-          </div>
-          <div class="progress-bar-container">
-            <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
-          </div>
-          <div class="progress-info">
-            <span class="usage-text">
-              <template v-if="credits.total === 999999">
-                {{ $t("Unlimited AI Credits") }}
-              </template>
-              <template v-else>
-                {{ $t("You've used {used} AI credits of {total} this month", { used: credits.used, total: credits.total }) }}
-              </template>
-            </span>
-            <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: credits.reset_date || "Next month" }) }}</span>
-          </div>
-        </div>
-
-        <div class="text-muted small">
-         {{ $t("\"AI credit\" is the currency for using JusPrin AI. Every time you ask JusPrin to determine the best way to slice the model, you will use 1 AI credit.") }}
-         <br>
-         {{ $t("We set a limit on the number of AI credits per month for free users because OpenAI charges us for each API call.") }}
-        </div>
-
-        <muted-alert class="mt-2 feature-notice">
-          {{ $t("AI credit limit is reset at the beginning of each month.") }}
-        </muted-alert>
-
-        <div class="body-section" v-if="!userInfo.has_active_subscription">
-          <h4 class="modal-section-title">{{ $t("Get More AI Credits") }}</h4>
-          <div class="section-description">{{ $t("If you are running short on AI credits, there are two ways to get more.") }}</div>
-          <div class="upgrade-option">
-            <div class="upgrade-details">
-              <div class="upgrade-title">
-                {{ $t("Upgrade to Unlimited Plan") }}
-                <span v-if="userInfo.has_active_subscription" class="discount">{{ $t("30% OFF") }}</span>
-              </div>
-              <div class="text-muted small">{{ $t("Note: If your account is an Obico Pro account, you can get a 30% discount on the upgrade.") }}</div>
+        <template v-if="isUnlimitedPlan">
+          <div class="body-section text-center">
+            <div class="celebration" style="font-size: 2.5rem; margin: 1.5rem 0;">
+              🎉 <i class="mdi mdi-crown" style="color: gold; font-size: 2.5rem;"></i> 🎉
             </div>
-            <button class="btn btn-primary upgrade-button" @click="handleUpgrade">{{ $t("Upgrade") }}</button>
+            <div class="unlimited-text" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;">
+              {{ $t('Yay! You are on the Unlimited subscription plan!') }}
+            </div>
+            <button class="btn btn-primary" @click="handleManageSubscription">
+              {{ $t('Manage Subscription') }}
+            </button>
           </div>
-          <div class="mt-4">
-            <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI credits using your own OpenAI API key.')">
-              <template #hostYourOwnLink>
-                <a href="https://github.com/TheSpaghettiDetective/JusPrin" target="_blank">{{ $t("host your own JusPrin server") }}</a>
-              </template>
-            </i18next>
+        </template>
+        <template v-else>
+          <div class="body-section">
+            <div class="ai-credits-header">
+              <img src="/static/img/jusprin-credit.png" alt="JusPrin Credit Icon" class="credit-icon" />
+              <h4 class="modal-section-title">{{ $t("AI Credits") }}</h4>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
+            </div>
+            <div class="progress-info">
+              <span class="usage-text">
+                {{ $t("You've used {used} AI credits of {total} this month", { used: credits.used, total: credits.total }) }}
+              </span>
+              <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: credits.reset_date || "Next month" }) }}</span>
+            </div>
           </div>
-        </div>
+
+          <div class="text-muted small">
+           {{ $t("\"AI credit\" is the currency for using JusPrin AI. Every time you ask JusPrin to determine the best way to slice the model, you will use 1 AI credit.") }}
+           <br>
+           {{ $t("We set a limit on the number of AI credits per month for free users because OpenAI charges us for each API call.") }}
+          </div>
+
+          <muted-alert class="mt-2 feature-notice">
+            {{ $t("AI credit limit is reset at the beginning of each month.") }}
+          </muted-alert>
+
+          <div class="body-section">
+            <h4 class="modal-section-title">{{ $t("Get More AI Credits") }}</h4>
+            <div class="section-description">{{ $t("If you are running short on AI credits, there are two ways to get more.") }}</div>
+            <div class="upgrade-option">
+              <div class="upgrade-details">
+                <div class="upgrade-title">
+                  {{ $t("Upgrade to Unlimited Plan") }}
+                  <span v-if="userInfo.has_active_subscription" class="discount">{{ $t("30% OFF") }}</span>
+                </div>
+                <div class="text-muted small">{{ $t("Note: If your account is an Obico Pro account, you can get a 30% discount on the upgrade.") }}</div>
+              </div>
+              <button class="btn btn-primary upgrade-button" @click="handleUpgrade">{{ $t("Upgrade") }}</button>
+            </div>
+            <div class="mt-4">
+              <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI credits using your own OpenAI API key.')">
+                <template #hostYourOwnLink>
+                  <a href="https://github.com/TheSpaghettiDetective/JusPrin" target="_blank">{{ $t("host your own JusPrin server") }}</a>
+                </template>
+              </i18next>
+            </div>
+          </div>
+        </template>
 
         <div class="body-section" v-else>
           <h4 class="modal-section-title">{{ $t("Your Active Subscription") }}</h4>
@@ -143,6 +153,9 @@ export default {
       if (this.credits.total === 0) return 0
       if (this.credits.total === 999999) return 100 // Unlimited case, show full progress bar
       return Math.min(100, (this.credits.used / this.credits.total) * 100)
+    },
+    isUnlimitedPlan() {
+      return this.credits.total === 999999
     }
   },
   watch: {
@@ -184,6 +197,9 @@ export default {
     },
     handleUpgrade() {
       this.$emit('upgrade')
+    },
+    handleManageSubscription() {
+      // Implement the logic to manage the subscription
     }
   }
 }

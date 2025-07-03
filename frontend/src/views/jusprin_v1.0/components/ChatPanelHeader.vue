@@ -14,14 +14,19 @@
 
     <!-- Credit Display -->
     <div
-      v-if="creditsInfo && creditsInfo.monthly_limit > 0"
+      v-if="creditsInfo && creditsInfo.monthly_limit !== 0"
       class="credit-display"
       :class="creditStatusClass"
       @click="$emit('show-upgrade-modal')"
       :title="$t('Click to see upgrade options')"
     >
       <img src="/static/img/jusprin-credit.png" alt="Credits" class="credit-icon" />
-      <span class="credit-text">{{ remainingCredits }}/{{ creditsInfo.monthly_limit }}</span>
+      <span class="credit-text" v-if="creditsInfo.monthly_limit === -1">
+        {{ $t('Unlimited') }}
+      </span>
+      <span class="credit-text" v-else>
+        {{ remainingCredits }}/{{ creditsInfo.monthly_limit }}
+      </span>
     </div>
 
     <div class="header-actions">

@@ -44,20 +44,18 @@ def require_ai_credits(view_func):
         # Execute the view function
         response = view_func(self, request, *args, **kwargs)
 
-        # Only inject credit info when credits are enabled (not unlimited)
-        if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is not None:
-            # Get updated credit info after consumption
-            credits_info = get_credits_info(request.user.id)
+        # Get updated credit info after consumption
+        credits_info = get_credits_info(request.user.id)
 
-            # Handle both dict and list responses
-            if isinstance(response.data, dict):
-                response.data['jusprint_credits'] = credits_info
-            elif isinstance(response.data, list):
-                # Wrap list in object with credit info
-                response.data = {
-                    'data': response.data,
-                    'jusprint_credits': credits_info
-                }
+        # Handle both dict and list responses
+        if isinstance(response.data, dict):
+            response.data['jusprint_credits'] = credits_info
+        elif isinstance(response.data, list):
+            # Wrap list in object with credit info
+            response.data = {
+                'data': response.data,
+                'jusprint_credits': credits_info
+            }
 
         return response
     return wrapper

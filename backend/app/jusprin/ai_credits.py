@@ -1,38 +1,31 @@
-from datetime import datetime
+from datetime import datetime, date
 from django.conf import settings
-from lib.cache import REDIS
+from django.db import transaction
+from django.utils import timezone
 from app.models import User
+from .models import JusPrinAICredit
 
 
-def _get_current_month_key(user_id: int) -> str:
-    """Generate Redis key for current month's AI credits.
+def _get_current_month_start() -> date:
+    """Get the start date of the current month.
+
+    Returns:
+        First day of current month
+    """
+    now = timezone.now().date()
+    return date(now.year, now.month, 1)
+
+
+def get_monthly_free_credits_limit(user_id: int) -> int:
+    """Get the monthly free credits limit for a user.
 
     Args:
         user_id: User ID
 
     Returns:
-        Redis key string for current month
+        Number of free credits per month, or -1 if unlimited
     """
-    now = datetime.now()
-    return f'jusprin:ai_credits:{user_id}:{now.year}:{now.month:02d}'
-
-
-def get_monthly_free_credits_limit() -> int:
-    """Get the monthly free credits limit from Django settings.
-
-    Returns:
-        Number of free credits per month, or 0 if not configured
-    """
-    limit = settings.JUSPRIN_FREE_CREDITS_PER_MONTH
-    if limit is None:
-        return 0
-    try:
-        return int(limit)
-    except (ValueError, TypeError):
-        return 0
-
-
-
+    return ai_credit.ai_credit_free_monthly_quota
 
 
 def get_used_credits(user_id: int) -> int:
@@ -42,20 +35,9 @@ def get_used_credits(user_id: int) -> int:
         user_id: User ID
 
     Returns:
-        Number of used credits for this month (0 when unlimited)
+        Number of used credits for this month
     """
-    # If not configured, return 0 (no tracking)
-    if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is None:
-        return 0
-
-    key = _get_current_month_key(user_id)
-    return int(REDIS.get(key) or 0)
-
-
-
-
-
-
+    return ai_credit.ai_credit_used_current_month
 
 
 def consume_credit_for_pipeline(user_id: int) -> dict:
@@ -76,61 +58,63 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
             'message': str
         }
     """
-    # If JUSPRIN_FREE_CREDITS_PER_MONTH is not set (None), allow unlimited usage
-    if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is None:
-        return {
-            'success': True,
-            'used_credits': 0,
-            'monthly_limit': -1,  # -1 indicates unlimited
-            'message': 'Credits not configured - unlimited usage allowed'
-        }
+    try:
+        with transaction.atomic():
 
-    monthly_limit = get_monthly_free_credits_limit()
+            monthly_limit = ai_credit.ai_credit_free_monthly_quota
 
-    if monthly_limit <= 0:
+            # If quota is -1 (unlimited), allow usage
+            if monthly_limit == -1:
+                return {
+                    'success': True,
+                    'used_credits': 0,
+                    'monthly_limit': -1,  # -1 indicates unlimited
+                    'message': 'Unlimited usage allowed'
+                }
+
+            # If quota is 0, block usage
+            if monthly_limit <= 0:
+                return {
+                    'success': False,
+                    'used_credits': ai_credit.ai_credit_used_current_month,
+                    'monthly_limit': monthly_limit,
+                    'message': 'AI credits disabled - usage blocked'
+                }
+
+            # Check if we would exceed the limit
+            if ai_credit.ai_credit_used_current_month >= monthly_limit:
+                return {
+                    'success': False,
+                    'used_credits': ai_credit.ai_credit_used_current_month,
+                    'monthly_limit': monthly_limit,
+                    'message': 'Monthly AI credit limit exceeded'
+                }
+
+            # Consume the credit
+            ai_credit.ai_credit_used_current_month += 1
+            ai_credit.save()
+
+            return {
+                'success': True,
+                'used_credits': ai_credit.ai_credit_used_current_month,
+                'monthly_limit': monthly_limit,
+                'message': 'Credit consumed successfully'
+            }
+
+    except User.DoesNotExist:
         return {
             'success': False,
             'used_credits': 0,
             'monthly_limit': 0,
-            'message': 'AI credits configured but set to 0 - usage blocked'
+            'message': 'User not found'
         }
-
-    key = _get_current_month_key(user_id)
-
-    # Atomic check and increment using Redis pipeline
-    with REDIS.pipeline() as pipe:
-        pipe.get(key)
-        pipe.incrby(key, 1)
-        # Set expiration for automatic monthly reset
-        now = datetime.now()
-        if now.month == 12:
-            next_month = datetime(now.year + 1, 1, 1)
-        else:
-            next_month = datetime(now.year, now.month + 1, 1)
-        expire_seconds = int((next_month - now).total_seconds()) + 86400  # +1 day buffer
-        pipe.expire(key, expire_seconds)
-
-        results = pipe.execute()
-        old_used = int(results[0] or 0)
-        new_used = int(results[1])
-
-    # Check if operation exceeded the limit
-    if new_used > monthly_limit:
-        # Rollback the increment
-        REDIS.decrby(key, 1)
+    except Exception as e:
         return {
             'success': False,
-            'used_credits': old_used,
-            'monthly_limit': monthly_limit,
-            'message': 'Monthly AI credit limit exceeded'
+            'used_credits': 0,
+            'monthly_limit': 0,
+            'message': f'Error processing credit: {str(e)}'
         }
-
-    return {
-        'success': True,
-        'used_credits': new_used,
-        'monthly_limit': monthly_limit,
-        'message': 'Credit consumed successfully'
-    }
 
 
 def reset_monthly_credits(user_id: int) -> dict:
@@ -142,26 +126,31 @@ def reset_monthly_credits(user_id: int) -> dict:
     Returns:
         Dictionary with reset result
     """
-    # If not configured, return unlimited status
-    if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is None:
+    try:
+        ai_credit.ai_credit_used_current_month = 0
+        ai_credit.save()
+
         return {
             'success': True,
             'used_credits': 0,
-            'monthly_limit': -1,  # -1 indicates unlimited
-            'message': 'Credits not configured - unlimited usage allowed'
+            'monthly_limit': ai_credit.ai_credit_free_monthly_quota,
+            'message': 'Monthly credits reset successfully'
         }
 
-    key = _get_current_month_key(user_id)
-    REDIS.delete(key)
-
-    monthly_limit = get_monthly_free_credits_limit()
-
-    return {
-        'success': True,
-        'used_credits': 0,
-        'monthly_limit': monthly_limit,
-        'message': 'Monthly credits reset successfully'
-    }
+    except User.DoesNotExist:
+        return {
+            'success': False,
+            'used_credits': 0,
+            'monthly_limit': 0,
+            'message': 'User not found'
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'used_credits': 0,
+            'monthly_limit': 0,
+            'message': f'Error resetting credits: {str(e)}'
+        }
 
 
 def get_credits_info(user_id: int) -> dict:
@@ -173,21 +162,29 @@ def get_credits_info(user_id: int) -> dict:
     Returns:
         Dictionary with all credit information
     """
-    # If not configured, return unlimited status
-    if settings.JUSPRIN_FREE_CREDITS_PER_MONTH is None:
+    try:
+
+        monthly_limit = ai_credit.ai_credit_free_monthly_quota
+        used = ai_credit.ai_credit_used_current_month
+
         return {
-            'monthly_limit': -1,  # -1 indicates unlimited
-            'used_credits': 0,
-            'credits_enabled': False,  # Not enabled/configured
-            'can_use_ai': True  # Always allowed when unlimited
+            'monthly_limit': monthly_limit,
+            'used_credits': used,
+            'credits_enabled': monthly_limit != -1,
+            'can_use_ai': monthly_limit == -1 or used < monthly_limit
         }
 
-    monthly_limit = get_monthly_free_credits_limit()
-    used = get_used_credits(user_id)
-
-    return {
-        'monthly_limit': monthly_limit,
-        'used_credits': used,
-        'credits_enabled': monthly_limit > 0,
-        'can_use_ai': used < monthly_limit
-    }
+    except User.DoesNotExist:
+        return {
+            'monthly_limit': 0,
+            'used_credits': 0,
+            'credits_enabled': False,
+            'can_use_ai': False
+        }
+    except Exception:
+        return {
+            'monthly_limit': 0,
+            'used_credits': 0,
+            'credits_enabled': False,
+            'can_use_ai': False
+        }

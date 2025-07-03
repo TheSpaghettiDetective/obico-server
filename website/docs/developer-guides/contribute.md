@@ -38,17 +38,17 @@ The skill sets we need the most are:
 - CSS.
 - Vue.
 
-### Mobile {#mobile}
-
-- React Native
-- iOS (Swift or Obj-C)
-- Android (Kotlin or Java)
-
 ### Our source code repos {#our-source-code-repos}
 
 - [The Obico Server](https://github.com/TheSpaghettiDetective/obico-server)
 - [Obico for OctoPrint plugin](https://github.com/TheSpaghettiDetective/OctoPrint-Obico)
 - [Obico for Klipper (Moonraker plugin)](https://github.com/TheSpaghettiDetective/moonraker-obico)
+
+### Process of opening PRs
+
+1. Switch to the `master` branch before you're making any commit. The `release` branch is for end-users only. *DO NOT USE the `release` branch*.
+
+1. Run `cd frontend && yarn && yarn serve` to launch a Vue dev server for the front-end. Do not submit any bundled files created by `yarn build` in your PR.
 
 ## Help fellow makers in the community! {#help-fellow-makers-in-the-community}
 

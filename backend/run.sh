@@ -10,8 +10,8 @@ elif [ "${OBICO_CONTAINER}" = "web" ]; then
   
   # Implementation from https://github.com/imagegenius/docker-obico
   [ -d /data/media ] || mkdir /data/media
-  rm -r /app/static_build/media
-  ln -s data/media /app/static_build/media
+  [ -d /app/static_build/media ] && rm -r /app/static_build/media
+  ln -s /data/media /app/static_build/media
 
   daphne -b 0.0.0.0 -p 3334 config.routing:application
 fi

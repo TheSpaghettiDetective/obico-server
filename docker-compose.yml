@@ -86,7 +86,7 @@ services:
     <<: *web-defaults
     hostname: tasks
     image: ghcr.io/d-mcknight/obico_web:latest
-    command: [ "/bin/sh", "/app/run.sh", "web" ]
+    command: [ "/bin/sh", "/app/run.sh", "tasks" ]
       # command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
     healthcheck:
       test: ["CMD-SHELL", "celery -A config inspect ping"]

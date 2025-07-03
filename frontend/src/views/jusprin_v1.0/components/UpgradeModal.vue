@@ -31,7 +31,14 @@
             <div class="progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
           </div>
           <div class="progress-info">
-            <span class="usage-text">You've used {{ credits.used }} AI credits of {{ credits.total }} this month</span>
+            <span class="usage-text">
+              <template v-if="credits.total === 999999">
+                {{ $t("Unlimited AI Credits") }}
+              </template>
+              <template v-else>
+                {{ $t("You've used {used} AI credits of {total} this month", { used: credits.used, total: credits.total }) }}
+              </template>
+            </span>
             <span class="reset-date">{{ $t("Reset on {resetDate}", { resetDate: credits.reset_date || "Next month" }) }}</span>
           </div>
         </div>
@@ -134,7 +141,7 @@ export default {
     },
     progressPercentage() {
       if (this.credits.total === 0) return 0
-      if (this.credits.total === 999999) return 0 // Unlimited case
+      if (this.credits.total === 999999) return 100 // Unlimited case, show full progress bar
       return Math.min(100, (this.credits.used / this.credits.total) * 100)
     }
   },

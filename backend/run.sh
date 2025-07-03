@@ -9,8 +9,8 @@ elif [ "${OBICO_CONTAINER}" = "web" ]; then
   python manage.py collectstatic -v 2 --noinput 
   
   # Implementation from https://github.com/imagegenius/docker-obico
-  mkdir /data/media
-  mkdir /app/static_build
+  [ -d /data/media ] || mkdir /data/media
+  rm -r /app/static_build/media
   ln -s data/media /app/static_build/media
 
   daphne -b 0.0.0.0 -p 3334 config.routing:application

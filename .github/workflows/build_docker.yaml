@@ -47,5 +47,5 @@ jobs:
           labels: ${{ steps.base_meta.outputs.labels }}
           platforms: ${{ env.PLATFORMS }}
           file: ml_api/Dockerfile
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # cache-from: type=gha
+          # cache-to: type=gha,mode=max

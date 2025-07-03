@@ -8,6 +8,8 @@ x-web-defaults: &web-defaults
     #  volumes:
     #    - ./backend:/app
     #    - ./frontend:/frontend
+  volumes:
+    - ./data:/data
   depends_on:
     - redis
   environment:
@@ -25,7 +27,7 @@ x-web-defaults: &web-defaults
     CSRF_TRUSTED_ORIGINS: '${CSRF_TRUSTED_ORIGINS-}'
     SOCIAL_LOGIN: '${SOCIAL_LOGIN-False}'
     REDIS_URL: '${REDIS_URL-redis://redis:6379}'
-    DATABASE_URL: '${DATABASE_URL-sqlite:////app/db.sqlite3}'
+    DATABASE_URL: '${DATABASE_URL-sqlite:////data/db.sqlite3}'
     INTERNAL_MEDIA_HOST: '${INTERNAL_MEDIA_HOST-http://web:3334}'
     ML_API_HOST: '${ML_API_HOST-http://ml_api:3333}'
     ACCOUNT_ALLOW_SIGN_UP: '${ACCOUNT_ALLOW_SIGN_UP-False}'

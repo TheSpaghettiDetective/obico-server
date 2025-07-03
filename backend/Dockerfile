@@ -9,4 +9,9 @@ COPY backend /app
 COPY frontend /frontend
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Keep recordings in mounted config directory
+# Implementation from https://github.com/imagegenius/docker-obico
+RUN mkdir -P /data/media && ln -s \
+    /data/media \
+    /app/obico/backend/static_build/media
 CMD ["/bin/sh", "/app/run.sh"]

@@ -268,6 +268,12 @@ export default {
         this.adjustTextareaHeight()
       })
     },
+    oauthAccessToken(newValue, oldValue) {
+      // When token becomes available (changes from null to non-null), fetch user data
+      if (newValue && !oldValue) {
+        this.fetchUserData()
+      }
+    },
   },
   created() {
     const urlParams = new URLSearchParams(window.location.search)
@@ -275,7 +281,6 @@ export default {
   },
   mounted() {
     this.initMessagesAndQuickButtons()
-    this.fetchUserData()
   },
   methods: {
     callAgentAction,

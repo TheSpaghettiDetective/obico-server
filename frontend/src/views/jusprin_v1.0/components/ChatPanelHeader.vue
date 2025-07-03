@@ -265,6 +265,7 @@ export default {
       font-size: 1.25rem
       display: inline-flex
       align-items: center
+      color: gold
 
   .credit-text
     color: white

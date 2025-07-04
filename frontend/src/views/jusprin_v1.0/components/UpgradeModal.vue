@@ -33,14 +33,17 @@
             <div class="celebration" style="font-size: 2.5rem; margin: 1.5rem 0;">
               🎉 <i class="mdi mdi-crown" style="color: gold; font-size: 2.5rem;"></i> 🎉
             </div>
-            <div class="unlimited-text" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;">
-              {{ $t('Yay! You are on the Unlimited subscription plan!') }}
+            <div class="unlimited-text" style="font-size: 1.2rem; font-weight: bold;">
+              {{ $t('Yay! You are on the Unlimited Plan!') }}
+            </div>
+            <div class="unlimited-text" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 3rem;">
+              {{ $t('Enjoy unlimited AI credits!') }}
             </div>
             <a
               href="/ent/jusprin/pricing/"
               class="btn btn-primary upgrade-button"
             >
-              {{ $t('Manage Subscription') }}
+              {{ $t('Manage Subscription Plan') }}
             </a>
           </div>
         </template>

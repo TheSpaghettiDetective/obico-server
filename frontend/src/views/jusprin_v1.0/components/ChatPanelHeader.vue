@@ -34,7 +34,7 @@
       <button
         class="header-button"
         :title="$t('Contact Support')"
-        @click="$emit('show-contact-support-form')"
+        @click="handleSupportButtonClick"
       >
         <i class="mdi mdi-message-question-outline large-icon"></i>
       </button>
@@ -207,6 +207,15 @@ export default {
         callAgentAction('set_btn_notification_badges', this.notificationBadgeCount)
       } else if (focusEventType === 'out_of_focus') {
         this.changeChatPanelVisibility(false)
+      }
+    },
+    handleSupportButtonClick() {
+      if (this.creditsInfo && this.creditsInfo.ai_credit_free_monthly_quota !== -1) {
+        // Free user - show Discord message
+        this.$emit('show-discord-support-message')
+      } else {
+        // Paid user - show contact form
+        this.$emit('show-contact-support-form')
       }
     },
   },

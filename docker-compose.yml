@@ -43,7 +43,8 @@ services:
   ml_api:
     hostname: ml_api
     restart: unless-stopped
-    image: ghcr.io/TheSpaghettiDetective/ml_api:latest
+    # TODO: Update tag to `release` when there is a release-tagged image
+    image: ghcr.io/thespaghettidetective/ml_api:latest
     environment:
       DEBUG: 'True'
       FLASK_APP: 'server.py'
@@ -58,7 +59,8 @@ services:
   web:
     <<: *web-defaults
     hostname: web
-    image: ghcr.io/TheSpaghettiDetective/obico_web:latest
+    # TODO: Update tag to `release` when there is a release-tagged image
+    image: ghcr.io/thespaghettidetective/obico_web:latest
     ports:
       - "3334:3334"
     depends_on:
@@ -74,7 +76,8 @@ services:
   tasks:
     <<: *web-defaults
     hostname: tasks
-    image: ghcr.io/TheSpaghettiDetective/obico_web:latest
+    # TODO: Update tag to `release` when there is a release-tagged image
+    image: ghcr.io/thespaghettidetective/obico_web:latest
     command: [ "/bin/sh", "/app/run.sh", "tasks" ]
     healthcheck:
       test: ["CMD-SHELL", "celery -A config inspect ping"]

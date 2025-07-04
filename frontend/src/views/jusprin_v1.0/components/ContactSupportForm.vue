@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import api from '../lib/api'
 import urls from '@config/server-urls'
 
 export default {
@@ -42,6 +42,10 @@ export default {
     messages: {
       type: Array,
       required: true,
+    },
+    oauthAccessToken: {
+      type: String,
+      default: null,
     },
   },
   data() {
@@ -74,7 +78,7 @@ export default {
       this.error = null
 
       try {
-        await axios.post(urls.jusprinContactSupport(), {
+        await api.post(urls.jusprinContactSupport(), this.oauthAccessToken, {
           message: this.supportMessage,
         })
 

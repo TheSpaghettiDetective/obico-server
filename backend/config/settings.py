@@ -493,6 +493,9 @@ ADMIN_IP_WHITELIST = json.loads(os.environ.get('ADMIN_IP_WHITELIST') or '[]')
 
 CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('CSRF_TRUSTED_ORIGINS') or '[]')
 
+# JusPrin specific settings
+
+
 # This line prevents warning messages after 3.2
 # https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

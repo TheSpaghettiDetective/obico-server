@@ -5,7 +5,19 @@
       @action="callAgentAction"
       :should-popup-chat-panel="Boolean(oauthAccessToken)"
       @show-contact-support-form="showContactSupportForm"
+      @show-upgrade-modal="openUpgradeModal"
+      :credits-info="creditsInfo"
     />
+
+    <!-- Upgrade Modal -->
+    <upgrade-modal
+      :show="showUpgradeModal"
+      :oauth-access-token="oauthAccessToken"
+      @close="closeUpgradeModal"
+    />
+
+
+
     <div v-if="oauthAccessToken" class="chat-container mt-3">
       <div ref="chatMessageContainer" class="chat-messages" @scroll="handleChatScroll">
         <div
@@ -90,6 +102,7 @@
         <contact-support-form
           v-if="showContactSupport"
           :messages="messages"
+          :oauth-access-token="oauthAccessToken"
           @form-dismissed="handleContactSupportFormDismissed"
         />
         <div v-if="slicingProgress" class="message assistant">
@@ -190,6 +203,7 @@ import ChatPanelHeader from './components/ChatPanelHeader.vue'
 import userNotificationMixin from './mixins/userNotificationMixin'
 import { callAgentAction, getAgentActionResponse, setAgentActionRetVal } from './lib/agentAction'
 import ContactSupportForm from './components/ContactSupportForm'
+import UpgradeModal from './components/UpgradeModal'
 
 export default {
   name: 'EmbeddedChatPage',
@@ -199,6 +213,7 @@ export default {
     GradientFadableContainer,
     ChatPanelHeader,
     ContactSupportForm,
+    UpgradeModal,
   },
   mixins: [QuickButtonsMixin, MessagesMixin, SlicingParamFixerMixin, userNotificationMixin],
   data() {
@@ -216,6 +231,9 @@ export default {
       showScrollButton: false,
       slicingProgress: null,
       current_workflow: null,
+      showUpgradeModal: false,
+      creditsInfo: null, // Will be populated from API responses
+      userInfo: null, // Will be populated from /jusprin/api/me/
     }
   },
   computed: {
@@ -250,6 +268,12 @@ export default {
         this.adjustTextareaHeight()
       })
     },
+    oauthAccessToken(newValue, oldValue) {
+      // When token becomes available (changes from null to non-null), fetch user data
+      if (newValue && !oldValue) {
+        this.fetchUserData()
+      }
+    },
   },
   created() {
     const urlParams = new URLSearchParams(window.location.search)
@@ -261,6 +285,56 @@ export default {
   methods: {
     callAgentAction,
     setAgentActionRetVal, // For JusPrin CallEmbeddedChatMethod
+    async fetchUserData() {
+      if (!this.oauthAccessToken) {
+        return
+      }
+      const response = await api.get(urls.jusprinMe(), this.oauthAccessToken)
+      this.userInfo = response.data.user
+      this.creditsInfo = response.data.ai_credits
+    },
+    async withCreditCheck(apiCall) {
+      // Check if balance is 0 before making the call
+      if (this.creditsInfo && this.creditsInfo.ai_credit_free_monthly_quota !== -1) {
+        const remainingCredits = Math.max(0, this.creditsInfo.ai_credit_free_monthly_quota - (this.creditsInfo.ai_credit_used_current_month || 0))
+        if (remainingCredits <= 0) {
+          this.openUpgradeModal()
+          return {
+            data: {
+              message: {
+                role: 'assistant',
+                content: this.$t("You're on a free plan and your account has run out of AI credits.")
+              }
+            }
+          }
+        }
+      }
+
+      try {
+        const result = await apiCall()
+
+        // Refresh user data after successful call
+        await this.fetchUserData()
+
+        return result
+      } catch (error) {
+        // Catch 402 errors and show UpgradeModal
+        if (error.response && error.response.status === 402) {
+          this.openUpgradeModal()
+          return {
+            data: {
+              message: {
+                role: 'assistant',
+                content: this.$t("You're on a free plan and your account has run out of AI credits.")
+              }
+            }
+          }
+        }
+
+        // Let all other errors bubble up to Sentry
+        throw error
+      }
+    },
     async callLongRunningAgentActionThenRefreshPresets(action, payload = null) {
       await getAgentActionResponse(action, payload, 1000 * 60 * 60 * 24) // Make timeout super long as it's hard to know how long it takes user to finish things like adding a printer
       this.refreshSelectedPresets()
@@ -373,19 +447,22 @@ export default {
         }
 
         const currentChatId = await this.getCurrentChatId()
-        const response = await api.post(urls.jusprinChatMessages(), this.oauthAccessToken, {
-          messages: this.messages,
-          current_workflow: this.current_workflow,
-          slicing_profiles: {
-            filament_presets: [this.selectedPreset('filament', presets)],
-            print_process_presets: presets.printProcessPresets,
-            filament_overrides: this.overridesFromEditedPreset('filament', editedPresets),
-            print_process_overrides: this.overridesFromEditedPreset('printProcess', editedPresets),
-          },
-          plates: plates,
-          chat_id: currentChatId,
+        const response = await this.withCreditCheck(async () => {
+          return api.post(urls.jusprinChatMessages(), this.oauthAccessToken, {
+            messages: this.messages,
+            current_workflow: this.current_workflow,
+            slicing_profiles: {
+              filament_presets: [this.selectedPreset('filament', presets)],
+              print_process_presets: presets.printProcessPresets,
+              filament_overrides: this.overridesFromEditedPreset('filament', editedPresets),
+              print_process_overrides: this.overridesFromEditedPreset('printProcess', editedPresets),
+            },
+            plates: plates,
+            chat_id: currentChatId,
+          })
         })
         this.thinking = false
+
         this.processChatResponse(response.data, presets)
       } catch (error) {
         window.Sentry?.captureException(error)
@@ -792,11 +869,19 @@ export default {
       }
 
       try {
-        const response = await api.post(
-          urls.jusprinPlateAnalysisProcess(),
-          this.oauthAccessToken,
-          payload
-        )
+        const response = await this.withCreditCheck(async () => {
+          return api.post(
+            urls.jusprinPlateAnalysisProcess(),
+            this.oauthAccessToken,
+            payload
+          )
+        })
+
+                // Handle credit response structure - if it's a credit message, restructure it for processAnalysisResponse
+        if (response.data && response.data.message && response.data.message.role === 'assistant') {
+          return { message: response.data.message }
+        }
+
         return response.data
       } catch (error) {
         console.error('Error calling plate analysis:', error)
@@ -857,10 +942,10 @@ export default {
       this.clearQuickButtons()
 
       const analysisResponse = await this.callPlateAnalysis()
-      this.processAnalysisResponse(analysisResponse)
+      await this.processAnalysisResponse(analysisResponse)
     },
 
-    processAnalysisResponse(response) {
+    async processAnalysisResponse(response) {
       this.messages.push(response.message)
       this.thinking = false
 
@@ -1070,6 +1155,14 @@ export default {
       ])
     },
     // End of methods for handling the print troubleshooting flow
+
+    // Modal methods
+    openUpgradeModal() {
+      this.showUpgradeModal = true
+    },
+    closeUpgradeModal() {
+      this.showUpgradeModal = false
+    },
   },
 }
 </script>

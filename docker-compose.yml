@@ -39,6 +39,7 @@ x-web-defaults: &web-defaults
     VERSION:
     OPENAI_API_KEY: '${OPENAI_API_KEY-}'
 
+
 services:
   ml_api:
     hostname: ml_api

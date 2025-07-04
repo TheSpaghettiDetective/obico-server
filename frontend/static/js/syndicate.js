@@ -26,7 +26,15 @@ export const jusprin = {
     },
     {
       name: 'surface-secondary',
-      values: {[Themes.Light]: '#9ca3af', [Themes.Dark]: '#9ca3af'},
+      values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'},
+    },
+    {
+      name: 'text-primary',
+      values: {[Themes.Light]: '#1f2937', [Themes.Dark]: '#1f2937'},
+    },
+    {
+      name: 'text-secondary',
+      values: {[Themes.Light]: '#6b7280', [Themes.Dark]: '#6b7280'},
     },
   ],
 }

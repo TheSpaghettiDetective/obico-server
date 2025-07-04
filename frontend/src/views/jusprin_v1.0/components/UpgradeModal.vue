@@ -20,7 +20,7 @@
       <div v-else>
         <div class="user-info">
           <div class="user-details">
-            <h3 class="user-name">{{ userDisplayName }}</h3>
+            <h3 v-if="userInfo.first_name || userInfo.last_name" class="user-name">{{ userDisplayName }}</h3>
             <div class="user-email">{{ userInfo.email }}</div>
           </div>
           <span class="plan-badge" :class="{ 'pro-badge': isUnlimitedPlan }">
@@ -179,8 +179,7 @@ export default {
     },
     userDisplayName() {
       if (!this.userInfo) return ''
-      const fullName = `${this.userInfo.first_name || ''} ${this.userInfo.last_name || ''}`.trim()
-      return fullName || this.userInfo.username || this.userInfo.email || 'User'
+      return `${this.userInfo.first_name || ''} ${this.userInfo.last_name || ''}`.trim()
     },
     nextMonthResetDate() {
       const now = new Date()

@@ -2,12 +2,6 @@ version: '2.4'
 
 x-web-defaults: &web-defaults
   restart: unless-stopped
-    #  build:
-    #    context: backend
-    #    dockerfile: 'Dockerfile'
-    #  volumes:
-    #    - ./backend:/app
-    #    - ./frontend:/frontend
   volumes:
     - ./data:/data
   depends_on:
@@ -50,14 +44,10 @@ services:
     hostname: ml_api
     restart: unless-stopped
     image: ghcr.io/d-mcknight/ml_api:latest
-      #build:
-      #context: ml_api
     environment:
       DEBUG: 'True'
       FLASK_APP: 'server.py'
-      # ML_API_TOKEN:
     tty: true
-      #command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://ml_api:3333/hc/"]
       start_period: 30s
@@ -74,7 +64,6 @@ services:
     depends_on:
       - ml_api
     command: [ "/bin/sh", "/app/run.sh", "web" ]
-        # command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://web:3334/hc/"]
       start_period: 30s
@@ -87,7 +76,6 @@ services:
     hostname: tasks
     image: ghcr.io/d-mcknight/obico_web:latest
     command: [ "/bin/sh", "/app/run.sh", "tasks" ]
-      # command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
     healthcheck:
       test: ["CMD-SHELL", "celery -A config inspect ping"]
       start_period: 15s

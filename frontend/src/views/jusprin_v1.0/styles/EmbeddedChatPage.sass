@@ -322,3 +322,94 @@ $breakpoint-small: 600px
     transform: scale(1.05)
   100%
     transform: scale(1)
+
+// Discord support styles
+.discord-support-container
+  display: flex
+  align-items: center
+  gap: 16px
+  padding: 16px
+  background-color: var(--color-surface-primary)
+  border-radius: var(--border-radius-md)
+  border: 1px solid var(--color-divider)
+  margin-top: 8px
+
+  .discord-info
+    flex: 1
+    display: flex
+    flex-direction: column
+    gap: 8px
+
+    .discord-url
+      display: flex
+      align-items: center
+      gap: 8px
+      font-size: 14px
+
+      strong
+        color: var(--color-text-primary)
+        font-weight: 600
+
+      code
+        background-color: var(--color-input-background)
+        padding: 4px 8px
+        border-radius: var(--border-radius-xs)
+        font-family: monospace
+        font-size: 12px
+        color: var(--color-text-secondary)
+        border: 1px solid var(--color-divider-muted)
+
+    .discord-instructions
+      font-size: 14px
+      color: var(--color-text-secondary)
+      line-height: 1.4
+
+  .qr-code-container
+    flex-shrink: 0
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 8px
+    background-color: white
+    border-radius: var(--border-radius-sm)
+    border: 1px solid var(--color-divider)
+
+    .qr-code
+      width: 120px
+      height: 120px
+      display: block
+
+// Mobile responsive adjustments
+@media (max-width: 768px)
+  .discord-support-container
+    flex-direction: column
+    text-align: center
+    gap: 12px
+
+    .discord-info
+      .discord-url
+        justify-content: center
+        flex-wrap: wrap
+
+    .qr-code-container
+      .qr-code
+        width: 100px
+        height: 100px
+
+// Upgrade link styles
+.upgrade-message
+  line-height: 1.5
+
+  .upgrade-link
+    color: var(--color-primary)
+    text-decoration: none
+    font-weight: 600
+    cursor: pointer
+    transition: color 0.2s ease
+
+    &:hover
+      color: var(--color-primary-hover)
+      text-decoration: underline
+
+    &:active
+      color: var(--color-primary-hover)

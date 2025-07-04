@@ -5,6 +5,7 @@
       @action="callAgentAction"
       :should-popup-chat-panel="Boolean(oauthAccessToken)"
       @show-contact-support-form="showContactSupportForm"
+      @show-discord-support-message="showDiscordSupportMessage"
       @show-upgrade-modal="openUpgradeModal"
       :credits-info="creditsInfo"
     />
@@ -28,7 +29,17 @@
         >
           <div v-if="message.content" class="message-block">
             <div class="message-content">
-              <VueMarkdown>{{ message.content }}</VueMarkdown>
+              <div v-if="message.has_upgrade_link" class="upgrade-message">
+                <div>{{ $t('Since you are on a Free plan, please join our Discord server to seek support from the community.') }}</div>
+                <div>
+                  <i18next :translation="$t('You can also {localizedDom} to get email support from the Obico team.')">
+                    <template #localizedDom>
+                      <a href="#" @click.prevent="openUpgradeModal" class="upgrade-link">{{ $t('upgrade to the Unlimited plan') }}</a>
+                    </template>
+                  </i18next>
+                </div>
+              </div>
+              <VueMarkdown v-else>{{ message.content }}</VueMarkdown>
               <gradient-fadable-container
                 v-if="
                   message.per_override_explanations && message.per_override_explanations.length > 0
@@ -88,6 +99,29 @@
                   "
                 ></i>
                 {{ message.jusprinNotification.text }}
+              </div>
+            </div>
+          </div>
+          <div v-if="message.discord_support" class="message-block mt-2">
+            <div class="message-content">
+              <div class="discord-support-container">
+                <div class="discord-info">
+                  <div class="discord-url">
+                    <strong>Discord Server:</strong>
+                    <code>{{ message.discord_support.url }}</code>
+                  </div>
+                  <div class="discord-instructions">
+                    {{ $t("Scan this QR code with your phone to join our Discord server:") }}
+                  </div>
+                </div>
+                <div class="qr-code-container">
+                  <img
+                    :src="message.discord_support.qr_code_url"
+                    alt="Discord QR Code"
+                    class="qr-code"
+                    @error="handleQRCodeError"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -1075,6 +1109,20 @@ export default {
       })
       this.scrollToBottom()
     },
+    showDiscordSupportMessage() {
+      this.clearQuickButtons()
+      this.messages.push({
+        role: 'assistant',
+        content: this.$t('Since you are on a Free plan, please join our Discord server to seek support from the community. You can also upgrade to the Unlimited plan to get email support from the Obico team.'),
+        discord_support: {
+          url: 'https://discord.gg/Tx67dHNYH3',
+          qr_code_url: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fdiscord.gg%2FTx67dHNYH3'
+        },
+        has_upgrade_link: true
+      })
+      this.setQuickButtons([this.cannedActions.moreOptions])
+      this.scrollToBottom()
+    },
 
     // Methods for handling the print troubleshooting flow
     populatePrintTroubleshootingQuickButtonsIfNeeded() {
@@ -1162,6 +1210,11 @@ export default {
     },
     closeUpgradeModal() {
       this.showUpgradeModal = false
+    },
+    handleQRCodeError(event) {
+      // Hide the QR code if it fails to load
+      event.target.style.display = 'none'
+      console.warn('Failed to load QR code for Discord support')
     },
   },
 }

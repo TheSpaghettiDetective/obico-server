@@ -14,7 +14,7 @@
 
     <!-- Credit Display -->
     <div
-      v-if="creditsInfo && creditsInfo.ai_credit_free_monthly_quota !== 0"
+      v-if="creditsInfo && isEnt"
       class="credit-display"
       :class="creditStatusClass"
       @click="$emit('show-upgrade-modal')"
@@ -67,6 +67,7 @@
 
 <script>
 import { getAgentActionResponse, callAgentAction } from '../lib/agentAction'
+import { settings } from '@src/lib/page-context'
 
 export default {
   name: 'ChatPanelHeader',
@@ -94,6 +95,7 @@ export default {
       },
       chatPanelPopUpOnErrorsValue:
         localStorage.getItem('jusprin.chatPanelPopUpOnErrors') !== 'false',
+      isEnt: false,
     }
   },
   computed: {
@@ -144,6 +146,11 @@ export default {
       return this.$i18next.t('You are on a free plan, which has limited AI credits. Click to see upgrade options.')
     },
   },
+  created() {
+    const { IS_ENT } = settings()
+    this.isEnt = !!IS_ENT
+  },
+
   async mounted() {
     const devMode = new URLSearchParams(window.location.search).get('devmode') === 'true'
     await this.changeChatPanelViewMode(this.preferredChatPanelViewMode, false)

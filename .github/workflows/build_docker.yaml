@@ -56,8 +56,8 @@ jobs:
           labels: ${{ steps.ml_meta.outputs.labels }}
           platforms: ${{ env.PLATFORMS }}
           file: ml_api/Dockerfile
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # obico_web image
       - name: Extract metadata for obico_web
@@ -78,5 +78,5 @@ jobs:
           labels: ${{ steps.web_meta.outputs.labels }}
           platforms: ${{ env.PLATFORMS }}
           file: backend/Dockerfile
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

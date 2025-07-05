@@ -1,0 +1,415 @@
+$breakpoint-small: 600px
+
+.page-wrapper
+  position: relative
+  width: 100vw
+  height: 100vh
+  overflow: hidden
+
+.icon-btn-container
+  position: fixed
+  bottom: 5%
+  left: 50%
+  transform: translateX(-50%)
+  display: flex
+  justify-content: flex-end
+  align-items: center
+  width: 80%
+  max-width: 33em
+  z-index: 10
+  margin-bottom: 2em
+
+.chat-container
+  display: flex
+  flex-direction: column
+  height: calc(100vh - 64px)
+  overflow-y: auto
+  position: relative
+
+.chat-messages
+  flex-grow: 1
+  overflow-y: auto
+  overflow-x: hidden // Quick fix for content overflowing on Safari (was good on chrome/firefox), it works fine for all browsers now
+  padding: 0px 17px 60px 17px
+
+.message
+  border-radius: 18px
+  margin-bottom: 1rem
+  @media (max-width: $breakpoint-small)
+    margin-bottom: 0.5rem
+  .message-block
+    padding: 8px 15px
+    border-radius: 18px
+    line-height: 1.4
+    position: relative
+    color: black
+    max-width: 80%
+    width: fit-content
+    @media (max-width: $breakpoint-small)
+      max-width: 92%
+
+  &.user
+    display: flex
+    flex-direction: column
+    align-items: flex-end
+    .message-block
+      background-color: #dcf8c6
+      &:before
+        content: ""
+        position: absolute
+        z-index: 0
+        bottom: 0
+        right: -8px
+        height: 20px
+        width: 20px
+        background: #dcf8c6
+        background-attachment: fixed
+        border-bottom-left-radius: 15px
+      &:after
+        content: ""
+        position: absolute
+        z-index: 1
+        bottom: 0
+        right: -10px
+        width: 10px
+        height: 20px
+        background: var(--color-background)
+        border-bottom-left-radius: 10px
+
+  &.assistant
+    display: flex
+    flex-direction: column
+    .message-block
+      background-color: #fff
+      display: inline-flex
+      align-items: flex-start
+      &:before
+        content: ""
+        position: absolute
+        z-index: 0
+        bottom: 0
+        left: -7px
+        height: 20px
+        width: 20px
+        background: #fff
+        border-bottom-right-radius: 15px
+      &:after
+        content: ""
+        position: absolute
+        z-index: 1
+        bottom: 0
+        left: -10px
+        width: 10px
+        height: 20px
+        background: var(--color-background)
+        border-bottom-right-radius: 10px
+
+      .message-content
+        cursor: pointer
+
+.quick-button
+  display: flex
+  flex-wrap: wrap
+  justify-content: flex-end
+  align-items: flex-end
+  width: 80%
+  margin-left: auto
+  gap: 0.5rem
+  margin-bottom: 10px
+
+.chat-input
+  position: fixed
+  bottom: 0
+  left: 0
+  right: 0
+  padding: 0.25rem 0.5rem
+  display: flex
+  align-items: center
+  background: var(--color-background)
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1)
+  z-index: 1
+  gap: 10px
+  width: 100%
+
+  textarea
+    flex-grow: 1
+    border: none
+    outline: none
+    padding: 0.5rem
+    font-size: 1rem
+    width: 100%
+    min-height: 40px
+    max-height: 150px
+    overflow-y: auto
+    resize: none
+    padding: 10px
+    font-size: 16px
+    border-radius: 5px
+    border: 1px solid #ccc
+
+.send-button
+  background-color: var(--color-primary)
+  color: var(--color-text-primary)
+  border: none
+  border-radius: 50%
+  width: 30px
+  height: 30px
+  display: flex
+  align-items: center
+  justify-content: center
+  cursor: pointer
+  margin-left: 0.5rem
+
+  &:disabled
+    opacity: 0.5
+    cursor: not-allowed
+    .send-icon
+      color: #999
+
+.send-icon
+  font-size: 1.2rem
+  color: var(--color-on-primary)
+
+.message-content
+  :deep(p)
+    margin: 0
+    padding: 0
+
+  :deep(a)
+    color: var(--color-primary)
+    cursor: pointer
+
+.single-line-message
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+  a
+    display: inline
+    white-space: nowrap
+
+.button-container
+  display: flex
+  justify-content: flex-end
+
+.align-items-center
+  align-items: center
+
+.login-container
+  display: flex
+  justify-content: center
+  align-items: center
+  height: 100vh
+
+.scroll-to-bottom
+  position: fixed
+  bottom: 52px
+  left: 50%
+  transform: translateX(-50%)
+  background: var(--color-surface-primary)
+  color: var(--color-text-primary)
+  border: 1px solid #ffffff1a
+  padding: 0px 6px
+  cursor: pointer
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1)
+  transition: opacity 0.3s ease-in-out
+
+.large-icon
+  font-size: 24px
+
+.slicing-message-block
+  width: 80% !important
+  max-width: 80% !important
+  opacity: 1
+  transition: opacity 2s ease-out
+  .message-content
+    width: 100% !important
+
+.fade-out
+  opacity: 0
+
+.slicing-progress-container
+  position: relative
+  width: 100%
+  height: 20px
+  background-color: #f0f0f0
+  border-radius: 10px
+  overflow: hidden
+  margin: 10px 0
+
+  .slicing-progress-bar
+    height: 100%
+    background-color: var(--color-success)
+    border-radius: 10px
+    transition: width 0.3s ease
+
+  .slicing-progress-text
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    height: 100%
+    display: flex
+    align-items: center
+    justify-content: center
+    color: #000
+    font-weight: bold
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.7)
+
+.slicing-errors
+  margin-top: 10px
+  color: var(--color-error)
+  font-weight: 500
+  padding: 8px 12px
+  background-color: rgba(255, 0, 0, 0.1)
+  border-radius: 6px
+  border-left: 3px solid var(--color-error)
+
+  .error-message
+    margin: 4px 0
+    &:first-child
+      margin-top: 0
+    &:last-child
+      margin-bottom: 0
+
+.notification-text
+  padding: 10px
+  border-radius: 5px
+  display: flex
+  align-items: center
+  gap: 8px
+
+  &.error
+    background-color: rgba(255, 0, 0, 0.1)
+    border-left: 3px solid #ff0000
+    color: #d32f2f
+
+  &.warning
+    background-color: rgba(255, 193, 7, 0.1)
+    border-left: 3px solid #ffc107
+    color: #f57c00
+
+  i
+    font-size: 18px
+
+
+.thinking-animation
+  position: relative
+
+  :deep(p)
+    background: linear-gradient(90deg, var(--color-primary-muted), var(--color-primary), var(--color-primary-hover), var(--color-primary))
+    background-size: 300% 100%
+    animation: gradientSweep 2s ease-in-out infinite, pulsate 1.5s ease-in-out infinite
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
+    display: inline-block
+    font-weight: 600
+    margin: 0
+    padding: 0
+
+@keyframes gradientSweep
+  0%
+    background-position: 0% 50%
+  50%
+    background-position: 100% 50%
+  100%
+    background-position: 0% 50%
+
+@keyframes pulsate
+  0%
+    transform: scale(1)
+  50%
+    transform: scale(1.05)
+  100%
+    transform: scale(1)
+
+// Discord support styles
+.discord-support-container
+  display: flex
+  align-items: center
+  gap: 16px
+  padding: 16px
+  background-color: var(--color-surface-primary)
+  border-radius: var(--border-radius-md)
+  border: 1px solid var(--color-divider)
+  margin-top: 8px
+
+  .discord-info
+    flex: 1
+    display: flex
+    flex-direction: column
+    gap: 8px
+
+    .discord-url
+      display: flex
+      align-items: center
+      gap: 8px
+      font-size: 14px
+
+      strong
+        color: var(--color-text-primary)
+        font-weight: 600
+
+      code
+        background-color: var(--color-input-background)
+        padding: 4px 8px
+        border-radius: var(--border-radius-xs)
+        font-family: monospace
+        font-size: 12px
+        color: var(--color-text-secondary)
+        border: 1px solid var(--color-divider-muted)
+
+    .discord-instructions
+      font-size: 14px
+      color: var(--color-text-secondary)
+      line-height: 1.4
+
+  .qr-code-container
+    flex-shrink: 0
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 8px
+    background-color: white
+    border-radius: var(--border-radius-sm)
+    border: 1px solid var(--color-divider)
+
+    .qr-code
+      width: 120px
+      height: 120px
+      display: block
+
+// Mobile responsive adjustments
+@media (max-width: 768px)
+  .discord-support-container
+    flex-direction: column
+    text-align: center
+    gap: 12px
+
+    .discord-info
+      .discord-url
+        justify-content: center
+        flex-wrap: wrap
+
+    .qr-code-container
+      .qr-code
+        width: 100px
+        height: 100px
+
+// Upgrade link styles
+.upgrade-message
+  line-height: 1.5
+
+  .upgrade-link
+    color: var(--color-primary)
+    text-decoration: none
+    font-weight: 600
+    cursor: pointer
+    transition: color 0.2s ease
+
+    &:hover
+      color: var(--color-primary-hover)
+      text-decoration: underline
+
+    &:active
+      color: var(--color-primary-hover)

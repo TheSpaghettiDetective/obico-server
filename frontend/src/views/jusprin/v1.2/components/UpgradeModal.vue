@@ -39,12 +39,13 @@
             <div class="unlimited-text" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 3rem;">
               {{ $t('Enjoy unlimited AI credits!') }}
             </div>
-            <a
-              href="/ent/jusprin/pricing/"
+            <button
+              type="button"
               class="btn btn-primary upgrade-button"
+              @click="showPricingPlan"
             >
               {{ $t('Manage Subscription Plan') }}
-            </a>
+            </button>
           </div>
         </template>
         <template v-else>
@@ -85,12 +86,13 @@
                 </div>
                 <div class="text-primary small">{{ $t("If your account is an Obico Pro account, you can get a 30% discount on the upgrade. Discount automatically applied at checkout.") }}</div>
               </div>
-              <a
-                href="/ent/jusprin/pricing/"
+              <button
+                type="button"
                 class="btn btn-primary upgrade-button"
+                @click="showPricingPlan"
               >
                 {{ $t('Upgrade') }}
-              </a>
+              </button>
             </div>
             <div class="mt-4">
               <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI credits using your own OpenAI API key.')">
@@ -123,6 +125,7 @@
 import MutedAlert from '@src/components/MutedAlert.vue'
 import api from '../lib/api'
 import urls from '@config/server-urls'
+import { callAgentAction } from '../lib/agentAction'
 
 export default {
   name: 'UpgradeModal',
@@ -218,6 +221,9 @@ export default {
     },
     closeModal() {
       this.$emit('close')
+    },
+    showPricingPlan() {
+      callAgentAction('show_pricing_plan')
     }
   }
 }

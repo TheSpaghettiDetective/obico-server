@@ -224,8 +224,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../../styles/theme';
-@import '../../../styles/mixin';
+@import '../../../../styles/theme';
+@import '../../../../styles/mixin';
 
 // Upgrade Modal Styles
 .upgrade-modal-backdrop {

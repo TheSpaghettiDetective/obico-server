@@ -154,3 +154,6 @@ class JusPrinContactSupportRequestViewSet(viewsets.ViewSet):
 
 def embedded_chat_v10(request):
     return render(request, 'jusprin/v1.0/embedded_chat.html')
+
+def embedded_chat_v12(request):
+    return render(request, 'jusprin/v1.2/embedded_chat.html')

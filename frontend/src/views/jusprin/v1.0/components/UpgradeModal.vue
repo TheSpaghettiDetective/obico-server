@@ -40,7 +40,7 @@
               {{ $t('Enjoy unlimited AI credits!') }}
             </div>
             <a
-              href="/ent/jusprin/pricing/"
+              href="/ent/jusprin/pricing/?can_go_back_to_chat=1"
               class="btn btn-primary upgrade-button"
             >
               {{ $t('Manage Subscription Plan') }}
@@ -86,7 +86,7 @@
                 <div class="text-primary small">{{ $t("If your account is an Obico Pro account, you can get a 30% discount on the upgrade. Discount automatically applied at checkout.") }}</div>
               </div>
               <a
-                href="/ent/jusprin/pricing/"
+                href="/ent/jusprin/pricing/?can_go_back_to_chat=1"
                 class="btn btn-primary upgrade-button"
               >
                 {{ $t('Upgrade') }}

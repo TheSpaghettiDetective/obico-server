@@ -104,12 +104,12 @@ msgid ""
 "\n"
 "To confirm this is correct, go to:\n"
 "%(activate_url)s\n"
-msgstr ""
+msgstr "來自 %(site_name)s 的問候！\n\n您收到這封電子郵件是因為使用者 %(user_display)s 將您的電子郵件地址用於連結他們的帳戶。\n\n若正確，請前往：\n%(activate_url)s\n"
 
 #: app/templates/account/email/email_confirmation_message.txt:8
 #, python-format
 msgid "Thank you from %(site_name)s!\n"
-msgstr ""
+msgstr "感謝您使用 %(site_name)s！\n"
 
 #: app/templates/account/email/email_confirmation_subject.txt:3
 msgid "Verify your email address!"
@@ -122,14 +122,14 @@ msgid ""
 "\n"
 "You're receiving this e-mail because you or someone else has requested a password for your user account.\n"
 "It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
-msgstr ""
+msgstr "來自 %(site_name)s 的問候！\n\n您收到這封電子郵件是因為您或其他人請求了您的帳戶密碼。\n如果您沒有請求重設密碼，可以安全地忽略此郵件。請點擊下方連結以重設您的密碼。"
 
 #: app/templates/account/email/password_reset_key_message.txt:8
 #, python-format
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
-msgstr ""
+msgstr "感謝您使用 %(site_name)s！\n%(site_domain)s"
 
 #: app/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
@@ -342,7 +342,7 @@ msgstr "重設我的密碼"
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it within a few\n"
 "              minutes."
-msgstr ""
+msgstr "我們已向您發送電子郵件。如果您在幾分鐘內未收到，請聯絡我們。"
 
 #: app/templates/account/password_reset_from_key.html:14
 msgid "Bad Token"
@@ -351,7 +351,7 @@ msgstr "無效的令牌"
 #: app/templates/account/password_reset_from_key.html:19
 #, python-format
 msgid "The password reset link was invalid, possibly because it has already been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</a>."
-msgstr ""
+msgstr "密碼重設連結無效，可能已被使用。請<a href=\"%(passwd_reset_url)s\">重新申請密碼重設</a>。"
 
 #: app/templates/account/password_reset_from_key.html:53
 #: app/templates/account/password_reset_from_key_done.html:13
@@ -441,19 +441,19 @@ msgid ""
 "This part of the site requires us to verify that\n"
 "  you are who you claim to be. For this purpose, we require that you\n"
 "  verify ownership of your e-mail address. "
-msgstr ""
+msgstr "本網站部分功能需要驗證您的身份。為此，我們需要您驗證電子郵件地址的所有權。"
 
 #: app/templates/account/verified_email_required.html:17
 msgid ""
 "We have sent an e-mail to you for\n"
 "  verification. Please click on the link inside this e-mail. Please\n"
 "  contact us if you do not receive it within a few minutes."
-msgstr ""
+msgstr "我們已向您發送驗證郵件。請點擊郵件中的連結。如果您在幾分鐘內未收到，請聯絡我們。"
 
 #: app/templates/account/verified_email_required.html:21
 #, python-format
 msgid "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-mail address</a>."
-msgstr ""
+msgstr "<strong>注意：</strong>您仍可<a href=\"%(email_url)s\">更改您的電子郵件地址</a>。"
 
 #: app/templates/mobile/account/login.html:41
 msgid "This email was previously signed up using either Google or Facebook."
@@ -483,8 +483,7 @@ msgid ""
                 "
 msgstr ""
 "                註冊即表示我同意 %(brand_name)s 應用程式的
-                <a class="link" href="%(tos_link)s">使用條款</a>和<a class="link" href="%(privacy_link)s">隱私政策</a>
-                "
+                <a class="link" href="%(tos_link)s">使用條款</a>和<a class="link" href="%(privacy_link)s">隱私政策</a>\n                "
 
 #: app/templates/new_octoprinttunnel_succeeded.html:7
 msgid "Succeeded"
@@ -593,7 +592,7 @@ msgstr "登入已取消"
 #: app/templates/socialaccount/login_cancelled.html:13
 #, python-format
 msgid "You decided to cancel logging in to our site using one of your existing accounts. If this was a mistake, please proceed to <a href=\"%(login_url)s\">sign in</a>."
-msgstr ""
+msgstr "您已取消使用現有帳戶登入本站。如果這是誤操作，請前往<a href=\"%(login_url)s\">登入</a>。"
 
 #: app/templates/socialaccount/messages/account_connected.txt:2
 msgid "The social account has been connected."
@@ -621,7 +620,7 @@ msgstr "註冊"
 msgid ""
 "You are about to use your %(provider_name)s account to login to\n"
 "  %(site_name)s. As a final step, please complete the following form:"
-msgstr ""
+msgstr "您即將使用 %(provider_name)s 帳戶登入 %(site_name)s。最後請完成下列表單："
 
 #: app/templates/unsubscribe_email.html:8
 msgid "Got it! You will no longer receive emails"

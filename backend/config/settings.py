@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     'simple_history',
     'widget_tweaks',
     'rest_framework',
-    'jstemplate',
     'pushbullet',
     'corsheaders',
     'safedelete',

@@ -104,7 +104,13 @@ msgid ""
 "\n"
 "To confirm this is correct, go to:\n"
 "%(activate_url)s\n"
-msgstr """¡Hola desde %(site_name)s!\n"""\n"""Recibe este correo electrónico porque el usuario %(user_display)s ha proporcionado el suyo como dirección de correo electrónico para conectar su cuenta.\n"""\n"""Para confirmar que esto es correcto, vaya a:\n""""%(activate_url)s\n"""
+msgstr ""
+"¡Hola desde %(site_name)s!\n"
+"\n"
+"Recibe este correo electrónico porque el usuario %(user_display)s ha proporcionado el suyo como dirección de correo electrónico para conectar su cuenta.\n"
+"\n"
+"Para confirmar que esto es correcto, vaya a:\n"
+"%(activate_url)s\n"
 
 #: app/templates/account/email/email_confirmation_message.txt:8
 #, python-format
@@ -122,14 +128,20 @@ msgid ""
 "\n"
 "You're receiving this e-mail because you or someone else has requested a password for your user account.\n"
 "It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
-msgstr """¡Hola desde %(site_name)s!\n"""\n"""Recibe este correo electrónico porque usted o alguien más ha solicitado una contraseña para su cuenta de usuario.\n""""Puede ignorarse de forma segura si no solicitó un restablecimiento de contraseña. Haga clic en el enlace de abajo para restablecer su contraseña."""
+msgstr ""
+"¡Hola desde %(site_name)s!\n"
+"\n"
+"Recibe este correo electrónico porque usted o alguien más ha solicitado una contraseña para su cuenta de usuario.\n"
+"Puede ignorarse de forma segura si no solicitó un restablecimiento de contraseña. Haga clic en el enlace de abajo para restablecer su contraseña."
 
 #: app/templates/account/email/password_reset_key_message.txt:8
 #, python-format
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
-msgstr """¡Gracias por usar %(site_name)s!\n"""%(site_domain)s"""
+msgstr ""
+"¡Gracias por usar %(site_name)s!\n"
+"%(site_domain)s"
 
 #: app/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
@@ -204,7 +216,7 @@ msgstr "Su credencial de inicio de sesión es la misma para la aplicación móvi
 
 #: app/templates/account/login.html:100
 msgid "\"Sign in with Apple\" is not available in the web app. If you want to use the web app, please sign up for a different account and <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">re-link your printer</a>"
-msgstr ""Iniciar sesión con Apple" no está disponible en la aplicación web. Si desea utilizar la aplicación web, regístrese para obtener una cuenta diferente y <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">vuelva a vincular su impresora</a>"
+msgstr "\"Iniciar sesión con Apple\" no está disponible en la aplicación web. Si desea utilizar la aplicación web, regístrese para obtener una cuenta diferente y <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">vuelva a vincular su impresora</a>"
 
 #: app/templates/account/login.html:101
 #: app/templates/mobile/account/login.html:103
@@ -342,7 +354,9 @@ msgstr "Restablecer mi contraseña"
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it within a few\n"
 "              minutes."
-msgstr """Le hemos enviado un correo electrónico. Por favor, contáctenos si no lo recibe en unos pocos\n""              minutos."
+msgstr ""
+"Le hemos enviado un correo electrónico. Por favor, contáctenos si no lo recibe en unos pocos\n"
+"              minutos."
 
 #: app/templates/account/password_reset_from_key.html:14
 msgid "Bad Token"
@@ -377,7 +391,10 @@ msgid ""
 "            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
 "            "
 msgstr ""
-"            Al registrarme, acepto los\n            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Política de privacidad</a> de la aplicación %(brand_name)s\n            "
+"\n"
+"            Al registrarme, acepto los\n"
+"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
+"            "
 
 #: app/templates/account/signup.html:45
 #, python-format
@@ -387,7 +404,10 @@ msgid ""
 "            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
 "            "
 msgstr ""
-"            Al registrarme, acepto los\n            <a class=\"link\" href=\"%(tos_link)s\">Términos de uso</a> y la <a class=\"link\" href=\"%(privacy_link)s\">Política de privacidad</a> de la aplicación %(brand_name)s\n            "
+"\n"
+"            Al registrarme, acepto los\n"
+"            <a class=\"link\" href=\"%(tos_link)s\">Términos de uso</a> y la <a class=\"link\" href=\"%(privacy_link)s\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
+"            "
 
 #: app/templates/account/signup.html:77
 #: app/templates/mobile/account/signup.html:80
@@ -447,14 +467,20 @@ msgid ""
 "This part of the site requires us to verify that\n"
 "  you are who you claim to be. For this purpose, we require that you\n"
 "  verify ownership of your e-mail address. "
-msgstr """Esta parte del sitio requiere que verifiquemos que\n""  "usted es quien dice ser. Para este propósito, requerimos que\n""  "verifique la propiedad de su dirección de correo electrónico. "
+msgstr ""
+"Esta parte del sitio requiere que verifiquemos que\n"
+"  usted es quien dice ser. Para este propósito, requerimos que\n"
+"  verifique la propiedad de su dirección de correo electrónico. "
 
 #: app/templates/account/verified_email_required.html:17
 msgid ""
 "We have sent an e-mail to you for\n"
 "  verification. Please click on the link inside this e-mail. Please\n"
 "  contact us if you do not receive it within a few minutes."
-msgstr """Le hemos enviado un correo electrónico para\n""  "verificación. Por favor, haga clic en el enlace dentro de este correo electrónico. Por favor,\n""  "contáctenos si no lo recibe en unos minutos.""
+msgstr ""
+"Le hemos enviado un correo electrónico para\n"
+"  verificación. Por favor, haga clic en el enlace dentro de este correo electrónico. Por favor,\n"
+"  contáctenos si no lo recibe en unos minutos."
 
 #: app/templates/account/verified_email_required.html:21
 #, python-format
@@ -482,13 +508,7 @@ msgid ""
 "                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Privacy Policy</a>\n"
 "                "
 msgstr ""
-"                Al registrarme, acepto los\n"
-"                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
-"                "
-
-"                Al registrarme, acepto los\n"
-"                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
-"                "
+"\n"
 "                Al registrarme, acepto los\n"
 "                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
 "                "
@@ -553,7 +573,7 @@ msgstr "Autorizar"
 
 #: app/templates/oauth2_provider/authorize.html:20
 msgid "requires the following permissions"
-msgstr "requiere los siguientes permisos ""
+msgstr "requiere los siguientes permisos"
 
 #: app/templates/oauth2_provider/authorize.html:32
 msgid "Cancel"

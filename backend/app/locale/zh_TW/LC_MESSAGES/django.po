@@ -478,10 +478,12 @@ msgstr ""
 #: app/templates/mobile/account/signup.html:49
 #, python-format
 msgid ""
-"                By signing up, I agree to the %(brand_name)s app's
-                <a class="link" href="%(tos_link)s">Terms of Use</a> and <a class="link" href="%(privacy_link)s">Privacy Policy</a>
-                "
+"\n"
+"                By signing up, I agree to the %(brand_name)s app's\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
+"                "
 msgstr ""
+"\n"
 "                註冊即表示我同意 %(brand_name)s 應用程式的\n"
 "                <a class=\"link\" href=\"%(tos_link)s\">使用條款</a>和<a class=\"link\" href=\"%(privacy_link)s\">隱私政策</a>\n"
 "                "

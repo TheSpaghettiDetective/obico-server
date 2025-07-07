@@ -104,7 +104,13 @@ msgid ""
 "\n"
 "To confirm this is correct, go to:\n"
 "%(activate_url)s\n"
-msgstr """Hallo von %(site_name)s!\n""""\n""""Sie erhalten diese E-Mail, weil Benutzer %(user_display)s Ihre E-Mail-Adresse angegeben hat, um sein Konto zu verbinden.\n""""\n""""Um dies zu bestätigen, gehen Sie zu:\n""""%(activate_url)s\n""""
+msgstr ""
+"Hallo von %(site_name)s!\n"
+"\n"
+"Sie erhalten diese E-Mail, weil Benutzer %(user_display)s Ihre E-Mail-Adresse angegeben hat, um sein Konto zu verbinden.\n"
+"\n"
+"Um dies zu bestätigen, gehen Sie zu:\n"
+"%(activate_url)s\n"
 
 #: app/templates/account/email/email_confirmation_message.txt:8
 #, python-format
@@ -122,14 +128,20 @@ msgid ""
 "\n"
 "You're receiving this e-mail because you or someone else has requested a password for your user account.\n"
 "It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
-msgstr """Hallo von %(site_name)s!\n""""\n""""Sie erhalten diese E-Mail, weil Sie oder jemand anderes ein Passwort für Ihr Benutzerkonto angefordert hat.\n""""Sie kann ignoriert werden, wenn Sie keine Passwortzurücksetzung angefordert haben. Klicken Sie auf den Link unten, um Ihr Passwort zurückzusetzen."""
+msgstr ""
+"Hallo von %(site_name)s!\n"
+"\n"
+"Sie erhalten diese E-Mail, weil Sie oder jemand anderes ein Passwort für Ihr Benutzerkonto angefordert hat.\n"
+"Sie kann ignoriert werden, wenn Sie keine Passwortzurücksetzung angefordert haben. Klicken Sie auf den Link unten, um Ihr Passwort zurückzusetzen."
 
 #: app/templates/account/email/password_reset_key_message.txt:8
 #, python-format
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
-msgstr """Vielen Dank für die Nutzung von %(site_name)s!\n"""%(site_domain)s""""
+msgstr ""
+"Vielen Dank für die Nutzung von %(site_name)s!\n"
+"%(site_domain)s"
 
 #: app/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
@@ -204,7 +216,7 @@ msgstr "Ihre Anmeldedaten sind für die mobile App und die Web-App identisch. We
 
 #: app/templates/account/login.html:100
 msgid "\"Sign in with Apple\" is not available in the web app. If you want to use the web app, please sign up for a different account and <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">re-link your printer</a>"
-msgstr ""Mit Apple anmelden" ist in der Web-App nicht verfügbar. Wenn Sie die Web-App nutzen möchten, registrieren Sie sich bitte für ein anderes Konto und <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">verknüpfen Sie Ihren Drucker erneut</a>"
+msgstr "\"Mit Apple anmelden\" ist in der Web-App nicht verfügbar. Wenn Sie die Web-App nutzen möchten, registrieren Sie sich bitte für ein anderes Konto und <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">verknüpfen Sie Ihren Drucker erneut</a>"
 
 #: app/templates/account/login.html:101
 #: app/templates/mobile/account/login.html:103
@@ -342,7 +354,9 @@ msgstr "Mein Passwort zurücksetzen"
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it within a few\n"
 "              minutes."
-msgstr """Wir haben Ihnen eine E-Mail gesendet. Bitte kontaktieren Sie uns, wenn Sie diese nicht innerhalb weniger\n""              Minuten erhalten."
+msgstr ""
+"Wir haben Ihnen eine E-Mail gesendet. Bitte kontaktieren Sie uns, wenn Sie diese nicht innerhalb weniger\n"
+"              Minuten erhalten."
 
 #: app/templates/account/password_reset_from_key.html:14
 msgid "Bad Token"
@@ -377,7 +391,10 @@ msgid ""
 "            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
 "            "
 msgstr ""
-"            Mit der Anmeldung stimme ich den\n"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Nutzungsbedingungen</a> und der <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Datenschutzrichtlinie</a> der %(brand_name)s App zu\n"            "
+"\n"
+"            Mit der Anmeldung stimme ich den\n"
+"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Nutzungsbedingungen</a> und der <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Datenschutzrichtlinie</a> der %(brand_name)s App zu\n"
+"            "
 
 #: app/templates/account/signup.html:45
 #, python-format
@@ -387,8 +404,9 @@ msgid ""
 "            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
 "            "
 msgstr ""
-"            Mit der Anmeldung stimme ich den
-"            <a class="link" href="%(tos_link)s">Nutzungsbedingungen</a> und der <a class="link" href="%(privacy_link)s">Datenschutzrichtlinie</a> der %(brand_name)s App zu
+"\n"
+"            Mit der Anmeldung stimme ich den\n"
+"            <a class=\"link\" href=\"%(tos_link)s\">Nutzungsbedingungen</a> und der <a class=\"link\" href=\"%(privacy_link)s\">Datenschutzrichtlinie</a> der %(brand_name)s App zu\n"
 "            "
 
 #: app/templates/account/signup.html:77
@@ -449,19 +467,25 @@ msgid ""
 "This part of the site requires us to verify that\n"
 "  you are who you claim to be. For this purpose, we require that you\n"
 "  verify ownership of your e-mail address. "
-msgstr """Dieser Teil der Website erfordert, dass wir überprüfen,\n""  "dass Sie die Person sind, für die Sie sich ausgeben. Zu diesem Zweck müssen Sie\n""  "den Besitz Ihrer E-Mail-Adresse bestätigen. "
+msgstr ""
+"Dieser Teil der Website erfordert, dass wir überprüfen,\n"
+"  dass Sie die Person sind, für die Sie sich ausgeben. Zu diesem Zweck müssen Sie\n"
+"  den Besitz Ihrer E-Mail-Adresse bestätigen. "
 
 #: app/templates/account/verified_email_required.html:17
 msgid ""
 "We have sent an e-mail to you for\n"
 "  verification. Please click on the link inside this e-mail. Please\n"
 "  contact us if you do not receive it within a few minutes."
-msgstr """Wir haben Ihnen eine E-Mail zur\n""  "Bestätigung gesendet. Bitte klicken Sie auf den Link in dieser E-Mail. Bitte\n""  "kontaktieren Sie uns, wenn Sie diese nicht innerhalb weniger Minuten erhalten.""
+msgstr ""
+"Wir haben Ihnen eine E-Mail zur\n"
+"  Bestätigung gesendet. Bitte klicken Sie auf den Link in dieser E-Mail. Bitte\n"
+"  kontaktieren Sie uns, wenn Sie diese nicht innerhalb weniger Minuten erhalten."
 
 #: app/templates/account/verified_email_required.html:21
 #, python-format
 msgid "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-mail address</a>."
-msgstr "<strong>Hinweis:</strong> Sie können Ihre E-Mail-Adresse immer noch <a href="%(email_url)s">ändern</a>."
+msgstr "<strong>Hinweis:</strong> Sie können Ihre E-Mail-Adresse immer noch <a href=\"%(email_url)s\">ändern</a>."
 
 #: app/templates/mobile/account/login.html:41
 msgid "This email was previously signed up using either Google or Facebook."
@@ -484,7 +508,7 @@ msgid ""
 "                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Privacy Policy</a>\n"
 "                "
 msgstr ""
-"                Mit der Anmeldung stimme ich den\n                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Nutzungsbedingungen</a> und der <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Datenschutzrichtlinie</a> der %(brand_name)s App zu\n                "
+"\n"
 "                Mit der Anmeldung stimme ich den\n"
 "                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Nutzungsbedingungen</a> und der <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Datenschutzrichtlinie</a> der %(brand_name)s App zu\n"
 "                "
@@ -497,13 +521,10 @@ msgid ""
 "                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
 "                "
 msgstr ""
-"                Mit der Anmeldung stimme ich den
-                <a class="link" href="%(tos_link)s">Nutzungsbedingungen</a> und der <a class="link" href="%(privacy_link)s">Datenschutzrichtlinie</a> der %(brand_name)s App zu
-                "
 "\n"
 "                Mit der Anmeldung stimme ich den\n"
 "                <a class=\"link\" href=\"%(tos_link)s\">Nutzungsbedingungen</a> und der <a class=\"link\" href=\"%(privacy_link)s\">Datenschutzrichtlinie</a> der %(brand_name)s App zu\n"
-"
+"                "
 
 #: app/templates/new_octoprinttunnel_succeeded.html:7
 msgid "Succeeded"
@@ -644,7 +665,9 @@ msgstr "REGISTRIEREN"
 msgid ""
 "You are about to use your %(provider_name)s account to login to\n"
 "  %(site_name)s. As a final step, please complete the following form:"
-msgstr """Sie sind dabei, Ihr %(provider_name)s-Konto zu verwenden, um sich bei\n""  "%(site_name)s anzumelden. Als letzten Schritt füllen Sie bitte das folgende Formular aus:"
+msgstr ""
+"Sie sind dabei, Ihr %(provider_name)s-Konto zu verwenden, um sich bei\n"
+"  %(site_name)s anzumelden. Als letzten Schritt füllen Sie bitte das folgende Formular aus:"
 
 #: app/templates/unsubscribe_email.html:8
 msgid "Got it! You will no longer receive emails"

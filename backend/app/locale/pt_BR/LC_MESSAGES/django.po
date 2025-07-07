@@ -104,7 +104,13 @@ msgid ""
 "\n"
 "To confirm this is correct, go to:\n"
 "%(activate_url)s\n"
-msgstr """Olá de %(site_name)s!\n"""\n"""Você está recebendo este e-mail porque o usuário %(user_display)s forneceu o seu como endereço de e-mail para conectar a conta dele.\n"""\n"""Para confirmar que isso está correto, vá para:\n""""%(activate_url)s\n"""
+msgstr ""
+"Olá de %(site_name)s!\n"
+"\n"
+"Você está recebendo este e-mail porque o usuário %(user_display)s forneceu o seu como endereço de e-mail para conectar a conta dele.\n"
+"\n"
+"Para confirmar que isso está correto, vá para:\n"
+"%(activate_url)s\n"
 
 #: app/templates/account/email/email_confirmation_message.txt:8
 #, python-format
@@ -122,14 +128,20 @@ msgid ""
 "\n"
 "You're receiving this e-mail because you or someone else has requested a password for your user account.\n"
 "It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
-msgstr """Olá de %(site_name)s!\n""""\n""""Você está recebendo este e-mail porque você ou outra pessoa solicitou uma senha para sua conta de usuário.\n""""Pode ser ignorado com segurança se você não solicitou uma redefinição de senha. Clique no link abaixo para redefinir sua senha."""
+msgstr ""
+"Olá de %(site_name)s!\n"
+"\n"
+"Você está recebendo este e-mail porque você ou outra pessoa solicitou uma senha para sua conta de usuário.\n"
+"Pode ser ignorado com segurança se você não solicitou uma redefinição de senha. Clique no link abaixo para redefinir sua senha."
 
 #: app/templates/account/email/password_reset_key_message.txt:8
 #, python-format
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
-msgstr """Obrigado por usar %(site_name)s!\n"""%(site_domain)s"""
+msgstr ""
+"Obrigado por usar %(site_name)s!\n"
+"%(site_domain)s"
 
 #: app/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
@@ -204,7 +216,7 @@ msgstr "Sua credencial de login é a mesma para o aplicativo móvel e o aplicati
 
 #: app/templates/account/login.html:100
 msgid "\"Sign in with Apple\" is not available in the web app. If you want to use the web app, please sign up for a different account and <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">re-link your printer</a>"
-msgstr ""Entrar com Apple" não está disponível no aplicativo web. Se você quiser usar o aplicativo web, por favor, cadastre-se para uma conta diferente e <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">re-conecte sua impressora</a>"
+msgstr "\"Entrar com Apple\" não está disponível no aplicativo web. Se você quiser usar o aplicativo web, por favor, cadastre-se para uma conta diferente e <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">re-conecte sua impressora</a>"
 
 #: app/templates/account/login.html:101
 #: app/templates/mobile/account/login.html:103
@@ -342,7 +354,9 @@ msgstr "Redefinir Minha Senha"
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it within a few\n"
 "              minutes."
-msgstr """Enviamos um e-mail para você. Por favor, entre em contato conosco se você não o receber em alguns\n""              minutos."
+msgstr ""
+"Enviamos um e-mail para você. Por favor, entre em contato conosco se você não o receber em alguns\n"
+"              minutos."
 
 #: app/templates/account/password_reset_from_key.html:14
 msgid "Bad Token"
@@ -377,9 +391,10 @@ msgid ""
 "            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
 "            "
 msgstr ""
-"            Ao se cadastrar, concordo com os
-            <a class="link" href="https://www.obico.io/terms.html">Termos de Uso</a> e a <a class="link" href="https://www.obico.io/privacy.html">Política de Privacidade</a> do aplicativo %(brand_name)s
-            "
+"\n"
+"            Ao se cadastrar, concordo com os\n"
+"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Termos de Uso</a> e a <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Política de Privacidade</a> do aplicativo %(brand_name)s\n"
+"            "
 
 #: app/templates/account/signup.html:45
 #, python-format
@@ -389,7 +404,10 @@ msgid ""
 "            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
 "            "
 msgstr ""
-"            Ao se cadastrar, concordo com os\n            <a class=\"link\" href=\"%(tos_link)s\">Termos de Uso</a> e a <a class=\"link\" href=\"%(privacy_link)s\">Política de Privacidade</a> do aplicativo %(brand_name)s\n            "
+"\n"
+"            Ao se cadastrar, concordo com os\n"
+"            <a class=\"link\" href=\"%(tos_link)s\">Termos de Uso</a> e a <a class=\"link\" href=\"%(privacy_link)s\">Política de Privacidade</a> do aplicativo %(brand_name)s\n"
+"            "
 
 #: app/templates/account/signup.html:77
 #: app/templates/mobile/account/signup.html:80
@@ -449,19 +467,25 @@ msgid ""
 "This part of the site requires us to verify that\n"
 "  you are who you claim to be. For this purpose, we require that you\n"
 "  verify ownership of your e-mail address. "
-msgstr """Esta parte do site exige que verifiquemos que\n""  "você é quem afirma ser. Para este fim, exigimos que você\n""  "verifique a propriedade do seu endereço de e-mail. "
+msgstr ""
+"Esta parte do site exige que verifiquemos que\n"
+"  você é quem afirma ser. Para este fim, exigimos que você\n"
+"  verifique a propriedade do seu endereço de e-mail. "
 
 #: app/templates/account/verified_email_required.html:17
 msgid ""
 "We have sent an e-mail to you for\n"
 "  verification. Please click on the link inside this e-mail. Please\n"
 "  contact us if you do not receive it within a few minutes."
-msgstr """Enviamos um e-mail para você para\n""  "verificação. Por favor, clique no link dentro deste e-mail. Por favor,\n""  "entre em contato conosco se você não o receber em alguns minutos.""
+msgstr ""
+"Enviamos um e-mail para você para\n"
+"  verificação. Por favor, clique no link dentro deste e-mail. Por favor,\n"
+"  entre em contato conosco se você não o receber em alguns minutos."
 
 #: app/templates/account/verified_email_required.html:21
 #, python-format
 msgid "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-mail address</a>."
-msgstr "<strong>Nota:</strong> você ainda pode <a href="%(email_url)s">alterar seu endereço de e-mail</a>."
+msgstr "<strong>Nota:</strong> você ainda pode <a href=\"%(email_url)s\">alterar seu endereço de e-mail</a>."
 
 #: app/templates/mobile/account/login.html:41
 msgid "This email was previously signed up using either Google or Facebook."

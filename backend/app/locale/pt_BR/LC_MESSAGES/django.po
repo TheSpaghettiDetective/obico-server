@@ -372,9 +372,10 @@ msgstr "Senha. Novamente"
 #: app/templates/account/signup.html:40
 #, python-format
 msgid ""
-"            By signing up, I agree to the %(brand_name)s app's
-            <a class="link" href="https://www.obico.io/terms.html">Terms of Use</a> and <a class="link" href="https://www.obico.io/privacy.html">PrivacyPolicy</a>
-            "
+"\n"
+"            By signing up, I agree to the %(brand_name)s app's\n"
+"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"            "
 msgstr ""
 "            Ao se cadastrar, concordo com os
             <a class="link" href="https://www.obico.io/terms.html">Termos de Uso</a> e a <a class="link" href="https://www.obico.io/privacy.html">Política de Privacidade</a> do aplicativo %(brand_name)s
@@ -383,7 +384,10 @@ msgstr ""
 #: app/templates/account/signup.html:45
 #, python-format
 msgid ""
-"            By signing up, I agree to the %(brand_name)s app's\n            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n            "
+"\n"
+"            By signing up, I agree to the %(brand_name)s app's\n"
+"            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+"            "
 msgstr ""
 "            Ao se cadastrar, concordo com os\n            <a class=\"link\" href=\"%(tos_link)s\">Termos de Uso</a> e a <a class=\"link\" href=\"%(privacy_link)s\">Política de Privacidade</a> do aplicativo %(brand_name)s\n            "
 

@@ -152,7 +152,7 @@ msgstr "確認"
 #: app/templates/account/email_confirm.html:28
 #, python-format
 msgid "This e-mail confirmation link expired or is invalid. Please <a href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
-msgstr ""
+msgstr "此電子郵件確認連結已過期或無效。請<a href=\"%(email_url)s\">發出新的電子郵件確認請求</a>。"
 
 #: app/templates/account/login.html:10 app/templates/account/signup.html:10
 #: app/templates/mobile/account/login.html:12
@@ -482,8 +482,9 @@ msgid ""
                 <a class="link" href="%(tos_link)s">Terms of Use</a> and <a class="link" href="%(privacy_link)s">Privacy Policy</a>
                 "
 msgstr ""
-"                註冊即表示我同意 %(brand_name)s 應用程式的
-                <a class="link" href="%(tos_link)s">使用條款</a>和<a class="link" href="%(privacy_link)s">隱私政策</a>\n                "
+"                註冊即表示我同意 %(brand_name)s 應用程式的\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">使用條款</a>和<a class=\"link\" href=\"%(privacy_link)s\">隱私政策</a>\n"
+"                "
 
 #: app/templates/new_octoprinttunnel_succeeded.html:7
 msgid "Succeeded"

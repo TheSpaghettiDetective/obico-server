@@ -17,10 +17,20 @@
       @close="closeUpgradeModal"
     />
 
-
-
     <div v-if="oauthAccessToken" class="chat-container mt-3">
       <div ref="chatMessageContainer" class="chat-messages" @scroll="handleChatScroll">
+        <!-- Outdated version notice as first JusBot message bubble -->
+        <div class="message assistant">
+          <div class="message-block">
+            <div class="message-content">
+              <i class="mdi mdi-alert-circle-outline"></i>
+              <span>
+                You are on an outdated JusPrin version. Download the latest version at
+                <span class="highlighted-url">https://github.com/TheSpaghettiDetective/JusPrin/releases/latest</span>
+              </span>
+            </div>
+          </div>
+        </div>
         <div
           v-for="(message, index) in messages"
           :key="index"
@@ -1222,4 +1232,20 @@ export default {
 
 <style lang="sass" scoped>
 @import './styles/EmbeddedChatPage'
+
+.highlighted-url
+  background: var(--color-surface-primary, #e9ecef)
+  color: var(--color-primary, #007bff)
+  border-radius: var(--border-radius-xs, 4px)
+  padding: 2px 8px
+  margin-left: 6px
+  font-family: monospace
+  font-size: 0.98em
+  word-break: break-all
+  display: inline-block
+  vertical-align: middle
+// icon style for message bubble
+.message-content i.mdi-alert-circle-outline
+  font-size: 1.3em
+  margin-right: 8px
 </style>

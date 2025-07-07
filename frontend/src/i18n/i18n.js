@@ -43,7 +43,11 @@ import entBaseUk from './locales/ent_uk.json';
 import {language} from '@src/lib/page-context'
 
 const getCurrentLanguage = () => {
-  return language().replace(/_/g, '-');
+  const lang = language().replace(/_/g, '-');
+  if (lang === 'zh') return 'zh-CN';
+  if (lang === 'zh_Hans' || lang === 'zh-Hans') return 'zh-CN';
+  if (lang === 'zh_Hant' || lang === 'zh-Hant') return 'zh-TW';
+  return lang;
 };
 
 const currentLanguage = getCurrentLanguage()

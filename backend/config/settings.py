@@ -195,6 +195,9 @@ LANGUAGES = [
     ('pt-br', 'Brazilian Portuguese'),
     ('es', 'Spanish'),
     ('de', 'German'),
+    ('fr', 'French'),
+    ('it', 'Italian'),
+    ('ru', 'Russian'),
 ]
 
 

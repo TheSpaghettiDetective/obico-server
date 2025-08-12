@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-26 03:06+0000\n"
+"POT-Creation-Date: 2025-08-12 22:10+0000\n"
 "PO-Revision-Date: 2024-10-26 03:06+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -35,7 +35,8 @@ msgstr "Correo electrónico o contraseña inválidos."
 
 #: app/forms.py:105 app/views/mobile_views.py:52 app/views/web_views.py:64
 msgid "A user is already registered with this email address."
-msgstr "Ya existe un usuario registrado con esta dirección de correo electrónico."
+msgstr ""
+"Ya existe un usuario registrado con esta dirección de correo electrónico."
 
 #: app/models/syndicate_models.py:84
 msgid "email address"
@@ -60,7 +61,8 @@ msgstr "Direcciones de correo electrónico"
 
 #: app/templates/account/email.html:14
 msgid "The following e-mail addresses are associated with your account:"
-msgstr "Las siguientes direcciones de correo electrónico están asociadas a su cuenta:"
+msgstr ""
+"Las siguientes direcciones de correo electrónico están asociadas a su cuenta:"
 
 #: app/templates/account/email.html:29
 msgid "Primary"
@@ -92,22 +94,40 @@ msgid "Warning:"
 msgstr "Advertencia:"
 
 #: app/templates/account/email.html:52
-msgid "You currently do not have any e-mail address set up. You should really add an e-mail address so you can receive notifications, reset your password, etc."
-msgstr "Actualmente no tiene ninguna dirección de correo electrónico configurada. Debería añadir una dirección de correo electrónico para poder recibir notificaciones, restablecer su contraseña, etc."
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, etc."
+msgstr ""
+"Actualmente no tiene ninguna dirección de correo electrónico configurada. "
+"Debería añadir una dirección de correo electrónico para poder recibir "
+"notificaciones, restablecer su contraseña, etc."
+
+#: app/templates/account/email.html:58
+#, fuzzy
+#| msgid "E-mail Addresses"
+msgid "Add E-mail Address"
+msgstr "Direcciones de correo electrónico"
+
+#: app/templates/account/email.html:66
+msgid "Add E-mail"
+msgstr "Agregar correo electrónico"
 
 #: app/templates/account/email/email_confirmation_message.txt:1
 #, python-format
 msgid ""
 "Hello from %(site_name)s!\n"
 "\n"
-"You're receiving this e-mail because user %(user_display)s has given yours as an e-mail address to connect their account.\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
 "\n"
 "To confirm this is correct, go to:\n"
 "%(activate_url)s\n"
 msgstr ""
 "¡Hola desde %(site_name)s!\n"
 "\n"
-"Recibe este correo electrónico porque el usuario %(user_display)s ha proporcionado el suyo como dirección de correo electrónico para conectar su cuenta.\n"
+"Recibe este correo electrónico porque el usuario %(user_display)s ha "
+"proporcionado el suyo como dirección de correo electrónico para conectar su "
+"cuenta.\n"
 "\n"
 "Para confirmar que esto es correcto, vaya a:\n"
 "%(activate_url)s\n"
@@ -126,13 +146,17 @@ msgstr "¡Verifique su dirección de correo electrónico!"
 msgid ""
 "Hello from %(site_name)s!\n"
 "\n"
-"You're receiving this e-mail because you or someone else has requested a password for your user account.\n"
-"It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
 msgstr ""
 "¡Hola desde %(site_name)s!\n"
 "\n"
-"Recibe este correo electrónico porque usted o alguien más ha solicitado una contraseña para su cuenta de usuario.\n"
-"Puede ignorarse de forma segura si no solicitó un restablecimiento de contraseña. Haga clic en el enlace de abajo para restablecer su contraseña."
+"Recibe este correo electrónico porque usted o alguien más ha solicitado una "
+"contraseña para su cuenta de usuario.\n"
+"Puede ignorarse de forma segura si no solicitó un restablecimiento de "
+"contraseña. Haga clic en el enlace de abajo para restablecer su contraseña."
 
 #: app/templates/account/email/password_reset_key_message.txt:8
 #, python-format
@@ -155,7 +179,9 @@ msgstr "Confirmar dirección de correo electrónico"
 #: app/templates/account/email_confirm.html:17
 #, python-format
 msgid "Please confirm you own <a href=\"mailto:%(email)s\">%(email)s</a>."
-msgstr "Por favor, confirme que es propietario de <a href=\"mailto:%(email)s\">%(email)s</a>."
+msgstr ""
+"Por favor, confirme que es propietario de <a href=\"mailto:"
+"%(email)s\">%(email)s</a>."
 
 #: app/templates/account/email_confirm.html:19
 msgid "Confirm"
@@ -163,130 +189,198 @@ msgstr "Confirmar"
 
 #: app/templates/account/email_confirm.html:28
 #, python-format
-msgid "This e-mail confirmation link expired or is invalid. Please <a href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
-msgstr "Este enlace de confirmación de correo electrónico ha caducado o no es válido. Por favor, <a href=\"%(email_url)s\">envíe una nueva solicitud de confirmación de correo electrónico</a>."
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+"Este enlace de confirmación de correo electrónico ha caducado o no es "
+"válido. Por favor, <a href=\"%(email_url)s\">envíe una nueva solicitud de "
+"confirmación de correo electrónico</a>."
 
 #: app/templates/account/login.html:10 app/templates/account/signup.html:10
-#: app/templates/mobile/account/login.html:12
+#: app/templates/mobile/account/login.html:13
 #: app/templates/mobile/account/signup.html:14
 msgid "Email address"
 msgstr "Dirección de correo electrónico"
 
 #: app/templates/account/login.html:11 app/templates/account/signup.html:11
-#: app/templates/mobile/account/login.html:13
+#: app/templates/mobile/account/login.html:14
 #: app/templates/mobile/account/signup.html:15
 msgid "Password"
 msgstr "Contraseña"
 
-#: app/templates/account/login.html:41
-#: app/templates/mobile/account/login.html:43
+#: app/templates/account/login.html:45
+#: app/templates/mobile/account/login.html:44
 msgid "Click here to reset your password"
 msgstr "Haga clic aquí para restablecer su contraseña"
 
-#: app/templates/account/login.html:43
-#: app/templates/mobile/account/login.html:45
+#: app/templates/account/login.html:47
+#: app/templates/mobile/account/login.html:46
 msgid "Wrong email or password."
 msgstr "Correo electrónico o contraseña incorrectos."
 
-#: app/templates/account/login.html:44 app/templates/account/login.html:79
-#: app/templates/mobile/account/login.html:46
-#: app/templates/mobile/account/login.html:81
+#: app/templates/account/login.html:48 app/templates/account/login.html:90
+#: app/templates/mobile/account/login.html:47
+#: app/templates/mobile/account/login.html:89
 msgid "Forgot Password?"
 msgstr "¿Olvidó su contraseña?"
 
-#: app/templates/account/login.html:76
-#: app/templates/mobile/account/login.html:78
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:86
 msgid "Remember me"
 msgstr "Recordarme"
 
-#: app/templates/account/login.html:86 app/templates/account/signup.html:123
-#: app/templates/mobile/account/login.html:88
-#: app/templates/mobile/account/signup.html:126
+#: app/templates/account/login.html:97 app/templates/account/signup.html:134
+#: app/templates/mobile/account/login.html:96
+#: app/templates/mobile/account/signup.html:128
 msgid "Sign In"
 msgstr "Iniciar sesión"
 
-#: app/templates/account/login.html:92
-#: app/templates/mobile/account/login.html:95
+#: app/templates/account/login.html:103
+#: app/templates/mobile/account/login.html:103
 msgid "Having trouble?"
 msgstr "¿Tiene problemas?"
 
-#: app/templates/account/login.html:99
-msgid "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the mobile app, you can use the same to sign in here."
-msgstr "Su credencial de inicio de sesión es la misma para la aplicación móvil y la aplicación web. Si se registró previamente usando la aplicación móvil, puede usar la misma para iniciar sesión aquí."
+#: app/templates/account/login.html:110
+msgid ""
+"Your sign-in credential is the same for the mobile app and the web app. If "
+"you previously signed up using the mobile app, you can use the same to sign "
+"in here."
+msgstr ""
+"Su credencial de inicio de sesión es la misma para la aplicación móvil y la "
+"aplicación web. Si se registró previamente usando la aplicación móvil, puede "
+"usar la misma para iniciar sesión aquí."
 
-#: app/templates/account/login.html:100
-msgid "\"Sign in with Apple\" is not available in the web app. If you want to use the web app, please sign up for a different account and <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">re-link your printer</a>"
-msgstr "\"Iniciar sesión con Apple\" no está disponible en la aplicación web. Si desea utilizar la aplicación web, regístrese para obtener una cuenta diferente y <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">vuelva a vincular su impresora</a>"
+#: app/templates/account/login.html:111
+msgid ""
+"\"Sign in with Apple\" is not available in the web app. If you want to use "
+"the web app, please sign up for a different account and <a class=\"link\" "
+"target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-"
+"printer/\">re-link your printer</a>"
+msgstr ""
+"\"Iniciar sesión con Apple\" no está disponible en la aplicación web. Si "
+"desea utilizar la aplicación web, regístrese para obtener una cuenta "
+"diferente y <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/"
+"docs/user-guides/relink-printer/\">vuelva a vincular su impresora</a>"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
-msgid "Even if you previously signed up an account using Google or Facebook, you can still"
-msgstr "Incluso si se registró previamente con una cuenta de Google o Facebook, aún puede"
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
+msgid ""
+"Even if you previously signed up an account using Google or Facebook, you "
+"can still"
+msgstr ""
+"Incluso si se registró previamente con una cuenta de Google o Facebook, aún "
+"puede"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid "reset password"
 msgstr "restablecer contraseña"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid "using the same email address."
 msgstr "usando la misma dirección de correo electrónico."
 
-#: app/templates/account/login.html:102
-#: app/templates/mobile/account/login.html:104
-msgid "If you can't sign in the mobile app, re-install the mobile app and try it again."
-msgstr "Si no puede iniciar sesión en la aplicación móvil, vuelva a instalar la aplicación móvil e inténtelo de nuevo."
+#: app/templates/account/login.html:113
+#: app/templates/mobile/account/login.html:112
+msgid ""
+"If you can't sign in the mobile app, re-install the mobile app and try it "
+"again."
+msgstr ""
+"Si no puede iniciar sesión en la aplicación móvil, vuelva a instalar la "
+"aplicación móvil e inténtelo de nuevo."
 
-#: app/templates/account/login.html:103
-#: app/templates/mobile/account/login.html:105
+#: app/templates/account/login.html:114
+#: app/templates/mobile/account/login.html:113
 msgid "Contact us"
 msgstr "Contáctenos"
 
-#: app/templates/account/login.html:103
-#: app/templates/mobile/account/login.html:105
+#: app/templates/account/login.html:114
+#: app/templates/mobile/account/login.html:113
 msgid "if you have tried everything else."
 msgstr "si ha probado todo lo demás."
 
-#: app/templates/account/login.html:107
-#: app/templates/mobile/account/login.html:109
+#: app/templates/account/login.html:118
+#: app/templates/mobile/account/login.html:117
 msgid "Close"
 msgstr "Cerrar"
 
-#: app/templates/account/login.html:115
-#: app/templates/mobile/account/login.html:116
+#: app/templates/account/login.html:126
+#: app/templates/mobile/account/login.html:124
 msgid "Don't have an account?"
 msgstr "¿No tiene una cuenta?"
 
-#: app/templates/account/login.html:115
-#: app/templates/mobile/account/login.html:116
+#: app/templates/account/login.html:126
+#: app/templates/mobile/account/login.html:124
 msgid "Sign Up Now"
 msgstr "Regístrese ahora"
 
-#: app/templates/account/login.html:123 app/templates/account/signup.html:129
-#: app/templates/mobile/account/login.html:121
-#: app/templates/mobile/account/login.html:124
-#: app/templates/mobile/account/signup.html:132
+#: app/templates/account/login.html:134 app/templates/account/signup.html:140
+#: app/templates/mobile/account/login.html:129
+#: app/templates/mobile/account/login.html:132
+#: app/templates/mobile/account/signup.html:134
 msgid "Or"
 msgstr "O"
 
-#: app/templates/account/login.html:126 app/templates/account/signup.html:131
-#: app/templates/mobile/account/login.html:127
-#: app/templates/mobile/account/signup.html:134
-msgid "Continue with social media"
-msgstr "Continuar con redes sociales"
-
-#: app/templates/account/login.html:131 app/templates/account/signup.html:136
-#: app/templates/mobile/account/login.html:132
-#: app/templates/mobile/account/signup.html:139
+#: app/templates/account/login.html:140
+#: app/templates/mobile/account/login.html:138
 msgid "Login with Facebook"
 msgstr "Iniciar sesión con Facebook"
 
-#: app/templates/account/login.html:137 app/templates/account/signup.html:142
-#: app/templates/mobile/account/login.html:138
-#: app/templates/mobile/account/signup.html:145
+#: app/templates/account/login.html:141 app/templates/account/login.html:165
+#: app/templates/mobile/account/login.html:139
+#: app/templates/mobile/account/login.html:170
+#, fuzzy
+#| msgid "Login with Facebook"
+msgid "Continue with Facebook"
+msgstr "Iniciar sesión con Facebook"
+
+#: app/templates/account/login.html:146
+#: app/templates/mobile/account/login.html:144
 msgid "Login with Google"
 msgstr "Iniciar sesión con Google"
+
+#: app/templates/account/login.html:147 app/templates/account/signup.html:144
+#: app/templates/account/signup.html:145
+#: app/templates/mobile/account/login.html:145
+#: app/templates/mobile/account/signup.html:138
+#: app/templates/mobile/account/signup.html:139
+#, fuzzy
+#| msgid "Login with Google"
+msgid "Continue with Google"
+msgstr "Iniciar sesión con Google"
+
+#: app/templates/account/login.html:163
+#: app/templates/mobile/account/login.html:168
+msgid "Facebook Login Is Going Away Soon"
+msgstr "El inicio de sesión con Facebook desaparecerá pronto"
+
+#: app/templates/account/login.html:164
+#: app/templates/mobile/account/login.html:169
+#, fuzzy
+#| msgid "Reset My Password"
+msgid "Reset Password"
+msgstr "Restablecer mi contraseña"
+
+#: app/templates/account/login.html:166
+#: app/templates/mobile/account/login.html:171
+msgid ""
+"The Facebook developer program has become bogged down with so much "
+"bureaucracy that it's no longer practical for small, independent developers "
+"like me to keep supporting it. On top of that, the number of people using "
+"Facebook to log in has dropped sharply, making it hard to justify all the "
+"extra work."
+msgstr "El programa de desarrolladores de Facebook se ha vuelto tan burocrático que ya no es práctico para desarrolladores pequeños e independientes como yo seguir soportándolo. Además, el número de personas que usan Facebook para iniciar sesión ha caído en picado, lo que dificulta justificar todo el trabajo adicional."
+
+#: app/templates/account/login.html:167
+#: app/templates/mobile/account/login.html:172
+#, python-format
+msgid ""
+"To keep your Obico account accessible, please switch to logging in with your "
+"email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use "
+"the same email address linked to your account."
+msgstr "Para mantener el acceso a su cuenta de Obico, cambie a iniciar sesión con su correo electrónico. Simplemente haga clic en el botón <b>\"%(reset_button_text)s\"</b> de abajo y use la misma dirección de correo vinculada a su cuenta."
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
 #: app/templates/account/logout.html:18
@@ -300,7 +394,8 @@ msgstr "¿Está seguro de que desea cerrar sesión?"
 #: app/templates/account/messages/cannot_delete_primary_email.txt:2
 #, python-format
 msgid "You cannot remove your primary e-mail address (%(email)s)."
-msgstr "No puede eliminar su dirección de correo electrónico principal (%(email)s)."
+msgstr ""
+"No puede eliminar su dirección de correo electrónico principal (%(email)s)."
 
 #: app/templates/account/messages/email_confirmed.txt:2
 #, python-format
@@ -352,10 +447,12 @@ msgstr "Restablecer mi contraseña"
 
 #: app/templates/account/password_reset_done.html:18
 msgid ""
-"We have sent you an e-mail. Please contact us if you do not receive it within a few\n"
+"We have sent you an e-mail. Please contact us if you do not receive it "
+"within a few\n"
 "              minutes."
 msgstr ""
-"Le hemos enviado un correo electrónico. Por favor, contáctenos si no lo recibe en unos pocos\n"
+"Le hemos enviado un correo electrónico. Por favor, contáctenos si no lo "
+"recibe en unos pocos\n"
 "              minutos."
 
 #: app/templates/account/password_reset_from_key.html:14
@@ -364,8 +461,14 @@ msgstr "Token inválido"
 
 #: app/templates/account/password_reset_from_key.html:19
 #, python-format
-msgid "The password reset link was invalid, possibly because it has already been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</a>."
-msgstr "El enlace para restablecer la contraseña no es válido, posiblemente porque ya ha sido utilizado. Por favor, solicite un <a href=\"%(passwd_reset_url)s\">nuevo restablecimiento de contraseña</a>."
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+"El enlace para restablecer la contraseña no es válido, posiblemente porque "
+"ya ha sido utilizado. Por favor, solicite un <a "
+"href=\"%(passwd_reset_url)s\">nuevo restablecimiento de contraseña</a>."
 
 #: app/templates/account/password_reset_from_key.html:53
 #: app/templates/account/password_reset_from_key_done.html:13
@@ -383,49 +486,98 @@ msgstr "Establecer contraseña"
 msgid "Password. Again"
 msgstr "Contraseña. De nuevo"
 
-#: app/templates/account/signup.html:40
-#, python-format
+#: app/templates/account/signup.html:41
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "            By signing up, I agree to the %(brand_name)s app's\n"
+#| "            <a class=\"link\" href=\"https://www.obico.io/terms."
+#| "html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#| "privacy.html\">PrivacyPolicy</a>\n"
+#| "            "
 msgid ""
 "\n"
-"            By signing up, I agree to the %(brand_name)s app's\n"
-"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
-"            "
+"              By signing up, I agree to the %(brand_name)s app's\n"
+"              <a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/terms.html\">Terms of Use</a> and <a class=\"link\" target=\"_blank\" "
+"href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"              "
 msgstr ""
 "\n"
 "            Al registrarme, acepto los\n"
-"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
+"            <a class=\"link\" href=\"https://www.obico.io/terms."
+"html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico."
+"io/privacy.html\">Política de privacidad</a> de la aplicación "
+"%(brand_name)s\n"
 "            "
 
-#: app/templates/account/signup.html:45
-#, python-format
+#: app/templates/account/signup.html:46
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "                By signing up, I agree to the %(brand_name)s app's\n"
+#| "                <a class=\"link\" href=\"https://www.obico.io/terms."
+#| "html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#| "privacy.html\">Privacy Policy</a>\n"
+#| "                "
 msgid ""
 "\n"
-"            By signing up, I agree to the %(brand_name)s app's\n"
-"            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
-"            "
+"              JusPrin is a project built by <a class=\"link\" "
+"target=\"_blank\" href=\"https://www.obico.io\">Obico</a>. By signing up, I "
+"agree to Obico's\n"
+"              <a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/terms.html\">Terms of Use</a> and <a class=\"link\" target=\"_blank\" "
+"href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"              "
 msgstr ""
 "\n"
-"            Al registrarme, acepto los\n"
-"            <a class=\"link\" href=\"%(tos_link)s\">Términos de uso</a> y la <a class=\"link\" href=\"%(privacy_link)s\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
-"            "
+"                Al registrarme, acepto los\n"
+"                <a class=\"link\" href=\"https://www.obico.io/terms."
+"html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico."
+"io/privacy.html\">Política de privacidad</a> de la aplicación "
+"%(brand_name)s\n"
+"                "
 
-#: app/templates/account/signup.html:77
-#: app/templates/mobile/account/signup.html:80
+#: app/templates/account/signup.html:51
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "                By signing up, I agree to the %(brand_name)s app's\n"
+#| "                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> "
+#| "and <a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
+#| "                "
+msgid ""
+"\n"
+"              By signing up, I agree to the %(brand_name)s app's\n"
+"              <a class=\"link\" target=\"_blank\" "
+"href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" "
+"target=\"_blank\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+"              "
+msgstr ""
+"\n"
+"                Al registrarme, acepto los\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">Términos de uso</a> "
+"y la <a class=\"link\" href=\"%(privacy_link)s\">Política de privacidad</a> "
+"de la aplicación %(brand_name)s\n"
+"                "
+
+#: app/templates/account/signup.html:88
+#: app/templates/mobile/account/signup.html:82
 msgid "We'll never share your email with anyone else."
 msgstr "Nunca compartiremos su correo electrónico con nadie más."
 
-#: app/templates/account/signup.html:96
-#: app/templates/mobile/account/signup.html:99
+#: app/templates/account/signup.html:107
+#: app/templates/mobile/account/signup.html:101
 msgid "At least 6 characters. And be secure, please."
 msgstr "Al menos 6 caracteres. Y sea seguro, por favor."
 
-#: app/templates/account/signup.html:120
-#: app/templates/mobile/account/signup.html:123
+#: app/templates/account/signup.html:131
+#: app/templates/mobile/account/signup.html:125
 msgid "Sign Up"
 msgstr "Registrarse"
 
-#: app/templates/account/signup.html:122
-#: app/templates/mobile/account/signup.html:125
+#: app/templates/account/signup.html:133
+#: app/templates/mobile/account/signup.html:127
 msgid "Already have an account?"
 msgstr "¿Ya tiene una cuenta?"
 
@@ -449,7 +601,8 @@ msgstr "ya ha iniciado sesión como %(user_display)s."
 
 #: app/templates/account/snippets/password_change_form.html:4
 msgid "Passwords must be At least 6 characters. And be secure, please."
-msgstr "Las contraseñas deben tener al menos 6 caracteres. Y ser seguras, por favor."
+msgstr ""
+"Las contraseñas deben tener al menos 6 caracteres. Y ser seguras, por favor."
 
 #: app/templates/account/verification_sent.html:5
 #: app/templates/account/verification_sent.html:9
@@ -459,8 +612,14 @@ msgid "Verify Your E-mail Address"
 msgstr "Verifique su dirección de correo electrónico"
 
 #: app/templates/account/verification_sent.html:11
-msgid "We have sent an e-mail to you for verification. Follow the link provided to finalize the signup process. Please contact us if you do not receive it within a few minutes."
-msgstr "Le hemos enviado un correo electrónico para su verificación. Siga el enlace proporcionado para finalizar el proceso de registro. Por favor, contáctenos si no lo recibe en unos minutos."
+msgid ""
+"We have sent an e-mail to you for verification. Follow the link provided to "
+"finalize the signup process. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr ""
+"Le hemos enviado un correo electrónico para su verificación. Siga el enlace "
+"proporcionado para finalizar el proceso de registro. Por favor, contáctenos "
+"si no lo recibe en unos minutos."
 
 #: app/templates/account/verified_email_required.html:13
 msgid ""
@@ -479,51 +638,78 @@ msgid ""
 "  contact us if you do not receive it within a few minutes."
 msgstr ""
 "Le hemos enviado un correo electrónico para\n"
-"  verificación. Por favor, haga clic en el enlace dentro de este correo electrónico. Por favor,\n"
+"  verificación. Por favor, haga clic en el enlace dentro de este correo "
+"electrónico. Por favor,\n"
 "  contáctenos si no lo recibe en unos minutos."
 
 #: app/templates/account/verified_email_required.html:21
 #, python-format
-msgid "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-mail address</a>."
-msgstr "<strong>Nota:</strong> aún puede <a href=\"%(email_url)s\">cambiar su dirección de correo electrónico</a>."
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
+"mail address</a>."
+msgstr ""
+"<strong>Nota:</strong> aún puede <a href=\"%(email_url)s\">cambiar su "
+"dirección de correo electrónico</a>."
 
-#: app/templates/mobile/account/login.html:41
+#: app/templates/mobile/account/login.html:42
 msgid "This email was previously signed up using either Google or Facebook."
-msgstr "Este correo electrónico fue registrado previamente usando Google o Facebook."
+msgstr ""
+"Este correo electrónico fue registrado previamente usando Google o Facebook."
 
-#: app/templates/mobile/account/login.html:102
-msgid "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the web app, you can use the same to sign in here."
-msgstr "Su credencial de inicio de sesión es la misma para la aplicación móvil y la aplicación web. Si se registró previamente usando la aplicación web, puede usar la misma para iniciar sesión aquí."
+#: app/templates/mobile/account/login.html:110
+msgid ""
+"Your sign-in credential is the same for the mobile app and the web app. If "
+"you previously signed up using the web app, you can use the same to sign in "
+"here."
+msgstr ""
+"Su credencial de inicio de sesión es la misma para la aplicación móvil y la "
+"aplicación web. Si se registró previamente usando la aplicación web, puede "
+"usar la misma para iniciar sesión aquí."
 
-#: app/templates/mobile/account/login.html:145
-#: app/templates/mobile/account/signup.html:152
+#: app/templates/mobile/account/login.html:151
 msgid "Login with Apple"
 msgstr "Iniciar sesión con Apple"
 
-#: app/templates/mobile/account/signup.html:44
+#: app/templates/mobile/account/login.html:152
+#: app/templates/mobile/account/signup.html:145
+#: app/templates/mobile/account/signup.html:146
+#, fuzzy
+#| msgid "Login with Apple"
+msgid "Continue with Apple"
+msgstr "Iniciar sesión con Apple"
+
+#: app/templates/mobile/account/signup.html:45
 #, python-format
 msgid ""
 "\n"
 "                By signing up, I agree to the %(brand_name)s app's\n"
-"                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Privacy Policy</a>\n"
+"                <a class=\"link\" href=\"https://www.obico.io/terms."
+"html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+"privacy.html\">Privacy Policy</a>\n"
 "                "
 msgstr ""
 "\n"
 "                Al registrarme, acepto los\n"
-"                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
+"                <a class=\"link\" href=\"https://www.obico.io/terms."
+"html\">Términos de uso</a> y la <a class=\"link\" href=\"https://www.obico."
+"io/privacy.html\">Política de privacidad</a> de la aplicación "
+"%(brand_name)s\n"
 "                "
 
-#: app/templates/mobile/account/signup.html:49
+#: app/templates/mobile/account/signup.html:50
 #, python-format
 msgid ""
 "\n"
 "                By signing up, I agree to the %(brand_name)s app's\n"
-"                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and "
+"<a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
 "                "
 msgstr ""
 "\n"
 "                Al registrarme, acepto los\n"
-"                <a class=\"link\" href=\"%(tos_link)s\">Términos de uso</a> y la <a class=\"link\" href=\"%(privacy_link)s\">Política de privacidad</a> de la aplicación %(brand_name)s\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">Términos de uso</a> "
+"y la <a class=\"link\" href=\"%(privacy_link)s\">Política de privacidad</a> "
+"de la aplicación %(brand_name)s\n"
 "                "
 
 #: app/templates/new_octoprinttunnel_succeeded.html:7
@@ -596,8 +782,13 @@ msgstr "Puede tardar un tiempo en ser ejecutado por OctoPrint."
 
 #: app/templates/printer_acted.html:31
 #, python-format
-msgid " You are trying to %(action)s a print but %(printer_name)s is not printing... maybe you clicked a link in an outdated email? "
-msgstr " Está intentando %(action)s una impresión pero %(printer_name)s no está imprimiendo... ¿quizás hizo clic en un enlace de un correo electrónico obsoleto? "
+msgid ""
+" You are trying to %(action)s a print but %(printer_name)s is not "
+"printing... maybe you clicked a link in an outdated email? "
+msgstr ""
+" Está intentando %(action)s una impresión pero %(printer_name)s no está "
+"imprimiendo... ¿quizás hizo clic en un enlace de un correo electrónico "
+"obsoleto? "
 
 #: app/templates/printer_acted.html:39
 msgid "Go to webcam view"
@@ -609,8 +800,11 @@ msgid "Social Network Login Failure"
 msgstr "Fallo de inicio de sesión en la red social"
 
 #: app/templates/socialaccount/authentication_error.html:10
-msgid "An error occurred while attempting to login via your social network account."
-msgstr "Se produjo un error al intentar iniciar sesión a través de su cuenta de red social."
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr ""
+"Se produjo un error al intentar iniciar sesión a través de su cuenta de red "
+"social."
 
 #: app/templates/socialaccount/connections.html:5
 #: app/templates/socialaccount/connections.html:9
@@ -618,12 +812,18 @@ msgid "Account Connections"
 msgstr "Conexiones de cuenta"
 
 #: app/templates/socialaccount/connections.html:12
-msgid "You can sign in to your account using any of the following third party accounts:"
-msgstr "Puede iniciar sesión en su cuenta utilizando cualquiera de las siguientes cuentas de terceros:"
+msgid ""
+"You can sign in to your account using any of the following third party "
+"accounts:"
+msgstr ""
+"Puede iniciar sesión en su cuenta utilizando cualquiera de las siguientes "
+"cuentas de terceros:"
 
 #: app/templates/socialaccount/connections.html:44
-msgid "You currently have no social network accounts connected to this account."
-msgstr "Actualmente no tiene ninguna cuenta de red social conectada a esta cuenta."
+msgid ""
+"You currently have no social network accounts connected to this account."
+msgstr ""
+"Actualmente no tiene ninguna cuenta de red social conectada a esta cuenta."
 
 #: app/templates/socialaccount/connections.html:47
 msgid "Add a 3rd Party Account"
@@ -636,8 +836,14 @@ msgstr "Inicio de sesión cancelado"
 
 #: app/templates/socialaccount/login_cancelled.html:13
 #, python-format
-msgid "You decided to cancel logging in to our site using one of your existing accounts. If this was a mistake, please proceed to <a href=\"%(login_url)s\">sign in</a>."
-msgstr "Ha decidido cancelar el inicio de sesión en nuestro sitio utilizando una de sus cuentas existentes. Si fue un error, por favor, proceda a <a href=\"%(login_url)s\">iniciar sesión</a>."
+msgid ""
+"You decided to cancel logging in to our site using one of your existing "
+"accounts. If this was a mistake, please proceed to <a "
+"href=\"%(login_url)s\">sign in</a>."
+msgstr ""
+"Ha decidido cancelar el inicio de sesión en nuestro sitio utilizando una de "
+"sus cuentas existentes. Si fue un error, por favor, proceda a <a "
+"href=\"%(login_url)s\">iniciar sesión</a>."
 
 #: app/templates/socialaccount/messages/account_connected.txt:2
 msgid "The social account has been connected."
@@ -704,3 +910,21 @@ msgstr "en notificaciones de cuenta."
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
 msgstr "Cambiar preferencias de notificación"
+
+#~ msgid "Continue with social media"
+#~ msgstr "Continuar con redes sociales"
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "            By signing up, I agree to the %(brand_name)s app's\n"
+#~ "            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and "
+#~ "<a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+#~ "            "
+#~ msgstr ""
+#~ "\n"
+#~ "            Al registrarme, acepto los\n"
+#~ "            <a class=\"link\" href=\"%(tos_link)s\">Términos de uso</a> y "
+#~ "la <a class=\"link\" href=\"%(privacy_link)s\">Política de privacidad</a> "
+#~ "de la aplicación %(brand_name)s\n"
+#~ "            "

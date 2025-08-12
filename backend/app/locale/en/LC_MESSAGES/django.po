@@ -348,7 +348,7 @@ msgstr "Login with Google"
 #: app/templates/account/login.html:163
 #: app/templates/mobile/account/login.html:168
 msgid "Facebook Login Is Going Away Soon"
-msgstr ""
+msgstr "Facebook Login Is Going Away Soon"
 
 #: app/templates/account/login.html:164
 #: app/templates/mobile/account/login.html:169
@@ -365,7 +365,7 @@ msgid ""
 "like me to keep supporting it. On top of that, the number of people using "
 "Facebook to log in has dropped sharply, making it hard to justify all the "
 "extra work."
-msgstr ""
+msgstr "The Facebook developer program has become bogged down with so much bureaucracy that it's no longer practical for small, independent developers like me to keep supporting it. On top of that, the number of people using Facebook to log in has dropped sharply, making it hard to justify all the extra work."
 
 #: app/templates/account/login.html:167
 #: app/templates/mobile/account/login.html:172
@@ -374,7 +374,7 @@ msgid ""
 "To keep your Obico account accessible, please switch to logging in with your "
 "email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use "
 "the same email address linked to your account."
-msgstr ""
+msgstr "To keep your Obico account accessible, please switch to logging in with your email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use the same email address linked to your account."
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
 #: app/templates/account/logout.html:18

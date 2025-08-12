@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-26 03:06+0000\n"
+"POT-Creation-Date: 2025-08-12 22:10+0000\n"
 "PO-Revision-Date: 2024-10-26 03:06+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -92,19 +92,41 @@ msgid "Warning:"
 msgstr "警告："
 
 #: app/templates/account/email.html:52
-msgid "You currently do not have any e-mail address set up. You should really add an e-mail address so you can receive notifications, reset your password, etc."
-msgstr "您目前沒有設定任何電子郵件地址。您應該新增一個電子郵件地址，以便接收通知、重設密碼等。"
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, etc."
+msgstr ""
+"您目前沒有設定任何電子郵件地址。您應該新增一個電子郵件地址，以便接收通知、重"
+"設密碼等。"
+
+#: app/templates/account/email.html:58
+#, fuzzy
+#| msgid "E-mail Addresses"
+msgid "Add E-mail Address"
+msgstr "電子郵件地址"
+
+#: app/templates/account/email.html:66
+msgid "Add E-mail"
+msgstr "新增電子郵件"
 
 #: app/templates/account/email/email_confirmation_message.txt:1
 #, python-format
 msgid ""
 "Hello from %(site_name)s!\n"
 "\n"
-"You're receiving this e-mail because user %(user_display)s has given yours as an e-mail address to connect their account.\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
 "\n"
 "To confirm this is correct, go to:\n"
 "%(activate_url)s\n"
-msgstr "來自 %(site_name)s 的問候！\n\n您收到這封電子郵件是因為使用者 %(user_display)s 將您的電子郵件地址用於連結他們的帳戶。\n\n若正確，請前往：\n%(activate_url)s\n"
+msgstr ""
+"來自 %(site_name)s 的問候！\n"
+"\n"
+"您收到這封電子郵件是因為使用者 %(user_display)s 將您的電子郵件地址用於連結他"
+"們的帳戶。\n"
+"\n"
+"若正確，請前往：\n"
+"%(activate_url)s\n"
 
 #: app/templates/account/email/email_confirmation_message.txt:8
 #, python-format
@@ -120,16 +142,24 @@ msgstr "驗證您的電子郵件地址！"
 msgid ""
 "Hello from %(site_name)s!\n"
 "\n"
-"You're receiving this e-mail because you or someone else has requested a password for your user account.\n"
-"It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
-msgstr "來自 %(site_name)s 的問候！\n\n您收到這封電子郵件是因為您或其他人請求了您的帳戶密碼。\n如果您沒有請求重設密碼，可以安全地忽略此郵件。請點擊下方連結以重設您的密碼。"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+"來自 %(site_name)s 的問候！\n"
+"\n"
+"您收到這封電子郵件是因為您或其他人請求了您的帳戶密碼。\n"
+"如果您沒有請求重設密碼，可以安全地忽略此郵件。請點擊下方連結以重設您的密碼。"
 
 #: app/templates/account/email/password_reset_key_message.txt:8
 #, python-format
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
-msgstr "感謝您使用 %(site_name)s！\n%(site_domain)s"
+msgstr ""
+"感謝您使用 %(site_name)s！\n"
+"%(site_domain)s"
 
 #: app/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
@@ -151,130 +181,191 @@ msgstr "確認"
 
 #: app/templates/account/email_confirm.html:28
 #, python-format
-msgid "This e-mail confirmation link expired or is invalid. Please <a href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
-msgstr "此電子郵件確認連結已過期或無效。請<a href=\"%(email_url)s\">發出新的電子郵件確認請求</a>。"
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+"此電子郵件確認連結已過期或無效。請<a href=\"%(email_url)s\">發出新的電子郵件"
+"確認請求</a>。"
 
 #: app/templates/account/login.html:10 app/templates/account/signup.html:10
-#: app/templates/mobile/account/login.html:12
+#: app/templates/mobile/account/login.html:13
 #: app/templates/mobile/account/signup.html:14
 msgid "Email address"
 msgstr "電子郵件地址"
 
 #: app/templates/account/login.html:11 app/templates/account/signup.html:11
-#: app/templates/mobile/account/login.html:13
+#: app/templates/mobile/account/login.html:14
 #: app/templates/mobile/account/signup.html:15
 msgid "Password"
 msgstr "密碼"
 
-#: app/templates/account/login.html:41
-#: app/templates/mobile/account/login.html:43
+#: app/templates/account/login.html:45
+#: app/templates/mobile/account/login.html:44
 msgid "Click here to reset your password"
 msgstr "點擊此處重設您的密碼"
 
-#: app/templates/account/login.html:43
-#: app/templates/mobile/account/login.html:45
+#: app/templates/account/login.html:47
+#: app/templates/mobile/account/login.html:46
 msgid "Wrong email or password."
 msgstr "錯誤的電子郵件或密碼。"
 
-#: app/templates/account/login.html:44 app/templates/account/login.html:79
-#: app/templates/mobile/account/login.html:46
-#: app/templates/mobile/account/login.html:81
+#: app/templates/account/login.html:48 app/templates/account/login.html:90
+#: app/templates/mobile/account/login.html:47
+#: app/templates/mobile/account/login.html:89
 msgid "Forgot Password?"
 msgstr "忘記密碼？"
 
-#: app/templates/account/login.html:76
-#: app/templates/mobile/account/login.html:78
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:86
 msgid "Remember me"
 msgstr "記住我"
 
-#: app/templates/account/login.html:86 app/templates/account/signup.html:123
-#: app/templates/mobile/account/login.html:88
-#: app/templates/mobile/account/signup.html:126
+#: app/templates/account/login.html:97 app/templates/account/signup.html:134
+#: app/templates/mobile/account/login.html:96
+#: app/templates/mobile/account/signup.html:128
 msgid "Sign In"
 msgstr "登入"
 
-#: app/templates/account/login.html:92
-#: app/templates/mobile/account/login.html:95
+#: app/templates/account/login.html:103
+#: app/templates/mobile/account/login.html:103
 msgid "Having trouble?"
 msgstr "遇到問題？"
 
-#: app/templates/account/login.html:99
-msgid "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the mobile app, you can use the same to sign in here."
-msgstr "您的登入憑證在行動應用程式和網路應用程式中是相同的。如果您之前使用行動應用程式註冊，您可以使用相同的憑證在此登入。"
+#: app/templates/account/login.html:110
+msgid ""
+"Your sign-in credential is the same for the mobile app and the web app. If "
+"you previously signed up using the mobile app, you can use the same to sign "
+"in here."
+msgstr ""
+"您的登入憑證在行動應用程式和網路應用程式中是相同的。如果您之前使用行動應用程"
+"式註冊，您可以使用相同的憑證在此登入。"
 
-#: app/templates/account/login.html:100
-msgid "\"Sign in with Apple\" is not available in the web app. If you want to use the web app, please sign up for a different account and <a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">re-link your printer</a>"
-msgstr "「使用 Apple 登入」在網路應用程式中不可用。如果您想使用網路應用程式，請註冊一個不同的帳戶並<a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-printer/\">重新連結您的印表機</a>"
+#: app/templates/account/login.html:111
+msgid ""
+"\"Sign in with Apple\" is not available in the web app. If you want to use "
+"the web app, please sign up for a different account and <a class=\"link\" "
+"target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-"
+"printer/\">re-link your printer</a>"
+msgstr ""
+"「使用 Apple 登入」在網路應用程式中不可用。如果您想使用網路應用程式，請註冊一"
+"個不同的帳戶並<a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/docs/user-guides/relink-printer/\">重新連結您的印表機</a>"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
-msgid "Even if you previously signed up an account using Google or Facebook, you can still"
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
+msgid ""
+"Even if you previously signed up an account using Google or Facebook, you "
+"can still"
 msgstr "即使您之前使用 Google 或 Facebook 註冊了帳戶，您仍然可以"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid "reset password"
 msgstr "重設密碼"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid "using the same email address."
 msgstr "使用相同的電子郵件地址。"
 
-#: app/templates/account/login.html:102
-#: app/templates/mobile/account/login.html:104
-msgid "If you can't sign in the mobile app, re-install the mobile app and try it again."
+#: app/templates/account/login.html:113
+#: app/templates/mobile/account/login.html:112
+msgid ""
+"If you can't sign in the mobile app, re-install the mobile app and try it "
+"again."
 msgstr "如果您無法登入行動應用程式，請重新安裝行動應用程式並再試一次。"
 
-#: app/templates/account/login.html:103
-#: app/templates/mobile/account/login.html:105
+#: app/templates/account/login.html:114
+#: app/templates/mobile/account/login.html:113
 msgid "Contact us"
 msgstr "聯絡我們"
 
-#: app/templates/account/login.html:103
-#: app/templates/mobile/account/login.html:105
+#: app/templates/account/login.html:114
+#: app/templates/mobile/account/login.html:113
 msgid "if you have tried everything else."
 msgstr "如果您已嘗試所有其他方法。"
 
-#: app/templates/account/login.html:107
-#: app/templates/mobile/account/login.html:109
+#: app/templates/account/login.html:118
+#: app/templates/mobile/account/login.html:117
 msgid "Close"
 msgstr "關閉"
 
-#: app/templates/account/login.html:115
-#: app/templates/mobile/account/login.html:116
+#: app/templates/account/login.html:126
+#: app/templates/mobile/account/login.html:124
 msgid "Don't have an account?"
 msgstr "沒有帳戶？"
 
-#: app/templates/account/login.html:115
-#: app/templates/mobile/account/login.html:116
+#: app/templates/account/login.html:126
+#: app/templates/mobile/account/login.html:124
 msgid "Sign Up Now"
 msgstr "立即註冊"
 
-#: app/templates/account/login.html:123 app/templates/account/signup.html:129
-#: app/templates/mobile/account/login.html:121
-#: app/templates/mobile/account/login.html:124
-#: app/templates/mobile/account/signup.html:132
+#: app/templates/account/login.html:134 app/templates/account/signup.html:140
+#: app/templates/mobile/account/login.html:129
+#: app/templates/mobile/account/login.html:132
+#: app/templates/mobile/account/signup.html:134
 msgid "Or"
 msgstr "或"
 
-#: app/templates/account/login.html:126 app/templates/account/signup.html:131
-#: app/templates/mobile/account/login.html:127
-#: app/templates/mobile/account/signup.html:134
-msgid "Continue with social media"
-msgstr "使用社群媒體繼續"
-
-#: app/templates/account/login.html:131 app/templates/account/signup.html:136
-#: app/templates/mobile/account/login.html:132
-#: app/templates/mobile/account/signup.html:139
+#: app/templates/account/login.html:140
+#: app/templates/mobile/account/login.html:138
 msgid "Login with Facebook"
 msgstr "使用 Facebook 登入"
 
-#: app/templates/account/login.html:137 app/templates/account/signup.html:142
-#: app/templates/mobile/account/login.html:138
-#: app/templates/mobile/account/signup.html:145
+#: app/templates/account/login.html:141 app/templates/account/login.html:165
+#: app/templates/mobile/account/login.html:139
+#: app/templates/mobile/account/login.html:170
+#, fuzzy
+#| msgid "Login with Facebook"
+msgid "Continue with Facebook"
+msgstr "使用 Facebook 登入"
+
+#: app/templates/account/login.html:146
+#: app/templates/mobile/account/login.html:144
 msgid "Login with Google"
 msgstr "使用 Google 登入"
+
+#: app/templates/account/login.html:147 app/templates/account/signup.html:144
+#: app/templates/account/signup.html:145
+#: app/templates/mobile/account/login.html:145
+#: app/templates/mobile/account/signup.html:138
+#: app/templates/mobile/account/signup.html:139
+#, fuzzy
+#| msgid "Login with Google"
+msgid "Continue with Google"
+msgstr "使用 Google 登入"
+
+#: app/templates/account/login.html:163
+#: app/templates/mobile/account/login.html:168
+msgid "Facebook Login Is Going Away Soon"
+msgstr "Facebook 登入功能即將下線"
+
+#: app/templates/account/login.html:164
+#: app/templates/mobile/account/login.html:169
+#, fuzzy
+#| msgid "Reset My Password"
+msgid "Reset Password"
+msgstr "重設我的密碼"
+
+#: app/templates/account/login.html:166
+#: app/templates/mobile/account/login.html:171
+msgid ""
+"The Facebook developer program has become bogged down with so much "
+"bureaucracy that it's no longer practical for small, independent developers "
+"like me to keep supporting it. On top of that, the number of people using "
+"Facebook to log in has dropped sharply, making it hard to justify all the "
+"extra work."
+msgstr "Facebook 開發者計畫的官僚流程過於繁瑣，對像我這樣的小型獨立開發者而言已難以持續支援。此外，使用 Facebook 登入的人數大幅下降，讓投入這些額外工作的合理性變得困難。"
+
+#: app/templates/account/login.html:167
+#: app/templates/mobile/account/login.html:172
+#, python-format
+msgid ""
+"To keep your Obico account accessible, please switch to logging in with your "
+"email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use "
+"the same email address linked to your account."
+msgstr "為確保您仍可存取 Obico 帳戶，請改用電子郵件登入。只需點擊下方 <b>\"%(reset_button_text)s\"</b> 按鈕，並使用與您帳戶連結的相同電子郵件地址。"
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
 #: app/templates/account/logout.html:18
@@ -340,7 +431,8 @@ msgstr "重設我的密碼"
 
 #: app/templates/account/password_reset_done.html:18
 msgid ""
-"We have sent you an e-mail. Please contact us if you do not receive it within a few\n"
+"We have sent you an e-mail. Please contact us if you do not receive it "
+"within a few\n"
 "              minutes."
 msgstr "我們已向您發送電子郵件。如果您在幾分鐘內未收到，請聯絡我們。"
 
@@ -350,8 +442,13 @@ msgstr "無效的令牌"
 
 #: app/templates/account/password_reset_from_key.html:19
 #, python-format
-msgid "The password reset link was invalid, possibly because it has already been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</a>."
-msgstr "密碼重設連結無效，可能已被使用。請<a href=\"%(passwd_reset_url)s\">重新申請密碼重設</a>。"
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+"密碼重設連結無效，可能已被使用。請<a href=\"%(passwd_reset_url)s\">重新申請密"
+"碼重設</a>。"
 
 #: app/templates/account/password_reset_from_key.html:53
 #: app/templates/account/password_reset_from_key_done.html:13
@@ -369,37 +466,91 @@ msgstr "設定密碼"
 msgid "Password. Again"
 msgstr "再次輸入密碼"
 
-#: app/templates/account/signup.html:40
-#, python-format
+#: app/templates/account/signup.html:41
+#, fuzzy, python-format
+#| msgid ""
+#| "            By signing up, I agree to the %(brand_name)s app's\n"
+#| "            <a class=\"link\" href=\"https://www.obico.io/terms."
+#| "html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#| "privacy.html\">PrivacyPolicy</a>\n"
+#| "            "
 msgid ""
-"            By signing up, I agree to the %(brand_name)s app's\n            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n            "
+"\n"
+"              By signing up, I agree to the %(brand_name)s app's\n"
+"              <a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/terms.html\">Terms of Use</a> and <a class=\"link\" target=\"_blank\" "
+"href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"              "
 msgstr ""
-"            註冊即表示我同意 %(brand_name)s 應用程式的\n            <a class=\"link\" href=\"https://www.obico.io/terms.html\">使用條款</a>和<a class=\"link\" href=\"https://www.obico.io/privacy.html\">隱私政策</a>\n            "
+"            註冊即表示我同意 %(brand_name)s 應用程式的\n"
+"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">使用條"
+"款</a>和<a class=\"link\" href=\"https://www.obico.io/privacy.html\">隱私政策"
+"</a>\n"
+"            "
 
-#: app/templates/account/signup.html:45
-#, python-format
+#: app/templates/account/signup.html:46
+#, fuzzy
+#| msgid ""
+#| "                By signing up, I agree to the %(brand_name)s app's\n"
+#| "                <a class=\"link\" href=\"https://www.obico.io/terms."
+#| "html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#| "privacy.html\">Privacy Policy</a>\n"
+#| "                "
 msgid ""
-"            By signing up, I agree to the %(brand_name)s app's\n            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n            "
+"\n"
+"              JusPrin is a project built by <a class=\"link\" "
+"target=\"_blank\" href=\"https://www.obico.io\">Obico</a>. By signing up, I "
+"agree to Obico's\n"
+"              <a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/terms.html\">Terms of Use</a> and <a class=\"link\" target=\"_blank\" "
+"href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"              "
 msgstr ""
-"            註冊即表示我同意 %(brand_name)s 應用程式的\n            <a class=\"link\" href=\"%(tos_link)s\">使用條款</a>和<a class=\"link\" href=\"%(privacy_link)s\">隱私政策</a>\n            "
+"                註冊即表示我同意 %(brand_name)s 應用程式的\n"
+"                <a class=\"link\" href=\"https://www.obico.io/terms.html\">使"
+"用條款</a>和<a class=\"link\" href=\"https://www.obico.io/privacy.html\">隱私"
+"政策</a>\n"
+"                "
 
-#: app/templates/account/signup.html:77
-#: app/templates/mobile/account/signup.html:80
+#: app/templates/account/signup.html:51
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "                By signing up, I agree to the %(brand_name)s app's\n"
+#| "                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> "
+#| "and <a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
+#| "                "
+msgid ""
+"\n"
+"              By signing up, I agree to the %(brand_name)s app's\n"
+"              <a class=\"link\" target=\"_blank\" "
+"href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" "
+"target=\"_blank\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+"              "
+msgstr ""
+"\n"
+"                註冊即表示我同意 %(brand_name)s 應用程式的\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">使用條款</a>和<a "
+"class=\"link\" href=\"%(privacy_link)s\">隱私政策</a>\n"
+"                "
+
+#: app/templates/account/signup.html:88
+#: app/templates/mobile/account/signup.html:82
 msgid "We'll never share your email with anyone else."
 msgstr "我們絕不會與任何人分享您的電子郵件。"
 
-#: app/templates/account/signup.html:96
-#: app/templates/mobile/account/signup.html:99
+#: app/templates/account/signup.html:107
+#: app/templates/mobile/account/signup.html:101
 msgid "At least 6 characters. And be secure, please."
 msgstr "至少6個字元。請確保安全。"
 
-#: app/templates/account/signup.html:120
-#: app/templates/mobile/account/signup.html:123
+#: app/templates/account/signup.html:131
+#: app/templates/mobile/account/signup.html:125
 msgid "Sign Up"
 msgstr "註冊"
 
-#: app/templates/account/signup.html:122
-#: app/templates/mobile/account/signup.html:125
+#: app/templates/account/signup.html:133
+#: app/templates/mobile/account/signup.html:127
 msgid "Already have an account?"
 msgstr "已經有帳戶？"
 
@@ -433,59 +584,100 @@ msgid "Verify Your E-mail Address"
 msgstr "驗證您的電子郵件地址"
 
 #: app/templates/account/verification_sent.html:11
-msgid "We have sent an e-mail to you for verification. Follow the link provided to finalize the signup process. Please contact us if you do not receive it within a few minutes."
-msgstr "我們已向您發送一封驗證電子郵件。請點擊提供的連結以完成註冊過程。如果您在幾分鐘內沒有收到，請聯繫我們。"
+msgid ""
+"We have sent an e-mail to you for verification. Follow the link provided to "
+"finalize the signup process. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr ""
+"我們已向您發送一封驗證電子郵件。請點擊提供的連結以完成註冊過程。如果您在幾分"
+"鐘內沒有收到，請聯繫我們。"
 
 #: app/templates/account/verified_email_required.html:13
 msgid ""
 "This part of the site requires us to verify that\n"
 "  you are who you claim to be. For this purpose, we require that you\n"
 "  verify ownership of your e-mail address. "
-msgstr "本網站部分功能需要驗證您的身份。為此，我們需要您驗證電子郵件地址的所有權。"
+msgstr ""
+"本網站部分功能需要驗證您的身份。為此，我們需要您驗證電子郵件地址的所有權。"
 
 #: app/templates/account/verified_email_required.html:17
 msgid ""
 "We have sent an e-mail to you for\n"
 "  verification. Please click on the link inside this e-mail. Please\n"
 "  contact us if you do not receive it within a few minutes."
-msgstr "我們已向您發送驗證郵件。請點擊郵件中的連結。如果您在幾分鐘內未收到，請聯絡我們。"
+msgstr ""
+"我們已向您發送驗證郵件。請點擊郵件中的連結。如果您在幾分鐘內未收到，請聯絡我"
+"們。"
 
 #: app/templates/account/verified_email_required.html:21
 #, python-format
-msgid "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-mail address</a>."
-msgstr "<strong>注意：</strong>您仍可<a href=\"%(email_url)s\">更改您的電子郵件地址</a>。"
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
+"mail address</a>."
+msgstr ""
+"<strong>注意：</strong>您仍可<a href=\"%(email_url)s\">更改您的電子郵件地址</"
+"a>。"
 
-#: app/templates/mobile/account/login.html:41
+#: app/templates/mobile/account/login.html:42
 msgid "This email was previously signed up using either Google or Facebook."
 msgstr "此電子郵件之前已使用 Google 或 Facebook 註冊。"
 
-#: app/templates/mobile/account/login.html:102
-msgid "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the web app, you can use the same to sign in here."
-msgstr "您的登入憑證在行動應用程式和網路應用程式中是相同的。如果您之前使用網路應用程式註冊，您可以使用相同的憑證在此登入。"
+#: app/templates/mobile/account/login.html:110
+msgid ""
+"Your sign-in credential is the same for the mobile app and the web app. If "
+"you previously signed up using the web app, you can use the same to sign in "
+"here."
+msgstr ""
+"您的登入憑證在行動應用程式和網路應用程式中是相同的。如果您之前使用網路應用程"
+"式註冊，您可以使用相同的憑證在此登入。"
 
-#: app/templates/mobile/account/login.html:145
-#: app/templates/mobile/account/signup.html:152
+#: app/templates/mobile/account/login.html:151
 msgid "Login with Apple"
 msgstr "使用 Apple 登入"
 
-#: app/templates/mobile/account/signup.html:44
-#, python-format
-msgid ""
-"                By signing up, I agree to the %(brand_name)s app's\n                <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy.html\">Privacy Policy</a>\n                "
-msgstr ""
-"                註冊即表示我同意 %(brand_name)s 應用程式的\n                <a class=\"link\" href=\"https://www.obico.io/terms.html\">使用條款</a>和<a class=\"link\" href=\"https://www.obico.io/privacy.html\">隱私政策</a>\n                "
+#: app/templates/mobile/account/login.html:152
+#: app/templates/mobile/account/signup.html:145
+#: app/templates/mobile/account/signup.html:146
+#, fuzzy
+#| msgid "Login with Apple"
+msgid "Continue with Apple"
+msgstr "使用 Apple 登入"
 
-#: app/templates/mobile/account/signup.html:49
+#: app/templates/mobile/account/signup.html:45
+#, fuzzy, python-format
+#| msgid ""
+#| "                By signing up, I agree to the %(brand_name)s app's\n"
+#| "                <a class=\"link\" href=\"https://www.obico.io/terms."
+#| "html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#| "privacy.html\">Privacy Policy</a>\n"
+#| "                "
+msgid ""
+"\n"
+"                By signing up, I agree to the %(brand_name)s app's\n"
+"                <a class=\"link\" href=\"https://www.obico.io/terms."
+"html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+"privacy.html\">Privacy Policy</a>\n"
+"                "
+msgstr ""
+"                註冊即表示我同意 %(brand_name)s 應用程式的\n"
+"                <a class=\"link\" href=\"https://www.obico.io/terms.html\">使"
+"用條款</a>和<a class=\"link\" href=\"https://www.obico.io/privacy.html\">隱私"
+"政策</a>\n"
+"                "
+
+#: app/templates/mobile/account/signup.html:50
 #, python-format
 msgid ""
 "\n"
 "                By signing up, I agree to the %(brand_name)s app's\n"
-"                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and "
+"<a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
 "                "
 msgstr ""
 "\n"
 "                註冊即表示我同意 %(brand_name)s 應用程式的\n"
-"                <a class=\"link\" href=\"%(tos_link)s\">使用條款</a>和<a class=\"link\" href=\"%(privacy_link)s\">隱私政策</a>\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">使用條款</a>和<a "
+"class=\"link\" href=\"%(privacy_link)s\">隱私政策</a>\n"
 "                "
 
 #: app/templates/new_octoprinttunnel_succeeded.html:7
@@ -542,11 +734,17 @@ msgid "Cancel"
 msgstr "取消"
 
 #: app/templates/printer_acted.html:23
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "        Successfully sent command to OctoPrint to %(action)s print\n"
+#| "        "
 msgid ""
-"        Successfully sent command to OctoPrint to %(action)s print\n        "
+"\n"
+"        Successfully sent command to OctoPrint to %(action)s print\n"
+"        "
 msgstr ""
-"        已成功向 OctoPrint 發送命令以 %(action)s 列印\n        "
+"        已成功向 OctoPrint 發送命令以 %(action)s 列印\n"
+"        "
 
 #: app/templates/printer_acted.html:28
 msgid "It may take a while to be executed by OctoPrint."
@@ -554,8 +752,12 @@ msgstr "OctoPrint 執行可能需要一些時間。"
 
 #: app/templates/printer_acted.html:31
 #, python-format
-msgid " You are trying to %(action)s a print but %(printer_name)s is not printing... maybe you clicked a link in an outdated email? "
-msgstr " 您正在嘗試 %(action)s 列印，但 %(printer_name)s 未在列印...您是否點擊了過時電子郵件中的連結？ "
+msgid ""
+" You are trying to %(action)s a print but %(printer_name)s is not "
+"printing... maybe you clicked a link in an outdated email? "
+msgstr ""
+" 您正在嘗試 %(action)s 列印，但 %(printer_name)s 未在列印...您是否點擊了過時"
+"電子郵件中的連結？ "
 
 #: app/templates/printer_acted.html:39
 msgid "Go to webcam view"
@@ -567,7 +769,8 @@ msgid "Social Network Login Failure"
 msgstr "社交網路登入失敗"
 
 #: app/templates/socialaccount/authentication_error.html:10
-msgid "An error occurred while attempting to login via your social network account."
+msgid ""
+"An error occurred while attempting to login via your social network account."
 msgstr "嘗試透過您的社交網路帳戶登入時發生錯誤。"
 
 #: app/templates/socialaccount/connections.html:5
@@ -576,11 +779,14 @@ msgid "Account Connections"
 msgstr "帳戶連接"
 
 #: app/templates/socialaccount/connections.html:12
-msgid "You can sign in to your account using any of the following third party accounts:"
+msgid ""
+"You can sign in to your account using any of the following third party "
+"accounts:"
 msgstr "您可以使用以下任何第三方帳戶登入您的帳戶："
 
 #: app/templates/socialaccount/connections.html:44
-msgid "You currently have no social network accounts connected to this account."
+msgid ""
+"You currently have no social network accounts connected to this account."
 msgstr "您目前沒有任何社交網路帳戶連接到此帳戶。"
 
 #: app/templates/socialaccount/connections.html:47
@@ -594,8 +800,13 @@ msgstr "登入已取消"
 
 #: app/templates/socialaccount/login_cancelled.html:13
 #, python-format
-msgid "You decided to cancel logging in to our site using one of your existing accounts. If this was a mistake, please proceed to <a href=\"%(login_url)s\">sign in</a>."
-msgstr "您已取消使用現有帳戶登入本站。如果這是誤操作，請前往<a href=\"%(login_url)s\">登入</a>。"
+msgid ""
+"You decided to cancel logging in to our site using one of your existing "
+"accounts. If this was a mistake, please proceed to <a "
+"href=\"%(login_url)s\">sign in</a>."
+msgstr ""
+"您已取消使用現有帳戶登入本站。如果這是誤操作，請前往<a "
+"href=\"%(login_url)s\">登入</a>。"
 
 #: app/templates/socialaccount/messages/account_connected.txt:2
 msgid "The social account has been connected."
@@ -623,7 +834,8 @@ msgstr "註冊"
 msgid ""
 "You are about to use your %(provider_name)s account to login to\n"
 "  %(site_name)s. As a final step, please complete the following form:"
-msgstr "您即將使用 %(provider_name)s 帳戶登入 %(site_name)s。最後請完成下列表單："
+msgstr ""
+"您即將使用 %(provider_name)s 帳戶登入 %(site_name)s。最後請完成下列表單："
 
 #: app/templates/unsubscribe_email.html:8
 msgid "Got it! You will no longer receive emails"
@@ -660,3 +872,18 @@ msgstr "在帳戶通知上。"
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
 msgstr "更改通知偏好設定"
+
+#~ msgid "Continue with social media"
+#~ msgstr "使用社群媒體繼續"
+
+#, python-format
+#~ msgid ""
+#~ "            By signing up, I agree to the %(brand_name)s app's\n"
+#~ "            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and "
+#~ "<a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+#~ "            "
+#~ msgstr ""
+#~ "            註冊即表示我同意 %(brand_name)s 應用程式的\n"
+#~ "            <a class=\"link\" href=\"%(tos_link)s\">使用條款</a>和<a "
+#~ "class=\"link\" href=\"%(privacy_link)s\">隱私政策</a>\n"
+#~ "            "

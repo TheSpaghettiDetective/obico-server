@@ -359,7 +359,7 @@ msgstr "使用 Google 登录"
 #: app/templates/account/login.html:163
 #: app/templates/mobile/account/login.html:168
 msgid "Facebook Login Is Going Away Soon"
-msgstr ""
+msgstr "Facebook 登录即将下线"
 
 #: app/templates/account/login.html:164
 #: app/templates/mobile/account/login.html:169
@@ -376,7 +376,7 @@ msgid ""
 "like me to keep supporting it. On top of that, the number of people using "
 "Facebook to log in has dropped sharply, making it hard to justify all the "
 "extra work."
-msgstr ""
+msgstr "Facebook 开发者项目的官僚流程过于繁琐，已不再适合像我这样的小型独立开发者继续支持。再加上使用 Facebook 登录的人数大幅下降，已难以证明投入这些额外工作的合理性。"
 
 #: app/templates/account/login.html:167
 #: app/templates/mobile/account/login.html:172
@@ -385,7 +385,7 @@ msgid ""
 "To keep your Obico account accessible, please switch to logging in with your "
 "email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use "
 "the same email address linked to your account."
-msgstr ""
+msgstr "为确保您仍可访问 Obico 账户，请改用电子邮箱登录。只需点击下方<b>\"%(reset_button_text)s\"</b>按钮，并使用与您账户关联的同一电子邮箱地址。"
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
 #: app/templates/account/logout.html:18

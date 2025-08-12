@@ -70,7 +70,6 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-      - db
     command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://web:3334/hc/"]

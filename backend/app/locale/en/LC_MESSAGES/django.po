@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-26 03:06+0000\n"
+"POT-Creation-Date: 2025-08-12 21:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,6 +100,16 @@ msgstr ""
 "You currently do not have any e-mail address set up. You should really add "
 "an e-mail address so you can receive notifications, reset your password, etc."
 
+#: app/templates/account/email.html:58
+#, fuzzy
+#| msgid "E-mail Addresses"
+msgid "Add E-mail Address"
+msgstr "E-mail Addresses"
+
+#: app/templates/account/email.html:66
+msgid "Add E-mail"
+msgstr ""
+
 #: app/templates/account/email/email_confirmation_message.txt:1
 #, python-format
 msgid ""
@@ -182,50 +192,50 @@ msgstr ""
 "href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 
 #: app/templates/account/login.html:10 app/templates/account/signup.html:10
-#: app/templates/mobile/account/login.html:12
+#: app/templates/mobile/account/login.html:13
 #: app/templates/mobile/account/signup.html:14
 msgid "Email address"
 msgstr "Email address"
 
 #: app/templates/account/login.html:11 app/templates/account/signup.html:11
-#: app/templates/mobile/account/login.html:13
+#: app/templates/mobile/account/login.html:14
 #: app/templates/mobile/account/signup.html:15
 msgid "Password"
 msgstr "Password"
 
-#: app/templates/account/login.html:41
-#: app/templates/mobile/account/login.html:43
+#: app/templates/account/login.html:45
+#: app/templates/mobile/account/login.html:44
 msgid "Click here to reset your password"
 msgstr "Click here to reset your password"
 
-#: app/templates/account/login.html:43
-#: app/templates/mobile/account/login.html:45
+#: app/templates/account/login.html:47
+#: app/templates/mobile/account/login.html:46
 msgid "Wrong email or password."
 msgstr "Wrong email or password."
 
-#: app/templates/account/login.html:44 app/templates/account/login.html:79
-#: app/templates/mobile/account/login.html:46
-#: app/templates/mobile/account/login.html:81
+#: app/templates/account/login.html:48 app/templates/account/login.html:90
+#: app/templates/mobile/account/login.html:47
+#: app/templates/mobile/account/login.html:89
 msgid "Forgot Password?"
 msgstr "Forgot Password?"
 
-#: app/templates/account/login.html:76
-#: app/templates/mobile/account/login.html:78
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:86
 msgid "Remember me"
 msgstr "Remember me"
 
-#: app/templates/account/login.html:86 app/templates/account/signup.html:123
-#: app/templates/mobile/account/login.html:88
-#: app/templates/mobile/account/signup.html:126
+#: app/templates/account/login.html:97 app/templates/account/signup.html:134
+#: app/templates/mobile/account/login.html:96
+#: app/templates/mobile/account/signup.html:128
 msgid "Sign In"
 msgstr "Sign In"
 
-#: app/templates/account/login.html:92
-#: app/templates/mobile/account/login.html:95
+#: app/templates/account/login.html:103
+#: app/templates/mobile/account/login.html:103
 msgid "Having trouble?"
 msgstr "Having trouble?"
 
-#: app/templates/account/login.html:99
+#: app/templates/account/login.html:110
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the mobile app, you can use the same to sign "
@@ -235,7 +245,7 @@ msgstr ""
 "you previously signed up using the mobile app, you can use the same to sign "
 "in here."
 
-#: app/templates/account/login.html:100
+#: app/templates/account/login.html:111
 msgid ""
 "\"Sign in with Apple\" is not available in the web app. If you want to use "
 "the web app, please sign up for a different account and <a class=\"link\" "
@@ -247,8 +257,8 @@ msgstr ""
 "target=\"_blank\" href=\"https://www.obico.io/docs/user-guides/relink-"
 "printer/\">re-link your printer</a>"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid ""
 "Even if you previously signed up an account using Google or Facebook, you "
 "can still"
@@ -256,18 +266,18 @@ msgstr ""
 "Even if you previously signed up an account using Google or Facebook, you "
 "can still"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid "reset password"
 msgstr "reset password"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid "using the same email address."
 msgstr "using the same email address."
 
-#: app/templates/account/login.html:102
-#: app/templates/mobile/account/login.html:104
+#: app/templates/account/login.html:113
+#: app/templates/mobile/account/login.html:112
 msgid ""
 "If you can't sign in the mobile app, re-install the mobile app and try it "
 "again."
@@ -275,55 +285,96 @@ msgstr ""
 "If you can't sign in the mobile app, re-install the mobile app and try it "
 "again."
 
-#: app/templates/account/login.html:103
-#: app/templates/mobile/account/login.html:105
+#: app/templates/account/login.html:114
+#: app/templates/mobile/account/login.html:113
 msgid "Contact us"
 msgstr "Contact us"
 
-#: app/templates/account/login.html:103
-#: app/templates/mobile/account/login.html:105
+#: app/templates/account/login.html:114
+#: app/templates/mobile/account/login.html:113
 msgid "if you have tried everything else."
 msgstr "if you have tried everything else."
 
-#: app/templates/account/login.html:107
-#: app/templates/mobile/account/login.html:109
+#: app/templates/account/login.html:118
+#: app/templates/mobile/account/login.html:117
 msgid "Close"
 msgstr "Close"
 
-#: app/templates/account/login.html:115
-#: app/templates/mobile/account/login.html:116
+#: app/templates/account/login.html:126
+#: app/templates/mobile/account/login.html:124
 msgid "Don't have an account?"
 msgstr "Don't have an account?"
 
-#: app/templates/account/login.html:115
-#: app/templates/mobile/account/login.html:116
+#: app/templates/account/login.html:126
+#: app/templates/mobile/account/login.html:124
 msgid "Sign Up Now"
 msgstr "Sign Up Now"
 
-#: app/templates/account/login.html:123 app/templates/account/signup.html:129
-#: app/templates/mobile/account/login.html:121
-#: app/templates/mobile/account/login.html:124
-#: app/templates/mobile/account/signup.html:132
+#: app/templates/account/login.html:134 app/templates/account/signup.html:140
+#: app/templates/mobile/account/login.html:129
+#: app/templates/mobile/account/login.html:132
+#: app/templates/mobile/account/signup.html:134
 msgid "Or"
 msgstr "Or"
 
-#: app/templates/account/login.html:126 app/templates/account/signup.html:131
-#: app/templates/mobile/account/login.html:127
-#: app/templates/mobile/account/signup.html:134
-msgid "Continue with social media"
-msgstr "Continue with social media"
-
-#: app/templates/account/login.html:131 app/templates/account/signup.html:136
-#: app/templates/mobile/account/login.html:132
-#: app/templates/mobile/account/signup.html:139
+#: app/templates/account/login.html:140
+#: app/templates/mobile/account/login.html:138
 msgid "Login with Facebook"
 msgstr "Login with Facebook"
 
-#: app/templates/account/login.html:137 app/templates/account/signup.html:142
-#: app/templates/mobile/account/login.html:138
-#: app/templates/mobile/account/signup.html:145
+#: app/templates/account/login.html:141 app/templates/account/login.html:165
+#: app/templates/mobile/account/login.html:139
+#: app/templates/mobile/account/login.html:170
+#, fuzzy
+#| msgid "Login with Facebook"
+msgid "Continue with Facebook"
+msgstr "Login with Facebook"
+
+#: app/templates/account/login.html:146
+#: app/templates/mobile/account/login.html:144
 msgid "Login with Google"
 msgstr "Login with Google"
+
+#: app/templates/account/login.html:147 app/templates/account/signup.html:144
+#: app/templates/account/signup.html:145
+#: app/templates/mobile/account/login.html:145
+#: app/templates/mobile/account/signup.html:138
+#: app/templates/mobile/account/signup.html:139
+#, fuzzy
+#| msgid "Login with Google"
+msgid "Continue with Google"
+msgstr "Login with Google"
+
+#: app/templates/account/login.html:163
+#: app/templates/mobile/account/login.html:168
+msgid "Facebook Login Is Going Away Soon"
+msgstr ""
+
+#: app/templates/account/login.html:164
+#: app/templates/mobile/account/login.html:169
+#, fuzzy
+#| msgid "Reset My Password"
+msgid "Reset Password"
+msgstr "Reset My Password"
+
+#: app/templates/account/login.html:166
+#: app/templates/mobile/account/login.html:171
+msgid ""
+"The Facebook developer program has become bogged down with so much "
+"bureaucracy that it's no longer practical for small, independent developers "
+"like me to keep supporting it. On top of that, the number of people using "
+"Facebook to log in has dropped sharply, making it hard to justify all the "
+"extra work."
+msgstr ""
+
+#: app/templates/account/login.html:167
+#: app/templates/mobile/account/login.html:172
+#, python-format
+msgid ""
+"To keep your Obico account accessible, please switch to logging in with your "
+"email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use "
+"the same email address linked to your account."
+msgstr ""
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
 #: app/templates/account/logout.html:18
@@ -428,15 +479,22 @@ msgstr "Set Password"
 msgid "Password. Again"
 msgstr "Password. Again"
 
-#: app/templates/account/signup.html:40
-#, python-format
+#: app/templates/account/signup.html:41
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "            By signing up, I agree to the %(brand_name)s app's\n"
+#| "            <a class=\"link\" href=\"https://www.obico.io/terms."
+#| "html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#| "privacy.html\">PrivacyPolicy</a>\n"
+#| "            "
 msgid ""
 "\n"
-"            By signing up, I agree to the %(brand_name)s app's\n"
-"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms "
-"of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy."
-"html\">PrivacyPolicy</a>\n"
-"            "
+"              By signing up, I agree to the %(brand_name)s app's\n"
+"              <a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/terms.html\">Terms of Use</a> and <a class=\"link\" target=\"_blank\" "
+"href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"              "
 msgstr ""
 "\n"
 "            By signing up, I agree to the %(brand_name)s app's\n"
@@ -445,38 +503,71 @@ msgstr ""
 "html\">PrivacyPolicy</a>\n"
 "            "
 
-#: app/templates/account/signup.html:45
-#, python-format
+#: app/templates/account/signup.html:46
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "                By signing up, I agree to the %(brand_name)s app's\n"
+#| "                <a class=\"link\" href=\"https://www.obico.io/terms."
+#| "html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#| "privacy.html\">Privacy Policy</a>\n"
+#| "                "
 msgid ""
 "\n"
-"            By signing up, I agree to the %(brand_name)s app's\n"
-"            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a "
-"class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
-"            "
+"              JusPrin is a project built by <a class=\"link\" "
+"target=\"_blank\" href=\"https://www.obico.io\">Obico</a>. By signing up, I "
+"agree to Obico's\n"
+"              <a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/terms.html\">Terms of Use</a> and <a class=\"link\" target=\"_blank\" "
+"href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"              "
 msgstr ""
 "\n"
-"            By signing up, I agree to the %(brand_name)s app's\n"
-"            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a "
-"class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
-"            "
+"                By signing up, I agree to the %(brand_name)s app's\n"
+"                <a class=\"link\" href=\"https://www.obico.io/terms."
+"html\">Terms of Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+"privacy.html\">Privacy Policy</a>\n"
+"                "
 
-#: app/templates/account/signup.html:77
-#: app/templates/mobile/account/signup.html:80
+#: app/templates/account/signup.html:51
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "                By signing up, I agree to the %(brand_name)s app's\n"
+#| "                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> "
+#| "and <a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
+#| "                "
+msgid ""
+"\n"
+"              By signing up, I agree to the %(brand_name)s app's\n"
+"              <a class=\"link\" target=\"_blank\" "
+"href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" "
+"target=\"_blank\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+"              "
+msgstr ""
+"\n"
+"                By signing up, I agree to the %(brand_name)s app's\n"
+"                <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and "
+"<a class=\"link\" href=\"%(privacy_link)s\">Privacy Policy</a>\n"
+"                "
+
+#: app/templates/account/signup.html:88
+#: app/templates/mobile/account/signup.html:82
 msgid "We'll never share your email with anyone else."
 msgstr "We'll never share your email with anyone else."
 
-#: app/templates/account/signup.html:96
-#: app/templates/mobile/account/signup.html:99
+#: app/templates/account/signup.html:107
+#: app/templates/mobile/account/signup.html:101
 msgid "At least 6 characters. And be secure, please."
 msgstr "At least 6 characters. And be secure, please."
 
-#: app/templates/account/signup.html:120
-#: app/templates/mobile/account/signup.html:123
+#: app/templates/account/signup.html:131
+#: app/templates/mobile/account/signup.html:125
 msgid "Sign Up"
 msgstr "Sign Up"
 
-#: app/templates/account/signup.html:122
-#: app/templates/mobile/account/signup.html:125
+#: app/templates/account/signup.html:133
+#: app/templates/mobile/account/signup.html:127
 msgid "Already have an account?"
 msgstr "Already have an account?"
 
@@ -548,11 +639,11 @@ msgstr ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
 "mail address</a>."
 
-#: app/templates/mobile/account/login.html:41
+#: app/templates/mobile/account/login.html:42
 msgid "This email was previously signed up using either Google or Facebook."
 msgstr "This email was previously signed up using either Google or Facebook."
 
-#: app/templates/mobile/account/login.html:102
+#: app/templates/mobile/account/login.html:110
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the web app, you can use the same to sign in "
@@ -562,12 +653,19 @@ msgstr ""
 "you previously signed up using the web app, you can use the same to sign in "
 "here."
 
-#: app/templates/mobile/account/login.html:145
-#: app/templates/mobile/account/signup.html:152
+#: app/templates/mobile/account/login.html:151
 msgid "Login with Apple"
 msgstr "Login with Apple"
 
-#: app/templates/mobile/account/signup.html:44
+#: app/templates/mobile/account/login.html:152
+#: app/templates/mobile/account/signup.html:145
+#: app/templates/mobile/account/signup.html:146
+#, fuzzy
+#| msgid "Login with Apple"
+msgid "Continue with Apple"
+msgstr "Login with Apple"
+
+#: app/templates/mobile/account/signup.html:45
 #, python-format
 msgid ""
 "\n"
@@ -584,7 +682,7 @@ msgstr ""
 "privacy.html\">Privacy Policy</a>\n"
 "                "
 
-#: app/templates/mobile/account/signup.html:49
+#: app/templates/mobile/account/signup.html:50
 #, python-format
 msgid ""
 "\n"
@@ -795,3 +893,20 @@ msgstr "on account notifications."
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
 msgstr "Change notification preferences"
+
+#~ msgid "Continue with social media"
+#~ msgstr "Continue with social media"
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "            By signing up, I agree to the %(brand_name)s app's\n"
+#~ "            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and "
+#~ "<a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+#~ "            "
+#~ msgstr ""
+#~ "\n"
+#~ "            By signing up, I agree to the %(brand_name)s app's\n"
+#~ "            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and "
+#~ "<a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+#~ "            "

@@ -1,5 +1,6 @@
 {% extends "account/base.html" %}
 
+{% load static %}
 {% load i18n %}
 {% load widget_tweaks %}
 {% load account socialaccount %}
@@ -163,6 +164,12 @@
 
 {% block page_js %}
 {{ block.super }}
+<script src="{% static 'vendor/js/sweetalert2-8.0.1.all.min.js' %}"></script>
+{% trans "Facebook Login Is Going Away Soon" as i18n_fb_title %}
+{% trans "Reset Password" as i18n_reset %}
+{% trans "Continue with Facebook" as i18n_continue_fb %}
+{% blocktrans trimmed asvar i18n_fb_desc1 %}The Facebook developer program has become bogged down with so much bureaucracy that it's no longer practical for small, independent developers like me to keep supporting it. On top of that, the number of people using Facebook to log in has dropped sharply, making it hard to justify all the extra work.{% endblocktrans %}
+{% blocktrans trimmed with reset_button_text=i18n_reset asvar i18n_fb_desc2 %}To keep your Obico account accessible, please switch to logging in with your email. Just click the <b>"{{ reset_button_text }}"</b> button below and use the same email address linked to your account.{% endblocktrans %}
 <script>
 function togglePasswordVisibility(e) {
   e.preventDefault();
@@ -179,5 +186,30 @@ function togglePasswordVisibility(e) {
     eyeIcon.classList.add('fa-eye');
   }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  var fbLink = document.querySelector('a.facebook-btn');
+  if (!fbLink || typeof Swal === 'undefined') return;
+  fbLink.addEventListener('click', function(ev) {
+    ev.preventDefault();
+    var targetHref = fbLink.getAttribute('href');
+    Swal.fire({
+      title: "{{ i18n_fb_title|escapejs }}",
+      html: '<p style="text-align:left;line-height:1.5;">{{ i18n_fb_desc1|escapejs }}</p>' +
+            '<p style="text-align:left;line-height:1.5;">{{ i18n_fb_desc2|escapejs }}</p>',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: "{{ i18n_reset|escapejs }}",
+      cancelButtonText: "{{ i18n_continue_fb|escapejs }}",
+      reverseButtons: true
+    }).then(function(result) {
+      if (result && result.value) {
+        window.location.href = '{% url "account_reset_password" %}';
+      } else {
+        window.location.href = targetHref;
+      }
+    });
+  });
+});
 </script>
 {% endblock page_js %}

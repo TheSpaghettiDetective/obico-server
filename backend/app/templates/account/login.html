@@ -134,23 +134,20 @@
               <span class="text-muted">{% trans "Or" %}</span>
             </div>
 
-            <p class="text-center my-2">{% trans "Continue with social media" %}</p>
-            <div class="social-login">
-              {% for provider in socialaccount_providers %}
-                {% if provider.id == "facebook" %}
-                <a href="{% provider_login_url "facebook" method="oauth2" %}" class="social-btn facebook-btn"
-                  role="button" aria-label="{% trans 'Login with Facebook' %}">
-                  <i class="fab fa-facebook-f"></i>
-                </a>
-                {% endif %}
-                {% if provider.id == "google" %}
-                <a href="{% provider_login_url "google" method="oauth2" %}" class="social-btn google-btn"
-                  role="button" aria-label="{% trans 'Login with Google' %}">
-                  <i class="fab fa-google"></i>
-                </a>
-                {% endif %}
-              {% endfor %}
-            </div>
+            {% for provider in socialaccount_providers %}
+              {% if provider.id == "facebook" %}
+              <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn btn-block facebook-btn text-white"
+                role="button" aria-label="{% trans 'Login with Facebook' %}">
+                <i class="fab fa-facebook-f mr-2"></i>{% trans "Continue with Facebook" %}
+              </a>
+              {% endif %}
+              {% if provider.id == "google" %}
+              <a href="{% provider_login_url "google" method="oauth2" %}" class="btn btn-block google-btn text-white"
+                role="button" aria-label="{% trans 'Login with Google' %}">
+                <i class="fab fa-google mr-2"></i>{% trans "Continue with Google" %}
+              </a>
+              {% endif %}
+            {% endfor %}
           </div>
           {% endif %}
         </form>

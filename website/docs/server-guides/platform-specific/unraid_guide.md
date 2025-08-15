@@ -40,12 +40,12 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 cd obico-server && docker-compose up -d
 ```
 
-This will install obico-server to your Unraid server! To update obico-server, open up the terminal, change directory to the install directory, and run docker compose again.
+This will install obico-server to your Unraid server! To update obico-server, open up the terminal, change directory to the install directory, and run `docker compose pull`.
 
 ```Bash
 cd /mnt/user/appdata/obico-server # or where you install obico-server to
-git pull
-docker-compose up -d --force-recreate --build
+docker compose pull
+docker compose up -d --force-recreate --build
 ```
 
 ## Configuring obico-server {#configuring-obico}
@@ -67,12 +67,6 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 DEFAULT_FROM_EMAIL=youremail@gmail.com
 ...
-```
-
-Rebuild the container (Note - if you are going to limit the CPU usage you can also change that now before rebuilding the container, see the below section) -
-
-```bash
-docker-compose up -d --force-recreate --build
 ```
 
 ## Issues with the Installation {#issues-with-the-installation}

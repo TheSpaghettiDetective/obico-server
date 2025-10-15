@@ -21,6 +21,13 @@ except Exception as e:
     print(f'Error during importing OnnxNet! - {e}')
     onnx_ready = False
 
+rknn_ready = True
+try:
+    from lib.rknn import RKNNNet
+except Exception as e:
+    print(f'Error during importing RKNNNet! - {e}')
+    rknn_ready = False
+
 
 def load_net(config_path, meta_path, weights_path=None):
 
@@ -41,6 +48,10 @@ def load_net(config_path, meta_path, weights_path=None):
                     if not darknet_ready:
                         raise Exception('Not loading darknet net due to previous import failure. Check earlier log for errors.')
                     net_main = YoloNet(weights, meta_path, config_path, use_gpu)
+                elif weights.endswith(".rknn"):
+                    if not rknn_ready:
+                        raise Exception('Not loading RKNN net due to previous import failure. Check earlier log for errors.')
+                    net_main = RKNNNet(weights, meta_path)
 
                 else:
                     raise Exception(f'Can not recognize net from weights file surfix: {weights}')
@@ -56,6 +67,7 @@ def load_net(config_path, meta_path, weights_path=None):
 
     model_dir = path.join(path.dirname(path.realpath(__file__)), '..', 'model')
     net_config_priority = [
+            dict(weights_path=path.join(model_dir, 'model-weights.rknn'), use_gpu=False),
             dict(weights_path=path.join(model_dir, 'model-weights.darknet'), use_gpu=True),
             dict(weights_path=path.join(model_dir, 'model-weights.onnx'), use_gpu=True),
             dict(weights_path=path.join(model_dir, 'model-weights.onnx'), use_gpu=False),

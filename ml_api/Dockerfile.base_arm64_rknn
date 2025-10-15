@@ -1,0 +1,9 @@
+FROM docker.io/bitnami/minideb:bookworm
+RUN \
+    install_packages python3.11 python3.11-venv curl wget &&\
+    curl -L# 'https://github.com/airockchip/rknn-toolkit2/raw/refs/heads/master/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so' -o /usr/lib/librknnrt.so &&\
+    python3.11 -m venv /opt/obico-python --upgrade-deps &&\
+    /opt/obico-python/bin/python3.11 -m pip install https://github.com/airockchip/rknn-toolkit2/raw/refs/heads/master/rknn-toolkit-lite2/packages/rknn_toolkit_lite2-2.3.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl &&\
+    /opt/obico-python/bin/python3.11 -m pip install opencv-python-headless &&\
+    /opt/obico-python/bin/python3.11 -m pip cache purge
+ENV PATH="/opt/obico-python/bin:$PATH"

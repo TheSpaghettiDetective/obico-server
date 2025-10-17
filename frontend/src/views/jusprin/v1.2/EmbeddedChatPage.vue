@@ -862,30 +862,30 @@ export default {
         return
       }
 
-      const quickButtons = [this.cannedActions.startOver, this.cannedActions.moreOptions]
-
-      if (this.slicingProgress.errors && this.slicingProgress.errors.length > 0) {
-        this.messages.push({
-          role: 'assistant',
-          content: `${this.$t("My slicing algorithm lord just said:")}\n *"${this.slicingProgress.errors.join(
-            '\n'
-          )}"*`,
-        })
-        quickButtons.unshift(this.cannedActions.tellMeWhatNotificationMeans)
-      } else {
-        if (this.supportedActions.includes('switch_to_preview')) {
-          quickButtons.unshift(this.cannedActions.switchToPreview)
-        }
-        quickButtons.unshift(this.cannedActions.exportGCode)
-      }
-
-      this.setQuickButtons(quickButtons)
-
       // Add fade-out class first
       this.slicingProgress.fadeOut = true
 
       // Remove the progress bar after fade out animation completes
       setTimeout(() => {
+        const quickButtons = [this.cannedActions.startOver, this.cannedActions.moreOptions]
+
+        if (this.slicingProgress.errors && this.slicingProgress.errors.length > 0) {
+          this.messages.push({
+            role: 'assistant',
+            content: `${this.$t("My slicing algorithm lord just said:")}\n *"${this.slicingProgress.errors.join(
+              '\n'
+            )}"*`,
+          })
+          quickButtons.unshift(this.cannedActions.tellMeWhatNotificationMeans)
+        } else {
+          if (this.supportedActions.includes('switch_to_preview')) {
+            quickButtons.unshift(this.cannedActions.switchToPreview)
+          }
+          quickButtons.unshift(this.cannedActions.exportGCode)
+        }
+
+        this.setQuickButtons(quickButtons)
+
         this.slicingProgress = null
       }, 2000) // Match the transition duration in CSS
     },

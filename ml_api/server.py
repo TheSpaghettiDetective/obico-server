@@ -39,7 +39,13 @@ net_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'mod
 def get_p():
     if 'img' in request.args:
         try:
-            resp = requests.get(request.args['img'], stream=True, timeout=(0.1, 5))
+            # Use longer timeout for Google Cloud Storage as it's slower
+            if 'storage.googleapis.com' in request.args['img']:
+                timeout = (10, 30)  # 10s connection, 30s read
+            else:
+                timeout = (0.1, 5)  # 0.1s connection, 5s read
+
+            resp = requests.get(request.args['img'], stream=True, timeout=timeout)
             resp.raise_for_status()
             img_array = np.array(bytearray(resp.content), dtype=np.uint8)
             img = cv2.imdecode(img_array, -1)

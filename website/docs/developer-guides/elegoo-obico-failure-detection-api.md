@@ -23,9 +23,6 @@ Use the [Elegoo-Obico Access Token API](./elegoo-obico-access-token.md) to manag
 
 This POST request should be sent as `multipart/form-data` format.
 
-![](/img/developer-guides/postman-form-data-format.png)
-
-
 #### Form parameters {#form-parameters}
 
 - `serial_no`: The device serial number. Required for authentication.

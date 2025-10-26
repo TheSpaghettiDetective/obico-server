@@ -16,7 +16,7 @@ Please contact Obico team to obtain your partner authentication token.
 
 ## Endpoint {#endpoint}
 
-- `https://app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
+- `https://elegoo-app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
 - `https://app-stg.obico.io/`. Staging endpoint. Please don't use unless instructed by the Obico team.
 
 ## POST `/ent/partners/api/elegoo/access_token/` {#post-entpartnersapielegooaccess-token}
@@ -192,7 +192,7 @@ Partner authentication token is not valid. Contact Obico team member.
 ### Creating a new access token
 
 ```bash
-curl -X POST https://app.obico.io/ent/partners/api/elegoo/access_token/ \
+curl -X POST https://elegoo-app.obico.io/ent/partners/api/elegoo/access_token/ \
   -H "Content-Type: application/json" \
   -H "Authorization: Token YOUR_PARTNER_TOKEN" \
   -d '{
@@ -205,7 +205,7 @@ curl -X POST https://app.obico.io/ent/partners/api/elegoo/access_token/ \
 ### Updating an existing access token
 
 ```bash
-curl -X PATCH "https://app.obico.io/ent/partners/api/elegoo/access_token/?serial_no=ELEGOO_DEVICE_001" \
+curl -X PATCH "https://elegoo-app.obico.io/ent/partners/api/elegoo/access_token/?serial_no=ELEGOO_DEVICE_001" \
   -H "Content-Type: application/json" \
   -H "Authorization: Token YOUR_PARTNER_TOKEN" \
   -d '{

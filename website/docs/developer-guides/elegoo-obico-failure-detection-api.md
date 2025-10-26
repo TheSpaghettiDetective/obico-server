@@ -148,7 +148,7 @@ API request was NOT processed successfully because of rate throttling.
 ## Usage Example {#usage-example}
 
 ```bash
-curl -X POST https://app.obico.io/ent/partners/api/elegoo/predict/ \
+curl -X POST https://elegoo-app.obico.io/ent/partners/api/elegoo/predict/ \
   -F "serial_no=ELEGOO_DEVICE_001" \
   -F "access_token=your_access_token_here" \
   -F "print_id=print_456" \

@@ -31,7 +31,7 @@ This POST request should be sent as `application/json` format.
 
 - `serial_no` (required): A unique identifier for the device. Max 256 characters.
 - `access_token` (required): The access token for the device. Max 512 characters.
-- `expired_at` (required): ISO 8601 formatted datetime string for token expiration.
+- `expire_in` (required): Number of seconds from now until the token expires. Server computes `expired_at`.
 
 #### Example request {#example-request}
 
@@ -39,7 +39,7 @@ This POST request should be sent as `application/json` format.
 {
   "serial_no": "ELEGOO_DEVICE_001",
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expired_at": "2025-12-31T23:59:59Z"
+  "expire_in": 86400
 }
 ```
 
@@ -66,7 +66,7 @@ API request was NOT processed successfully due to missing required parameters or
 
 ```json
 {
-  "error": "serial_no, access_token, and expired_at are required"
+  "error": "serial_no, access_token, and expire_in are required"
 }
 ```
 
@@ -74,7 +74,7 @@ or
 
 ```json
 {
-  "error": "Invalid expired_at. Use ISO 8601."
+  "error": "expire_in must be an integer number of seconds"
 }
 ```
 
@@ -107,7 +107,7 @@ This PATCH request should be sent as `application/json` format.
 
 - `serial_no` (required if not in query): The serial number to identify the record to update.
 - `access_token` (optional): New access token to update.
-- `expired_at` (optional): New expiration datetime in ISO 8601 format. Cannot be empty or null.
+- `expire_in` (required): Number of seconds from now to extend/reset the token expiry. Must be > 0.
 
 #### Example request {#example-request-1}
 
@@ -115,7 +115,7 @@ This PATCH request should be sent as `application/json` format.
 {
   "serial_no": "ELEGOO_DEVICE_001",
   "access_token": "new_updated_token_xyz789",
-  "expired_at": "2026-01-31T23:59:59Z"
+  "expire_in": 172800
 }
 ```
 
@@ -150,7 +150,7 @@ or
 
 ```json
 {
-  "error": "Invalid expired_at. Use ISO 8601."
+  "error": "expire_in must be an integer number of seconds"
 }
 ```
 
@@ -158,7 +158,7 @@ or
 
 ```json
 {
-  "error": "expired_at cannot be empty or null"
+  "error": "expire_in is required and must be provided on PATCH"
 }
 ```
 
@@ -198,7 +198,7 @@ curl -X POST https://app.obico.io/ent/partners/api/elegoo/access_token/ \
   -d '{
     "serial_no": "ELEGOO_DEVICE_001",
     "access_token": "your_access_token_here",
-    "expired_at": "2025-12-31T23:59:59Z"
+    "expire_in": 86400
   }'
 ```
 
@@ -210,7 +210,7 @@ curl -X PATCH "https://app.obico.io/ent/partners/api/elegoo/access_token/?serial
   -H "Authorization: Token YOUR_PARTNER_TOKEN" \
   -d '{
     "access_token": "new_updated_token",
-    "expired_at": "2026-01-31T23:59:59Z"
+    "expire_in": 172800
   }'
 ```
 

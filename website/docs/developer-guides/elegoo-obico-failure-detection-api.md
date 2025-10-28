@@ -101,13 +101,13 @@ API request was NOT processed successfully for other reasons, such as missing re
 
 Examples of error messages:
 - `"Missing or invalid image"`
+- `"print_id is required"`
 
 #### Status code: `401` {#status-code-401}
 
 Authentication failed. This can occur when:
 - Missing `serial_no` or `access_token`
-- Invalid credentials
-- Access token has expired
+- Invalid credentials (including expired access tokens)
 
 #### Body {#body-2}
 
@@ -125,13 +125,6 @@ or
 }
 ```
 
-or
-
-```
-{
-  "error": "Access token has expired"
-}
-```
 
 #### Status code: `429` {#status-code-429}
 

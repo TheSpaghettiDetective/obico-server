@@ -29,7 +29,7 @@ This POST request should be sent as `application/json` format.
 
 #### Body parameters {#body-parameters}
 
-- `serial_no` (required): A unique identifier for the device. Max 256 characters.
+- `serial_no` (required): A unique identifier for the device. Max 256 characters. Must be unique across the entire system.
 - `access_token` (required): The access token for the device. Max 512 characters.
 - `expire_in` (required): Number of seconds from now until the token expires. Server computes `expired_at`.
 
@@ -78,6 +78,18 @@ or
 }
 ```
 
+#### Status code: `409` {#status-code-409}
+
+A record with the same `serial_no` already exists. Each `serial_no` must be unique across the system.
+
+#### Body {#body-409}
+
+```json
+{
+  "error": "serial_no already exists"
+}
+```
+
 #### Status code: `401` {#status-code-401}
 
 Partner authentication token is not valid. Contact Obico team member.
@@ -101,19 +113,21 @@ This PATCH request should be sent as `application/json` format.
 
 #### Query parameters {#query-parameters}
 
-- `serial_no` (optional): The serial number to identify the record to update. Can also be provided in the request body.
+- `serial_no` (required): The serial number to identify the record to update. Must be provided as a query parameter.
 
 #### Body parameters {#body-parameters-1}
 
-- `serial_no` (required if not in query): The serial number to identify the record to update.
 - `access_token` (optional): New access token to update.
 - `expire_in` (required): Number of seconds from now to extend/reset the token expiry. Must be > 0.
+
+:::warning
+The `serial_no` field is immutable and cannot be changed. It must be provided as a query parameter only. Including `serial_no` in the request body will result in a 400 error.
+:::
 
 #### Example request {#example-request-1}
 
 ```json
 {
-  "serial_no": "ELEGOO_DEVICE_001",
   "access_token": "new_updated_token_xyz789",
   "expire_in": 172800
 }
@@ -142,7 +156,15 @@ API request was NOT processed successfully due to missing required parameters or
 
 ```json
 {
-  "error": "serial_no is required"
+  "error": "serial_no is required as a query parameter"
+}
+```
+
+or
+
+```json
+{
+  "error": "serial_no cannot be updated"
 }
 ```
 
@@ -213,4 +235,8 @@ curl -X PATCH "https://elegoo-app.obico.io/ent/partners/api/elegoo/access_token/
     "expire_in": 172800
   }'
 ```
+
+:::note
+Note that `serial_no` is provided as a query parameter, not in the request body. The `serial_no` field is immutable and cannot be changed once created.
+:::
 

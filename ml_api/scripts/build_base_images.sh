@@ -33,3 +33,9 @@ docker build --platform linux/arm64 -f Dockerfile.base_arm64 -t ${VERSION_BASE}-
 docker push ${VERSION_BASE}-linux-arm64
 docker manifest create ${INSECURE} ${VERSION_BASE} --amend ${VERSION_BASE}-linux-amd64 --amend ${VERSION_BASE}-linux-arm64
 docker manifest push ${INSECURE} ${VERSION_BASE}
+# arm64(rknn)
+RKNN_VERSION_BASE=${PREFIX}/ml_api_base_rknn:${VERSION}
+docker build --platform linux/arm64 -f Dockerfile.base_arm64_rknn -t "${RKNN_VERSION_BASE}"
+docker push "${RKNN_VERSION_BASE}"
+# At present, RKNN only supports arm64 targets, if they support something else (such as riscv) in the future,
+#   the same manifest pattern seen above will be needed here.

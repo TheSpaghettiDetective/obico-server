@@ -1,0 +1,8 @@
+FROM thespaghettidetective/ml_api_base_rknn:latest
+
+ADD . /app
+WORKDIR /app
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+EXPOSE 3333

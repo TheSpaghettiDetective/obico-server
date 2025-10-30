@@ -80,7 +80,6 @@ if get_bool('SOCIAL_LOGIN', False):
     INSTALLED_APPS += [
         'allauth.socialaccount.providers.apple',
         'site_specific_allauth_google_provider',
-        'site_specific_allauth_facebook_provider',
     ]
 
 MIDDLEWARE = [
@@ -308,11 +307,7 @@ ACCOUNT_ALLOW_SIGN_UP = get_bool('ACCOUNT_ALLOW_SIGN_UP', False)
 ACCOUNT_ADAPTER = 'app.accounts.SyndicateSpecificAccountAdapter'
 AUTH_USER_MODEL = 'app.User'
 SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
-SOCIALACCOUNT_PROVIDERS = {
-    'facebook': {
-        'VERIFIED_EMAIL': True
-    }
-}
+SOCIALACCOUNT_PROVIDERS = {}
 # Backwards compatibility to allow SSO via GET request
 # We can remove this after we update to the mobile app to use POST instead of GET
 SOCIALACCOUNT_LOGIN_ON_GET = True

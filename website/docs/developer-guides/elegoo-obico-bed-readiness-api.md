@@ -4,6 +4,10 @@ title: Elegoo-Obico Bed Readiness API
 
 The APIs documented on this page are designed for Elegoo partners to detect bed readiness using Obico's AI-powered bed readiness detection system. This system uses advanced AI model to detect debris, tools, and wires on the print bed within a specified region of interest.
 
+:::warning
+**Implementation Status**: The API endpoint is currently set up for authentication and routing, but the actual bed readiness detection ML model endpoint (`/bed_readiness_p/`) is not yet implemented in the ML API service. The current implementation will return an error when called.
+:::
+
 ## Authentication {#authentication}
 
 Authentication is performed using device credentials passed as form data parameters:
@@ -49,8 +53,8 @@ API request was processed successfully.
 ```
 
 - `score`: A float between 0.0 and 1.0 representing the bed readiness score.
-  - `0.0`: The model is highly confident there are *NO** foreign objects on the print bed that could obstruct printing.
-  - `1.0`: The model is highly confident there are foreign objects are on the print bed that could obstruct printing.
+  - `0.0`: The model is highly confident there are **NO** foreign objects on the print bed that could obstruct printing.
+  - `1.0`: The model is highly confident there are foreign objects on the print bed that could obstruct printing.
   - Values in between represent level of confidence.
 
 #### Status code: `400` {#status-code-400}

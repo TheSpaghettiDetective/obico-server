@@ -4,9 +4,6 @@ title: Elegoo-Obico Bed Readiness API
 
 The APIs documented on this page are designed for Elegoo partners to detect bed readiness using Obico's AI-powered bed readiness detection system. This system uses advanced AI model to detect debris, tools, and wires on the print bed within a specified region of interest.
 
-:::warning
-**Implementation Status**: The API endpoint is currently set up for authentication and routing, but the actual bed readiness detection ML model endpoint (`/bed_readiness_p/`) is not yet implemented in the ML API service. The current implementation will return an error when called.
-:::
 
 ## Authentication {#authentication}
 
@@ -59,7 +56,7 @@ API request was processed successfully.
 
 #### Status code: `400` {#status-code-400}
 
-API request was NOT processed successfully for other reasons, such as missing required parameters or invalid data.
+API request was NOT processed successfully due to validation errors or processing failures.
 
 #### Body {#body-1}
 
@@ -71,19 +68,17 @@ API request was NOT processed successfully for other reasons, such as missing re
 ```
 
 Examples of error messages:
-- `"Missing 'img' file parameter"`
-- `"Missing 'bed_polygon' parameter"`
-- `"bed_polygon must be a list of at least 3 points"`
-- `"Each polygon point must be [x, y]"`
-- `"sensitivity must be between 1 and 10"`
-- `"Invalid JSON in bed_polygon parameter"`
+- `"Invalid JSON in bed_polygon parameter: {error details}"`
+- `"Invalid parameter: bed_polygon must be a list of at least 3 points"`
+- `"Invalid parameter: Each polygon point must be [x, y]"`
+- `"Invalid parameter: sensitivity must be between 1 and 10"`
+- `"Failed to process request: {error details}"`
 
 #### Status code: `401` {#status-code-401}
 
 Authentication failed. This can occur when:
 - Missing `serial_no` or `access_token`
-- Invalid credentials
-- Access token has expired
+- Invalid credentials or expired access token
 
 #### Body {#body-2}
 
@@ -101,26 +96,24 @@ or
 }
 ```
 
-or
-
-```
-{
-  "error": "Access token has expired"
-}
-```
+**Note:** Expired access tokens will also return the "Invalid credentials" error message.
 
 #### Status code: `422` {#status-code-422}
 
-API request was NOT processed successfully due to validation errors in the request parameters.
+API request was NOT processed successfully due to missing required parameters.
 
 #### Body {#body-3}
 
 ```
 {
   "score": null,
-  "message": "Validation error message"
+  "message": "Error message"
 }
 ```
+
+Examples of error messages:
+- `"Missing 'img' file parameter"`
+- `"Missing 'bed_polygon' parameter"`
 
 :::tip
 For most use cases, sensitivity level 5 provides the best balance between accuracy and false positive reduction. Higher sensitivity may detect very small particles that don't actually affect print quality.

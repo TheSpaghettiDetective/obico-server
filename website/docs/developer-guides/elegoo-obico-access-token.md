@@ -21,7 +21,11 @@ Please contact Obico team to obtain your partner authentication token.
 
 ## POST `/ent/partners/api/elegoo/access_token/` {#post-entpartnersapielegooaccess-token}
 
-Creates a new Elegoo custom authentication record.
+Creates a new Elegoo custom authentication record, or updates an existing one if a record with the same `serial_no` already exists.
+
+:::tip
+This endpoint performs an "upsert" operation - it will create a new record if the `serial_no` doesn't exist, or update the existing record if it does. This allows you to use a single endpoint for both creating and refreshing access tokens.
+:::
 
 ### Request {#request}
 
@@ -29,7 +33,7 @@ This POST request should be sent as `application/json` format.
 
 #### Body parameters {#body-parameters}
 
-- `serial_no` (required): A unique identifier for the device. Max 256 characters. Must be unique across the entire system.
+- `serial_no` (required): A unique identifier for the device. Max 256 characters.
 - `access_token` (required): The access token for the device. Max 512 characters.
 - `expire_in` (required): Number of seconds from now until the token expires. Server computes `expired_at`.
 
@@ -47,9 +51,22 @@ This POST request should be sent as `application/json` format.
 
 #### Status code: `201` {#status-code-201}
 
-Access token record was created successfully.
+A new access token record was created successfully.
 
 #### Body {#body}
+
+```json
+{
+  "code": 201,
+  "msg": "success"
+}
+```
+
+#### Status code: `200` {#status-code-200}
+
+An existing access token record was updated successfully.
+
+#### Body {#body-2}
 
 ```json
 {
@@ -78,129 +95,11 @@ or
 }
 ```
 
-#### Status code: `409` {#status-code-409}
-
-A record with the same `serial_no` already exists. Each `serial_no` must be unique across the system.
-
-#### Body {#body-409}
-
-```json
-{
-  "error": "serial_no already exists"
-}
-```
-
 #### Status code: `401` {#status-code-401}
 
 Partner authentication token is not valid. Contact Obico team member.
 
 #### Body {#body-3}
-
-```json
-{
-  "error": "Invalid or Inactive Token",
-  "is_authenticated": "False"
-}
-```
-
-## PATCH `/ent/partners/api/elegoo/access_token/` {#patch-entpartnersapielegooaccess-token}
-
-Updates an existing Elegoo custom authentication record.
-
-### Request {#request-1}
-
-This PATCH request should be sent as `application/json` format.
-
-#### Query parameters {#query-parameters}
-
-- `serial_no` (required): The serial number to identify the record to update. Must be provided as a query parameter.
-
-#### Body parameters {#body-parameters-1}
-
-- `access_token` (optional): New access token to update.
-- `expire_in` (required): Number of seconds from now to extend/reset the token expiry. Must be > 0.
-
-:::warning
-The `serial_no` field is immutable and cannot be changed. It must be provided as a query parameter only. Including `serial_no` in the request body will result in a 400 error.
-:::
-
-#### Example request {#example-request-1}
-
-```json
-{
-  "access_token": "new_updated_token_xyz789",
-  "expire_in": 172800
-}
-```
-
-### Response {#response-1}
-
-#### Status code: `200` {#status-code-200}
-
-Access token record was updated successfully.
-
-#### Body {#body-2}
-
-```json
-{
-  "code": 200,
-  "msg": "success"
-}
-```
-
-#### Status code: `400` {#status-code-400-1}
-
-API request was NOT processed successfully due to missing required parameters or invalid data format.
-
-#### Body {#body-4}
-
-```json
-{
-  "error": "serial_no is required as a query parameter"
-}
-```
-
-or
-
-```json
-{
-  "error": "serial_no cannot be updated"
-}
-```
-
-or
-
-```json
-{
-  "error": "expire_in must be an integer number of seconds"
-}
-```
-
-or
-
-```json
-{
-  "error": "expire_in is required and must be provided on PATCH"
-}
-```
-
-#### Status code: `404` {#status-code-404}
-
-The specified serial number was not found.
-
-#### Body {#body-5}
-
-```json
-{
-  "error": "Auth record not found"
-}
-```
-
-#### Status code: `401` {#status-code-401-1}
-
-Partner authentication token is not valid. Contact Obico team member.
-
-#### Body {#body-6}
 
 ```json
 {
@@ -224,19 +123,38 @@ curl -X POST https://elegoo-app.obico.io/ent/partners/api/elegoo/access_token/ \
   }'
 ```
 
+Response (201 Created):
+```json
+{
+  "code": 201,
+  "msg": "success"
+}
+```
+
 ### Updating an existing access token
 
+To update an existing access token, simply send the same POST request with the same `serial_no` but with new `access_token` and/or `expire_in` values:
+
 ```bash
-curl -X PATCH "https://elegoo-app.obico.io/ent/partners/api/elegoo/access_token/?serial_no=ELEGOO_DEVICE_001" \
+curl -X POST https://elegoo-app.obico.io/ent/partners/api/elegoo/access_token/ \
   -H "Content-Type: application/json" \
   -H "Authorization: Token YOUR_PARTNER_TOKEN" \
   -d '{
+    "serial_no": "ELEGOO_DEVICE_001",
     "access_token": "new_updated_token",
     "expire_in": 172800
   }'
 ```
 
+Response (200 OK):
+```json
+{
+  "code": 200,
+  "msg": "success"
+}
+```
+
 :::note
-Note that `serial_no` is provided as a query parameter, not in the request body. The `serial_no` field is immutable and cannot be changed once created.
+The endpoint automatically determines whether to create or update based on whether the `serial_no` already exists. You can use the same POST request for both operations - the response status code will indicate whether a new record was created (201) or an existing one was updated (200).
 :::
 

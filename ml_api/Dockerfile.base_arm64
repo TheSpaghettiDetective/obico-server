@@ -31,7 +31,7 @@ FROM nvcr.io/nvidia/l4t-tensorrt:r8.0.1-runtime as ml_api_base_jetson
 COPY --from=darknet_builder_jetson /darknet /darknet
 
 WORKDIR /
-RUN wget https://nvidia.box.com/shared/static/2sv2fv1wseihaw8ym0d4srz41dzljwxh.whl -O onnxruntime_gpu-1.11.0-cp38-none-any.whl
+RUN curl -o onnxruntime_gpu-1.11.0-cp38-none-any.whl https://nvidia.box.com/shared/static/2sv2fv1wseihaw8ym0d4srz41dzljwxh.whl
 RUN pip3 install onnxruntime_gpu-1.11.0-cp38-none-any.whl
 
 # Some hacks to make darknet see cuda libraries. May fail easily

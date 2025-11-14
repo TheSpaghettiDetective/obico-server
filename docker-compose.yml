@@ -2,12 +2,8 @@ version: '2.4'
 
 x-web-defaults: &web-defaults
   restart: unless-stopped
-  build:
-    context: backend
-    dockerfile: 'Dockerfile'
   volumes:
-    - ./backend:/app
-    - ./frontend:/frontend
+    - ./data:/data
   depends_on:
     - redis
   environment:
@@ -25,7 +21,7 @@ x-web-defaults: &web-defaults
     CSRF_TRUSTED_ORIGINS: '${CSRF_TRUSTED_ORIGINS-}'
     SOCIAL_LOGIN: '${SOCIAL_LOGIN-False}'
     REDIS_URL: '${REDIS_URL-redis://redis:6379}'
-    DATABASE_URL: '${DATABASE_URL-sqlite:////app/db.sqlite3}'
+    DATABASE_URL: '${DATABASE_URL-sqlite:////data/db.sqlite3}'
     INTERNAL_MEDIA_HOST: '${INTERNAL_MEDIA_HOST-http://web:3334}'
     ML_API_HOST: '${ML_API_HOST-http://ml_api:3333}'
     ACCOUNT_ALLOW_SIGN_UP: '${ACCOUNT_ALLOW_SIGN_UP-False}'
@@ -48,14 +44,12 @@ services:
   ml_api:
     hostname: ml_api
     restart: unless-stopped
-    build:
-      context: ml_api
+    # TODO: Update tag to `release` when there is a release-tagged image
+    image: ghcr.io/thespaghettidetective/ml_api:latest
     environment:
       DEBUG: 'True'
       FLASK_APP: 'server.py'
-      # ML_API_TOKEN:
     tty: true
-    command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://ml_api:3333/hc/"]
       start_period: 30s
@@ -66,11 +60,13 @@ services:
   web:
     <<: *web-defaults
     hostname: web
+    # TODO: Update tag to `release` when there is a release-tagged image
+    image: ghcr.io/thespaghettidetective/obico_web:latest
     ports:
       - "3334:3334"
     depends_on:
       - ml_api
-    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
+    command: [ "/bin/sh", "/app/run.sh", "web" ]
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://web:3334/hc/"]
       start_period: 30s
@@ -81,7 +77,9 @@ services:
   tasks:
     <<: *web-defaults
     hostname: tasks
-    command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
+    # TODO: Update tag to `release` when there is a release-tagged image
+    image: ghcr.io/thespaghettidetective/obico_web:latest
+    command: [ "/bin/sh", "/app/run.sh", "tasks" ]
     healthcheck:
       test: ["CMD-SHELL", "celery -A config inspect ping"]
       start_period: 15s

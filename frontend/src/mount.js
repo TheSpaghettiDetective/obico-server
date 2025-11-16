@@ -17,7 +17,6 @@ import moment from 'moment'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import i18next from "@src/i18n/i18n.js";
 import I18NextVue from "i18next-vue";
 import {
   faStar,
@@ -42,6 +41,8 @@ import {
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 import { syndicate, language } from '@src/lib/page-context'
 import { syndicateTextConstant } from '@src/config/syndicateText'
+import { getLocalPref } from '@src/lib/pref'
+import i18next from '@src/i18n/i18n.js'
 
 Vue.prototype.$syndicate = syndicate().name
 Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().name||'base'] || syndicateTextConstant.base
@@ -90,6 +91,17 @@ export default (store, routes, components) => {
   const router = new VueRouter({
     mode: 'history',
     routes,
+  })
+
+  // Apply saved language preference on navigation
+  router.beforeEach((to, from, next) => {
+    const savedLanguage = getLocalPref('user-language', null)
+
+    if (savedLanguage && savedLanguage !== i18next.language) {
+      i18next.changeLanguage(savedLanguage)
+    }
+
+    next()
   })
 
   Vue.component('LoadingPlaceholder', LoadingPlaceholder)

@@ -41,8 +41,16 @@ import entBaseTr from './locales/ent_tr.json';
 import entBaseUk from './locales/ent_uk.json';
 
 import {language} from '@src/lib/page-context'
+import { getLocalPref } from '@src/lib/pref'
 
 const getCurrentLanguage = () => {
+  // Check for saved language preference first
+  const savedLanguage = getLocalPref('user-language', null)
+  if (savedLanguage) {
+    return savedLanguage
+  }
+
+  // Fall back to backend page context
   const lang = language().replace(/_/g, '-');
   if (lang === 'zh') return 'zh-CN';
   if (lang === 'zh_Hans' || lang === 'zh-Hans') return 'zh-CN';

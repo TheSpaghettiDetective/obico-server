@@ -4,6 +4,7 @@ from typing import List, Optional, Union, Literal
 import sentry_sdk
 import copy
 from textwrap import dedent
+import os
 from .utils import combined_params
 
 class Percentage(str):
@@ -567,7 +568,7 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
     messages.extend(chat_history)
 
     response = instructor_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('OPENAI_MODEL_NAME', 'gpt-4o'),
         messages=messages,
         response_model=SlicingResponse
     )
@@ -632,7 +633,7 @@ def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation
     messages.extend(chat_history)
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('OPENAI_MODEL_NAME', 'gpt-4o'),
         messages=messages,
         temperature=0.0,
     )

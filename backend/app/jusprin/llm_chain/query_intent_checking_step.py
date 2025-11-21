@@ -1,4 +1,5 @@
 import json
+import os
 from textwrap import dedent
 from .determine_slicing_settings_step import determine_slicing_settings_step
 from .guide_print_issue_troubleshooting_step import guide_print_issue_troubleshooting_step
@@ -117,7 +118,7 @@ def summarize_chat_history(chat, openai_client):
     messages = [{'role': 'system', 'content': system_prompt}]
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('OPENAI_MODEL_NAME', 'gpt-4o'),
         messages=messages,
         temperature=0.0,
     )

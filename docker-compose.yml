@@ -42,6 +42,7 @@ x-web-defaults: &web-defaults
     SYNDICATE: '${SYNDICATE-}'
     VERSION:
     OPENAI_API_KEY: '${OPENAI_API_KEY-}'
+    OPENAI_BASE_URL: '${OPENAI_BASE_URL-}'
 
 services:
   ml_api:

@@ -31,7 +31,8 @@ class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):
     @observe(capture_input=False, capture_output=True)
     def create(self, request):
         api_key = os.environ.get('OPENAI_API_KEY')
-        openai_client = OpenAI(api_key=api_key)
+        base_url = os.environ.get('OPENAI_BASE_URL')
+        openai_client = OpenAI(api_key=api_key, base_url=base_url)
         langfuse_context.update_current_trace(
             input=request.data.get('messages'),
             user_id=str(request.user.id),
@@ -61,7 +62,8 @@ class JusPrinChatViewSet(viewsets.ModelViewSet):
     @observe(capture_input=False, capture_output=True)
     def messages(self, request):
         api_key = os.environ.get('OPENAI_API_KEY')
-        openai_client = OpenAI(api_key=api_key)
+        base_url = os.environ.get('OPENAI_BASE_URL')
+        openai_client = OpenAI(api_key=api_key, base_url=base_url)
         langfuse_context.update_current_trace(
             input=request.data.get('messages'),
             user_id=str(request.user.id),

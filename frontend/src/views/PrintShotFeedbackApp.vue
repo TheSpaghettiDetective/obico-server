@@ -39,7 +39,7 @@
                   </div>
                   <br />
                   <div class="card-body p-3">
-                    <a :href="`/print_history/${print.id}/`">
+                    <a :href="`/prints/${print.id}/`">
                       <i class="fas fa-chevron-left"></i> {{$t("Print Page")}}
                     </a>
                   </div>

@@ -43,16 +43,30 @@ API request was processed successfully.
 
 #### Body {#body}
 
+**Successful detection:**
 ```
 {
-  "score": 0.15
+  "score": 0.15,
+  "message": "Okay"
 }
 ```
 
-- `score`: A float between 0.0 and 1.0 representing the bed readiness score.
+**Platform not found:**
+```
+{
+  "score": -1,
+  "message": "Print bed is not found in the expected position."
+}
+```
+
+- `score`: A float representing the bed readiness score.
+  - `-1`: The print bed platform was not detected in the expected position. This may indicate incorrect `bed_polygon` coordinates or the bed is not visible in the image.
   - `0.0`: The model is highly confident there are **NO** foreign objects on the print bed that could obstruct printing.
   - `1.0`: The model is highly confident there are foreign objects on the print bed that could obstruct printing.
-  - Values in between represent level of confidence.
+  - Values between 0.0 and 1.0 represent level of confidence.
+- `message`: A string indicating the status of the detection.
+  - `"Okay"`: Detection completed successfully.
+  - `"Print bed is not found in the expected position."`: The platform bbox was not detected, indicating the bed polygon may be incorrect or the bed is not visible.
 
 #### Status code: `400` {#status-code-400}
 

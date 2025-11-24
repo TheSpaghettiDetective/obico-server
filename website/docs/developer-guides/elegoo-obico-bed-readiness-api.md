@@ -43,7 +43,6 @@ API request was processed successfully.
 
 #### Body {#body}
 
-**Successful detection:**
 ```
 {
   "score": 0.15,
@@ -51,22 +50,11 @@ API request was processed successfully.
 }
 ```
 
-**Platform not found:**
-```
-{
-  "score": -1,
-  "message": "Print bed is not found in the expected position."
-}
-```
-
-- `score`: A float representing the bed readiness score.
-  - `-1`: The print bed platform was not detected in the expected position. This may indicate incorrect `bed_polygon` coordinates or the bed is not visible in the image.
+- `score`: A float between 0.0 and 1.0 representing the bed readiness score.
   - `0.0`: The model is highly confident there are **NO** foreign objects on the print bed that could obstruct printing.
   - `1.0`: The model is highly confident there are foreign objects on the print bed that could obstruct printing.
   - Values between 0.0 and 1.0 represent level of confidence.
-- `message`: A string indicating the status of the detection.
-  - `"Okay"`: Detection completed successfully.
-  - `"Print bed is not found in the expected position."`: The platform bbox was not detected, indicating the bed polygon may be incorrect or the bed is not visible.
+- `message`: A string indicating the status of the detection. Always `"Okay"` for successful detection.
 
 #### Status code: `400` {#status-code-400}
 
@@ -114,10 +102,11 @@ or
 
 #### Status code: `422` {#status-code-422}
 
-API request was NOT processed successfully due to missing required parameters.
+API request was NOT processed successfully due to missing required parameters or semantic validation errors.
 
 #### Body {#body-3}
 
+**Missing required parameters:**
 ```
 {
   "score": null,
@@ -128,6 +117,19 @@ API request was NOT processed successfully due to missing required parameters.
 Examples of error messages:
 - `"Missing 'img' file parameter"`
 - `"Missing 'bed_polygon' parameter"`
+
+**Platform not found (semantic validation error):**
+```
+{
+  "score": null,
+  "message": "Print bed is not found in the expected position."
+}
+```
+
+This error occurs when the `bed_polygon` coordinates do not match the actual print bed position in the image. This may indicate:
+- Incorrect `bed_polygon` coordinates
+- The print bed is not visible in the image
+- The image does not contain the expected print bed area
 
 :::tip
 For most use cases, sensitivity level 5 provides the best balance between accuracy and false positive reduction. Higher sensitivity may detect very small particles that don't actually affect print quality.

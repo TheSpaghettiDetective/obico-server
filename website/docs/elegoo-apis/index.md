@@ -1,17 +1,12 @@
 ---
 title: Elegoo APIs
-unlisted: true
 ---
 
-```mdx-code-block
-import DocCardList from '@theme/DocCardList';
+# Elegoo APIs
 
-<DocCardList items={[
-  {type: 'link', label: 'Elegoo-Obico Access Token API', href: '/docs/elegoo-apis/elegoo-obico-access-token/', docId: 'elegoo-apis/elegoo-obico-access-token'},
-  {type: 'link', label: 'Elegoo-Obico Bed Readiness API', href: '/docs/elegoo-apis/elegoo-obico-bed-readiness-api/', docId: 'elegoo-apis/elegoo-obico-bed-readiness-api'},
-  {type: 'link', label: 'Elegoo-Obico Chat Messages API', href: '/docs/elegoo-apis/elegoo-obico-chat-messages-api/', docId: 'elegoo-apis/elegoo-obico-chat-messages-api'},
-  {type: 'link', label: 'Elegoo-Obico Failure Detection API', href: '/docs/elegoo-apis/elegoo-obico-failure-detection-api/', docId: 'elegoo-apis/elegoo-obico-failure-detection-api'},
-  {type: 'link', label: 'Elegoo-Obico Plate Analysis API', href: '/docs/elegoo-apis/elegoo-obico-plate-analysis-api/', docId: 'elegoo-apis/elegoo-obico-plate-analysis-api'},
-  {type: 'link', label: 'Elegoo-Obico User Access Token API', href: '/docs/elegoo-apis/elegoo-obico-user-access-token/', docId: 'elegoo-apis/elegoo-obico-user-access-token'},
-]}/>
-```
+- [Elegoo-Obico Access Token API](./elegoo-obico-access-token.md)
+- [Elegoo-Obico User Access Token API](./elegoo-obico-user-access-token.md)
+- [Elegoo-Obico Bed Readiness API](./elegoo-obico-bed-readiness-api.md)
+- [Elegoo-Obico Failure Detection API](./elegoo-obico-failure-detection-api.md)
+- [Elegoo-Obico Plate Analysis API](./elegoo-obico-plate-analysis-api.md)
+- [Elegoo-Obico Chat Messages API](./elegoo-obico-chat-messages-api.md)

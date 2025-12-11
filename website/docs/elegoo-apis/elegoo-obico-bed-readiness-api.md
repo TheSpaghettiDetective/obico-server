@@ -1,5 +1,6 @@
 ---
 title: Elegoo-Obico Bed Readiness API
+unlisted: true
 ---
 
 The APIs documented on this page are designed for Elegoo partners to detect bed readiness using Obico's AI-powered bed readiness detection system. This system uses advanced AI model to detect debris, tools, and wires on the print bed within a specified region of interest.

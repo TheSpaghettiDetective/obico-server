@@ -188,5 +188,16 @@ module.exports = {
       ],
     },
     'developer-guides/contribute',
+    {
+      type: 'category',
+      label: 'Elegoo APIs',
+      link: {type: 'doc', id: 'elegoo-apis/index'},
+      items: [
+        'elegoo-apis/elegoo-obico-access-token',
+        'elegoo-apis/elegoo-obico-bed-readiness-api',
+        'elegoo-apis/elegoo-obico-failure-detection-api',
+        'elegoo-apis/elegoo-obico-user-access-token',
+      ],
+    },
   ],
 };

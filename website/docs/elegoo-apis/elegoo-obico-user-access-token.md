@@ -1,5 +1,6 @@
 ---
 title: Elegoo-Obico User Access Token API
+unlisted: true
 ---
 
 The APIs documented on this page are designed for Elegoo partners to manage user-based access tokens for their custom authentication system.

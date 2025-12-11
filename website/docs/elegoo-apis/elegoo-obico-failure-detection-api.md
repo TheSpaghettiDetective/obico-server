@@ -1,5 +1,6 @@
 ---
 title: Elegoo-Obico Failure Detection API
+unlisted: true
 ---
 
 The APIs documented on this page are designed for Elegoo partners to detect print failures using Obico's AI-powered failure detection system.

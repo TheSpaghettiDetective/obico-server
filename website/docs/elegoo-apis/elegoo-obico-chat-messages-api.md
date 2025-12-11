@@ -1,5 +1,6 @@
 ---
 title: Elegoo-Obico Chat Messages API
+unlisted: true
 ---
 
 The APIs documented on this page are designed for Elegoo partners to interact with Obico's AI-powered chat assistant for 3D printing slicer guidance. This system uses advanced AI models to help users with various tasks including query intent detection, slicing settings determination, and print troubleshooting.

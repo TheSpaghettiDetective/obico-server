@@ -1,5 +1,6 @@
 ---
 title: Elegoo-Obico Plate Analysis API
+unlisted: true
 ---
 
 The APIs documented on this page are designed for Elegoo partners to analyze 3D printing plates using Obico's AI-powered plate analysis system. This system uses advanced AI models to analyze 3D models based on isometric images and provide detailed model analysis along with recommended printing strategies.

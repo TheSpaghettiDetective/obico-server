@@ -27,12 +27,14 @@ flowchart TD
     SendMessages --> MessagesSent[Messages Processed]
 
     ChatCreated -.->|Optional| PlateAnalysis[POST plate_analysis/<br/>Analyze build plate]
-    PlateAnalysis --> AnalysisComplete[Analysis Complete]
+    PlateAnalysis -->|Returns analysis| UserEdit{User optionally<br/>edits output}
+    UserEdit -.->|Optional| SendMessages
 
     style Register fill:#e1f5ff
     style CreateChat fill:#fff4e1
     style SendMessages fill:#e8f5e9
     style PlateAnalysis fill:#f3e5f5
+    style UserEdit fill:#fff9c4
 ```
 
 ## Step-by-Step Flow
@@ -73,6 +75,8 @@ Analyze build plate images. This endpoint is optional and can be called independ
 
 **Required**: `elegoo_user_id`, `access_token` (for authentication)
 
+**Optional Flow**: The output from `plate_analysis/` can be optionally edited by the user and then sent to `chats/messages/` as an input query.
+
 ## Authentication
 
 All functional APIs (`chats/`, `chats/messages/`, `plate_analysis/`) require authentication using:
@@ -87,6 +91,7 @@ These credentials can be provided in:
 
 - **Sequential Dependency**: `chats/` must be called before `chats/messages/` to obtain the `chat_id`
 - **Optional Endpoint**: `plate_analysis/` can be called independently and is not required for the chat flow
+- **Plate Analysis Integration**: The output from `plate_analysis/` can be optionally edited by the user and sent to `chats/messages/` as an input query
 - **Token Management**: Access tokens must be registered via `user_access_token/` before they can be used for authentication
 - **Token Expiration**: Access tokens expire based on the `expire_in` value provided during registration
 

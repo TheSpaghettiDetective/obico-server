@@ -166,3 +166,4 @@ Make sure to register your user credentials using the [Elegoo-Obico User Access 
 :::warning
 The model must already be positioned on the print bed in the images. The analysis assumes the model is ready for slicing and focuses on printing strategy rather than orientation.
 :::
+

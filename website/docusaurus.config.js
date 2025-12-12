@@ -13,6 +13,10 @@ module.exports = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: '/img/favicon.png',
+  themes: ['@docusaurus/theme-mermaid'],
+  markdown: {
+    mermaid: true,
+  },
   themeConfig: {
     announcementBar: {
       id: 'giveStarOnGitHubAnnouncement',

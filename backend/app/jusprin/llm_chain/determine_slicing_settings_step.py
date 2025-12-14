@@ -76,7 +76,7 @@ def determine_slicing_settings_step(chat, openai_client):
     messages = [{'role': 'system', 'content': system_prompt}]
     messages.extend(chat_history)
 
-    llm_model_name = "gpt-4o"
+    llm_model_name = "qwen3-max"
     response = openai_client.chat.completions.create(
         model=llm_model_name,
         messages=messages,

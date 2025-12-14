@@ -2,7 +2,7 @@ import json
 from textwrap import dedent
 from typing import Optional, List
 import instructor
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from .determine_slicing_settings_adjustments_step import (
     FilamentParamOverride,
     PrintProcessParamOverride,
@@ -38,6 +38,32 @@ class PrintTroubleShootingResponse(BaseModel):
         description="Whether or not a solution has been proposed in the current message. Set it to True no matter if the solution involves adjusting slicing parameters or not."
     )
 
+    @field_validator(
+        "filament_param_adjustments",
+        "print_process_param_adjustments",
+        "user_options_to_choose_from",
+        "end_troubleshooting",
+        "solution_is_proposed",
+        mode="before",
+    )
+    @classmethod
+    def _parse_json_string_fields(cls, v):
+        """
+        Some OpenAI-compatible providers may return these fields as JSON strings.
+        Accept both.
+        """
+        if v is None:
+            return None
+        if isinstance(v, str):
+            s = v.strip()
+            if not s:
+                return None
+            try:
+                return json.loads(s)
+            except Exception:
+                return v
+        return v
+
 def get_confirmation_message(chat, openai_client):
     chat_history = chat.get('messages', [])
 
@@ -54,7 +80,7 @@ def get_confirmation_message(chat, openai_client):
     messages.extend(chat_history)
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="qwen3-max",
         messages=messages,
         temperature=0.0,
     )
@@ -125,7 +151,7 @@ def guide_print_issue_troubleshooting_step(chat, openai_client):
 
     instructor_client = instructor.from_openai(openai_client)
     response = instructor_client.chat.completions.create(
-        model="gpt-4o",
+        model="qwen3-max",
         response_model=PrintTroubleShootingResponse,
         messages=messages,
         temperature=0.0,

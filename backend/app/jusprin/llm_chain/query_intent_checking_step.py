@@ -120,7 +120,7 @@ def summarize_chat_history(chat, openai_client):
     messages = [{'role': 'system', 'content': system_prompt}]
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="qwen3-max",
         messages=messages,
         temperature=0.0,
     )
@@ -238,7 +238,7 @@ def query_intent_checking_step(chat, openai_client):
 
     tools = get_tools()
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="qwen3-max",
         messages=messages,
         functions=tools,
         function_call="auto",
@@ -256,5 +256,10 @@ def query_intent_checking_step(chat, openai_client):
     tool_name = response.choices[0].message.function_call.name
     tool_args = json.loads(response.choices[0].message.function_call.arguments)
 
-    # Get the initial response with a single action
-    return call_function(response.choices[0].message.content, tool_name, **tool_args)
+    # Get the initial response with a single action.
+    #
+    # NOTE: Some OpenAI-compatible providers may return unexpected wrapper metadata
+    # inside `function_call.arguments` (e.g. {"request": ...}). We keep passing the
+    # parsed dict through as a single `args` object (instead of `**tool_args`) so
+    # unknown keys won't crash Python, and future tools can opt-in to reading args.
+    return call_function(response.choices[0].message.content, tool_name, tool_args)

@@ -75,7 +75,7 @@ def retrieve_slicing_settings_step(chat, openai_client):
 
     # Get response from LLM
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="qwen3-max",
         messages=messages,
         temperature=0.0,
     )

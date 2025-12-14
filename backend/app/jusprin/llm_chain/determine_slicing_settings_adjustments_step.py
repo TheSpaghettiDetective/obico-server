@@ -1,8 +1,9 @@
 import instructor
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Union, Literal
 import sentry_sdk
 import copy
+import json
 from textwrap import dedent
 from .utils import combined_params
 
@@ -400,6 +401,30 @@ class SlicingResponse(BaseModel):
         description="A list of explanations for each parameter override"
     )
 
+    @field_validator(
+        "filament_param_override",
+        "print_process_param_override",
+        "per_override_explanations",
+        mode="before",
+    )
+    @classmethod
+    def _parse_json_string_fields(cls, v):
+        """
+        Some OpenAI-compatible providers return these fields as JSON *strings*
+        instead of structured objects/arrays. Accept both.
+        """
+        if v is None:
+            return None
+        if isinstance(v, str):
+            s = v.strip()
+            if not s:
+                return None
+            try:
+                return json.loads(s)
+            except Exception:
+                return v
+        return v
+
 
 def fix_filament_param_override(filament_param_override):
     if filament_param_override is None:
@@ -567,7 +592,7 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
     messages.extend(chat_history)
 
     response = instructor_client.chat.completions.create(
-        model="gpt-4o",
+        model="qwen3-max",
         messages=messages,
         response_model=SlicingResponse
     )
@@ -632,7 +657,7 @@ def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation
     messages.extend(chat_history)
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="qwen3-max",
         messages=messages,
         temperature=0.0,
     )

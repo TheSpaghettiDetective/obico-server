@@ -97,7 +97,7 @@ class JusPrinChatViewSet(viewsets.ModelViewSet):
     @observe(capture_input=False, capture_output=True)
     def messages(self, request):
         api_key = os.environ.get('DASHSCOPE_API_KEY')
-        base_url = os.environ.get('DASHSCOPE_BASE_URL') or "https://dashscope.aliyuncs.com/compatible-mode/v1" # This is the international version for Qwen models
+        base_url = os.environ.get('DASHSCOPE_BASE_URL') or "https://dashscope-intl.aliyuncs.com/compatible-mode/v1" # This is the international version for Qwen models
         openai_client = OpenAI(api_key=api_key, base_url=base_url)
         langfuse_context.update_current_trace(
             input=request.data.get('messages'),

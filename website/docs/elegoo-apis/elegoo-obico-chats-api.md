@@ -273,3 +273,5 @@ Make sure to register your user credentials using the [Elegoo-Obico User Access 
 The AI assistant is integrated into JusPrin, a 3D printing slicer derived from OrcaSlicer. It inherits all capabilities of OrcaSlicer and functions exactly the same, with additional improvements. Any feature or functionality available in OrcaSlicer is also present in JusPrin.
 :::
 
+
+

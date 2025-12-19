@@ -19,9 +19,11 @@ def analyse_plate_step(chat, openai_client):
         }
     instructor_client = instructor.from_openai(openai_client)
     images = chat.get('images', None)
+    response_language = chat.get('language', 'English')
 
     system_prompt = dedent(f"""
         You are a knowledgeable AI assistant integrated into a 3D printing slicer.
+        **CRITICAL: You MUST respond entirely in {response_language}.**
         Your primary role is to analyze this 3D model based on its isometric images and produce a detailed response with these structured fields:
 
         1. model_analysis:

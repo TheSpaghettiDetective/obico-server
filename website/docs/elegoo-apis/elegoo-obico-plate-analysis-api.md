@@ -147,6 +147,22 @@ or
 
 **Note:** Expired access tokens will return the "Invalid or expired access token" error message.
 
+#### Status code: `402` {#status-code-402}
+
+Insufficient Elegoo credits. The user does not have enough credits to perform the requested operation.
+
+#### Body {#body-3}
+
+```json
+{
+  "code": 402,
+  "error": "Elegoo API returned: {'code': 402, 'msg': 'Insufficient credits'}"
+}
+```
+
+- `code`: Integer. Always `402`.
+- `error`: String. Detailed error message from the Elegoo API indicating the reason for insufficient credits.
+
 ## Usage Example {#usage-example}
 
 ```bash

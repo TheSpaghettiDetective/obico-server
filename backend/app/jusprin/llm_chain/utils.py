@@ -1,4 +1,11 @@
 import copy
+import os
+
+
+def get_brand_name():
+    """Get brand name from environment variable."""
+    return os.environ.get('JUSPRIN_BRAND_NAME', 'JusPrin')
+
 
 def add_agent_action_to_message(message, action_name, action_arguments):
     """

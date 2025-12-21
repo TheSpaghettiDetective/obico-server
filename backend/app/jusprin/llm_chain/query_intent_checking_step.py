@@ -3,81 +3,84 @@ from textwrap import dedent
 from .determine_slicing_settings_step import determine_slicing_settings_step
 from .guide_print_issue_troubleshooting_step import guide_print_issue_troubleshooting_step
 from .retrieve_slicing_settings_step import retrieve_slicing_settings_step
-from .utils import add_agent_action_to_message, get_new_lines_as_string
+from .utils import add_agent_action_to_message, get_new_lines_as_string, get_brand_name
 
-tools = [
-    {
-        "name": "start_chat_over",
-        "description": "Start a new chat with JusPrin AI assistant.",
-        "parameters": {}
-    },
-    {
-        "name": "slice_model",
-        "description": "Slice the model using the current slicing parameters. Use this when the user explicitly asks to start slicing the model.",
-        "parameters": {}
-    },
-    {
-        "name": "auto_orient_all_models",
-        "description": "Automatically orient all models to minimize the need for supports. Note that this does not allow for specific manual orientation requests.",
-        "parameters": {}
-    },
-    {
-        "name": "auto_arrange_all_models",
-        "description": "Automatically arrange all models on the print bed.",
-        "parameters": {}
-    },
-    {
-        "name": "add_printers",
-        "description": "Add new printers to the slicer. Use this when the user explicitly asks to register new printers.",
-        "parameters": {}
-    },
-    {
-        "name": "change_printer",
-        "description": "Change the printer currently selected in the slicer. Use this when the user asks to switch to a different printer.",
-        "parameters": {}
-    },
-    {
-        "name": "add_filaments",
-        "description": "Add new filaments to the slicer. Use this when the user explicitly asks to register new filaments.",
-        "parameters": {}
-    },
-    {
-        "name": "change_filament",
-        "description": "Change the filament currently selected in the slicer. Use this when the user asks to switch to a different filament.",
-        "parameters": {}
-    },
-    {
-        "name": "contact_support",
-        "description": "Direct the user to contact JusPrin support. Use this if the user reports an error with JusPrin.",
-        "parameters": {}
-    },
-    {
-        "name": "determine_slicing_settings",
-        "description": (
-            "Analyze the user's request to determine the optimal slicing settings. "
-            "This includes requests for adjusting speed, quality, wall thickness, or other slicing parameters, "
-            "as well as general requests like 'I want a faster print' or 'optimize for strength.' "
-            "Use this tool when the user's query indicates they want to modify or optimize slicing settings."
-        ),
-        "parameters": {}
-    },
-    {
-        "name": "retrieve_slicing_settings",
-        "description": (
-            "Retrieve the current value of specific slicing parameters. Use this tool when the user explicitly asks "
-            "about the current setting for parameters like speed, quality, wall thickness, adhesion, support, infill, etc., "
-            "without expressing a desire to change them."
-        ),
-        "parameters": {}
-    },
-    {
-        "name": "guide_print_issue_troubleshooting",
-        "description": (
-            "Guide the user through troubleshooting a printing issue. Use this when the user's request is to seek help in troubleshooting a printing issue."
-        ),
-        "parameters": {}
-    }
-]
+
+def get_tools():
+    brand_name = get_brand_name()
+    return [
+        {
+            "name": "start_chat_over",
+            "description": f"Start a new chat with {brand_name} AI assistant.",
+            "parameters": {}
+        },
+        {
+            "name": "slice_model",
+            "description": "Slice the model using the current slicing parameters. Use this when the user explicitly asks to start slicing the model.",
+            "parameters": {}
+        },
+        {
+            "name": "auto_orient_all_models",
+            "description": "Automatically orient all models to minimize the need for supports. Note that this does not allow for specific manual orientation requests.",
+            "parameters": {}
+        },
+        {
+            "name": "auto_arrange_all_models",
+            "description": "Automatically arrange all models on the print bed.",
+            "parameters": {}
+        },
+        {
+            "name": "add_printers",
+            "description": "Add new printers to the slicer. Use this when the user explicitly asks to register new printers.",
+            "parameters": {}
+        },
+        {
+            "name": "change_printer",
+            "description": "Change the printer currently selected in the slicer. Use this when the user asks to switch to a different printer.",
+            "parameters": {}
+        },
+        {
+            "name": "add_filaments",
+            "description": "Add new filaments to the slicer. Use this when the user explicitly asks to register new filaments.",
+            "parameters": {}
+        },
+        {
+            "name": "change_filament",
+            "description": "Change the filament currently selected in the slicer. Use this when the user asks to switch to a different filament.",
+            "parameters": {}
+        },
+        {
+            "name": "contact_support",
+            "description": f"Direct the user to contact {brand_name} support. Use this if the user reports an error with {brand_name}.",
+            "parameters": {}
+        },
+        {
+            "name": "determine_slicing_settings",
+            "description": (
+                "Analyze the user's request to determine the optimal slicing settings. "
+                "This includes requests for adjusting speed, quality, wall thickness, or other slicing parameters, "
+                "as well as general requests like 'I want a faster print' or 'optimize for strength.' "
+                "Use this tool when the user's query indicates they want to modify or optimize slicing settings."
+            ),
+            "parameters": {}
+        },
+        {
+            "name": "retrieve_slicing_settings",
+            "description": (
+                "Retrieve the current value of specific slicing parameters. Use this tool when the user explicitly asks "
+                "about the current setting for parameters like speed, quality, wall thickness, adhesion, support, infill, etc., "
+                "without expressing a desire to change them."
+            ),
+            "parameters": {}
+        },
+        {
+            "name": "guide_print_issue_troubleshooting",
+            "description": (
+                "Guide the user through troubleshooting a printing issue. Use this when the user's request is to seek help in troubleshooting a printing issue."
+            ),
+            "parameters": {}
+        }
+    ]
 
 
 def summarize_chat_history(chat, openai_client):
@@ -208,10 +211,11 @@ def query_intent_checking_step(chat, openai_client):
         chat_history = response['updated_chat_history']
         summarized_chat_history = response['summarized_chat_history']
 
+    brand_name = get_brand_name()
     system_prompt = dedent(f"""
-    You are a knowledgeable AI assistant integrated into JusPrin, a 3D printing slicer derived from OrcaSlicer.
-    JusPrin inherits all capabilities of OrcaSlicer and functions exactly the same, with additional improvements.
-    Always assume that any feature or functionality available in OrcaSlicer is also present in JusPrin.
+    You are a knowledgeable AI assistant integrated into {brand_name}, a 3D printing slicer derived from OrcaSlicer.
+    {brand_name} inherits all capabilities of OrcaSlicer and functions exactly the same, with additional improvements.
+    Always assume that any feature or functionality available in OrcaSlicer is also present in {brand_name}.
     You will be given a summary of the chat history and asked to determine the user's intent based on the context provided.
 
     Chat History Summary: {summarized_chat_history}
@@ -225,13 +229,14 @@ def query_intent_checking_step(chat, openai_client):
 
     Contextual Assumption:
     - You are integrated into a slicer, not a general chatbot.
-    - Use JusPrin's terminology and UI assumptions when explaining anything.
-    - Any reference to OrcaSlicer features should be treated as existing within JusPrin.
+    - Use {brand_name}'s terminology and UI assumptions when explaining anything.
+    - Any reference to OrcaSlicer features should be treated as existing within {brand_name}.
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]
     messages.extend(chat_history)
 
+    tools = get_tools()
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=messages,

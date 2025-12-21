@@ -1,11 +1,11 @@
 import json
 from textwrap import dedent
-from .utils import is_slicing_prerequisites_not_met, combined_params
+from .utils import is_slicing_prerequisites_not_met, combined_params, get_brand_name
 
 
 def construct_slicing_settings_prompt(filament_params, print_process_params):
     return dedent(f"""
-        You are a 3D printing expert assistant for JusPrin, a slicer derived from OrcaSlicer.
+        You are a 3D printing expert assistant for {get_brand_name()}, a slicer derived from OrcaSlicer.
         Your task is to respond to user's query about the current slicing parameters.
 
         Current Slicing Parameters:

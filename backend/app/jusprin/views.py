@@ -63,8 +63,8 @@ class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):
     @require_ai_credits
     @observe(capture_input=False, capture_output=True)
     def create(self, request):
-        api_key = os.environ.get('ZHIPU_API_KEY')
-        base_url = os.environ.get('ZHIPU_BASE_URL') or "https://open.bigmodel.cn/api/paas/v4/"
+        api_key = os.environ.get('VLM_API_KEY')
+        base_url = os.environ.get('VLM_BASE_URL')
         openai_client = OpenAI(api_key=api_key, base_url=base_url)
         langfuse_context.update_current_trace(
             input=request.data.get('messages'),
@@ -96,8 +96,8 @@ class JusPrinChatViewSet(viewsets.ModelViewSet):
     @require_ai_credits
     @observe(capture_input=False, capture_output=True)
     def messages(self, request):
-        api_key = os.environ.get('DASHSCOPE_API_KEY')
-        base_url = os.environ.get('DASHSCOPE_BASE_URL') or "https://dashscope-intl.aliyuncs.com/compatible-mode/v1" # This is the international version for Qwen models
+        api_key = os.environ.get('LLM_API_KEY')
+        base_url = os.environ.get('LLM_BASE_URL')
         openai_client = OpenAI(api_key=api_key, base_url=base_url)
         langfuse_context.update_current_trace(
             input=request.data.get('messages'),

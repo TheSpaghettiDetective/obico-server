@@ -1,4 +1,5 @@
 import copy
+import json
 import os
 
 
@@ -94,3 +95,21 @@ def get_new_lines_as_string(new_lines):
                 raise ValueError(msg)
             string_messages.append(f"{role}: {message.get('content')}")
         return '\n'.join(string_messages)
+
+
+def parse_json_string_fields(v):
+    """
+    Some OpenAI-compatible providers return these fields as JSON *strings*
+    instead of structured objects/arrays. Accept both.
+    """
+    if v is None:
+        return None
+    if isinstance(v, str):
+        s = v.strip()
+        if not s:
+            return None
+        try:
+            return json.loads(s)
+        except Exception:
+            return v
+    return v

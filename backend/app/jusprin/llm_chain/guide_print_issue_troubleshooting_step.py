@@ -13,7 +13,7 @@ from .determine_slicing_settings_adjustments_step import (
     fix_brim_related_param_override,
     combined_params
 )
-from .utils import add_agent_action_to_message
+from .utils import add_agent_action_to_message, parse_json_string_fields
 class PrintTroubleShootingResponse(BaseModel):
     content: str = Field(
         description="Message to display to the user. If parameter adjustments are provided, assume they have already been applied in the slicer."
@@ -47,23 +47,9 @@ class PrintTroubleShootingResponse(BaseModel):
         "solution_is_proposed",
         mode="before",
     )
-    @classmethod
-    def _parse_json_string_fields(cls, v):
-        """
-        Some OpenAI-compatible providers may return these fields as JSON strings.
-        Accept both.
-        """
-        if v is None:
-            return None
-        if isinstance(v, str):
-            s = v.strip()
-            if not s:
-                return None
-            try:
-                return json.loads(s)
-            except Exception:
-                return v
-        return v
+    @staticmethod
+    def _parse_json_string_fields(v):
+        return parse_json_string_fields(v)
 
 def get_confirmation_message(chat, openai_client):
     chat_history = chat.get('messages', [])

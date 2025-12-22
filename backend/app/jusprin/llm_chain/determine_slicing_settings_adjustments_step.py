@@ -6,7 +6,7 @@ import sentry_sdk
 import copy
 import json
 from textwrap import dedent
-from .utils import combined_params
+from .utils import combined_params, parse_json_string_fields
 
 class Percentage(str):
     """Custom Pydantic type that only allows percentage strings (e.g., '50%')."""
@@ -408,23 +408,9 @@ class SlicingResponse(BaseModel):
         "per_override_explanations",
         mode="before",
     )
-    @classmethod
-    def _parse_json_string_fields(cls, v):
-        """
-        Some OpenAI-compatible providers return these fields as JSON *strings*
-        instead of structured objects/arrays. Accept both.
-        """
-        if v is None:
-            return None
-        if isinstance(v, str):
-            s = v.strip()
-            if not s:
-                return None
-            try:
-                return json.loads(s)
-            except Exception:
-                return v
-        return v
+    @staticmethod
+    def _parse_json_string_fields(v):
+        return parse_json_string_fields(v)
 
 
 def fix_filament_param_override(filament_param_override):

@@ -1,5 +1,6 @@
 from textwrap import dedent
 import instructor
+import os
 from pydantic import BaseModel, Field
 from textwrap import dedent
 
@@ -67,7 +68,7 @@ def analyse_plate_step(chat, openai_client):
     })
 
     response = instructor_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('VLM_MODEL_NAME'),
         messages=messages,
         response_model=PlateAnalysisResponseModel,
     )

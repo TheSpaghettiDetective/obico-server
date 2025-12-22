@@ -1,10 +1,12 @@
 import instructor
-from pydantic import BaseModel, Field
+import os
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Union, Literal
 import sentry_sdk
 import copy
+import json
 from textwrap import dedent
-from .utils import combined_params
+from .utils import combined_params, parse_json_string_fields
 
 class Percentage(str):
     """Custom Pydantic type that only allows percentage strings (e.g., '50%')."""
@@ -400,6 +402,16 @@ class SlicingResponse(BaseModel):
         description="A list of explanations for each parameter override"
     )
 
+    @field_validator(
+        "filament_param_override",
+        "print_process_param_override",
+        "per_override_explanations",
+        mode="before",
+    )
+    @staticmethod
+    def _parse_json_string_fields(v):
+        return parse_json_string_fields(v)
+
 
 def fix_filament_param_override(filament_param_override):
     if filament_param_override is None:
@@ -567,7 +579,7 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
     messages.extend(chat_history)
 
     response = instructor_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         response_model=SlicingResponse
     )
@@ -632,7 +644,7 @@ def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation
     messages.extend(chat_history)
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         temperature=0.0,
     )

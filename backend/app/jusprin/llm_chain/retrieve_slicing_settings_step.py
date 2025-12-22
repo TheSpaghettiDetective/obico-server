@@ -1,4 +1,5 @@
 import json
+import os
 from textwrap import dedent
 from .utils import is_slicing_prerequisites_not_met, combined_params, get_brand_name
 
@@ -75,7 +76,7 @@ def retrieve_slicing_settings_step(chat, openai_client):
 
     # Get response from LLM
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         temperature=0.0,
     )

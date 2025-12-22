@@ -1,4 +1,5 @@
 import json
+import os
 from textwrap import dedent
 from .determine_slicing_settings_step import determine_slicing_settings_step
 from .guide_print_issue_troubleshooting_step import guide_print_issue_troubleshooting_step
@@ -120,7 +121,7 @@ def summarize_chat_history(chat, openai_client):
     messages = [{'role': 'system', 'content': system_prompt}]
 
     response = openai_client.chat.completions.create(
-        model="qwen3-max",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         temperature=0.0,
     )
@@ -238,7 +239,7 @@ def query_intent_checking_step(chat, openai_client):
 
     tools = get_tools()
     response = openai_client.chat.completions.create(
-        model="qwen3-max",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         functions=tools,
         function_call="auto",

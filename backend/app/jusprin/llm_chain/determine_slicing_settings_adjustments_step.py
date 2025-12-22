@@ -1,4 +1,5 @@
 import instructor
+import os
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Union, Literal
 import sentry_sdk
@@ -592,7 +593,7 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
     messages.extend(chat_history)
 
     response = instructor_client.chat.completions.create(
-        model="qwen3-max",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         response_model=SlicingResponse
     )
@@ -657,7 +658,7 @@ def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation
     messages.extend(chat_history)
 
     response = openai_client.chat.completions.create(
-        model="qwen3-max",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         temperature=0.0,
     )

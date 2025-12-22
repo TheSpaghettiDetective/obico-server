@@ -1,5 +1,6 @@
 from .determine_slicing_settings_adjustments_step import determine_slicing_settings_adjustments_step
 import json
+import os
 from textwrap import dedent
 from .utils import is_slicing_prerequisites_not_met
 
@@ -76,9 +77,8 @@ def determine_slicing_settings_step(chat, openai_client):
     messages = [{'role': 'system', 'content': system_prompt}]
     messages.extend(chat_history)
 
-    llm_model_name = "qwen3-max"
     response = openai_client.chat.completions.create(
-        model=llm_model_name,
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         functions=tools,
         function_call="auto",

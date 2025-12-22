@@ -1,4 +1,5 @@
 import json
+import os
 from textwrap import dedent
 from typing import Optional, List
 import instructor
@@ -80,7 +81,7 @@ def get_confirmation_message(chat, openai_client):
     messages.extend(chat_history)
 
     response = openai_client.chat.completions.create(
-        model="qwen3-max",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         temperature=0.0,
     )
@@ -151,7 +152,7 @@ def guide_print_issue_troubleshooting_step(chat, openai_client):
 
     instructor_client = instructor.from_openai(openai_client)
     response = instructor_client.chat.completions.create(
-        model="qwen3-max",
+        model=os.environ.get('LLM_MODEL_NAME'),
         response_model=PrintTroubleShootingResponse,
         messages=messages,
         temperature=0.0,

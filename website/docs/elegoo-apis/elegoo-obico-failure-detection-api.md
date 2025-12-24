@@ -18,6 +18,11 @@ These credentials must be included in the POST request along with other paramete
 Use the [Elegoo-Obico Access Token API](./elegoo-obico-access-token.md) to manage device credentials before using the failure detection API.
 :::
 
+## Endpoint {#endpoint}
+
+- `https://elegoo-app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
+- `https://elegoo-app-stg.obico.io/`. Staging endpoint. Please don't use unless instructed by the Obico team.
+
 ## POST `/ent/partners/api/elegoo/predict/` {#post-entpartnersapielegoopredict}
 
 ### Request {#request}

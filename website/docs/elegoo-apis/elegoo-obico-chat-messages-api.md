@@ -19,6 +19,11 @@ These credentials can be included either in the POST request body (JSON) or as q
 Use the [Elegoo-Obico User Access Token API](./elegoo-obico-user-access-token.md) to manage user credentials before using the chat messages API.
 :::
 
+## Endpoint {#endpoint}
+
+- `https://elegoo-app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
+- `https://elegoo-app-stg.obico.io/`. Staging endpoint. Please don't use unless instructed by the Obico team.
+
 ## POST `/ent/partners/api/elegoo/chats/messages/` {#post-entpartnersapielegoochatsmessages}
 
 ### Request {#request}

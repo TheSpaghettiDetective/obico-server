@@ -18,6 +18,7 @@ Please contact Obico team to obtain your partner authentication token.
 ## Endpoint {#endpoint}
 
 - `https://elegoo-app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
+- `https://elegoo-cn-app.elegoo.com.cn`. Production endpoint within China.
 - `https://elegoo-app-stg.obico.io/`. Staging endpoint. Please don't use unless instructed by the Obico team.
 
 ## POST `/ent/partners/api/elegoo/user_access_token/` {#post-entpartnersapielegoouser-access-token}

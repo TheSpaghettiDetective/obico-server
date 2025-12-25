@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-25 16:07+0000\n"
+"POT-Creation-Date: 2025-12-25 17:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,74 +40,74 @@ msgstr "A user is already registered with this email address."
 
 #: app/jusprin/ai_credits.py:38
 msgid "Unlimited usage allowed"
-msgstr ""
+msgstr "Unlimited usage allowed"
 
 #: app/jusprin/ai_credits.py:47
 msgid "Monthly AI credit limit exceeded"
-msgstr ""
+msgstr "Monthly AI credit limit exceeded"
 
 #: app/jusprin/ai_credits.py:58
 msgid "Credit consumed successfully"
-msgstr ""
+msgstr "Credit consumed successfully"
 
 #: app/jusprin/llm_chain/utils.py:59
 msgid "Oops, something went wrong. Please contact support."
-msgstr ""
+msgstr "Oops, something went wrong. Please contact support."
 
 #: app/jusprin/llm_chain/utils.py:65
 msgid ""
 "Oops, you need to select at least one filament so that I can decide slicing "
 "parameters accordingly"
-msgstr ""
+msgstr "Oops, you need to select at least one filament so that I can decide slicing parameters accordingly"
 
 #: app/jusprin/llm_chain/utils.py:68
 msgid "Oops, I can not find any print process presets. Please contact support."
-msgstr ""
+msgstr "Oops, I can not find any print process presets. Please contact support."
 
 #: app/jusprin/llm_chain/utils.py:72
 #: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:95
 msgid "Oops, you need to add at least one model."
-msgstr ""
+msgstr "Oops, you need to add at least one model."
 
 #: app/jusprin/llm_chain/utils.py:80
 msgid ""
 "I currently do not know how to slice models with multiple filaments. Please "
 "manually slice your model. Also stay tuned for our product update."
-msgstr ""
+msgstr "I currently do not know how to slice models with multiple filaments. Please manually slice your model. Also stay tuned for our product update."
 
 #: app/jusprin/llm_chain/utils.py:89
 msgid "User"
-msgstr ""
+msgstr "User"
 
 #: app/jusprin/llm_chain/utils.py:91
 msgid "Assistant"
-msgstr ""
+msgstr "Assistant"
 
 #: app/jusprin/llm_chain/utils.py:93
 msgid "System"
-msgstr ""
+msgstr "System"
 
 #: app/jusprin/llm_chain/utils.py:95
 #, python-format
 msgid "Got unexpected message role: %(role)s"
-msgstr ""
+msgstr "Got unexpected message role: %(role)s"
 
 #: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:90
 msgid "No plates are found in the project. Please contact support."
-msgstr ""
+msgstr "No plates are found in the project. Please contact support."
 
 #: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:98
 msgid "No images found for analysis. Please contact support."
-msgstr ""
+msgstr "No images found for analysis. Please contact support."
 
 #: app/jusprin/views.py:130
 msgid "Message is required"
-msgstr ""
+msgstr "Message is required"
 
 #: app/jusprin/views.py:135
 #, python-format
 msgid "JusPrin Support Request from %(email)s"
-msgstr ""
+msgstr "JusPrin Support Request from %(email)s"
 
 #: app/jusprin/views.py:136
 #, python-format
@@ -117,14 +117,18 @@ msgid ""
 "Message:\n"
 "%(message)s"
 msgstr ""
+"User: %(email)s\n"
+"\n"
+"Message:\n"
+"%(message)s"
 
 #: app/jusprin/views.py:148
 msgid "Support request sent successfully"
-msgstr ""
+msgstr "Support request sent successfully"
 
 #: app/jusprin/views.py:154
 msgid "Failed to send support request"
-msgstr ""
+msgstr "Failed to send support request"
 
 #: app/models/syndicate_models.py:84
 msgid "email address"
@@ -196,7 +200,7 @@ msgstr "E-mail Addresses"
 
 #: app/templates/account/email.html:66
 msgid "Add E-mail"
-msgstr ""
+msgstr "Add E-mail"
 
 #: app/templates/account/email/email_confirmation_message.txt:1
 #, python-format

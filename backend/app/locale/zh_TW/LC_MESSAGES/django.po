@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-12 22:10+0000\n"
+"POT-Creation-Date: 2025-12-25 17:58+0000\n"
 "PO-Revision-Date: 2024-10-26 03:06+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -33,9 +33,101 @@ msgstr "重要日期"
 msgid "Invalid email or password."
 msgstr "無效的電子郵件或密碼。"
 
-#: app/forms.py:105 app/views/mobile_views.py:52 app/views/web_views.py:64
+#: app/forms.py:105 app/views/mobile_views.py:51 app/views/web_views.py:64
 msgid "A user is already registered with this email address."
 msgstr "此電子郵件地址已被註冊。"
+
+#: app/jusprin/ai_credits.py:38
+msgid "Unlimited usage allowed"
+msgstr "允許無限制使用"
+
+#: app/jusprin/ai_credits.py:47
+msgid "Monthly AI credit limit exceeded"
+msgstr "已達到每月 AI 點數上限"
+
+#: app/jusprin/ai_credits.py:58
+msgid "Credit consumed successfully"
+msgstr "點數已成功扣除"
+
+#: app/jusprin/llm_chain/utils.py:59
+msgid "Oops, something went wrong. Please contact support."
+msgstr "抱歉，發生了問題。請聯絡支援。"
+
+#: app/jusprin/llm_chain/utils.py:65
+msgid ""
+"Oops, you need to select at least one filament so that I can decide slicing "
+"parameters accordingly"
+msgstr "抱歉，您需要至少選擇一種線材，這樣我才能相應地決定切片參數"
+
+#: app/jusprin/llm_chain/utils.py:68
+msgid "Oops, I can not find any print process presets. Please contact support."
+msgstr "抱歉，我找不到任何列印流程預設。請聯絡支援。"
+
+#: app/jusprin/llm_chain/utils.py:72
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:95
+msgid "Oops, you need to add at least one model."
+msgstr "抱歉，您需要至少新增一個模型。"
+
+#: app/jusprin/llm_chain/utils.py:80
+msgid ""
+"I currently do not know how to slice models with multiple filaments. Please "
+"manually slice your model. Also stay tuned for our product update."
+msgstr "我目前不知道如何切片多線材模型。請手動切片您的模型。也請關注我們的產品更新。"
+
+#: app/jusprin/llm_chain/utils.py:89
+msgid "User"
+msgstr "使用者"
+
+#: app/jusprin/llm_chain/utils.py:91
+msgid "Assistant"
+msgstr "助手"
+
+#: app/jusprin/llm_chain/utils.py:93
+msgid "System"
+msgstr "系統"
+
+#: app/jusprin/llm_chain/utils.py:95
+#, python-format
+msgid "Got unexpected message role: %(role)s"
+msgstr "收到意外的訊息角色：%(role)s"
+
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:90
+msgid "No plates are found in the project. Please contact support."
+msgstr "專案中未找到列印平台。請聯絡支援。"
+
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:98
+msgid "No images found for analysis. Please contact support."
+msgstr "未找到可用於分析的影像。請聯絡支援。"
+
+#: app/jusprin/views.py:130
+msgid "Message is required"
+msgstr "訊息為必填"
+
+#: app/jusprin/views.py:135
+#, python-format
+msgid "JusPrin Support Request from %(email)s"
+msgstr "來自 %(email)s 的 JusPrin 支援請求"
+
+#: app/jusprin/views.py:136
+#, python-format
+msgid ""
+"User: %(email)s\n"
+"\n"
+"Message:\n"
+"%(message)s"
+msgstr ""
+"使用者：%(email)s\n"
+"\n"
+"訊息：\n"
+"%(message)s"
+
+#: app/jusprin/views.py:148
+msgid "Support request sent successfully"
+msgstr "支援請求已成功送出"
+
+#: app/jusprin/views.py:154
+msgid "Failed to send support request"
+msgstr "送出支援請求失敗"
 
 #: app/models/syndicate_models.py:84
 msgid "email address"
@@ -200,6 +292,13 @@ msgstr "電子郵件地址"
 msgid "Password"
 msgstr "密碼"
 
+#: app/templates/account/login.html:43
+#: app/templates/mobile/account/login.html:42
+#, fuzzy
+#| msgid "This email was previously signed up using either Google or Facebook."
+msgid "This email was previously signed up using Google."
+msgstr "此電子郵件之前已使用 Google 或 Facebook 註冊。"
+
 #: app/templates/account/login.html:45
 #: app/templates/mobile/account/login.html:44
 msgid "Click here to reset your password"
@@ -254,9 +353,11 @@ msgstr ""
 
 #: app/templates/account/login.html:112
 #: app/templates/mobile/account/login.html:111
-msgid ""
-"Even if you previously signed up an account using Google or Facebook, you "
-"can still"
+#, fuzzy
+#| msgid ""
+#| "Even if you previously signed up an account using Google or Facebook, you "
+#| "can still"
+msgid "Even if you previously signed up an account using Google, you can still"
 msgstr "即使您之前使用 Google 或 Facebook 註冊了帳戶，您仍然可以"
 
 #: app/templates/account/login.html:112
@@ -310,62 +411,18 @@ msgstr "或"
 
 #: app/templates/account/login.html:140
 #: app/templates/mobile/account/login.html:138
-msgid "Login with Facebook"
-msgstr "使用 Facebook 登入"
-
-#: app/templates/account/login.html:141 app/templates/account/login.html:165
-#: app/templates/mobile/account/login.html:139
-#: app/templates/mobile/account/login.html:170
-#, fuzzy
-#| msgid "Login with Facebook"
-msgid "Continue with Facebook"
-msgstr "使用 Facebook 登入"
-
-#: app/templates/account/login.html:146
-#: app/templates/mobile/account/login.html:144
 msgid "Login with Google"
 msgstr "使用 Google 登入"
 
-#: app/templates/account/login.html:147 app/templates/account/signup.html:144
+#: app/templates/account/login.html:141 app/templates/account/signup.html:144
 #: app/templates/account/signup.html:145
-#: app/templates/mobile/account/login.html:145
+#: app/templates/mobile/account/login.html:139
 #: app/templates/mobile/account/signup.html:138
 #: app/templates/mobile/account/signup.html:139
 #, fuzzy
 #| msgid "Login with Google"
 msgid "Continue with Google"
 msgstr "使用 Google 登入"
-
-#: app/templates/account/login.html:163
-#: app/templates/mobile/account/login.html:168
-msgid "Facebook Login Is Going Away Soon"
-msgstr "Facebook 登入功能即將下線"
-
-#: app/templates/account/login.html:164
-#: app/templates/mobile/account/login.html:169
-#, fuzzy
-#| msgid "Reset My Password"
-msgid "Reset Password"
-msgstr "重設我的密碼"
-
-#: app/templates/account/login.html:166
-#: app/templates/mobile/account/login.html:171
-msgid ""
-"The Facebook developer program has become bogged down with so much "
-"bureaucracy that it's no longer practical for small, independent developers "
-"like me to keep supporting it. On top of that, the number of people using "
-"Facebook to log in has dropped sharply, making it hard to justify all the "
-"extra work."
-msgstr "Facebook 開發者計畫的官僚流程過於繁瑣，對像我這樣的小型獨立開發者而言已難以持續支援。此外，使用 Facebook 登入的人數大幅下降，讓投入這些額外工作的合理性變得困難。"
-
-#: app/templates/account/login.html:167
-#: app/templates/mobile/account/login.html:172
-#, python-format
-msgid ""
-"To keep your Obico account accessible, please switch to logging in with your "
-"email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use "
-"the same email address linked to your account."
-msgstr "為確保您仍可存取 Obico 帳戶，請改用電子郵件登入。只需點擊下方 <b>\"%(reset_button_text)s\"</b> 按鈕，並使用與您帳戶連結的相同電子郵件地址。"
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
 #: app/templates/account/logout.html:18
@@ -618,10 +675,6 @@ msgstr ""
 "<strong>注意：</strong>您仍可<a href=\"%(email_url)s\">更改您的電子郵件地址</"
 "a>。"
 
-#: app/templates/mobile/account/login.html:42
-msgid "This email was previously signed up using either Google or Facebook."
-msgstr "此電子郵件之前已使用 Google 或 Facebook 註冊。"
-
 #: app/templates/mobile/account/login.html:110
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
@@ -631,11 +684,11 @@ msgstr ""
 "您的登入憑證在行動應用程式和網路應用程式中是相同的。如果您之前使用網路應用程"
 "式註冊，您可以使用相同的憑證在此登入。"
 
-#: app/templates/mobile/account/login.html:151
+#: app/templates/mobile/account/login.html:145
 msgid "Login with Apple"
 msgstr "使用 Apple 登入"
 
-#: app/templates/mobile/account/login.html:152
+#: app/templates/mobile/account/login.html:146
 #: app/templates/mobile/account/signup.html:145
 #: app/templates/mobile/account/signup.html:146
 #, fuzzy
@@ -872,6 +925,43 @@ msgstr "在帳戶通知上。"
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
 msgstr "更改通知偏好設定"
+
+#~ msgid "Login with Facebook"
+#~ msgstr "使用 Facebook 登入"
+
+#, fuzzy
+#~| msgid "Login with Facebook"
+#~ msgid "Continue with Facebook"
+#~ msgstr "使用 Facebook 登入"
+
+#~ msgid "Facebook Login Is Going Away Soon"
+#~ msgstr "Facebook 登入功能即將下線"
+
+#, fuzzy
+#~| msgid "Reset My Password"
+#~ msgid "Reset Password"
+#~ msgstr "重設我的密碼"
+
+#~ msgid ""
+#~ "The Facebook developer program has become bogged down with so much "
+#~ "bureaucracy that it's no longer practical for small, independent "
+#~ "developers like me to keep supporting it. On top of that, the number of "
+#~ "people using Facebook to log in has dropped sharply, making it hard to "
+#~ "justify all the extra work."
+#~ msgstr ""
+#~ "Facebook 開發者計畫的官僚流程過於繁瑣，對像我這樣的小型獨立開發者而言已難"
+#~ "以持續支援。此外，使用 Facebook 登入的人數大幅下降，讓投入這些額外工作的合"
+#~ "理性變得困難。"
+
+#, python-format
+#~ msgid ""
+#~ "To keep your Obico account accessible, please switch to logging in with "
+#~ "your email. Just click the <b>\"%(reset_button_text)s\"</b> button below "
+#~ "and use the same email address linked to your account."
+#~ msgstr ""
+#~ "為確保您仍可存取 Obico 帳戶，請改用電子郵件登入。只需點擊下方 "
+#~ "<b>\"%(reset_button_text)s\"</b> 按鈕，並使用與您帳戶連結的相同電子郵件地"
+#~ "址。"
 
 #~ msgid "Continue with social media"
 #~ msgstr "使用社群媒體繼續"

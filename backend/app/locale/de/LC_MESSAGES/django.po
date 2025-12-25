@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-12 22:10+0000\n"
+"POT-Creation-Date: 2025-12-25 17:58+0000\n"
 "PO-Revision-Date: 2024-10-26 03:06+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -33,9 +33,101 @@ msgstr "Wichtige Daten"
 msgid "Invalid email or password."
 msgstr "Ungültige E-Mail oder Passwort."
 
-#: app/forms.py:105 app/views/mobile_views.py:52 app/views/web_views.py:64
+#: app/forms.py:105 app/views/mobile_views.py:51 app/views/web_views.py:64
 msgid "A user is already registered with this email address."
 msgstr "Mit dieser E-Mail-Adresse ist bereits ein Benutzer registriert."
+
+#: app/jusprin/ai_credits.py:38
+msgid "Unlimited usage allowed"
+msgstr "Unbegrenzte Nutzung erlaubt"
+
+#: app/jusprin/ai_credits.py:47
+msgid "Monthly AI credit limit exceeded"
+msgstr "Monatliches KI-Credit-Limit überschritten"
+
+#: app/jusprin/ai_credits.py:58
+msgid "Credit consumed successfully"
+msgstr "Credit erfolgreich verbraucht"
+
+#: app/jusprin/llm_chain/utils.py:59
+msgid "Oops, something went wrong. Please contact support."
+msgstr "Ups, etwas ist schiefgelaufen. Bitte kontaktieren Sie den Support."
+
+#: app/jusprin/llm_chain/utils.py:65
+msgid ""
+"Oops, you need to select at least one filament so that I can decide slicing "
+"parameters accordingly"
+msgstr "Ups, Sie müssen mindestens ein Filament auswählen, damit ich die Slicing-Parameter entsprechend festlegen kann"
+
+#: app/jusprin/llm_chain/utils.py:68
+msgid "Oops, I can not find any print process presets. Please contact support."
+msgstr "Ups, ich kann keine Druckprozess-Voreinstellungen finden. Bitte kontaktieren Sie den Support."
+
+#: app/jusprin/llm_chain/utils.py:72
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:95
+msgid "Oops, you need to add at least one model."
+msgstr "Ups, Sie müssen mindestens ein Modell hinzufügen."
+
+#: app/jusprin/llm_chain/utils.py:80
+msgid ""
+"I currently do not know how to slice models with multiple filaments. Please "
+"manually slice your model. Also stay tuned for our product update."
+msgstr "Ich weiß derzeit nicht, wie man Modelle mit mehreren Filamenten slicen kann. Bitte slicen Sie Ihr Modell manuell. Bleiben Sie außerdem für unser Produkt-Update dran."
+
+#: app/jusprin/llm_chain/utils.py:89
+msgid "User"
+msgstr "Benutzer"
+
+#: app/jusprin/llm_chain/utils.py:91
+msgid "Assistant"
+msgstr "Assistent"
+
+#: app/jusprin/llm_chain/utils.py:93
+msgid "System"
+msgstr "System"
+
+#: app/jusprin/llm_chain/utils.py:95
+#, python-format
+msgid "Got unexpected message role: %(role)s"
+msgstr "Unerwartete Nachrichtenrolle erhalten: %(role)s"
+
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:90
+msgid "No plates are found in the project. Please contact support."
+msgstr "Im Projekt wurden keine Platten gefunden. Bitte kontaktieren Sie den Support."
+
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:98
+msgid "No images found for analysis. Please contact support."
+msgstr "Keine Bilder zur Analyse gefunden. Bitte kontaktieren Sie den Support."
+
+#: app/jusprin/views.py:130
+msgid "Message is required"
+msgstr "Nachricht ist erforderlich"
+
+#: app/jusprin/views.py:135
+#, python-format
+msgid "JusPrin Support Request from %(email)s"
+msgstr "JusPrin-Supportanfrage von %(email)s"
+
+#: app/jusprin/views.py:136
+#, python-format
+msgid ""
+"User: %(email)s\n"
+"\n"
+"Message:\n"
+"%(message)s"
+msgstr ""
+"Benutzer: %(email)s\n"
+"\n"
+"Nachricht:\n"
+"%(message)s"
+
+#: app/jusprin/views.py:148
+msgid "Support request sent successfully"
+msgstr "Supportanfrage erfolgreich gesendet"
+
+#: app/jusprin/views.py:154
+msgid "Failed to send support request"
+msgstr "Senden der Supportanfrage fehlgeschlagen"
 
 #: app/models/syndicate_models.py:84
 msgid "email address"
@@ -205,6 +297,14 @@ msgstr "E-Mail-Adresse"
 msgid "Password"
 msgstr "Passwort"
 
+#: app/templates/account/login.html:43
+#: app/templates/mobile/account/login.html:42
+#, fuzzy
+#| msgid "This email was previously signed up using either Google or Facebook."
+msgid "This email was previously signed up using Google."
+msgstr ""
+"Diese E-Mail wurde zuvor entweder mit Google oder Facebook registriert."
+
 #: app/templates/account/login.html:45
 #: app/templates/mobile/account/login.html:44
 msgid "Click here to reset your password"
@@ -261,9 +361,11 @@ msgstr ""
 
 #: app/templates/account/login.html:112
 #: app/templates/mobile/account/login.html:111
-msgid ""
-"Even if you previously signed up an account using Google or Facebook, you "
-"can still"
+#, fuzzy
+#| msgid ""
+#| "Even if you previously signed up an account using Google or Facebook, you "
+#| "can still"
+msgid "Even if you previously signed up an account using Google, you can still"
 msgstr ""
 "Auch wenn Sie sich zuvor mit einem Google- oder Facebook-Konto registriert "
 "haben, können Sie sich weiterhin anmelden."
@@ -321,62 +423,18 @@ msgstr "Oder"
 
 #: app/templates/account/login.html:140
 #: app/templates/mobile/account/login.html:138
-msgid "Login with Facebook"
-msgstr "Mit Facebook anmelden"
-
-#: app/templates/account/login.html:141 app/templates/account/login.html:165
-#: app/templates/mobile/account/login.html:139
-#: app/templates/mobile/account/login.html:170
-#, fuzzy
-#| msgid "Login with Facebook"
-msgid "Continue with Facebook"
-msgstr "Mit Facebook anmelden"
-
-#: app/templates/account/login.html:146
-#: app/templates/mobile/account/login.html:144
 msgid "Login with Google"
 msgstr "Mit Google anmelden"
 
-#: app/templates/account/login.html:147 app/templates/account/signup.html:144
+#: app/templates/account/login.html:141 app/templates/account/signup.html:144
 #: app/templates/account/signup.html:145
-#: app/templates/mobile/account/login.html:145
+#: app/templates/mobile/account/login.html:139
 #: app/templates/mobile/account/signup.html:138
 #: app/templates/mobile/account/signup.html:139
 #, fuzzy
 #| msgid "Login with Google"
 msgid "Continue with Google"
 msgstr "Mit Google anmelden"
-
-#: app/templates/account/login.html:163
-#: app/templates/mobile/account/login.html:168
-msgid "Facebook Login Is Going Away Soon"
-msgstr "Die Facebook-Anmeldung wird bald eingestellt"
-
-#: app/templates/account/login.html:164
-#: app/templates/mobile/account/login.html:169
-#, fuzzy
-#| msgid "Reset My Password"
-msgid "Reset Password"
-msgstr "Mein Passwort zurücksetzen"
-
-#: app/templates/account/login.html:166
-#: app/templates/mobile/account/login.html:171
-msgid ""
-"The Facebook developer program has become bogged down with so much "
-"bureaucracy that it's no longer practical for small, independent developers "
-"like me to keep supporting it. On top of that, the number of people using "
-"Facebook to log in has dropped sharply, making it hard to justify all the "
-"extra work."
-msgstr "Das Facebook-Entwicklerprogramm ist in so viel Bürokratie stecken geblieben, dass es für kleine, unabhängige Entwickler wie mich nicht mehr praktikabel ist, es weiter zu unterstützen. Zudem ist die Zahl der Nutzer, die sich mit Facebook anmelden, stark zurückgegangen, was den zusätzlichen Aufwand kaum noch rechtfertigt."
-
-#: app/templates/account/login.html:167
-#: app/templates/mobile/account/login.html:172
-#, python-format
-msgid ""
-"To keep your Obico account accessible, please switch to logging in with your "
-"email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use "
-"the same email address linked to your account."
-msgstr "Damit Sie weiterhin auf Ihr Obico-Konto zugreifen können, wechseln Sie bitte zur Anmeldung mit Ihrer E‑Mail. Klicken Sie einfach unten auf die Schaltfläche <b>\"%(reset_button_text)s\"</b> und verwenden Sie dieselbe E‑Mail-Adresse, die mit Ihrem Konto verknüpft ist."
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
 #: app/templates/account/logout.html:18
@@ -647,11 +705,6 @@ msgstr ""
 "<strong>Hinweis:</strong> Sie können Ihre E-Mail-Adresse immer noch <a "
 "href=\"%(email_url)s\">ändern</a>."
 
-#: app/templates/mobile/account/login.html:42
-msgid "This email was previously signed up using either Google or Facebook."
-msgstr ""
-"Diese E-Mail wurde zuvor entweder mit Google oder Facebook registriert."
-
 #: app/templates/mobile/account/login.html:110
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
@@ -662,11 +715,11 @@ msgstr ""
 "Sie sich zuvor über die Web-App registriert haben, können Sie dieselben "
 "Daten hier verwenden, um sich anzumelden."
 
-#: app/templates/mobile/account/login.html:151
+#: app/templates/mobile/account/login.html:145
 msgid "Login with Apple"
 msgstr "Mit Apple anmelden"
 
-#: app/templates/mobile/account/login.html:152
+#: app/templates/mobile/account/login.html:146
 #: app/templates/mobile/account/signup.html:145
 #: app/templates/mobile/account/signup.html:146
 #, fuzzy
@@ -906,6 +959,46 @@ msgstr "bei Kontobenachrichtigungen."
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
 msgstr "Benachrichtigungseinstellungen ändern"
+
+#~ msgid "Login with Facebook"
+#~ msgstr "Mit Facebook anmelden"
+
+#, fuzzy
+#~| msgid "Login with Facebook"
+#~ msgid "Continue with Facebook"
+#~ msgstr "Mit Facebook anmelden"
+
+#~ msgid "Facebook Login Is Going Away Soon"
+#~ msgstr "Die Facebook-Anmeldung wird bald eingestellt"
+
+#, fuzzy
+#~| msgid "Reset My Password"
+#~ msgid "Reset Password"
+#~ msgstr "Mein Passwort zurücksetzen"
+
+#~ msgid ""
+#~ "The Facebook developer program has become bogged down with so much "
+#~ "bureaucracy that it's no longer practical for small, independent "
+#~ "developers like me to keep supporting it. On top of that, the number of "
+#~ "people using Facebook to log in has dropped sharply, making it hard to "
+#~ "justify all the extra work."
+#~ msgstr ""
+#~ "Das Facebook-Entwicklerprogramm ist in so viel Bürokratie stecken "
+#~ "geblieben, dass es für kleine, unabhängige Entwickler wie mich nicht mehr "
+#~ "praktikabel ist, es weiter zu unterstützen. Zudem ist die Zahl der "
+#~ "Nutzer, die sich mit Facebook anmelden, stark zurückgegangen, was den "
+#~ "zusätzlichen Aufwand kaum noch rechtfertigt."
+
+#, python-format
+#~ msgid ""
+#~ "To keep your Obico account accessible, please switch to logging in with "
+#~ "your email. Just click the <b>\"%(reset_button_text)s\"</b> button below "
+#~ "and use the same email address linked to your account."
+#~ msgstr ""
+#~ "Damit Sie weiterhin auf Ihr Obico-Konto zugreifen können, wechseln Sie "
+#~ "bitte zur Anmeldung mit Ihrer E‑Mail. Klicken Sie einfach unten auf die "
+#~ "Schaltfläche <b>\"%(reset_button_text)s\"</b> und verwenden Sie dieselbe "
+#~ "E‑Mail-Adresse, die mit Ihrem Konto verknüpft ist."
 
 #~ msgid "Continue with social media"
 #~ msgstr "Mit sozialen Medien fortfahren"

@@ -3,6 +3,7 @@ import instructor
 import os
 from pydantic import BaseModel, Field
 from textwrap import dedent
+from django.utils.translation import gettext_lazy as _
 
 class PlateAnalysisResponseModel(BaseModel):
     """Response model for image analysis"""
@@ -86,14 +87,14 @@ def is_analyse_plate_prerequisites_not_met(chat):
     plates = chat['plates']
 
     if len(plates) == 0:
-        return "No plates are found in the project. Please contact support."
+        return _("No plates are found in the project. Please contact support.")
 
     model_objects = plates[0]['model_objects']
 
     if not model_objects or len(model_objects) == 0:
-        return "Oops, you need to add at least one model."
+        return _("Oops, you need to add at least one model.")
 
     if not images or len(images) == 0:
-        return "No images found for analysis. Please contact support."
+        return _("No images found for analysis. Please contact support.")
 
     return None

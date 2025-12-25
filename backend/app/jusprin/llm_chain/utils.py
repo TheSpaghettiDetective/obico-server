@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+from django.utils.translation import gettext_lazy as _
 
 
 def get_brand_name():
@@ -55,20 +56,20 @@ def is_slicing_prerequisites_not_met(chat):
         str or None: An error message if prerequisites are not met, None otherwise
     """
     if ('slicing_profiles' not in chat or 'plates' not in chat):
-        return "Oops, something went wrong. Please contact support."
+        return _("Oops, something went wrong. Please contact support.")
 
     slicing_profiles = chat['slicing_profiles']
     plates = chat['plates']
 
     if ('filament_presets' not in slicing_profiles) or (len(slicing_profiles['filament_presets']) != 1):
-        return "Oops, you need to select at least one filament so that I can decide slicing parameters accordingly"
+        return _("Oops, you need to select at least one filament so that I can decide slicing parameters accordingly")
 
     if ('print_process_presets' not in slicing_profiles or len(slicing_profiles['print_process_presets']) == 0):
-        return "Oops, I can not find any print process presets. Please contact support."
+        return _("Oops, I can not find any print process presets. Please contact support.")
 
     total_model_objects = sum(len(plate.get('model_objects', []) or plate.get('modelObjects', [])) for plate in plates)  # TODO: Remove modelObjects once we have discounted the support for v0.3
     if total_model_objects == 0:
-        return "Oops, you need to add at least one model."
+        return _("Oops, you need to add at least one model.")
 
     extruder_ids = set()
     for plate in plates:
@@ -76,7 +77,7 @@ def is_slicing_prerequisites_not_met(chat):
             extruder_ids.add(model.get('extruderId'))
 
     if len(extruder_ids) != 1:
-        return "I currently do not know how to slice models with multiple filaments. Please manually slice your model. Also stay tuned for our product update."
+        return _("I currently do not know how to slice models with multiple filaments. Please manually slice your model. Also stay tuned for our product update.")
 
     return None
 
@@ -85,13 +86,13 @@ def get_new_lines_as_string(new_lines):
         string_messages = []
         for message in new_lines:
             if message.get('role') == 'user':
-                role = 'User'
+                role = _('User')
             elif message.get('role') == 'assistant':
-                role = 'Assistant'
+                role = _('Assistant')
             elif message.get('role') == 'system':
-                role = 'System'
+                role = _('System')
             else:
-                msg = f"Got unexpected message role: {message.get('role')}"
+                msg = _("Got unexpected message role: %(role)s") % {'role': message.get('role')}
                 raise ValueError(msg)
             string_messages.append(f"{role}: {message.get('content')}")
         return '\n'.join(string_messages)

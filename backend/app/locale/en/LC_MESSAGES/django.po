@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-12 21:59+0000\n"
+"POT-Creation-Date: 2025-12-25 16:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,9 +34,97 @@ msgstr "Important dates"
 msgid "Invalid email or password."
 msgstr "Invalid email or password."
 
-#: app/forms.py:105 app/views/mobile_views.py:52 app/views/web_views.py:64
+#: app/forms.py:105 app/views/mobile_views.py:51 app/views/web_views.py:64
 msgid "A user is already registered with this email address."
 msgstr "A user is already registered with this email address."
+
+#: app/jusprin/ai_credits.py:38
+msgid "Unlimited usage allowed"
+msgstr ""
+
+#: app/jusprin/ai_credits.py:47
+msgid "Monthly AI credit limit exceeded"
+msgstr ""
+
+#: app/jusprin/ai_credits.py:58
+msgid "Credit consumed successfully"
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:59
+msgid "Oops, something went wrong. Please contact support."
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:65
+msgid ""
+"Oops, you need to select at least one filament so that I can decide slicing "
+"parameters accordingly"
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:68
+msgid "Oops, I can not find any print process presets. Please contact support."
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:72
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:95
+msgid "Oops, you need to add at least one model."
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:80
+msgid ""
+"I currently do not know how to slice models with multiple filaments. Please "
+"manually slice your model. Also stay tuned for our product update."
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:89
+msgid "User"
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:91
+msgid "Assistant"
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:93
+msgid "System"
+msgstr ""
+
+#: app/jusprin/llm_chain/utils.py:95
+#, python-format
+msgid "Got unexpected message role: %(role)s"
+msgstr ""
+
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:90
+msgid "No plates are found in the project. Please contact support."
+msgstr ""
+
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:98
+msgid "No images found for analysis. Please contact support."
+msgstr ""
+
+#: app/jusprin/views.py:130
+msgid "Message is required"
+msgstr ""
+
+#: app/jusprin/views.py:135
+#, python-format
+msgid "JusPrin Support Request from %(email)s"
+msgstr ""
+
+#: app/jusprin/views.py:136
+#, python-format
+msgid ""
+"User: %(email)s\n"
+"\n"
+"Message:\n"
+"%(message)s"
+msgstr ""
+
+#: app/jusprin/views.py:148
+msgid "Support request sent successfully"
+msgstr ""
+
+#: app/jusprin/views.py:154
+msgid "Failed to send support request"
+msgstr ""
 
 #: app/models/syndicate_models.py:84
 msgid "email address"
@@ -203,6 +291,13 @@ msgstr "Email address"
 msgid "Password"
 msgstr "Password"
 
+#: app/templates/account/login.html:43
+#: app/templates/mobile/account/login.html:42
+#, fuzzy
+#| msgid "This email was previously signed up using either Google or Facebook."
+msgid "This email was previously signed up using Google."
+msgstr "This email was previously signed up using either Google or Facebook."
+
 #: app/templates/account/login.html:45
 #: app/templates/mobile/account/login.html:44
 msgid "Click here to reset your password"
@@ -259,9 +354,11 @@ msgstr ""
 
 #: app/templates/account/login.html:112
 #: app/templates/mobile/account/login.html:111
-msgid ""
-"Even if you previously signed up an account using Google or Facebook, you "
-"can still"
+#, fuzzy
+#| msgid ""
+#| "Even if you previously signed up an account using Google or Facebook, you "
+#| "can still"
+msgid "Even if you previously signed up an account using Google, you can still"
 msgstr ""
 "Even if you previously signed up an account using Google or Facebook, you "
 "can still"
@@ -319,62 +416,18 @@ msgstr "Or"
 
 #: app/templates/account/login.html:140
 #: app/templates/mobile/account/login.html:138
-msgid "Login with Facebook"
-msgstr "Login with Facebook"
-
-#: app/templates/account/login.html:141 app/templates/account/login.html:165
-#: app/templates/mobile/account/login.html:139
-#: app/templates/mobile/account/login.html:170
-#, fuzzy
-#| msgid "Login with Facebook"
-msgid "Continue with Facebook"
-msgstr "Login with Facebook"
-
-#: app/templates/account/login.html:146
-#: app/templates/mobile/account/login.html:144
 msgid "Login with Google"
 msgstr "Login with Google"
 
-#: app/templates/account/login.html:147 app/templates/account/signup.html:144
+#: app/templates/account/login.html:141 app/templates/account/signup.html:144
 #: app/templates/account/signup.html:145
-#: app/templates/mobile/account/login.html:145
+#: app/templates/mobile/account/login.html:139
 #: app/templates/mobile/account/signup.html:138
 #: app/templates/mobile/account/signup.html:139
 #, fuzzy
 #| msgid "Login with Google"
 msgid "Continue with Google"
 msgstr "Login with Google"
-
-#: app/templates/account/login.html:163
-#: app/templates/mobile/account/login.html:168
-msgid "Facebook Login Is Going Away Soon"
-msgstr "Facebook Login Is Going Away Soon"
-
-#: app/templates/account/login.html:164
-#: app/templates/mobile/account/login.html:169
-#, fuzzy
-#| msgid "Reset My Password"
-msgid "Reset Password"
-msgstr "Reset My Password"
-
-#: app/templates/account/login.html:166
-#: app/templates/mobile/account/login.html:171
-msgid ""
-"The Facebook developer program has become bogged down with so much "
-"bureaucracy that it's no longer practical for small, independent developers "
-"like me to keep supporting it. On top of that, the number of people using "
-"Facebook to log in has dropped sharply, making it hard to justify all the "
-"extra work."
-msgstr "The Facebook developer program has become bogged down with so much bureaucracy that it's no longer practical for small, independent developers like me to keep supporting it. On top of that, the number of people using Facebook to log in has dropped sharply, making it hard to justify all the extra work."
-
-#: app/templates/account/login.html:167
-#: app/templates/mobile/account/login.html:172
-#, python-format
-msgid ""
-"To keep your Obico account accessible, please switch to logging in with your "
-"email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use "
-"the same email address linked to your account."
-msgstr "To keep your Obico account accessible, please switch to logging in with your email. Just click the <b>\"%(reset_button_text)s\"</b> button below and use the same email address linked to your account."
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
 #: app/templates/account/logout.html:18
@@ -639,10 +692,6 @@ msgstr ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
 "mail address</a>."
 
-#: app/templates/mobile/account/login.html:42
-msgid "This email was previously signed up using either Google or Facebook."
-msgstr "This email was previously signed up using either Google or Facebook."
-
 #: app/templates/mobile/account/login.html:110
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
@@ -653,11 +702,11 @@ msgstr ""
 "you previously signed up using the web app, you can use the same to sign in "
 "here."
 
-#: app/templates/mobile/account/login.html:151
+#: app/templates/mobile/account/login.html:145
 msgid "Login with Apple"
 msgstr "Login with Apple"
 
-#: app/templates/mobile/account/login.html:152
+#: app/templates/mobile/account/login.html:146
 #: app/templates/mobile/account/signup.html:145
 #: app/templates/mobile/account/signup.html:146
 #, fuzzy
@@ -893,6 +942,45 @@ msgstr "on account notifications."
 #: app/templates/unsubscribe_email.html:26
 msgid "Change notification preferences"
 msgstr "Change notification preferences"
+
+#~ msgid "Login with Facebook"
+#~ msgstr "Login with Facebook"
+
+#, fuzzy
+#~| msgid "Login with Facebook"
+#~ msgid "Continue with Facebook"
+#~ msgstr "Login with Facebook"
+
+#~ msgid "Facebook Login Is Going Away Soon"
+#~ msgstr "Facebook Login Is Going Away Soon"
+
+#, fuzzy
+#~| msgid "Reset My Password"
+#~ msgid "Reset Password"
+#~ msgstr "Reset My Password"
+
+#~ msgid ""
+#~ "The Facebook developer program has become bogged down with so much "
+#~ "bureaucracy that it's no longer practical for small, independent "
+#~ "developers like me to keep supporting it. On top of that, the number of "
+#~ "people using Facebook to log in has dropped sharply, making it hard to "
+#~ "justify all the extra work."
+#~ msgstr ""
+#~ "The Facebook developer program has become bogged down with so much "
+#~ "bureaucracy that it's no longer practical for small, independent "
+#~ "developers like me to keep supporting it. On top of that, the number of "
+#~ "people using Facebook to log in has dropped sharply, making it hard to "
+#~ "justify all the extra work."
+
+#, python-format
+#~ msgid ""
+#~ "To keep your Obico account accessible, please switch to logging in with "
+#~ "your email. Just click the <b>\"%(reset_button_text)s\"</b> button below "
+#~ "and use the same email address linked to your account."
+#~ msgstr ""
+#~ "To keep your Obico account accessible, please switch to logging in with "
+#~ "your email. Just click the <b>\"%(reset_button_text)s\"</b> button below "
+#~ "and use the same email address linked to your account."
 
 #~ msgid "Continue with social media"
 #~ msgstr "Continue with social media"

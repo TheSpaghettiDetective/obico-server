@@ -2,6 +2,7 @@ from datetime import datetime, date
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from app.models import User
 from .models import JusPrinAICredit
 
@@ -34,7 +35,7 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
                 'success': True,
                 'used_credits': 0,
                 'monthly_limit': -1,  # -1 indicates unlimited
-                'message': 'Unlimited usage allowed'
+                'message': _('Unlimited usage allowed')
             }
 
         # Check if we would exceed the limit
@@ -43,7 +44,7 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
                 'success': False,
                 'used_credits': ai_credit.ai_credit_used_current_month,
                 'monthly_limit': monthly_limit,
-                'message': 'Monthly AI credit limit exceeded'
+                'message': _('Monthly AI credit limit exceeded')
             }
 
         # Consume the credit
@@ -54,7 +55,7 @@ def consume_credit_for_pipeline(user_id: int) -> dict:
             'success': True,
             'used_credits': ai_credit.ai_credit_used_current_month,
             'monthly_limit': monthly_limit,
-            'message': 'Credit consumed successfully'
+            'message': _('Credit consumed successfully')
         }
 
 

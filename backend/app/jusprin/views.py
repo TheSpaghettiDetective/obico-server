@@ -18,6 +18,7 @@ from django.shortcuts import render
 from enum import Enum
 import sentry_sdk
 from django.core.mail import EmailMessage
+from django.utils.translation import gettext_lazy as _
 
 from api.authentication import CsrfExemptSessionAuthentication
 from .serializers import JusPrinChatSerializer, JusPrinAICreditSerializer, JusPrinMeSerializer
@@ -126,13 +127,13 @@ class JusPrinContactSupportRequestViewSet(viewsets.ViewSet):
 
         if not message:
             return Response(
-                {'error': 'Message is required'},
+                {'error': _('Message is required')},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         # Send email to support
-        subject = f"JusPrin Support Request from {user.email}"
-        email_body = f"User: {user.email}\n\nMessage:\n{message}"
+        subject = _("JusPrin Support Request from %(email)s") % {'email': user.email}
+        email_body = _("User: %(email)s\n\nMessage:\n%(message)s") % {'email': user.email, 'message': message}
 
         try:
             email = EmailMessage(
@@ -144,13 +145,13 @@ class JusPrinContactSupportRequestViewSet(viewsets.ViewSet):
             email.send()
 
             return Response(
-                {'message': 'Support request sent successfully'},
+                {'message': _('Support request sent successfully')},
                 status=status.HTTP_200_OK
             )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             return Response(
-                {'error': 'Failed to send support request'},
+                {'error': _('Failed to send support request')},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 

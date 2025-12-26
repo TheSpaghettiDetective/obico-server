@@ -19,6 +19,19 @@ These credentials can be included either in the POST request body (JSON) or as q
 Use the [Elegoo-Obico User Access Token API](./elegoo-obico-user-access-token.md) to manage user credentials before using the plate analysis API.
 :::
 
+## Language Support {#language-support}
+
+API responses can be returned in different languages using the `lang` query parameter. See the [Elegoo-Obico Language Support](./elegoo-obico-language-support.md) documentation for details on supported languages and usage.
+
+**Example:**
+```bash
+POST /ent/partners/api/elegoo/plate_analysis/?lang=zh-CN
+```
+
+:::note
+The `language` body parameter (documented below) is deprecated. Please use the `lang` query parameter instead.
+:::
+
 ## Endpoint {#endpoint}
 
 - `https://elegoo-app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
@@ -34,17 +47,7 @@ This POST request should be sent as `application/json` format.
 
 - `elegoo_user_id`: The Elegoo user identifier. Required for authentication. Can also be passed as query parameter.
 - `access_token`: The access token for the user. Required for authentication. Can also be passed as query parameter.
-- `language`: The language for the response. Optional. Defaults to `"English"`. Supported languages:
-  - `"English"`
-  - `"Chinese"`
-  - `"Japanese"`
-  - `"Korean"`
-  - `"German"`
-  - `"French"`
-  - `"Spanish"`
-  - `"Portuguese"`
-  - `"Italian"`
-  - `"Russian"`
+- `language`: **Deprecated.** The language for the response. Optional. Defaults to `"English"`. Use the `lang` query parameter instead (see [Language Support](#language-support) section above).
 - `messages`: Array of chat messages. Optional. Used for context tracking.
 - `chat_id`: Session identifier for the chat. Optional. Used for context tracking.
 - `images`: Array of base64-encoded image strings. Required. Isometric images of the 3D model to analyze.
@@ -60,7 +63,6 @@ This POST request should be sent as `application/json` format.
 {
   "elegoo_user_id": "ELEGOO_USER_001",
   "access_token": "your_access_token_here",
-  "language": "English",
   "chat_id": "chat_session_123",
   "messages": [],
   "images": [
@@ -171,12 +173,11 @@ Insufficient Elegoo credits. The user does not have enough credits to perform th
 ## Usage Example {#usage-example}
 
 ```bash
-curl -X POST https://elegoo-app.obico.io/ent/partners/api/elegoo/plate_analysis/ \
+curl -X POST "https://elegoo-app.obico.io/ent/partners/api/elegoo/plate_analysis/?lang=zh-CN" \
   -H "Content-Type: application/json" \
   -d '{
     "elegoo_user_id": "ELEGOO_USER_001",
     "access_token": "your_access_token_here",
-    "language": "Chinese",
     "chat_id": "chat_session_123",
     "images": ["data:image/jpeg;base64,/9j/4AAQSkZJRg..."],
     "plates": [{

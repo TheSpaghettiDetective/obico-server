@@ -19,6 +19,15 @@ These credentials can be included either in the POST request body (JSON) or as q
 Use the [Elegoo-Obico User Access Token API](./elegoo-obico-user-access-token.md) to manage user credentials before using the chat messages API.
 :::
 
+## Language Support {#language-support}
+
+API responses can be returned in different languages using the `lang` query parameter. See the [Elegoo-Obico Language Support](./elegoo-obico-language-support.md) documentation for details on supported languages and usage.
+
+**Example:**
+```bash
+POST /ent/partners/api/elegoo/chats/messages/?lang=zh-CN
+```
+
 ## Endpoint {#endpoint}
 
 - `https://elegoo-app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.

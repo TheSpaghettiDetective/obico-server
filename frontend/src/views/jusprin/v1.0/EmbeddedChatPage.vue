@@ -806,7 +806,7 @@ export default {
           this.messages.push({
             role: 'assistant',
             content:
-              this.$t('I notice some of your models have overhangs. I can try to auto-orient them to minimize the need for supports.'),
+              this.$i18next.t('I notice some of your models have overhangs. I can try to auto-orient them to minimize the need for supports.'),
           })
         }
         const quickButtons = [this.cannedActions.autoOrient, this.cannedActions.enableSupport]

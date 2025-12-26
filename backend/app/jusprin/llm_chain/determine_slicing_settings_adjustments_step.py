@@ -538,6 +538,9 @@ def adjustments_system_prompt(print_process_preset_name, filament_params, print_
 
         Important:
         - For each parameter override, you MUST provide a concise explanation of why it was needed.
+
+        Language policy:
+        - Respond in the same language as the user’s most recent message.
     """)
 
 
@@ -635,6 +638,9 @@ def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation
         - Avoid referring to 'the user' and speak naturally.
         - Avoid revealing your internal logic.
         - Use less than 80 words.
+
+        Language policy:
+        - Respond in the same language as the user’s most recent message.
     """)
 
 

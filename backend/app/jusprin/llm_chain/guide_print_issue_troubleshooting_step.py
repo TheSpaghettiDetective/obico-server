@@ -61,6 +61,9 @@ def get_confirmation_message(chat, openai_client):
         2. Ask the user if the print in question was made with the current slicing settings.
 
         Keep your response brief and focused on these two points.
+
+        Language policy:
+        - Respond in the same language as the user’s most recent message.
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]
@@ -131,6 +134,9 @@ def guide_print_issue_troubleshooting_step(chat, openai_client):
         - Avoid referring to 'the user' and speak naturally.
         - Avoid revealing your internal logic.
         - If any slicing parameter adjustments are returned, assume the slicer has already applied them, and reflect this in your language.
+
+        Language policy:
+        - Respond in the same language as the user’s most recent message.
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]

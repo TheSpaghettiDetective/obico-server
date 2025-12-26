@@ -22,6 +22,9 @@ def construct_slicing_settings_prompt(filament_params, print_process_params):
         6. Explain what the parameter does if it would help the user understand
 
         Remember: The user wants factual information about the current settings, not recommendations for changes.
+
+        Language policy:
+        - Respond in the same language as the user’s most recent message.
     """)
 
 

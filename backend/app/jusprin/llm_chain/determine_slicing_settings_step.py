@@ -72,6 +72,9 @@ def determine_slicing_settings_step(chat, openai_client):
         **Important**:
         - Avoid referring to 'the user' and speak naturally.
         - Avoid revealing your internal logic.
+
+        Language policy:
+        - Respond in the same language as the user’s most recent message.
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]

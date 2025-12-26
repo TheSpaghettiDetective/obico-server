@@ -116,6 +116,9 @@ def summarize_chat_history(chat, openai_client):
         {new_lines}
 
         New summary:
+
+        Language policy:
+        - Respond in the same language as the user’s most recent message.
     """
 
     messages = [{'role': 'system', 'content': system_prompt}]
@@ -232,6 +235,9 @@ def query_intent_checking_step(chat, openai_client):
     - You are integrated into a slicer, not a general chatbot.
     - Use {brand_name}'s terminology and UI assumptions when explaining anything.
     - Any reference to OrcaSlicer features should be treated as existing within {brand_name}.
+
+    Language policy:
+    - Respond in the same language as the user’s most recent message.
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]

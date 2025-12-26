@@ -85,6 +85,8 @@ def get_tools():
 
 
 def summarize_chat_history(chat, openai_client):
+    from ..language_utils import get_response_language_rule
+
     chat_history = chat.get('messages', [])
     existing_summary = None # TODO: Implement continuation summary
 
@@ -94,6 +96,7 @@ def summarize_chat_history(chat, openai_client):
         new_lines.append(message)
 
     new_lines = get_new_lines_as_string(new_lines)
+    language_rule = get_response_language_rule(chat)
 
     system_prompt = f"""Progressively summarize the lines of conversation provided, adding onto the previous summary returning a new summary. Do not over-summarise.
 
@@ -117,8 +120,7 @@ def summarize_chat_history(chat, openai_client):
 
         New summary:
 
-        Language policy:
-        - Respond in the same language as the user’s most recent message.
+        {language_rule}
     """
 
     messages = [{'role': 'system', 'content': system_prompt}]
@@ -215,7 +217,10 @@ def query_intent_checking_step(chat, openai_client):
         chat_history = response['updated_chat_history']
         summarized_chat_history = response['summarized_chat_history']
 
+    from ..language_utils import get_response_language_rule
+
     brand_name = get_brand_name()
+    language_rule = get_response_language_rule(chat)
     system_prompt = dedent(f"""
     You are a knowledgeable AI assistant integrated into {brand_name}, a 3D printing slicer derived from OrcaSlicer.
     {brand_name} inherits all capabilities of OrcaSlicer and functions exactly the same, with additional improvements.
@@ -236,8 +241,7 @@ def query_intent_checking_step(chat, openai_client):
     - Use {brand_name}'s terminology and UI assumptions when explaining anything.
     - Any reference to OrcaSlicer features should be treated as existing within {brand_name}.
 
-    Language policy:
-    - Respond in the same language as the user’s most recent message.
+    {language_rule}
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]

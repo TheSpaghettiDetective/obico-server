@@ -4,7 +4,7 @@ from textwrap import dedent
 from .utils import is_slicing_prerequisites_not_met, combined_params, get_brand_name
 
 
-def construct_slicing_settings_prompt(filament_params, print_process_params):
+def construct_slicing_settings_prompt(filament_params, print_process_params, language_rule):
     return dedent(f"""
         You are a 3D printing expert assistant for {get_brand_name()}, a slicer derived from OrcaSlicer.
         Your task is to respond to user's query about the current slicing parameters.
@@ -23,8 +23,7 @@ def construct_slicing_settings_prompt(filament_params, print_process_params):
 
         Remember: The user wants factual information about the current settings, not recommendations for changes.
 
-        Language policy:
-        - Respond in the same language as the user’s most recent message.
+        {language_rule}
     """)
 
 
@@ -61,13 +60,17 @@ def retrieve_slicing_settings_step(chat, openai_client):
         print_process_presets[0] if print_process_presets else {}
     )
 
+    from ..language_utils import get_response_language_rule
+
     print_process_overrides = slicing_params.get('print_process_overrides', {})
     print_process_params = combined_params(selected_print_process_preset, print_process_overrides)
+    language_rule = get_response_language_rule(chat)
 
     # Construct the system prompt with all current parameters
     system_prompt = construct_slicing_settings_prompt(
         filament_params=filament_params,
-        print_process_params=print_process_params
+        print_process_params=print_process_params,
+        language_rule=language_rule
     )
 
     # Get chat history

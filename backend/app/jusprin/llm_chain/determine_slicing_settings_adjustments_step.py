@@ -522,7 +522,7 @@ def fix_boolean_param_value(value): # OrcaSlicer takes 1 or 0, not true or false
         return 1 if value else 0
     return value
 
-def adjustments_system_prompt(print_process_preset_name, filament_params, print_process_params):
+def adjustments_system_prompt(print_process_preset_name, filament_params, print_process_params, language_rule):
     return dedent(f"""
         You are a 3D printing expert assistant. Your role is to help users optimize
         their 3D printing parameters based on their specific needs and queries.
@@ -539,8 +539,7 @@ def adjustments_system_prompt(print_process_preset_name, filament_params, print_
         Important:
         - For each parameter override, you MUST provide a concise explanation of why it was needed.
 
-        Language policy:
-        - Respond in the same language as the user’s most recent message.
+        {language_rule}
     """)
 
 
@@ -569,12 +568,16 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
     else:
         prev_print_process_overrides = {}
 
+    from ..language_utils import get_response_language_rule
+
     print_process_params = combined_params(suggested_print_process_preset, prev_print_process_overrides)
+    language_rule = get_response_language_rule(chat)
 
     system_prompt = adjustments_system_prompt(
         print_process_preset_name=print_process_preset_name,
         filament_params=filament_params,
         print_process_params=print_process_params,
+        language_rule=language_rule,
     )
 
     chat_history = chat.get('messages', [])
@@ -625,6 +628,9 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
 
 
 def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation, adjustments_explanation, openai_client):
+    from ..language_utils import get_response_language_rule
+
+    language_rule = get_response_language_rule(chat)
     system_prompt = dedent(f"""
         You are a 3D printing expert assistant. Your role is to combine the explanations of the previous steps into a single, coherent paragraph.
 
@@ -639,8 +645,7 @@ def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation
         - Avoid revealing your internal logic.
         - Use less than 80 words.
 
-        Language policy:
-        - Respond in the same language as the user’s most recent message.
+        {language_rule}
     """)
 
 

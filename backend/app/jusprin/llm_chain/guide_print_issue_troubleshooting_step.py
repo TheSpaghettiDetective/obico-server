@@ -52,7 +52,10 @@ class PrintTroubleShootingResponse(BaseModel):
         return parse_json_string_fields(v)
 
 def get_confirmation_message(chat, openai_client):
+    from ..language_utils import get_response_language_rule
+
     chat_history = chat.get('messages', [])
+    language_rule = get_response_language_rule(chat)
 
     system_prompt = dedent(f"""
         You are an AI assistant helping to confirm a user's intent to troubleshoot a printing issue.
@@ -62,8 +65,7 @@ def get_confirmation_message(chat, openai_client):
 
         Keep your response brief and focused on these two points.
 
-        Language policy:
-        - Respond in the same language as the user’s most recent message.
+        {language_rule}
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]
@@ -105,8 +107,11 @@ def guide_print_issue_troubleshooting_step(chat, openai_client):
     prev_print_process_overrides = slicing_params.get('print_process_overrides', {})
     print_process_params = combined_params(suggested_print_process_preset, prev_print_process_overrides)
 
+    from ..language_utils import get_response_language_rule
+
     chat_history = chat.get('messages', [])
     print_process_preset_name = suggested_print_process_preset.get('name')
+    language_rule = get_response_language_rule(chat)
 
     system_prompt = dedent(f"""
         You are a AI assistant integrated into a 3D printing slicer.
@@ -135,8 +140,7 @@ def guide_print_issue_troubleshooting_step(chat, openai_client):
         - Avoid revealing your internal logic.
         - If any slicing parameter adjustments are returned, assume the slicer has already applied them, and reflect this in your language.
 
-        Language policy:
-        - Respond in the same language as the user’s most recent message.
+        {language_rule}
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]

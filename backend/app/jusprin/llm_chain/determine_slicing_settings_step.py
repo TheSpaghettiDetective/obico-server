@@ -45,11 +45,14 @@ def determine_slicing_settings_step(chat, openai_client):
             }
         }
 
+    from ..language_utils import get_response_language_rule
+
     chat_history = chat.get('messages', [])
     slicing_params = chat.get('slicing_profiles', {})
     filament_preset = slicing_params.get('filament_presets', [])[0] # We assume that only the selected filament preset is in the request. This may change in the future.
     process_presets = slicing_params.get('print_process_presets', [])
     process_names = [process["name"] for process in process_presets]
+    language_rule = get_response_language_rule(chat)
 
     system_prompt = dedent(f"""
         You are a knowledgeable AI assistant integrated into a 3D printing slicer.
@@ -73,8 +76,7 @@ def determine_slicing_settings_step(chat, openai_client):
         - Avoid referring to 'the user' and speak naturally.
         - Avoid revealing your internal logic.
 
-        Language policy:
-        - Respond in the same language as the user’s most recent message.
+        {language_rule}
     """)
 
     messages = [{'role': 'system', 'content': system_prompt}]

@@ -645,9 +645,9 @@ export default {
         const presets = await getAgentActionResponse('get_presets')
         this.messages.push({
           role: 'assistant',
-          content: `${this.$t("I have not set any slicing parameters for you. Do you want me to slice your model with these?")}\n${this.$t("- Filament:")} **${
+          content: `${this.$i18next.t("I have not set any slicing parameters for you. Do you want me to slice your model with these?")}\n${this.$i18next.t("- Filament:")} **${
             this.selectedPreset('filament', presets)?.name
-          }**\n${this.$t("- Process preset:")} **${this.selectedPreset('printProcess', presets)?.name}**`,
+          }**\n${this.$i18next.t("- Process preset:")} **${this.selectedPreset('printProcess', presets)?.name}**`,
         })
 
         this.pushQuickButtons([
@@ -877,7 +877,7 @@ export default {
       if (this.slicingProgress.errors && this.slicingProgress.errors.length > 0) {
         this.messages.push({
           role: 'assistant',
-          content: `${this.$t("My slicing algorithm lord just said:")}\n *"${this.slicingProgress.errors.join(
+          content: `${this.$i18next.t("My slicing algorithm lord just said:")}\n *"${this.slicingProgress.errors.join(
             '\n'
           )}"*`,
         })
@@ -1031,7 +1031,7 @@ export default {
       const lastMessage = this.messages[this.messages.length - 1]
       this.messages.push({
         role: 'user',
-        content: `${this.$t("Please set the slicing settings based on the suggested strategy:")}\n\n${lastMessage.suggested_printing_method}`,
+        content: `${this.$i18next.t("Please set the slicing settings based on the suggested strategy:")}\n\n${lastMessage.suggested_printing_method}`,
       })
       this.sendUserQuery()
     },
@@ -1053,7 +1053,7 @@ export default {
 
       const plateAnalysisMessage = this.messages.pop()
       this.clearQuickButtons()
-      this.userInput = `${this.$t("Please set the slicing settings based on the suggested strategy:")}\n\n${plateAnalysisMessage.suggested_printing_method}`
+      this.userInput = `${this.$i18next.t("Please set the slicing settings based on the suggested strategy:")}\n\n${plateAnalysisMessage.suggested_printing_method}`
     },
 
     handleChatScroll() {

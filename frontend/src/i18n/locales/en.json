@@ -625,6 +625,7 @@
   "Print a strong part.": "Print a strong part.",
   "My last print did not stick to the bed. Help me fix it.": "My last print did not stick to the bed. Help me fix it.",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "Select a {{presetType}}. If the {{presetType}} is not listed, use the \"Add {{presetType}}\" button to add it first.",
+  "You have switched to:": "You have switched to:",
   "Welcome To": "Welcome To",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Your 30-Day {localizedDom} Free Trial Has Started!",
   "Pro Plan": "Pro Plan",

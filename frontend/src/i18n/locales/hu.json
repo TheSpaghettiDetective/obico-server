@@ -625,6 +625,7 @@
   "Print a strong part.": "Nyomtasson ki egy erős alkatrészt.",
   "My last print did not stick to the bed. Help me fix it.": "Az utolsó nyomat nem ragadt az ágyhoz. Segíts megjavítani.",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "Válasszon egy {{presetType}} elemet. Ha a {{presetType}} nem szerepel a listában, akkor először a „{{presetType}} hozzáadása” gombbal adja hozzá.",
+  "You have switched to:": "Átváltottál erre:",
   "Welcome To": "Üdvözöljük",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Elkezdődött a 30 napos {localizedDom} ingyenes próbaidőszakod!",
   "Pro Plan": "Pro csomag",

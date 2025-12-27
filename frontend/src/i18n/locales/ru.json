@@ -625,6 +625,7 @@
   "Print a strong part.": "Распечатайте сильную часть.",
   "My last print did not stick to the bed. Help me fix it.": "Мой последний отпечаток не прилип к кровати. Помогите мне это исправить.",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "Выберите {{presetType}}. Если {{presetType}} отсутствует в списке, используйте кнопку «Добавить {{presetType}}», чтобы сначала добавить его.",
+  "You have switched to:": "Вы переключились на:",
   "Welcome To": "Добро пожаловать в",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Ваша 30-дневная {localizedDom} бесплатная пробная версия началась!",
   "Pro Plan": "Профессиональный план",

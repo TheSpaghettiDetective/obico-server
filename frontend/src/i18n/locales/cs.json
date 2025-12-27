@@ -625,6 +625,7 @@
   "Print a strong part.": "Vytiskněte silnou součást.",
   "My last print did not stick to the bed. Help me fix it.": "Můj poslední otisk se nepřilepil na postel. Pomozte mi to opravit.",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "Vyberte {{presetType}}. Pokud {{presetType}} není v seznamu, přidejte jej nejprve tlačítkem „Přidat {{presetType}}“.",
+  "You have switched to:": "Přepnul jste na:",
   "Welcome To": "Vítejte",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Vaše 30denní bezplatná zkušební verze {localizedDom} začala!",
   "Pro Plan": "Profesionální plán",

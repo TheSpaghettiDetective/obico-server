@@ -625,6 +625,7 @@
   "Print a strong part.": "丈夫な部品を印刷します。",
   "My last print did not stick to the bed. Help me fix it.": "前回の印刷物がベッドに貼り付かなかったのですが、直してもらえませんか？",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "{{presetType}}を選択します。{{presetType}}がリストにない場合は、「{{presetType}}を追加」ボタンを使用して最初に追加します。",
+  "You have switched to:": "切り替えました：",
   "Welcome To": "ようこそ",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "30 日間の {localizedDom} 無料トライアルが開始されました。",
   "Pro Plan": "プロプラン",

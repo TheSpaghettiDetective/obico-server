@@ -625,6 +625,7 @@
   "Print a strong part.": "Skriv ut en stark del.",
   "My last print did not stick to the bed. Help me fix it.": "Mitt senaste tryck fastnade inte på sängen. Hjälp mig att fixa det.",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "Välj en {{presetType}}. Om {{presetType}} inte finns med i listan, använd knappen \"Lägg till {{presetType}}\" för att lägga till den först.",
+  "You have switched to:": "Du har bytt till:",
   "Welcome To": "Välkommen till",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Din 30-dagars {localizedDom} gratis provperiod har börjat!",
   "Pro Plan": "Pro-plan",

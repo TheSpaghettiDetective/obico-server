@@ -625,6 +625,7 @@
   "Print a strong part.": "打印一个强度高的部件。",
   "My last print did not stick to the bed. Help me fix it.": "我上一次打印未粘附在打印床上。帮我解决一下。",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "选择一个 {{presetType}}。如果未列出该 {{presetType}}，请先使用 \"添加 {{presetType}}\" 按钮添加。",
+  "You have switched to:": "您已切换到：",
   "Welcome To": "欢迎来到",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "您的30天 {localizedDom} 免费试用已开始！",
   "Pro Plan": "专业计划",

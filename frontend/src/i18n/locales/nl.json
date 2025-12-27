@@ -625,6 +625,7 @@
   "Print a strong part.": "Print een sterk onderdeel.",
   "My last print did not stick to the bed. Help me fix it.": "Mijn laatste afdruk bleef niet aan het bed plakken. Help me dit te verhelpen.",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "Selecteer een {{presetType}}. Als de {{presetType}} niet in de lijst staat, gebruik dan de knop \"Voeg {{presetType}} toe\" om deze eerst toe te voegen.",
+  "You have switched to:": "Je bent overgeschakeld naar:",
   "Welcome To": "Welkom bij",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Uw gratis proefperiode van 30 dagen voor {localizedDom} is begonnen!",
   "Pro Plan": "Pro-plan",

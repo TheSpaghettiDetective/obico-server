@@ -625,6 +625,7 @@
   "Print a strong part.": "Imprimez une pièce solide.",
   "My last print did not stick to the bed. Help me fix it.": "Ma dernière impression n'a pas collé au plateau. Aidez-moi à la réparer.",
   "Select a {presetType}. If the {presetType} is not listed, use the \"Add {presetType}\" button to add it first.": "Sélectionnez un {{presetType}}. Si {{presetType}} n'est pas répertorié, utilisez le bouton «\u00a0Ajouter {{presetType}}\u00a0» pour l'ajouter en premier.",
+  "You have switched to:": "Vous avez changé pour :",
   "Welcome To": "Bienvenue à",
   "Your 30-Day {localizedDom} Free Trial Has Started!": "Votre essai gratuit de 30 jours de {localizedDom} a commencé\u00a0!",
   "Pro Plan": "Plan Pro",

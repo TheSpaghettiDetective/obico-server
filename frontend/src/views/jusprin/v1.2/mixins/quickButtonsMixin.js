@@ -241,7 +241,7 @@ export default {
             type: presetType,
             name: preset.name,
           })
-          await this.refreshSelectedPresets()
+          await this.refreshSelectedPresets(false)
           this.populateQuickButtons()
         },
       }))

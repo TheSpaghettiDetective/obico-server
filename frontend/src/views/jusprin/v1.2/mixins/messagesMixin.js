@@ -33,9 +33,9 @@ export default {
             'I notice your model uses multiple plates or filaments.\n\nJusPrin is still in beta and does not support multiple plates or filaments yet.\n\nPlease manually slice your model. Also stay tuned for our product update.'
           ),
         },
-        currentPresetSelections: (printerName, filamentName) => ({
+        currentPresetSelections: (printerName, filamentName, isFirstTime = false) => ({
           role: 'assistant',
-          content: `${this.$i18next.t('You are currently using:')}\n- ${this.$i18next.t('Printer:')} **${printerName}**\n- ${this.$i18next.t('Filament:')} **${filamentName}**`,
+          content: `${isFirstTime ? this.$i18next.t('You are currently using:') : this.$i18next.t('You have switched to:')}\n- ${this.$i18next.t('Printer:')} **${printerName}**\n- ${this.$i18next.t('Filament:')} **${filamentName}**`,
         }),
         currentModelObjects: (modelObjectCount) => ({
           role: 'assistant',

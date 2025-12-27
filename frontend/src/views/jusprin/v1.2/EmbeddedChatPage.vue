@@ -371,7 +371,7 @@ export default {
     },
     async callLongRunningAgentActionThenRefreshPresets(action, payload = null) {
       await getAgentActionResponse(action, payload, 1000 * 60 * 60 * 24) // Make timeout super long as it's hard to know how long it takes user to finish things like adding a printer
-      this.refreshSelectedPresets()
+      this.refreshSelectedPresets(false)
       this.populateQuickButtons()
     },
     processAgentEvent(event) {
@@ -703,7 +703,7 @@ export default {
       // Reset messages and quick actions
       this.messages = [this.cannedMessages.greeting]
       setTimeout(async () => {
-        await this.refreshSelectedPresets()
+        await this.refreshSelectedPresets(true)
         await this.refreshModelObjects()
         this.populateQuickButtons()
       }, 10)
@@ -718,12 +718,13 @@ export default {
         this.messages.push(this.cannedMessages.noModelObjects)
       }
     },
-    async refreshSelectedPresets() {
+    async refreshSelectedPresets(isFirstTime = false) {
       const presets = await getAgentActionResponse('get_presets')
       this.messages.push(
         this.cannedMessages.currentPresetSelections(
           this.selectedPreset('printer', presets)?.name,
-          this.selectedPreset('filament', presets)?.name
+          this.selectedPreset('filament', presets)?.name,
+          isFirstTime
         )
       )
     },

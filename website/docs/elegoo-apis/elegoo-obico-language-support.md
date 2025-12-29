@@ -146,3 +146,4 @@ Error messages and validation messages are also translated based on the `lang` p
 - The language setting is **per-request** and does not persist across requests
 - Language support is **limited to JusPrin API endpoints** (`/jusprin/api/...`)
 
+

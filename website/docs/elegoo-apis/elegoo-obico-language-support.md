@@ -9,13 +9,14 @@ The Elegoo-Obico APIs support internationalization (i18n) through the `lang` que
 
 ### Usage
 
-The `lang` query parameter can be added to any JusPrin API request to specify the desired response language. The parameter accepts IETF language tags (e.g., `zh-CN`, `pt-BR`, `en-US`).
+The `lang` parameter can be added to any Elegoo partner API request to specify the desired response language. The parameter accepts IETF language tags (e.g., `zh-CN`, `pt-BR`, `en-US`).
 
 ### Format
 
 - **Parameter name**: `lang`
 - **Format**: IETF language tags (case-insensitive)
 - **Examples**: `zh-CN`, `zh-TW`, `pt-BR`, `en-US`, `es`, `de`, `fr`, `it`, `ru`
+- **Where to pass**: Query parameter only (`?lang=zh-CN`)
 
 The parameter accepts both hyphenated (`zh-CN`) and underscore-separated (`zh_CN`) formats. Both will be normalized internally.
 
@@ -32,16 +33,16 @@ The parameter accepts both hyphenated (`zh-CN`) and underscore-separated (`zh_CN
 #### With language parameter
 
 ```bash
-POST /jusprin/api/chats/messages/?lang=zh-CN
+POST /ent/partners/api/elegoo/chats/messages/?lang=zh-CN
 ```
 
 ```bash
-GET /jusprin/api/me/?lang=pt-BR
+POST /ent/partners/api/elegoo/plate_analysis/?lang=pt-BR
 ```
 
 #### Without language parameter
 
-If the `lang` parameter is not provided, the API will use the default language (English) or fall back to the `Accept-Language` header if available.
+If the `lang` parameter is not provided, the API will use the default language (English).
 
 ## Supported Languages {#supported-languages}
 
@@ -77,22 +78,21 @@ If an unsupported language code is provided, the API will fall back to the defau
 
 ## API Endpoints {#api-endpoints}
 
-The `lang` parameter works with all JusPrin API endpoints under `/jusprin/api/`:
+The `lang` parameter works with the following Elegoo partner API endpoints:
 
-- `/jusprin/api/me/` - User information
-- `/jusprin/api/chats/` - Chat session management
-- `/jusprin/api/chats/messages/` - Chat messages
-- `/jusprin/api/plate_analysis/` - Plate analysis
-- `/jusprin/api/contact_support/` - Support requests
+- `/ent/partners/api/elegoo/chats/` - Chat session management
+- `/ent/partners/api/elegoo/chats/messages/` - Chat messages
+- `/ent/partners/api/elegoo/plate_analysis/` - Plate analysis
 
 ## Example: Complete Request {#example-complete-request}
 
 ```bash
-POST /jusprin/api/chats/messages/?lang=zh-CN
+POST /ent/partners/api/elegoo/chats/messages/?lang=zh-CN
 Content-Type: application/json
-Authorization: Bearer your_access_token_here
 
 {
+  "elegoo_user_id": "ELEGOO_USER_001",
+  "access_token": "your_access_token_here",
   "messages": [
     {
       "role": "user",
@@ -144,6 +144,6 @@ Error messages and validation messages are also translated based on the `lang` p
 - The language parameter only affects **user-facing messages** in API responses
 - **Technical data** (IDs, timestamps, configuration values) are not translated
 - The language setting is **per-request** and does not persist across requests
-- Language support is **limited to JusPrin API endpoints** (`/jusprin/api/...`)
+- Language support works with **Elegoo partner API endpoints** (`/ent/partners/api/elegoo/...`)
 
 

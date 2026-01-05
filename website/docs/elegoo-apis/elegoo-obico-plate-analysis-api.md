@@ -36,6 +36,8 @@ The `language` body parameter (documented below) is deprecated. Please use the `
 
 - `https://elegoo-app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
 - `https://elegoo-app-stg.obico.io/`. Staging endpoint. Please don't use unless instructed by the Obico team.
+- `https://elegoo-cn-app.elegoo.com.cn`. Production endpoint within China.
+- `https://elegoo-cn-app-stg.elegoo.com.cn`. Staging endpoint within China.
 
 ## POST `/ent/partners/api/elegoo/plate_analysis/` {#post-entpartnersapielegooplate-analysis}
 

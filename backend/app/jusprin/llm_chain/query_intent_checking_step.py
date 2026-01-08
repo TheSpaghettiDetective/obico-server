@@ -73,13 +73,6 @@ def get_tools():
                 "without expressing a desire to change them."
             ),
             "parameters": {}
-        },
-        {
-            "name": "guide_print_issue_troubleshooting",
-            "description": (
-                "Guide the user through troubleshooting a printing issue. Use this when the user's request is to seek help in troubleshooting a printing issue."
-            ),
-            "parameters": {}
         }
     ]
 
@@ -229,7 +222,6 @@ def query_intent_checking_step(chat, openai_client):
 
     Chat History Summary: {summarized_chat_history}
 
-    - If the user's request is to seek help in troubleshooting a printing issue, you MUST call the 'troubleshoot_print_issue' tool.
     - If the user's request involves adjusting or optimizing slicing parameters (e.g., speed, wall thickness, quality, or any other aspect of the slicing process), you MUST call the 'determine_slicing_settings' tool.
     - For queries about specific actions (e.g., slicing a model or printing), use the appropriate tool if their intent is clear.
     - If the query is unrelated to 3D printing, politely notify the user and ask them to try again with a relevant query.

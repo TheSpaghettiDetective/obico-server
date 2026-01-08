@@ -40,8 +40,12 @@ def combined_params(prev_params, overrides):
     Returns:
         dict: The combined parameters
     """
+    if prev_params is None:
+        return copy.deepcopy(overrides) if overrides else {}
+
     params = copy.deepcopy(prev_params)
-    params.update(overrides)
+    if overrides:
+        params.update(overrides)
     return params
 
 

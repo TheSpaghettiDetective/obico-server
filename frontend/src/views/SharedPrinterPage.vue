@@ -97,7 +97,6 @@ export default {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
           this.loading = false
-          console.log(this.printer?.pic?.img_url)
           if ((this.printer?.settings?.webcams || []).length > 0) {
             const webcamsDeepCopy = JSON.parse(JSON.stringify(this.printer?.settings?.webcams)) // Probably a good idea to deep copy as we will change the objects and keep them around
             for (const webcam of webcamsDeepCopy) {

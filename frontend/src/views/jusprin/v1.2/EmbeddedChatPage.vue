@@ -903,24 +903,20 @@ export default {
         chat_id: currentChatId,
       }
 
-      try {
-        const response = await this.withCreditCheck(async () => {
-          return api.post(
-            urls.jusprinPlateAnalysisProcess(),
-            this.oauthAccessToken,
-            payload
-          )
-        })
+      const response = await this.withCreditCheck(async () => {
+        return api.post(
+          urls.jusprinPlateAnalysisProcess(),
+          this.oauthAccessToken,
+          payload
+        )
+      })
 
-                // Handle credit response structure - if it's a credit message, restructure it for processAnalysisResponse
-        if (response.data && response.data.message && response.data.message.role === 'assistant') {
-          return { message: response.data.message }
-        }
-
-        return response.data
-      } catch (error) {
-        console.error('Error calling plate analysis:', error)
+      // Handle credit response structure - if it's a credit message, restructure it for processAnalysisResponse
+      if (response.data && response.data.message && response.data.message.role === 'assistant') {
+        return { message: response.data.message }
       }
+
+      return response.data
     },
 
     async renderPlateForAnalysis() {
@@ -976,8 +972,15 @@ export default {
       this.thinking = true
       this.clearQuickButtons()
 
-      const analysisResponse = await this.callPlateAnalysis()
-      await this.processAnalysisResponse(analysisResponse)
+      try {
+        const analysisResponse = await this.callPlateAnalysis()
+        await this.processAnalysisResponse(analysisResponse)
+      } catch (error) {
+        window.Sentry?.captureException(error)
+        this.thinking = false
+        this.messages.push(this.cannedMessages.generalError)
+        this.populateQuickButtonsOnError()
+      }
     },
 
     async processAnalysisResponse(response) {

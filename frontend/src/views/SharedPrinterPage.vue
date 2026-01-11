@@ -10,11 +10,20 @@
             <div>{{ printer.name }}</div>
           </div>
 
-        <b-card-text v-if="webcams.length" class="px-0 py-0 content d-inline-block" style="width: 100%;">
+        <b-card-text v-if="webcams.length || printer?.pic?.img_url" class="px-0 py-0 content d-inline-block" style="width: 100%;">
             <b-row>
                 <b-col class="pb-0" style="position: relative">
                   <b-container fluid class="p-0">
                     <b-row no-gutters>
+                      <b-col v-if="webcams.length === 0 && printer?.pic?.img_url" :key="printer?.pic?.img_url" :cols="12">
+                        <div class="d-flex justify-content-center webcamBackground">
+                          <streaming-box
+                            :printer="printer"
+                            :autoplay="true"
+                            :stickyStreamingSrc="'IMAGE'"
+                          />
+                        </div>
+                      </b-col>
                       <b-col v-for="(webcam, index) in webcams" :key="index" :cols="webcams.length > 1 ? 6 : 12">
                         <div class="d-flex justify-content-center webcamBackground">
                           <streaming-box
@@ -88,7 +97,7 @@ export default {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
           this.loading = false
-
+          console.log(this.printer?.pic?.img_url)
           if ((this.printer?.settings?.webcams || []).length > 0) {
             const webcamsDeepCopy = JSON.parse(JSON.stringify(this.printer?.settings?.webcams)) // Probably a good idea to deep copy as we will change the objects and keep them around
             for (const webcam of webcamsDeepCopy) {

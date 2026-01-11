@@ -131,11 +131,20 @@
               </div>
             </div>
           </div>
-        <b-card-text v-if="webcams.length" class="px-0 py-0 content d-inline-block" style="width: 100%;">
+        <b-card-text v-if="webcams.length || printer?.pic?.img_url" class="px-0 py-0 content d-inline-block" style="width: 100%;">
             <b-row>
                 <b-col class="pb-0" style="position: relative">
                   <b-container fluid class="p-0">
                     <b-row no-gutters style="flex-direction: column; align-items: center;">
+                      <b-col v-if="webcams.length === 0 && printer?.pic?.img_url" :key="printer?.pic?.img_url" :cols="12">
+                        <div class="d-flex justify-content-center webcamBackground">
+                          <streaming-box
+                            :printer="printer"
+                            :autoplay="true"
+                            :stickyStreamingSrc="'IMAGE'"
+                          />
+                        </div>
+                      </b-col>
                       <b-col v-for="(webcam, index) in webcams" :key="index" v-show="isWebcamSelected(webcam)">
                         <div class="d-flex justify-content-center webcamBackground">
                           <streaming-box

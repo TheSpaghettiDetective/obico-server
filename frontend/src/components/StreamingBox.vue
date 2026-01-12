@@ -53,7 +53,9 @@
       class="centered-element"
       label="Buffering..."
     ></b-spinner>
-
+    <div v-if="taggedSrc && !showMJpeg && !showVideo" class="streaming-info overlay-info small">
+      {{$t("Real-time stream unavailable, showing last captured image")}}
+    </div>
     <div v-if="isVideoAvailable">
       <!-- show countdown and bitrate while streaming -->
       <div
@@ -243,7 +245,7 @@ export default {
       }
     },
     taggedSrc() {
-      if (this.webcam?.is_primary_camera) {
+      if (!this.webcam || this.webcam?.is_primary_camera) {
         return  get(this.printer, 'pic.img_url', null)
       }
       return null
@@ -472,7 +474,11 @@ export default {
         let transforms = ''
         if (flip_horizontal) transforms += ' scaleX(-1)'
         if (flip_vertical) transforms += ' scaleY(-1)'
-        if (rotation === 180) transforms += ' rotate(180deg)'
+        
+        // Apply rotation for all degrees, not just 180
+        if (rotation && rotation !== 0) {
+            transforms += ` rotate(${rotation}deg)`
+        }
 
         // return transform when exist
         if (transforms.trimStart().length) return transforms.trimStart()

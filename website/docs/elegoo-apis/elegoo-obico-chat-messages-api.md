@@ -180,6 +180,12 @@ The response contains a `message` object with the assistant's response:
         "enable_support": 0
       }
     }
+  },
+  "credit_resp": {
+    "code": 0,
+    "data": null,
+    "msg": "",
+    "traceId": "00000000000000000000000000000000"
   }
 }
 ```
@@ -199,6 +205,11 @@ The response contains a `message` object with the assistant's response:
     - `use_print_process_preset`: String. The name of the recommended print process preset to use.
     - `filament_overrides`: Object. Filament parameter overrides to apply on top of the preset. Values are arrays for filament parameters (e.g., `{"temperature": [215]}`).
     - `print_process_overrides`: Object. Print process parameter overrides to apply on top of the preset (e.g., `{"layer_height": 0.2}`).
+- `credit_resp`: Object or null. The response from the Elegoo credits API. Contains the result of the credit deduction operation.
+  - `code`: Integer. `0` indicates success.
+  - `data`: Object or null. Additional data from the credits API.
+  - `msg`: String. Message from the credits API.
+  - `traceId`: String. Trace identifier for debugging.
 
 ### Agent Actions {#agent-actions}
 
@@ -278,19 +289,30 @@ or
 
 #### Status code: `402` {#status-code-402}
 
-Insufficient Elegoo credits. The user does not have enough credits to perform the requested operation.
+Insufficient Elegoo credits or other credit API errors. The user does not have enough credits to perform the requested operation, or there was an error calling the Elegoo credits API.
 
 #### Body {#body-3}
 
 ```json
 {
   "code": 402,
-  "error": "Elegoo API returned: {'code': 402, 'msg': 'Insufficient credits'}"
+  "error": "Error in calling Elegoo credits API",
+  "credit_resp": {
+    "code": 10012,
+    "data": null,
+    "msg": "user not exist",
+    "traceId": "00000000000000000000000000000000"
+  }
 }
 ```
 
 - `code`: Integer. Always `402`.
-- `error`: String. Detailed error message from the Elegoo API indicating the reason for insufficient credits.
+- `error`: String. Generic error message indicating a credit API error.
+- `credit_resp`: Object or null. The response from the Elegoo credits API containing detailed error information. Will be `null` if the API request failed due to network errors.
+  - `code`: Integer. Error code from the credits API (e.g., `10012` for user not found, `402` for insufficient credits).
+  - `data`: Object or null. Additional data from the credits API.
+  - `msg`: String. Detailed error message from the credits API.
+  - `traceId`: String. Trace identifier for debugging.
 
 ## Workflows {#workflows}
 

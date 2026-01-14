@@ -5,13 +5,20 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
-git checkout pre-release && git merge master
+git checkout pre-release
+git merge master
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-cd frontend && nvm use && yarn && yarn build && cd ..
+cd frontend
+nvm use
+yarn
+yarn build
+cd ..
 
-git add frontend/builds && git commit -m "Check in built bundles"
+git add frontend/builds
+git commit -m "Check in built bundles"
 
-git push && git checkout master
+git push
+git checkout master

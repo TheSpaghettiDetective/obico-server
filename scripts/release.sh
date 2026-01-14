@@ -13,8 +13,8 @@ export NVM_DIR="$HOME/.nvm"
 
 cd frontend
 nvm use
-yarn
-yarn build
+npm install
+npm run build
 cd ..
 
 git add frontend/builds

@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% block navbar %}
-  {% if not page_context.app_platform %}
+  {% if not page_context.app_platform and page_context.syndicate.name != 'jusprin' %}
     {% with view_name=request.resolver_match.view_name %}
     <nav class="navbar navbar-expand-xl bg-dark static-top" id="dynamic-navbar">
       <div class="container">

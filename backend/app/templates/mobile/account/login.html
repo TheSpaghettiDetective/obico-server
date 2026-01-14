@@ -1,5 +1,6 @@
 {% extends "account/base.html" %}
 
+{% load static %}
 {% load i18n %}
 {% load widget_tweaks %}
 {% load account socialaccount %}
@@ -38,7 +39,7 @@
             {# user signed up using social accounts might not have password #}
             {% if form.no_password_yet %}
             <span class="text-danger">
-              {% trans "This email was previously signed up using either Google or Facebook." %}
+              {% trans "This email was previously signed up using Google." %}
             </span>
             <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Click here to reset your password" %}</a>.
             {% else %}
@@ -107,7 +108,7 @@
                 <div class="modal-body text-left">
                   <ul>
                     <li>{% trans "Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the web app, you can use the same to sign in here." %}</li>
-                    <li>{% trans "Even if you previously signed up an account using Google or Facebook, you can still" %} <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> {% trans "using the same email address." %}</li>
+                    <li>{% trans "Even if you previously signed up an account using Google, you can still" %} <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> {% trans "using the same email address." %}</li>
                     <li class="text-warning">{% trans "If you can't sign in the mobile app, re-install the mobile app and try it again." %}</li>
                     <li><a class="link" href="mailto:support@obico.io">{% trans "Contact us" %}</a> {% trans "if you have tried everything else." %}</li>
                   </ul>
@@ -131,29 +132,20 @@
               <span class="text-muted">{% trans "Or" %}</span>
             </div>
 
-            <p class="text-center my-2">{% trans "Continue with social media" %}</p>
-            <div class="social-login">
-              {% for provider in socialaccount_providers %}
-                {% if provider.id == "facebook" %}
-                <a href="{% provider_login_url "facebook" method="oauth2" %}" class="social-btn facebook-btn"
-                  role="button" aria-label="{% trans 'Login with Facebook' %}">
-                  <i class="fab fa-facebook-f"></i>
-                </a>
-                {% endif %}
-                {% if provider.id == "google" %}
-                <a href="{% provider_login_url "google" method="oauth2" %}" class="social-btn google-btn"
-                  role="button" aria-label="{% trans 'Login with Google' %}">
-                  <i class="fab fa-google"></i>
-                </a>
-                {% endif %}
-              {% endfor %}
-              {% if page_context.app_platform == 'ios' and page_context.syndicate.name == "base" %}
-              <a href="{% provider_login_url "apple" method="oauth2" %}" class="social-btn apple-btn"
-                role="button" aria-label="{% trans 'Login with Apple' %}">
-                <i class="fab fa-apple fa-lg"></i>
+            {% for provider in socialaccount_providers %}
+              {% if provider.id == "google" %}
+              <a href="{% provider_login_url "google" method="oauth2" %}" class="btn btn-block google-btn text-white"
+                role="button" aria-label="{% trans 'Login with Google' %}">
+                <i class="fab fa-google mr-2"></i>{% trans "Continue with Google" %}
               </a>
               {% endif %}
-            </div>
+            {% endfor %}
+            {% if page_context.app_platform == 'ios' and page_context.syndicate.name == "base" %}
+            <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block apple-btn text-white"
+              role="button" aria-label="{% trans 'Login with Apple' %}">
+              <i class="fab fa-apple mr-2"></i>{% trans "Continue with Apple" %}
+            </a>
+            {% endif %}
           </div>
           {% endif %}
 

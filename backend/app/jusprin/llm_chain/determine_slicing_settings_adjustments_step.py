@@ -1,10 +1,12 @@
 import instructor
-from pydantic import BaseModel, Field
+import os
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Union, Literal
 import sentry_sdk
 import copy
+import json
 from textwrap import dedent
-from .utils import combined_params
+from .utils import combined_params, parse_json_string_fields
 
 class Percentage(str):
     """Custom Pydantic type that only allows percentage strings (e.g., '50%')."""
@@ -400,6 +402,16 @@ class SlicingResponse(BaseModel):
         description="A list of explanations for each parameter override"
     )
 
+    @field_validator(
+        "filament_param_override",
+        "print_process_param_override",
+        "per_override_explanations",
+        mode="before",
+    )
+    @staticmethod
+    def _parse_json_string_fields(v):
+        return parse_json_string_fields(v)
+
 
 def fix_filament_param_override(filament_param_override):
     if filament_param_override is None:
@@ -510,7 +522,7 @@ def fix_boolean_param_value(value): # OrcaSlicer takes 1 or 0, not true or false
         return 1 if value else 0
     return value
 
-def adjustments_system_prompt(print_process_preset_name, filament_params, print_process_params):
+def adjustments_system_prompt(print_process_preset_name, filament_params, print_process_params, language_rule):
     return dedent(f"""
         You are a 3D printing expert assistant. Your role is to help users optimize
         their 3D printing parameters based on their specific needs and queries.
@@ -526,6 +538,8 @@ def adjustments_system_prompt(print_process_preset_name, filament_params, print_
 
         Important:
         - For each parameter override, you MUST provide a concise explanation of why it was needed.
+
+        {language_rule}
     """)
 
 
@@ -554,12 +568,16 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
     else:
         prev_print_process_overrides = {}
 
+    from ..language_utils import get_response_language_rule
+
     print_process_params = combined_params(suggested_print_process_preset, prev_print_process_overrides)
+    language_rule = get_response_language_rule(chat)
 
     system_prompt = adjustments_system_prompt(
         print_process_preset_name=print_process_preset_name,
         filament_params=filament_params,
         print_process_params=print_process_params,
+        language_rule=language_rule,
     )
 
     chat_history = chat.get('messages', [])
@@ -567,7 +585,7 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
     messages.extend(chat_history)
 
     response = instructor_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         response_model=SlicingResponse
     )
@@ -610,6 +628,9 @@ def determine_slicing_settings_adjustments_step(chat, print_process_preset_name,
 
 
 def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation, adjustments_explanation, openai_client):
+    from ..language_utils import get_response_language_rule
+
+    language_rule = get_response_language_rule(chat)
     system_prompt = dedent(f"""
         You are a 3D printing expert assistant. Your role is to combine the explanations of the previous steps into a single, coherent paragraph.
 
@@ -623,6 +644,8 @@ def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation
         - Avoid referring to 'the user' and speak naturally.
         - Avoid revealing your internal logic.
         - Use less than 80 words.
+
+        {language_rule}
     """)
 
 
@@ -632,7 +655,7 @@ def combine_explanations(chat, prev_preset_name, preset_name, preset_explanation
     messages.extend(chat_history)
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('LLM_MODEL_NAME'),
         messages=messages,
         temperature=0.0,
     )

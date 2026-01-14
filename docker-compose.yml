@@ -1,5 +1,3 @@
-version: '2.4'
-
 x-web-defaults: &web-defaults
   restart: unless-stopped
   build:
@@ -41,7 +39,14 @@ x-web-defaults: &web-defaults
     DJANGO_SECRET_KEY: '${DJANGO_SECRET_KEY-}'
     SYNDICATE: '${SYNDICATE-}'
     VERSION:
-    OPENAI_API_KEY: '${OPENAI_API_KEY-}'
+    LLM_API_KEY: '${LLM_API_KEY-}'
+    LLM_BASE_URL: '${LLM_BASE_URL-https://api.openai.com/v1}'
+    LLM_MODEL_NAME: '${LLM_MODEL_NAME-gpt-4o}'
+    VLM_API_KEY: '${VLM_API_KEY-}'
+    VLM_BASE_URL: '${VLM_BASE_URL-https://api.openai.com/v1}'
+    VLM_MODEL_NAME: '${VLM_MODEL_NAME-gpt-4o}'
+    JUSPRIN_BRAND_NAME: '${JUSPRIN_BRAND_NAME-JusPrin}'
+
 
 services:
   ml_api:

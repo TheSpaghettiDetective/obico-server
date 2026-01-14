@@ -15,12 +15,12 @@ import TabItem from '@theme/TabItem';
 :::tip
 This guide is for users who installed Klipper themselves. If you have a printer that came with Klipper pre-installed, follow the guide for your 3D printer:
 - [Creality K1 Series](https://www.obico.io/blog/remote-access-creality-k1/)
-- [Elegoo Neptune 4 Series](https://obico.io/blog/elegoo-neptune-4-and-obico-ai-3d-printing-revolution/)
-- [Kingroon KLP1](https://obico.io/blog/kingroon-klipper-remote-access-and-ai/)
-- [Kingroon KP3S Pro V2](https://obico.io/blog/kingroon-klipper-remote-access-and-ai/)
-- [Qidi X Series](https://obico.io/blog/qidi-tech-x-series-klipper-remote-access-and-ai/)
+- [Elegoo Neptune 4 Series](/blog/elegoo-neptune-4-and-obico-ai-3d-printing-revolution/)
+- [Kingroon KLP1](/blog/kingroon-klipper-remote-access-and-ai/)
+- [Kingroon KP3S Pro V2](/blog/kingroon-klipper-remote-access-and-ai/)
+- [Qidi X Series](/blog/qidi-tech-x-series-klipper-remote-access-and-ai/)
 - [Creality Sonic Pad](https://www.obico.io/blog/sonic-pad-remote-access-ai/)
-- [Sovol SV08 Series](https://obico.io/blog/sovol-svo7-series-klipper-remote-access-ai/)
+- [Sovol SV08 Series](/blog/sovol-svo7-series-klipper-remote-access-ai/)
 :::
 
 :::info

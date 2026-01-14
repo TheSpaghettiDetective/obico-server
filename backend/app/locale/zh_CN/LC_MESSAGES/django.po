@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-26 03:07+0000\n"
+"POT-Creation-Date: 2025-12-25 17:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,9 +35,102 @@ msgstr "重要日期"
 msgid "Invalid email or password."
 msgstr "错误的电子邮件或密码。"
 
-#: app/forms.py:105 app/views/mobile_views.py:52 app/views/web_views.py:64
+#: app/forms.py:105 app/views/mobile_views.py:51 app/views/web_views.py:64
 msgid "A user is already registered with this email address."
 msgstr "用户已使用此电子邮件地址注册。"
+
+#: app/jusprin/ai_credits.py:38
+msgid "Unlimited usage allowed"
+msgstr "允许无限使用"
+
+#: app/jusprin/ai_credits.py:47
+msgid "Monthly AI credit limit exceeded"
+msgstr "已达到月度 AI 积分上限"
+
+#: app/jusprin/ai_credits.py:58
+msgid "Credit consumed successfully"
+msgstr "积分已成功消耗"
+
+#: app/jusprin/llm_chain/utils.py:59
+msgid "Oops, something went wrong. Please contact support."
+msgstr "抱歉，出现了问题。请联系支持。"
+
+#: app/jusprin/llm_chain/utils.py:65
+msgid ""
+"Oops, you need to select at least one filament so that I can decide slicing "
+"parameters accordingly"
+msgstr "抱歉，您需要至少选择一种线材，以便我能够相应地决定切片参数"
+
+#: app/jusprin/llm_chain/utils.py:68
+msgid "Oops, I can not find any print process presets. Please contact support."
+msgstr "抱歉，我找不到任何打印流程预设。请联系支持。"
+
+#: app/jusprin/llm_chain/utils.py:72
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:95
+msgid "Oops, you need to add at least one model."
+msgstr "抱歉，您需要至少添加一个模型。"
+
+#: app/jusprin/llm_chain/utils.py:80
+msgid ""
+"I currently do not know how to slice models with multiple filaments. Please "
+"manually slice your model. Also stay tuned for our product update."
+msgstr ""
+"我目前不知道如何切片多线材模型。请手动切片您的模型。也请关注我们的产品更新。"
+
+#: app/jusprin/llm_chain/utils.py:89
+msgid "User"
+msgstr "用户"
+
+#: app/jusprin/llm_chain/utils.py:91
+msgid "Assistant"
+msgstr "助手"
+
+#: app/jusprin/llm_chain/utils.py:93
+msgid "System"
+msgstr "系统"
+
+#: app/jusprin/llm_chain/utils.py:95
+#, python-format
+msgid "Got unexpected message role: %(role)s"
+msgstr "收到意外的消息角色：%(role)s"
+
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:90
+msgid "No plates are found in the project. Please contact support."
+msgstr "项目中未找到打印平台。请联系支持。"
+
+#: app/jusprin/plate_analysis_llm_module/analyse_plate_step.py:98
+msgid "No images found for analysis. Please contact support."
+msgstr "未找到用于分析的图像。请联系支持。"
+
+#: app/jusprin/views.py:130
+msgid "Message is required"
+msgstr "消息是必需的"
+
+#: app/jusprin/views.py:135
+#, python-format
+msgid "JusPrin Support Request from %(email)s"
+msgstr "来自 %(email)s 的 JusPrin 支持请求"
+
+#: app/jusprin/views.py:136
+#, python-format
+msgid ""
+"User: %(email)s\n"
+"\n"
+"Message:\n"
+"%(message)s"
+msgstr ""
+"用户：%(email)s\n"
+"\n"
+"消息：\n"
+"%(message)s"
+
+#: app/jusprin/views.py:148
+msgid "Support request sent successfully"
+msgstr "支持请求已成功发送"
+
+#: app/jusprin/views.py:154
+msgid "Failed to send support request"
+msgstr "发送支持请求失败"
 
 #: app/models/syndicate_models.py:84
 msgid "email address"
@@ -100,6 +193,14 @@ msgid ""
 msgstr ""
 "您当前没有设置任何电子邮箱地址。您真的应该添加一个电子邮箱地址，这样您就可以"
 "接收通知、重置密码等。"
+
+#: app/templates/account/email.html:58
+msgid "Add E-mail Address"
+msgstr "添加电子邮箱地址"
+
+#: app/templates/account/email.html:66
+msgid "Add E-mail"
+msgstr "添加电子邮箱"
 
 #: app/templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -183,7 +284,7 @@ msgstr ""
 "邮件确认请求</a>。"
 
 #: app/templates/account/login.html:10 app/templates/account/signup.html:10
-#: app/templates/mobile/account/login.html:12
+#: app/templates/mobile/account/login.html:13
 #: app/templates/mobile/account/signup.html:14
 #, fuzzy
 #| msgid "email address"
@@ -191,48 +292,55 @@ msgid "Email address"
 msgstr "电子邮箱地址"
 
 #: app/templates/account/login.html:11 app/templates/account/signup.html:11
-#: app/templates/mobile/account/login.html:13
+#: app/templates/mobile/account/login.html:14
 #: app/templates/mobile/account/signup.html:15
 #, fuzzy
 #| msgid "Set Password"
 msgid "Password"
 msgstr "设置密码"
 
-#: app/templates/account/login.html:41
-#: app/templates/mobile/account/login.html:43
+#: app/templates/account/login.html:43
+#: app/templates/mobile/account/login.html:42
+#, fuzzy
+#| msgid "This email was previously signed up using either Google or Facebook."
+msgid "This email was previously signed up using Google."
+msgstr "此电子邮件之前是使用 Google 或 Facebook 注册的。"
+
+#: app/templates/account/login.html:45
+#: app/templates/mobile/account/login.html:44
 msgid "Click here to reset your password"
 msgstr "点击这里重置您的密码"
 
-#: app/templates/account/login.html:43
-#: app/templates/mobile/account/login.html:45
+#: app/templates/account/login.html:47
+#: app/templates/mobile/account/login.html:46
 msgid "Wrong email or password."
 msgstr "错误的电子邮件或密码。"
 
-#: app/templates/account/login.html:44 app/templates/account/login.html:79
-#: app/templates/mobile/account/login.html:46
-#: app/templates/mobile/account/login.html:81
+#: app/templates/account/login.html:48 app/templates/account/login.html:90
+#: app/templates/mobile/account/login.html:47
+#: app/templates/mobile/account/login.html:89
 msgid "Forgot Password?"
 msgstr "忘记密码？"
 
-#: app/templates/account/login.html:76
-#: app/templates/mobile/account/login.html:78
+#: app/templates/account/login.html:87
+#: app/templates/mobile/account/login.html:86
 msgid "Remember me"
 msgstr "记住我"
 
-#: app/templates/account/login.html:86 app/templates/account/signup.html:123
-#: app/templates/mobile/account/login.html:88
-#: app/templates/mobile/account/signup.html:126
+#: app/templates/account/login.html:97 app/templates/account/signup.html:134
+#: app/templates/mobile/account/login.html:96
+#: app/templates/mobile/account/signup.html:128
 #, fuzzy
 #| msgid "Sign up"
 msgid "Sign In"
 msgstr "注册"
 
-#: app/templates/account/login.html:92
-#: app/templates/mobile/account/login.html:95
+#: app/templates/account/login.html:103
+#: app/templates/mobile/account/login.html:103
 msgid "Having trouble?"
 msgstr "遇到问题？"
 
-#: app/templates/account/login.html:99
+#: app/templates/account/login.html:110
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the mobile app, you can use the same to sign "
@@ -241,7 +349,7 @@ msgstr ""
 "您的登录凭证在移动应用和网页应用中是相同的。如果您之前使用移动应用注册，您可"
 "以使用相同的凭证在这里登录。"
 
-#: app/templates/account/login.html:100
+#: app/templates/account/login.html:111
 #, fuzzy
 #| msgid ""
 #| "\"Sign in with Apple\" is not available in the web app. If you want to "
@@ -258,84 +366,81 @@ msgstr ""
 "户并<a class=\"link\" target=\"_blank\" href=\"https://www.obico.io/docs/"
 "user-guides/relink-printer/\">重新链接您的打印机</a>"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
-msgid ""
-"Even if you previously signed up an account using Google or Facebook, you "
-"can still"
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
+#, fuzzy
+#| msgid ""
+#| "Even if you previously signed up an account using Google or Facebook, you "
+#| "can still"
+msgid "Even if you previously signed up an account using Google, you can still"
 msgstr "即使您之前使用 Google 或 Facebook 注册了账户，您仍然可以"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid "reset password"
 msgstr "重置密码"
 
-#: app/templates/account/login.html:101
-#: app/templates/mobile/account/login.html:103
+#: app/templates/account/login.html:112
+#: app/templates/mobile/account/login.html:111
 msgid "using the same email address."
 msgstr "使用相同的电子邮件地址。"
 
-#: app/templates/account/login.html:102
-#: app/templates/mobile/account/login.html:104
+#: app/templates/account/login.html:113
+#: app/templates/mobile/account/login.html:112
 msgid ""
 "If you can't sign in the mobile app, re-install the mobile app and try it "
 "again."
 msgstr "如果您无法在移动应用中登录，请重新安装移动应用并再次尝试。"
 
-#: app/templates/account/login.html:103
-#: app/templates/mobile/account/login.html:105
+#: app/templates/account/login.html:114
+#: app/templates/mobile/account/login.html:113
 msgid "Contact us"
 msgstr "联系我们"
 
-#: app/templates/account/login.html:103
-#: app/templates/mobile/account/login.html:105
+#: app/templates/account/login.html:114
+#: app/templates/mobile/account/login.html:113
 msgid "if you have tried everything else."
 msgstr "如果您已尝试了其他所有方法。"
 
-#: app/templates/account/login.html:107
-#: app/templates/mobile/account/login.html:109
+#: app/templates/account/login.html:118
+#: app/templates/mobile/account/login.html:117
 msgid "Close"
 msgstr "关闭"
 
-#: app/templates/account/login.html:115
-#: app/templates/mobile/account/login.html:116
+#: app/templates/account/login.html:126
+#: app/templates/mobile/account/login.html:124
 msgid "Don't have an account?"
 msgstr "没有账户？"
 
-#: app/templates/account/login.html:115
-#: app/templates/mobile/account/login.html:116
+#: app/templates/account/login.html:126
+#: app/templates/mobile/account/login.html:124
 #, fuzzy
 #| msgid "Sign Up Closed"
 msgid "Sign Up Now"
 msgstr "立即注册"
 
-#: app/templates/account/login.html:123 app/templates/account/signup.html:129
-#: app/templates/mobile/account/login.html:121
-#: app/templates/mobile/account/login.html:124
-#: app/templates/mobile/account/signup.html:132
+#: app/templates/account/login.html:134 app/templates/account/signup.html:140
+#: app/templates/mobile/account/login.html:129
+#: app/templates/mobile/account/login.html:132
+#: app/templates/mobile/account/signup.html:134
 msgid "Or"
 msgstr "或者"
 
-#: app/templates/account/login.html:126 app/templates/account/signup.html:131
-#: app/templates/mobile/account/login.html:127
-#: app/templates/mobile/account/signup.html:134
-msgid "Continue with social media"
-msgstr "用社交媒体继续"
-
-#: app/templates/account/login.html:131 app/templates/account/signup.html:136
-#: app/templates/mobile/account/login.html:132
-#: app/templates/mobile/account/signup.html:139
-#, fuzzy
-#| msgid "Sign In with Facebook"
-msgid "Login with Facebook"
-msgstr "使用 Facebook 登录"
-
-#: app/templates/account/login.html:137 app/templates/account/signup.html:142
+#: app/templates/account/login.html:140
 #: app/templates/mobile/account/login.html:138
-#: app/templates/mobile/account/signup.html:145
 #, fuzzy
 #| msgid "Sign In with Google"
 msgid "Login with Google"
+msgstr "使用 Google 登录"
+
+#: app/templates/account/login.html:141 app/templates/account/signup.html:144
+#: app/templates/account/signup.html:145
+#: app/templates/mobile/account/login.html:139
+#: app/templates/mobile/account/signup.html:138
+#: app/templates/mobile/account/signup.html:139
+#, fuzzy
+#| msgid "Sign In with Google"
+msgid "Continue with Google"
 msgstr "使用 Google 登录"
 
 #: app/templates/account/logout.html:5 app/templates/account/logout.html:9
@@ -439,7 +544,7 @@ msgstr "设置密码"
 msgid "Password. Again"
 msgstr "密码重置"
 
-#: app/templates/account/signup.html:40
+#: app/templates/account/signup.html:41
 #, fuzzy, python-format
 #| msgid ""
 #| "By signing up, I agree to\n"
@@ -450,17 +555,40 @@ msgstr "密码重置"
 #| "              Policy</a>"
 msgid ""
 "\n"
-"            By signing up, I agree to the %(brand_name)s app's\n"
-"            <a class=\"link\" href=\"https://www.obico.io/terms.html\">Terms "
-"of Use</a> and <a class=\"link\" href=\"https://www.obico.io/privacy."
-"html\">PrivacyPolicy</a>\n"
-"            "
+"              By signing up, I agree to the %(brand_name)s app's\n"
+"              <a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/terms.html\">Terms of Use</a> and <a class=\"link\" target=\"_blank\" "
+"href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"              "
 msgstr ""
 "通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://www."
 "obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://www."
 "obico.io/privacy.html\">隐私政策</a>"
 
-#: app/templates/account/signup.html:45
+#: app/templates/account/signup.html:46
+#, fuzzy
+#| msgid ""
+#| "By signing up, I agree to\n"
+#| "            the %(brand_name)s app's <a class=\"link\" href=\"https://www."
+#| "obico.io/terms.html\">Terms of\n"
+#| "              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#| "privacy.html\">Privacy\n"
+#| "              Policy</a>"
+msgid ""
+"\n"
+"              JusPrin is a project built by <a class=\"link\" "
+"target=\"_blank\" href=\"https://www.obico.io\">Obico</a>. By signing up, I "
+"agree to Obico's\n"
+"              <a class=\"link\" target=\"_blank\" href=\"https://www.obico."
+"io/terms.html\">Terms of Use</a> and <a class=\"link\" target=\"_blank\" "
+"href=\"https://www.obico.io/privacy.html\">PrivacyPolicy</a>\n"
+"              "
+msgstr ""
+"通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://www."
+"obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://www."
+"obico.io/privacy.html\">隐私政策</a>"
+
+#: app/templates/account/signup.html:51
 #, fuzzy, python-format
 #| msgid ""
 #| "By signing up, I agree to\n"
@@ -471,34 +599,35 @@ msgstr ""
 #| "              Policy</a>"
 msgid ""
 "\n"
-"            By signing up, I agree to the %(brand_name)s app's\n"
-"            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and <a "
-"class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
-"            "
+"              By signing up, I agree to the %(brand_name)s app's\n"
+"              <a class=\"link\" target=\"_blank\" "
+"href=\"%(tos_link)s\">Terms of Use</a> and <a class=\"link\" "
+"target=\"_blank\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+"              "
 msgstr ""
 "通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://www."
 "obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://www."
 "obico.io/privacy.html\">隐私政策</a>"
 
-#: app/templates/account/signup.html:77
-#: app/templates/mobile/account/signup.html:80
+#: app/templates/account/signup.html:88
+#: app/templates/mobile/account/signup.html:82
 msgid "We'll never share your email with anyone else."
 msgstr "我们绝不会与他人分享您的电子邮件。"
 
-#: app/templates/account/signup.html:96
-#: app/templates/mobile/account/signup.html:99
+#: app/templates/account/signup.html:107
+#: app/templates/mobile/account/signup.html:101
 msgid "At least 6 characters. And be secure, please."
 msgstr "至少 6 个字符。请确保安全。"
 
-#: app/templates/account/signup.html:120
-#: app/templates/mobile/account/signup.html:123
+#: app/templates/account/signup.html:131
+#: app/templates/mobile/account/signup.html:125
 #, fuzzy
 #| msgid "Sign up"
 msgid "Sign Up"
 msgstr "注册"
 
-#: app/templates/account/signup.html:122
-#: app/templates/mobile/account/signup.html:125
+#: app/templates/account/signup.html:133
+#: app/templates/mobile/account/signup.html:127
 msgid "Already have an account?"
 msgstr "已经有帐户？"
 
@@ -567,11 +696,7 @@ msgstr ""
 "<strong>注意：</strong>您仍然可以<a href=\"%(email_url)s\">更改您的电子邮箱地"
 "址</a>。"
 
-#: app/templates/mobile/account/login.html:41
-msgid "This email was previously signed up using either Google or Facebook."
-msgstr "此电子邮件之前是使用 Google 或 Facebook 注册的。"
-
-#: app/templates/mobile/account/login.html:102
+#: app/templates/mobile/account/login.html:110
 msgid ""
 "Your sign-in credential is the same for the mobile app and the web app. If "
 "you previously signed up using the web app, you can use the same to sign in "
@@ -581,13 +706,20 @@ msgstr ""
 "以使用相同的凭证在这里登录。"
 
 #: app/templates/mobile/account/login.html:145
-#: app/templates/mobile/account/signup.html:152
 #, fuzzy
 #| msgid "Sign in with Apple"
 msgid "Login with Apple"
 msgstr "使用 Apple 登录"
 
-#: app/templates/mobile/account/signup.html:44
+#: app/templates/mobile/account/login.html:146
+#: app/templates/mobile/account/signup.html:145
+#: app/templates/mobile/account/signup.html:146
+#, fuzzy
+#| msgid "Sign in with Apple"
+msgid "Continue with Apple"
+msgstr "使用 Apple 登录"
+
+#: app/templates/mobile/account/signup.html:45
 #, fuzzy, python-format
 #| msgid ""
 #| "By signing up, I agree to\n"
@@ -608,7 +740,7 @@ msgstr ""
 "obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://www."
 "obico.io/privacy.html\">隐私政策</a>"
 
-#: app/templates/mobile/account/signup.html:49
+#: app/templates/mobile/account/signup.html:50
 #, fuzzy, python-format
 #| msgid ""
 #| "By signing up, I agree to\n"
@@ -818,11 +950,66 @@ msgstr "在账户通知上。"
 msgid "Change notification preferences"
 msgstr "更改通知偏好设置"
 
-#~ msgid "Add E-mail Address"
-#~ msgstr "添加电子邮箱地址"
+#, fuzzy
+#~| msgid "Sign In with Facebook"
+#~ msgid "Login with Facebook"
+#~ msgstr "使用 Facebook 登录"
 
-#~ msgid "Add E-mail"
-#~ msgstr "添加电子邮箱"
+#, fuzzy
+#~| msgid "Sign In with Facebook"
+#~ msgid "Continue with Facebook"
+#~ msgstr "使用 Facebook 登录"
+
+#~ msgid "Facebook Login Is Going Away Soon"
+#~ msgstr "Facebook 登录即将下线"
+
+#, fuzzy
+#~| msgid "Reset My Password"
+#~ msgid "Reset Password"
+#~ msgstr "重置我的密码"
+
+#~ msgid ""
+#~ "The Facebook developer program has become bogged down with so much "
+#~ "bureaucracy that it's no longer practical for small, independent "
+#~ "developers like me to keep supporting it. On top of that, the number of "
+#~ "people using Facebook to log in has dropped sharply, making it hard to "
+#~ "justify all the extra work."
+#~ msgstr ""
+#~ "Facebook 开发者项目的官僚流程过于繁琐，已不再适合像我这样的小型独立开发者"
+#~ "继续支持。再加上使用 Facebook 登录的人数大幅下降，已难以证明投入这些额外工"
+#~ "作的合理性。"
+
+#, python-format
+#~ msgid ""
+#~ "To keep your Obico account accessible, please switch to logging in with "
+#~ "your email. Just click the <b>\"%(reset_button_text)s\"</b> button below "
+#~ "and use the same email address linked to your account."
+#~ msgstr ""
+#~ "为确保您仍可访问 Obico 账户，请改用电子邮箱登录。只需点击下方"
+#~ "<b>\"%(reset_button_text)s\"</b>按钮，并使用与您账户关联的同一电子邮箱地"
+#~ "址。"
+
+#~ msgid "Continue with social media"
+#~ msgstr "用社交媒体继续"
+
+#, fuzzy, python-format
+#~| msgid ""
+#~| "By signing up, I agree to\n"
+#~| "            the %(brand_name)s app's <a class=\"link\" href=\"https://"
+#~| "www.obico.io/terms.html\">Terms of\n"
+#~| "              Use</a> and <a class=\"link\" href=\"https://www.obico.io/"
+#~| "privacy.html\">Privacy\n"
+#~| "              Policy</a>"
+#~ msgid ""
+#~ "\n"
+#~ "            By signing up, I agree to the %(brand_name)s app's\n"
+#~ "            <a class=\"link\" href=\"%(tos_link)s\">Terms of Use</a> and "
+#~ "<a class=\"link\" href=\"%(privacy_link)s\">PrivacyPolicy</a>\n"
+#~ "            "
+#~ msgstr ""
+#~ "通过注册，我同意 %(brand_name)s 应用的<a class=\"link\" href=\"https://"
+#~ "www.obico.io/terms.html\">使用条款</a>和<a class=\"link\" href=\"https://"
+#~ "www.obico.io/privacy.html\">隐私政策</a>"
 
 #~ msgid "Please Confirm Your E-mail Address"
 #~ msgstr "请确认您的电子邮箱地址"

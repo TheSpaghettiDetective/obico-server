@@ -40,5 +40,5 @@ Fortunately a few simple measures can be taken to avoid most of the false alarms
 You can check your camera setup to see if it's optimal. It not only helps The Detective improve the detection rate, but also provides a better viewing experience for human's eyes.
 
 - Whenever possible, avoid backlight. A simple rule of thumb is to have the light source and camera co-located closely together on the same side of the printer.
-- If your webcam comes with an adjustable lens, adjust its focal length so that it's focused on the printing area. If you are using a Raspberry Pi camera module, there is [a good video](https://www.youtube.com/watch?v=u6VhRVH3Z6Y) for how that can be done.
+- If your webcam comes with an adjustable lens, adjust its focal length so that it's focused on the printing area.
 - Position your webcam so that the printing area largely fills the whole camera view.

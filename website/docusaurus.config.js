@@ -13,6 +13,10 @@ module.exports = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: '/img/favicon.png',
+  themes: ['@docusaurus/theme-mermaid'],
+  markdown: {
+    mermaid: true,
+  },
   themeConfig: {
     announcementBar: {
       id: 'giveStarOnGitHubAnnouncement',
@@ -393,6 +397,7 @@ module.exports = {
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
+        sitemap: false,
       },
     ],
   ],
@@ -412,4 +417,8 @@ module.exports = {
     ],
     'plugin-image-zoom',
   ],
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'de-DE', 'es-ES', 'fr-FR', 'it-IT', 'nl-NL', 'pl-PL', 'pt-BR', 'ru-RU'],
+  },
 };

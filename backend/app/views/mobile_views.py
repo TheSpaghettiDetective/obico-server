@@ -10,7 +10,6 @@ from requests import RequestException
 from allauth.socialaccount.providers.base import ProviderException
 
 from site_specific_allauth_google_provider.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.apple.views import AppleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
@@ -62,13 +61,10 @@ def fetch_session(request):
 def oauth_callback(request, *args, **kwargs):
     try:
         is_google = request.GET['provider'] == 'google'
-        is_facebook = request.GET['provider'] == 'facebook'
         is_apple = request.GET['provider'] == 'apple'
 
         if is_google:
             adapter = GoogleOAuth2Adapter(request)
-        elif is_facebook:
-            adapter = FacebookOAuth2Adapter(request)
         elif is_apple:
             adapter = AppleOAuth2Adapter(request)
         else:
@@ -92,9 +88,6 @@ def oauth_callback(request, *args, **kwargs):
                     basic_auth=adapter.basic_auth)
                 access_token = client.get_access_token(request.GET['code'])
                 token = adapter.parse_token(access_token)
-            elif is_facebook:
-                access_token = request.GET['code']
-                token = adapter.parse_token({'access_token': access_token, 'token_type': 'bearer', 'expires_in': 5179237})      # hard-coded properties to make allauth happy
             elif is_apple:
                 access_token = request.GET['code']
                 id_token = request.GET['id_token']

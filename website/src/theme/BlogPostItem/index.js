@@ -112,6 +112,7 @@ function BlogPostItem(props) {
       <Head>
         {keywords && <meta name="keywords" content={keywords.join(',')} />}
         {image && <meta property="og:image" content={image} />}
+        <meta property="og:type" content="article" />
       </Head>
 
       <article className={!isBlogPostPage ? 'margin-bottom--xl' : undefined}>

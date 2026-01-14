@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     'simple_history',
     'widget_tweaks',
     'rest_framework',
-    'jstemplate',
     'pushbullet',
     'corsheaders',
     'safedelete',
@@ -81,7 +80,6 @@ if get_bool('SOCIAL_LOGIN', False):
     INSTALLED_APPS += [
         'allauth.socialaccount.providers.apple',
         'site_specific_allauth_google_provider',
-        'site_specific_allauth_facebook_provider',
     ]
 
 MIDDLEWARE = [
@@ -92,6 +90,7 @@ MIDDLEWARE = [
     'app.middleware.RefreshSessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'app.jusprin.middleware.jusprin_lang_middleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -192,6 +191,13 @@ USE_TZ = True
 LANGUAGES = [
     ('en', 'English'),
     ('zh-cn', 'Simplified Chinese'),
+    ('zh-tw', 'Traditional Chinese'),
+    ('pt-br', 'Brazilian Portuguese'),
+    ('es', 'Spanish'),
+    ('de', 'German'),
+    ('fr', 'French'),
+    ('it', 'Italian'),
+    ('ru', 'Russian'),
 ]
 
 
@@ -302,11 +308,7 @@ ACCOUNT_ALLOW_SIGN_UP = get_bool('ACCOUNT_ALLOW_SIGN_UP', False)
 ACCOUNT_ADAPTER = 'app.accounts.SyndicateSpecificAccountAdapter'
 AUTH_USER_MODEL = 'app.User'
 SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
-SOCIALACCOUNT_PROVIDERS = {
-    'facebook': {
-        'VERIFIED_EMAIL': True
-    }
-}
+SOCIALACCOUNT_PROVIDERS = {}
 # Backwards compatibility to allow SSO via GET request
 # We can remove this after we update to the mobile app to use POST instead of GET
 SOCIALACCOUNT_LOGIN_ON_GET = True
@@ -492,6 +494,9 @@ NOTIFICATION_PLUGIN_DIRS = [
 ADMIN_IP_WHITELIST = json.loads(os.environ.get('ADMIN_IP_WHITELIST') or '[]')
 
 CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('CSRF_TRUSTED_ORIGINS') or '[]')
+
+# JusPrin specific settings
+
 
 # This line prevents warning messages after 3.2
 # https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys

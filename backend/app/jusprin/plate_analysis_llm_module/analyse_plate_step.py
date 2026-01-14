@@ -1,7 +1,10 @@
 from textwrap import dedent
 import instructor
+import os
 from pydantic import BaseModel, Field
 from textwrap import dedent
+from django.utils.translation import gettext_lazy as _
+from ..language_utils import get_response_language_rule
 
 class PlateAnalysisResponseModel(BaseModel):
     """Response model for image analysis"""
@@ -20,8 +23,12 @@ def analyse_plate_step(chat, openai_client):
     instructor_client = instructor.from_openai(openai_client)
     images = chat.get('images', None)
 
+    language_rule = get_response_language_rule(chat)
+
     system_prompt = dedent(f"""
         You are a knowledgeable AI assistant integrated into a 3D printing slicer.
+        {language_rule}
+
         Your primary role is to analyze this 3D model based on its isometric images and produce a detailed response with these structured fields:
 
         1. model_analysis:
@@ -65,7 +72,7 @@ def analyse_plate_step(chat, openai_client):
     })
 
     response = instructor_client.chat.completions.create(
-        model="gpt-4o",
+        model=os.environ.get('VLM_MODEL_NAME'),
         messages=messages,
         response_model=PlateAnalysisResponseModel,
     )
@@ -83,14 +90,14 @@ def is_analyse_plate_prerequisites_not_met(chat):
     plates = chat['plates']
 
     if len(plates) == 0:
-        return "No plates are found in the project. Please contact support."
+        return _("No plates are found in the project. Please contact support.")
 
     model_objects = plates[0]['model_objects']
 
     if not model_objects or len(model_objects) == 0:
-        return "Oops, you need to add at least one model."
+        return _("Oops, you need to add at least one model.")
 
     if not images or len(images) == 0:
-        return "No images found for analysis. Please contact support."
+        return _("No images found for analysis. Please contact support.")
 
     return None

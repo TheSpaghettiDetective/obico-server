@@ -320,7 +320,7 @@ class PrintViewSet(
             return next_period_start.replace(hour=0, minute=0, second=0, microsecond=0)
 
 
-        tz = pytz.timezone(request.GET['timezone'])
+        tz = pytz.timezone(request.GET['timezone'].replace(' ', '+'))
         from_date = timezone.make_aware(parse_datetime(f'{request.GET["from_date"]}T00:00:00'), timezone=tz)
         to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
         group_by = request.GET['group_by'].lower()

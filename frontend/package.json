@@ -29,7 +29,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "pako": "^2.0.3",
-    "patch-package": "^6.5.0",
+    "patch-package": "^8.0.1",
     "postinstall-postinstall": "^2.1.0",
     "semver": "^7.3.5",
     "three": "^0.167.0",

@@ -107,7 +107,7 @@ psycopg2-binary==2.9.10
 ptyprocess==0.7.0
 pure-eval==0.2.3
 pushbullet.py==0.12.0
-pyasn1==0.6.1 ; python_version >= '3.8'
+pyasn1==0.6.2 ; python_version >= '3.8'
 pyasn1-modules==0.4.1 ; python_version >= '3.8'
 pycparser==2.22 ; python_version >= '3.8'
 pydantic==2.8.0

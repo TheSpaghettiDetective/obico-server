@@ -289,7 +289,7 @@ or
 
 #### Status code: `402` {#status-code-402}
 
-Insufficient Elegoo credits or other credit API errors. The user does not have enough credits to perform the requested operation, or there was an error calling the Elegoo credits API.
+Insufficient Elegoo credits. The user does not have enough credits to perform the requested operation. This status code is returned when the Elegoo credits API responds successfully but indicates insufficient credits.
 
 #### Body {#body-3}
 
@@ -308,11 +308,64 @@ Insufficient Elegoo credits or other credit API errors. The user does not have e
 
 - `code`: Integer. Always `402`.
 - `error`: String. Generic error message indicating a credit API error.
-- `credit_resp`: Object or null. The response from the Elegoo credits API containing detailed error information. Will be `null` if the API request failed due to network errors.
+- `credit_resp`: Object. The response from the Elegoo credits API containing detailed error information.
   - `code`: Integer. Error code from the credits API (e.g., `10012` for user not found, `402` for insufficient credits).
   - `data`: Object or null. Additional data from the credits API.
   - `msg`: String. Detailed error message from the credits API.
   - `traceId`: String. Trace identifier for debugging.
+
+#### Status code: `502` {#status-code-502}
+
+Elegoo credits API failure. This status code is returned when the Elegoo credits API fails to respond properly due to connection issues, server errors, or other API failures.
+
+#### Body {#body-4}
+
+The response body varies depending on the type of failure:
+
+**Connection error or timeout:**
+```json
+{
+  "code": 502,
+  "error": "Elegoo API connection error or timeout"
+}
+```
+
+**Server error (5xx):**
+```json
+{
+  "code": 502,
+  "error": "Elegoo API server returns 5XX"
+}
+```
+
+**Unexpected HTTP error (4xx):**
+```json
+{
+  "code": 502,
+  "error": "Elegoo API returns unexpected HTTP error"
+}
+```
+
+**JSON parsing failure or other request errors:**
+```json
+{
+  "code": 502,
+  "error": "Error in calling Elegoo credits API"
+}
+```
+
+or
+
+```json
+{
+  "code": 502,
+  "error": "Elegoo API request failed"
+}
+```
+
+- `code`: Integer. Always `502`.
+- `error`: String. Specific error message indicating the type of API failure.
+- `credit_resp`: Not included in 502 responses (will be `null` if accessed).
 
 ## Workflows {#workflows}
 

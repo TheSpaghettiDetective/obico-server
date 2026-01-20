@@ -1,4 +1,7 @@
 FROM thespaghettidetective/ml_api_base:1.4
+
+RUN apt update && apt install -y curl
+
 WORKDIR /app
 EXPOSE 3333
 

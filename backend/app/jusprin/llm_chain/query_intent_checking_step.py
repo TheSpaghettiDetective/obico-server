@@ -59,7 +59,7 @@ def get_tools():
             "name": "determine_slicing_settings",
             "description": (
                 "Analyze the user's request to determine the optimal slicing settings. "
-                "This includes requests for adjusting speed, quality, wall thickness, or other slicing parameters, "
+                "This includes requests for adjusting speed, quality, wall thickness, support, adhesion, infill, or any other slicing parameters, "
                 "as well as general requests like 'I want a faster print' or 'optimize for strength.' "
                 "Use this tool when the user's query indicates they want to modify or optimize slicing settings."
             ),
@@ -219,10 +219,10 @@ def query_intent_checking_step(chat, openai_client):
     Assistant: [Call Tool: determine_slicing_settings(intent="strength", parameter="wall_loops")]
 
     User: "Add a brim to the model so it sticks better."
-    Assistant: I cannot modify the adhesion settings directly. To add a brim manually:
-    1. Go to the **Process** settings on the left panel.
-    2. Click the **Others** (or **Plate Adhesion**) tab.
-    3. Find the **Brim type** dropdown and select "Auto" or "Outer brim only".
+    Assistant: [Call Tool: determine_slicing_settings(intent="adhesion", parameter="brim")]
+
+    User: "Enable support for my model."
+    Assistant: [Call Tool: determine_slicing_settings(intent="support", parameter="enable_support")]
 
     User: "Slice the file."
     Assistant: [Call Tool: slice_model()]
@@ -266,7 +266,7 @@ def query_intent_checking_step(chat, openai_client):
        - **INSTEAD:** Act as a UI Navigator. Provide precise, step-by-step instructions on how to find that setting or button in the {brand_name} UI manually.
 
     # SPECIFIC HANDLERS
-    - **Slicing Parameters:** If the request is about adjusting or optimizing slicing parameters (speed, wall thickness, quality, or any other aspect of the slicing process), you MUST call the 'determine_slicing_settings' tool.
+    - **Slicing Parameters:** If the request is about adjusting or optimizing slicing parameters (speed, wall thickness, quality, support, adhesion, infill, or any other aspect of the slicing process), you MUST call the 'determine_slicing_settings' tool.
     - **General Info:** If the query is a general question about 3D printing physics or material science, answer based on your knowledge.
     - **Irrelevant:** If the query is unrelated to 3D printing, politely decline.
 

@@ -26,7 +26,7 @@
     "i18next-vue": "^1.1.0",
     "ifvisible": "^1.1.0",
     "jquery": "^3.5.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "moment": "^2.29.4",
     "pako": "^2.0.3",
     "patch-package": "^6.5.0",

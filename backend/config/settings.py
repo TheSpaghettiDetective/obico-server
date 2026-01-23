@@ -350,6 +350,9 @@ if SENTRY_DSN:
         # something more human-readable.
         # release="myapp@1.0.0",
         release=VERSION,
+
+        # Performance monitoring
+        traces_sample_rate=0.1,
     )
 
 # REDIS client

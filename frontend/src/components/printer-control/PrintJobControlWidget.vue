@@ -3,12 +3,12 @@
     <template #title>{{ $t("Print Job Control") }}</template>
     <template #content>
       <div class="wrapper">
-        <div v-if="!printer.isOffline() && !printer.isDisconnected() && localDisplayMessage" class="display-status-container">
+        <div v-if="!printer.isOffline() && !printer.isDisconnected() && printer.status.display_status?.message" class="display-status-container">
           <span>
             <div>
               <i class="fas fa-comment-alt"></i>
             </div>
-            <p class="text">{{ localDisplayMessage }}</p>
+            <p class="text">{{ printer.status.display_status.message }}</p>
           </span>
           <button @click="onDisplayClear">
             <i class="fas fa-ban"></i>
@@ -215,7 +215,6 @@ export default {
       selectedGcodeId: null,
       savedPath: [null],
       printerFiles: false,
-      localDisplayMessage: null,
     }
   },
 
@@ -225,15 +224,6 @@ export default {
     },
     modalId() {
       return 'b-modal-gcodes' + this.printer.id
-    },
-  },
-
-  watch: {
-    'printer.status.display_status.message': {
-      handler(newMessage) {
-        this.localDisplayMessage = newMessage
-      },
-      immediate: true,
     },
   },
 
@@ -349,8 +339,6 @@ export default {
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
 
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        // Clear local message while waiting for new status
-        this.localDisplayMessage = null
         if (err) {
           this.$swal.Toast.fire({
             icon: 'error',

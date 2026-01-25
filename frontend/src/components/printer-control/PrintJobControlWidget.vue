@@ -3,18 +3,6 @@
     <template #title>{{ $t("Print Job Control") }}</template>
     <template #content>
       <div class="wrapper">
-        <div v-if="!printer.isOffline() && !printer.isDisconnected() && printer.status.display_status?.message" class="display-status-container">
-          <span>
-            <div>
-              <i class="fas fa-comment-alt"></i>
-            </div>
-            <p class="text">{{ printer.status.display_status.message }}</p>
-          </span>
-          <button @click="onDisplayClear">
-            <i class="fas fa-ban"></i>
-          </button>
-        </div>
-
         <div v-if="!printer.isOffline() && printer.hasError()" class="error-container">
           <div class="title">{{ printer.agentDisplayName() }} {{$t('Error')}}</div>
           <p class="text">
@@ -324,30 +312,6 @@ export default {
         }
       })
     },
-    onDisplayClear() {
-      const octoPayload = {
-        func: 'commands',
-        target: '_printer',
-        args: ["M117"],
-        force: true,
-      }
-      const moonrakerPayload = {
-        func: 'printer/gcode/script',
-        target: 'moonraker_api',
-        kwargs: {"script": "SET_DISPLAY_TEXT"},
-      }
-      const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
-
-      this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err) {
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: err,
-          })
-          }
-        }
-      )
-    }
   },
 }
 </script>
@@ -406,33 +370,4 @@ p
 .custom-svg-icon
   height: 1.125rem
   width: 1.125rem
-
-.display-status-container
-  display: flex
-  align-items: flex-start
-  justify-content: flex-start
-  gap: 0.5rem
-  border-radius: var(--border-radius-sm)
-  width: 100%
-  span
-    display: flex
-    align-items: flex-start
-    gap: 0.5rem
-    flex-grow: 1
-    min-width: 0
-  .text
-    margin: 0
-    font-size: 1rem
-    font-weight: normal
-    color: white
-    word-break: break-word
-    overflow-wrap: break-word
-    text-align: left
-  button
-    background: none
-    border: none
-    cursor: pointer
-    padding: 0
-    color: white
-    flex-shrink: 0
 </style>

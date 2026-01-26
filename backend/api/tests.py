@@ -384,3 +384,117 @@ class PrintTestCase(TestCase):
         process_printer_status(self.printer, status_msg_without_event(100, '1.gcode'))
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
         self.assertEqual(celery_app.send_task.call_count, 1)
+
+
+@override_settings(PRINT_EVENT_HANDLER='app.tasks.process_print_events')
+@patch('app.models.celery_app')
+class OAuthPrinterFlowTestCase(TestCase):
+    """Test the start_print and finish_print API actions for OAuth apps."""
+
+    def setUp(self):
+        self.user = User.objects.create(email='oauth@test.com')
+        self.user.set_password('test')
+        self.user.save()
+        self.printer = Printer.objects.create(user=self.user, name='OAuth Test Printer')
+        self.client = Client()
+        self.client.login(email='oauth@test.com', password='test')
+
+    def test_start_print_success(self, celery_app):
+        response = self.client.post(
+            f'/api/v1/printers/{self.printer.id}/start_print/',
+            {'filename': 'test_oauth.gcode'},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.printer.refresh_from_db()
+        self.assertIsNotNone(self.printer.current_print)
+        self.assertEqual(self.printer.current_print.filename, 'test_oauth.gcode')
+
+    def test_start_print_requires_filename(self, celery_app):
+        response = self.client.post(
+            f'/api/v1/printers/{self.printer.id}/start_print/',
+            {},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_start_print_auto_closes_existing_print(self, celery_app):
+        # Start first print
+        self.client.post(
+            f'/api/v1/printers/{self.printer.id}/start_print/',
+            {'filename': 'first.gcode'},
+            content_type='application/json'
+        )
+        self.printer.refresh_from_db()
+        first_print_id = self.printer.current_print.id
+
+        # Start second print - should auto-close first
+        response = self.client.post(
+            f'/api/v1/printers/{self.printer.id}/start_print/',
+            {'filename': 'second.gcode'},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.printer.refresh_from_db()
+
+        # Verify new print is active
+        self.assertEqual(self.printer.current_print.filename, 'second.gcode')
+
+        # Verify old print was finished
+        old_print = Print.objects.get(id=first_print_id)
+        self.assertIsNotNone(old_print.finished_at)
+
+    def test_finish_print_success(self, celery_app):
+        # Start a print first
+        self.client.post(
+            f'/api/v1/printers/{self.printer.id}/start_print/',
+            {'filename': 'test.gcode'},
+            content_type='application/json'
+        )
+        self.printer.refresh_from_db()
+        print_id = self.printer.current_print.id
+
+        # Finish the print
+        response = self.client.post(
+            f'/api/v1/printers/{self.printer.id}/finish_print/',
+            {'status': 'success'},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.printer.refresh_from_db()
+        self.assertIsNone(self.printer.current_print)
+
+        # Check print is marked as finished
+        print_obj = Print.objects.get(id=print_id)
+        self.assertIsNotNone(print_obj.finished_at)
+        self.assertIsNone(print_obj.cancelled_at)
+
+    def test_finish_print_cancelled(self, celery_app):
+        # Start a print first
+        self.client.post(
+            f'/api/v1/printers/{self.printer.id}/start_print/',
+            {'filename': 'test.gcode'},
+            content_type='application/json'
+        )
+        self.printer.refresh_from_db()
+        print_id = self.printer.current_print.id
+
+        # Cancel the print
+        response = self.client.post(
+            f'/api/v1/printers/{self.printer.id}/finish_print/',
+            {'status': 'cancelled'},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Check print is marked as cancelled
+        print_obj = Print.objects.get(id=print_id)
+        self.assertIsNotNone(print_obj.cancelled_at)
+
+    def test_finish_print_fails_if_not_printing(self, celery_app):
+        response = self.client.post(
+            f'/api/v1/printers/{self.printer.id}/finish_print/',
+            {},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 404)

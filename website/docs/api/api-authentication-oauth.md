@@ -118,7 +118,8 @@ curl -X POST https://app.obico.io/o/token/ \
   "access_token": "abc123xyz...",
   "token_type": "Bearer",
   "expires_in": 3153600000,
-  "scope": "read write"
+  "scope": "read write",
+  "refresh_token": "def456uvw..."
 }
 ```
 

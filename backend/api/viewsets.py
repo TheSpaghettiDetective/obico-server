@@ -175,7 +175,10 @@ class PrinterViewSet(
             printer.refresh_from_db()
 
         # Use current timestamp as ext_id for direct API prints
+        # If a print with this timestamp already exists, increment to find a unique one
         current_print_ts = int(timezone.now().timestamp())
+        while Print.objects.filter(printer=printer, ext_id=current_print_ts).exists():
+            current_print_ts += 1
         printer.set_current_print(filename, g_code_file_id=None, current_print_ts=current_print_ts)
         printer.refresh_from_db()
 

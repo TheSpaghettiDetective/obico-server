@@ -108,11 +108,11 @@ class Printer(SafeDeleteModel):
         for key in ('flipV', 'flipH', 'rotate90', 'rotation', 'streamRatio'):
             p_settings['webcam_' + key] = webcam_settings.get(key)
 
-        if 'webcam_rotation' in p_settings:
+        if p_settings.get('webcam_rotation') is not None:
             rotation_int = int(p_settings['webcam_rotation'])
             p_settings['webcam_rotation'] = rotation_int if rotation_int in [0, 90, 180, 270] else 0
             p_settings['webcam_rotate90'] = rotation_int == 270 # backward compatibility with old mobile app
-        elif 'webcam_rotate90' in p_settings: # Backward compatibility with old plugins
+        elif p_settings.get('webcam_rotate90') is not None: # Backward compatibility with old plugins
             p_settings['webcam_rotation'] = int(270 if p_settings['webcam_rotate90'] else 0)
 
         p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '16:9') == '16:9'

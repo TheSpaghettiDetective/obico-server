@@ -413,3 +413,17 @@ class OAuthPrinterFlowTestCase(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_create_printer(self, celery_app):
+        """Test creating a new printer via API."""
+        response = self.client.post(
+            '/api/v1/printers/',
+            {'name': 'New OAuth Printer'},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 201)
+        data = response.json()
+        self.assertEqual(data['name'], 'New OAuth Printer')
+        self.assertIsNotNone(data.get('auth_token'))
+        # Verify printer was created in database for this user
+        self.assertTrue(Printer.objects.filter(id=data['id'], user=self.user).exists())

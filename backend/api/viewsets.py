@@ -84,8 +84,7 @@ class UserViewSet(viewsets.GenericViewSet):
 
 
 class PrinterViewSet(
-    # FIXME arbitrary update IS allowed, right?
-    # no create, no destroy
+    mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
@@ -104,6 +103,11 @@ class PrinterViewSet(
             qs = Printer.objects.filter(user=self.request.user)
 
         return qs.select_related('current_print', 'printerprediction', 'user')
+
+    def perform_create(self, serializer):
+        """Create a new printer with generated auth token."""
+        auth_token = hexlify(os.urandom(10)).decode()
+        serializer.save(user=self.request.user, auth_token=auth_token)
 
     @action(detail=True, methods=['post'])
     def archive(self, request, pk=None):

@@ -18,8 +18,9 @@ sequenceDiagram
     participant App as OAuth App
     participant API as Obico API
 
-    App->>API: GET /api/v1/printers/
-    API-->>App: List of printers
+    App->>API: POST /api/v1/printers/
+    Note over API: Creates Printer record
+    API-->>App: Printer with auth_token
 
     App->>API: POST /api/v1/printers/{id}/start_print/
     Note over API: Creates Print record
@@ -47,6 +48,38 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 See [OAuth Authentication](/docs/api/api-authentication-oauth) for details on obtaining an access token.
 
 ## API Endpoints
+
+### Create Printer
+
+```
+POST /api/v1/printers/
+Content-Type: application/json
+
+{
+  "name": "My 3D Printer"
+}
+```
+
+Creates a new printer for the authenticated user.
+
+**Parameters:**
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | The name of the printer |
+
+**Response:** `201 Created`
+```json
+{
+  "id": 123,
+  "name": "My 3D Printer",
+  "auth_token": "a1b2c3d4e5f6...",
+  "created_at": "2024-01-15T10:30:00Z",
+  "current_print": null,
+  ...
+}
+```
+
+---
 
 ### List Printers
 
@@ -236,14 +269,23 @@ import requests
 
 BASE_URL = "https://app.obico.io"
 ACCESS_TOKEN = "your_oauth_access_token"
-PRINTER_ID = 123
 
 headers = {
     "Authorization": f"Bearer {ACCESS_TOKEN}",
     "Content-Type": "application/json",
 }
 
-# 1. Start a print
+# 1. Create a printer (one-time setup)
+response = requests.post(
+    f"{BASE_URL}/api/v1/printers/",
+    headers=headers,
+    json={"name": "My 3D Printer"},
+)
+printer = response.json()
+PRINTER_ID = printer["id"]
+print("Created printer:", printer)
+
+# 2. Start a print
 response = requests.post(
     f"{BASE_URL}/api/v1/printers/{PRINTER_ID}/start_print/",
     headers=headers,
@@ -251,7 +293,7 @@ response = requests.post(
 )
 print("Started print:", response.json())
 
-# 2. During printing - send images for detection
+# 3. During printing - send images for detection
 with open("snapshot.jpg", "rb") as f:
     response = requests.post(
         f"{BASE_URL}/api/v1/printers/{PRINTER_ID}/predict/",
@@ -267,7 +309,7 @@ with open("snapshot.jpg", "rb") as f:
     if ewm_mean - rolling_mean_long > 0.78:
         print("Warning: Possible failure detected!")
 
-# 3. Finish the print
+# 4. Finish the print
 response = requests.post(
     f"{BASE_URL}/api/v1/printers/{PRINTER_ID}/finish_print/",
     headers=headers,

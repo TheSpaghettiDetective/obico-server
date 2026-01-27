@@ -179,16 +179,6 @@ Missing required `img` parameter.
 
 Printer is not currently printing.
 
-##### Status code: `503` {#predict-503}
-
-ML API service unavailable.
-
-```json
-{
-  "error": "Failed to perform failure detection."
-}
-```
-
 ---
 
 ### Finish a Print

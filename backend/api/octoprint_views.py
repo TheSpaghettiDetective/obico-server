@@ -39,6 +39,7 @@ from lib.utils import save_pic, get_rotated_pic_url
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
+from lib.fd_2nd_gen import fd_2nd_gen_enabled, fd_2nd_gen_predict, apply_fd_2nd_gen_prediction
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
@@ -115,17 +116,17 @@ class OctoPrintPicView(APIView):
         pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
         internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, user.syndicate.name, long_term_storage=False)
 
-        img_url_updated = self.detect_if_needed(printer, pic, pic_id, internal_url)
+        img_url_updated = self.detect_if_needed(printer, pic, pic_id, internal_url, external_url)
         if not img_url_updated:
             cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
 
         send_status_to_web(printer.id)
         return Response({'result': 'ok'})
 
-    def detect_if_needed(self, printer, pic, pic_id, raw_pic_url):
+    def detect_if_needed(self, printer, pic, pic_id, raw_pic_url, external_url):
         '''
         Return:
-           True: Detection was performed. img_url was updated to the tagged image
+           True: Detection was performed. img_url was updated
            False: No detection was performed. img_url was not updated
         '''
 
@@ -138,6 +139,31 @@ class OctoPrintPicView(APIView):
             return False
 
         cache.print_num_predictions_incr(printer.current_print.id)
+
+        if fd_2nd_gen_enabled(printer.user):
+            fd2_result = fd_2nd_gen_predict(raw_pic_url, prediction=prediction, printer=printer, return_detections=False)
+            if fd2_result:
+                apply_fd_2nd_gen_prediction(prediction, fd2_result)
+                prediction.save()
+
+                if fd2_result.get('focus'):
+                    cache.print_high_prediction_add(printer.current_print.id, prediction.current_p, pic_id)
+
+                cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
+
+                prediction_json = serializers.serialize("json", [prediction, ])
+                p_out = io.BytesIO()
+                p_out.write(prediction_json.encode('UTF-8'))
+                p_out.seek(0)
+                save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
+
+                decision = fd2_result.get('decision') or {}
+                if decision.get('should_pause'):
+                    pause_if_needed(printer, external_url)
+                elif decision.get('should_alert'):
+                    alert_if_needed(printer, external_url)
+
+                return True
 
         req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()

@@ -91,6 +91,7 @@ class User(AbstractUser):
     unsub_token = models.UUIDField(null=False, blank=False, unique=True, db_index=True, default=uuid.uuid4, editable=False)
     account_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
     mobile_app_canary = models.BooleanField(null=False, blank=False, default=False)
+    fd_2nd_gen_enabled = models.BooleanField(null=False, blank=False, default=False)
     tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
     notification_enabled = models.BooleanField(null=False, blank=False, default=True)
     unseen_printer_events = models.IntegerField(null=False, blank=False, default=0)

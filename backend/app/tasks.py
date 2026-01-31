@@ -28,6 +28,7 @@ from .models import Print, PrinterEvent
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
 from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, copy_pic, last_pic_of_print
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
+from lib.fd_2nd_gen import fd_2nd_gen_enabled, fd_2nd_gen_predict, apply_fd_2nd_gen_prediction
 from lib.image import overlay_detections
 from lib import cache
 from lib import syndicate
@@ -196,15 +197,31 @@ def detect_timelapse(self, print_id):
         with open(jpg_abs_path, 'rb') as pic:
             pic_path = f'{_print.user.id}/{_print.id}/{jpg_path}'
             internal_url, _ = save_file_obj(f'uploaded/{pic_path}', pic, settings.PICS_CONTAINER, _print.user.syndicate.name, long_term_storage=False)
-            req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
-            req.raise_for_status()
-            detections = req.json()['detections']
-            update_prediction_with_detections(last_prediction, detections, _print.printer)
+            detections = []
+            if fd_2nd_gen_enabled(_print.user):
+                fd2_result = fd_2nd_gen_predict(internal_url, prediction=last_prediction, printer=_print.printer, return_detections=False)
+                if fd2_result:
+                    apply_fd_2nd_gen_prediction(last_prediction, fd2_result)
+                    detections = fd2_result.get('detections', [])
+                    decision = fd2_result.get('decision') or {}
+                    if decision.get('should_alert') or decision.get('should_pause'):
+                        _print.alerted_at = timezone.now()
+                else:
+                    req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
+                    req.raise_for_status()
+                    detections = req.json()['detections']
+                    update_prediction_with_detections(last_prediction, detections, _print.printer)
+                    if is_failing(last_prediction, 1, escalating_factor=1):
+                        _print.alerted_at = timezone.now()
+            else:
+                req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
+                req.raise_for_status()
+                detections = req.json()['detections']
+                update_prediction_with_detections(last_prediction, detections, _print.printer)
+                if is_failing(last_prediction, 1, escalating_factor=1):
+                    _print.alerted_at = timezone.now()
+
             predictions.append(last_prediction)
-
-            if is_failing(last_prediction, 1, escalating_factor=1):
-                _print.alerted_at = timezone.now()
-
             last_prediction = copy.deepcopy(last_prediction)
             detections_to_visualize = [d for d in detections if d[1] > VISUALIZATION_THRESH]
             overlay_detections(Image.open(jpg_abs_path), detections_to_visualize).save(os.path.join(tagged_jpgs_dir, jpg_path), "JPEG")

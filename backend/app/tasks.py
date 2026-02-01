@@ -200,10 +200,11 @@ def detect_timelapse(self, print_id):
             req.raise_for_status()
             detections = req.json()['detections']
             update_prediction_with_detections(last_prediction, detections, _print.printer)
+            predictions.append(last_prediction)
+
             if is_failing(last_prediction, 1, escalating_factor=1):
                 _print.alerted_at = timezone.now()
 
-            predictions.append(last_prediction)
             last_prediction = copy.deepcopy(last_prediction)
             detections_to_visualize = [d for d in detections if d[1] > VISUALIZATION_THRESH]
             overlay_detections(Image.open(jpg_abs_path), detections_to_visualize).save(os.path.join(tagged_jpgs_dir, jpg_path), "JPEG")

@@ -17,6 +17,7 @@ celery_app.conf.task_routes = {
     'app_ent.tasks.base_tasks.credit_dh_for_contribution': {'queue': 'realtime'},
     'app_ent.tasks.base_tasks.process_print_events_ent': {'queue': 'realtime'},
     'app_ent.tasks.base_tasks.setup_free_trial': {'queue': 'realtime'},
+    'app_ent.tasks.fd_2nd_gen_tasks.fd_2nd_gen_predict': {'queue': 'realtime'},
     'notifications.tasks.send_printer_notifications': {'queue': 'realtime'},
     'notifications.tasks.send_failure_alerts': {'queue': 'realtime'},
 }

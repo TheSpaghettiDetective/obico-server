@@ -39,7 +39,6 @@ from lib.utils import save_pic, get_rotated_pic_url
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
-from lib.fd_2nd_gen import fd_2nd_gen_enabled, fd_2nd_gen_predict, apply_fd_2nd_gen_prediction
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
@@ -50,6 +49,90 @@ LOGGER = logging.getLogger(__name__)
 
 IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 90
+FD_2ND_GEN_TIMEOUT_SECONDS = 30
+FD_2ND_GEN_PREDICTION_FIELDS = {
+    'current_p',
+    'ewm_mean',
+    'rolling_mean_short',
+    'rolling_mean_long',
+    'current_frame_num',
+    'lifetime_frame_num',
+}
+
+
+def _fd_2nd_gen_prediction_state(prediction):
+    if prediction is None:
+        return {
+            'prediction_num': 0,
+            'prediction_num_lifetime': 0,
+            'ewm_mean': 0.0,
+            'rolling_mean_short': 0.0,
+            'rolling_mean_long': 0.0,
+        }
+
+    return {
+        'prediction_num': prediction.current_frame_num,
+        'prediction_num_lifetime': prediction.lifetime_frame_num,
+        'ewm_mean': prediction.ewm_mean,
+        'rolling_mean_short': prediction.rolling_mean_short,
+        'rolling_mean_long': prediction.rolling_mean_long,
+    }
+
+
+def _fd_2nd_gen_printer_context(printer):
+    if printer is None:
+        return {
+            'detective_sensitivity': 1,
+            'detection_bending_factor': None,
+        }
+
+    return {
+        'detective_sensitivity': printer.detective_sensitivity,
+        'detection_bending_factor': printer.detection_bending_factor,
+    }
+
+
+def _apply_prediction_updates(prediction, updates):
+    if prediction is None or not updates:
+        return
+
+    for field in FD_2ND_GEN_PREDICTION_FIELDS:
+        if field in updates:
+            setattr(prediction, field, updates[field])
+
+
+def _run_detection_via_handler(handler_path, printer, prediction, raw_pic_url, return_detections=False):
+    payload = {
+        'img_url': raw_pic_url,
+        'prediction_state': _fd_2nd_gen_prediction_state(prediction),
+        'printer_context': _fd_2nd_gen_printer_context(printer),
+        'return_detections': return_detections,
+    }
+
+    try:
+        async_result = celery_app.send_task(handler_path, kwargs=payload, ignore_result=False)
+        fd_result = async_result.get(timeout=FD_2ND_GEN_TIMEOUT_SECONDS)
+    except Exception as err:
+        LOGGER.warning('FD 2nd gen handler failed: %s', err, exc_info=True)
+        return None
+
+    if not isinstance(fd_result, dict):
+        LOGGER.warning('FD 2nd gen handler returned unexpected payload: %s', type(fd_result))
+        return None
+
+    _apply_prediction_updates(prediction, fd_result.get('prediction_updates'))
+    prediction.save()
+
+    decision = fd_result.get('decision') or {}
+    return {
+        'model': fd_result.get('model', 'fd_2nd_gen'),
+        'detections': fd_result.get('detections', []),
+        'focus': bool(fd_result.get('focus')),
+        'decision': {
+            'should_pause': bool(decision.get('should_pause')),
+            'should_alert': bool(decision.get('should_alert')),
+        },
+    }
 
 
 def send_failure_alert(printer: Printer, img_url, is_warning: bool, print_paused: bool) -> None:
@@ -142,8 +225,8 @@ class OctoPrintPicView(APIView):
 
         # Both generations return a compatible payload so the downstream handling is shared.
         result = None
-        if fd_2nd_gen_enabled(printer.user):
-            result = self._run_detection_fd_2nd_gen(printer, prediction, raw_pic_url)
+        if getattr(printer.user, 'fd_2nd_gen_enabled', False):
+            result = _run_detection_via_handler(settings.FD_2ND_GEN_HANDLER, printer, prediction, raw_pic_url)
 
         if result is None:
             result = self._run_detection_fd_1st_gen(printer, prediction, raw_pic_url)
@@ -176,25 +259,6 @@ class OctoPrintPicView(APIView):
             alert_if_needed(printer, tagged_external_url)
 
         return True
-
-    def _run_detection_fd_2nd_gen(self, printer, prediction, raw_pic_url):
-        fd2_result = fd_2nd_gen_predict(raw_pic_url, prediction=prediction, printer=printer, return_detections=False)
-        if not fd2_result:
-            return None
-
-        apply_fd_2nd_gen_prediction(prediction, fd2_result)
-        prediction.save()
-
-        decision = fd2_result.get('decision') or {}
-        return {
-            'model': 'fd_2nd_gen',
-            'detections': fd2_result.get('detections', []),
-            'focus': bool(fd2_result.get('focus')),
-            'decision': {
-                'should_pause': bool(decision.get('should_pause')),
-                'should_alert': bool(decision.get('should_alert')),
-            }
-        }
 
     def _run_detection_fd_1st_gen(self, printer, prediction, raw_pic_url):
         req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)

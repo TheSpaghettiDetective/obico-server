@@ -468,7 +468,6 @@ PUBLIC_VERSION_CONTAINER = os.environ.get('PUBLIC_VERSION_CONTAINER', 'public-ve
 BUCKET_PREFIX = os.environ.get('BUCKET_PREFIX')
 ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
-FD_2ND_GEN_API_URL = os.environ.get('FD_2ND_GEN_API_URL')
 
 PIC_POST_LIMIT_PER_MINUTE = int(os.environ.get('PIC_POST_LIMIT_PER_MINUTE') or '0') # 0 means no limits
 MIN_DETECTION_INTERVAL = 10 # 10s as the default interval between detections. Recommended not to change as the hyper parameters are tuned based on interval = 10s.

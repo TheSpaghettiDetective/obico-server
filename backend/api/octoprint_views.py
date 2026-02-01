@@ -116,14 +116,14 @@ class OctoPrintPicView(APIView):
         pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
         internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, user.syndicate.name, long_term_storage=False)
 
-        img_url_updated = self.detect_if_needed(printer, pic, pic_id, internal_url, external_url)
+        img_url_updated = self.detect_if_needed(printer, pic, pic_id, internal_url)
         if not img_url_updated:
             cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
 
         send_status_to_web(printer.id)
         return Response({'result': 'ok'})
 
-    def detect_if_needed(self, printer, pic, pic_id, raw_pic_url, external_url):
+    def detect_if_needed(self, printer, pic, pic_id, raw_pic_url):
         '''
         Return:
            True: Detection was performed. img_url was updated
@@ -140,31 +140,63 @@ class OctoPrintPicView(APIView):
 
         cache.print_num_predictions_incr(printer.current_print.id)
 
+        # Both generations return a compatible payload so the downstream handling is shared.
+        result = None
         if fd_2nd_gen_enabled(printer.user):
-            fd2_result = fd_2nd_gen_predict(raw_pic_url, prediction=prediction, printer=printer, return_detections=False)
-            if fd2_result:
-                apply_fd_2nd_gen_prediction(prediction, fd2_result)
-                prediction.save()
+            result = self._run_detection_fd_2nd_gen(printer, prediction, raw_pic_url)
 
-                if fd2_result.get('focus'):
-                    cache.print_high_prediction_add(printer.current_print.id, prediction.current_p, pic_id)
+        if result is None:
+            result = self._run_detection_fd_1st_gen(printer, prediction, raw_pic_url)
 
-                cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
+        if result is None:
+            return False
 
-                prediction_json = serializers.serialize("json", [prediction, ])
-                p_out = io.BytesIO()
-                p_out.write(prediction_json.encode('UTF-8'))
-                p_out.seek(0)
-                save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
+        if result['focus']:
+            cache.print_high_prediction_add(printer.current_print.id, prediction.current_p, pic_id)
 
-                decision = fd2_result.get('decision') or {}
-                if decision.get('should_pause'):
-                    pause_if_needed(printer, external_url)
-                elif decision.get('should_alert'):
-                    alert_if_needed(printer, external_url)
+        pic.file.seek(0)  # Reset file object pointer so that we can load it again
+        tagged_img = io.BytesIO()
+        detections_to_visualize = [d for d in result['detections'] if d[1] > VISUALIZATION_THRESH]
+        overlay_detections(Image.open(pic), detections_to_visualize).save(tagged_img, "JPEG")
+        tagged_img.seek(0)
 
-                return True
+        pic_path = f'tagged/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
+        _, tagged_external_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
+        cache.printer_pic_set(printer.id, {'img_url': tagged_external_url}, ex=IMG_URL_TTL_SECONDS)
 
+        prediction_json = serializers.serialize("json", [prediction, ])
+        p_out = io.BytesIO()
+        p_out.write(prediction_json.encode('UTF-8'))
+        p_out.seek(0)
+        save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
+
+        if result['decision']['should_pause']:
+            pause_if_needed(printer, tagged_external_url)
+        elif result['decision']['should_alert']:
+            alert_if_needed(printer, tagged_external_url)
+
+        return True
+
+    def _run_detection_fd_2nd_gen(self, printer, prediction, raw_pic_url):
+        fd2_result = fd_2nd_gen_predict(raw_pic_url, prediction=prediction, printer=printer, return_detections=False)
+        if not fd2_result:
+            return None
+
+        apply_fd_2nd_gen_prediction(prediction, fd2_result)
+        prediction.save()
+
+        decision = fd2_result.get('decision') or {}
+        return {
+            'model': 'fd_2nd_gen',
+            'detections': fd2_result.get('detections', []),
+            'focus': bool(fd2_result.get('focus')),
+            'decision': {
+                'should_pause': bool(decision.get('should_pause')),
+                'should_alert': bool(decision.get('should_alert')),
+            }
+        }
+
+    def _run_detection_fd_1st_gen(self, printer, prediction, raw_pic_url):
         req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
         detections = req.json()['detections']
@@ -174,32 +206,19 @@ class OctoPrintPicView(APIView):
         update_prediction_with_detections(prediction, detections, printer)
         prediction.save()
 
-        if prediction.current_p > settings.THRESHOLD_LOW * 0.2:  # Select predictions high enough for focused feedback
-            cache.print_high_prediction_add(printer.current_print.id, prediction.current_p, pic_id)
+        should_pause = is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR)
+        should_alert = False if should_pause else is_failing(prediction, printer.detective_sensitivity, escalating_factor=1)
+        focus = prediction.current_p > settings.THRESHOLD_LOW * 0.2
 
-        pic.file.seek(0)  # Reset file object pointer so that we can load it again
-        tagged_img = io.BytesIO()
-        detections_to_visualize = [d for d in detections if d[1] > VISUALIZATION_THRESH]
-        overlay_detections(Image.open(pic), detections_to_visualize).save(tagged_img, "JPEG")
-        tagged_img.seek(0)
-
-        pic_path = f'tagged/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        _, external_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
-        cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
-
-        prediction_json = serializers.serialize("json", [prediction, ])
-        p_out = io.BytesIO()
-        p_out.write(prediction_json.encode('UTF-8'))
-        p_out.seek(0)
-        save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
-
-        if is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR):
-            # The prediction is high enough to match the "escalated" level and hence print needs to be paused
-            pause_if_needed(printer, external_url)
-        elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
-            alert_if_needed(printer, external_url)
-
-        return True
+        return {
+            'model': 'fd_1st_gen',
+            'detections': detections,
+            'focus': focus,
+            'decision': {
+                'should_pause': should_pause,
+                'should_alert': should_alert,
+            }
+        }
 
 class OctoPrinterView(APIView):
     authentication_classes = (PrinterAuthentication,)

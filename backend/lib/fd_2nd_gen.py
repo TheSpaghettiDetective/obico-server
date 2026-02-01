@@ -1,10 +1,8 @@
-import logging
 import requests
-from django.conf import settings
 
 from lib.utils import ml_api_auth_headers
 
-LOGGER = logging.getLogger(__name__)
+FD_2ND_GEN_API_URL = 'http://web:3334/ent/api/fd_2nd_gen/'
 
 
 def fd_2nd_gen_enabled(user):
@@ -57,10 +55,6 @@ def apply_fd_2nd_gen_prediction(prediction, result):
 
 
 def fd_2nd_gen_predict(img_url, prediction=None, printer=None, return_detections=False):
-    if not settings.FD_2ND_GEN_API_URL:
-        LOGGER.warning('FD_2ND_GEN_API_URL not configured')
-        return None
-
     payload = {
         'img_url': img_url,
         'prediction_state': _prediction_state_from_obj(prediction),
@@ -68,16 +62,12 @@ def fd_2nd_gen_predict(img_url, prediction=None, printer=None, return_detections
         'return_detections': return_detections,
     }
 
-    try:
-        resp = requests.post(
-            settings.FD_2ND_GEN_API_URL,
-            json=payload,
-            headers=ml_api_auth_headers(),
-            verify=False,
-            timeout=30,
-        )
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as err:
-        LOGGER.warning('FD 2nd gen prediction failed: %s', err)
-        return None
+    resp = requests.post(
+        FD_2ND_GEN_API_URL,
+        json=payload,
+        headers=ml_api_auth_headers(),
+        verify=False,
+        timeout=30,
+    )
+    resp.raise_for_status()
+    return resp.json()

@@ -200,19 +200,11 @@ def detect_timelapse(self, print_id):
             detections = []
             if fd_2nd_gen_enabled(_print.user):
                 fd2_result = fd_2nd_gen_predict(internal_url, prediction=last_prediction, printer=_print.printer, return_detections=False)
-                if fd2_result:
-                    apply_fd_2nd_gen_prediction(last_prediction, fd2_result)
-                    detections = fd2_result.get('detections', [])
-                    decision = fd2_result.get('decision') or {}
-                    if decision.get('should_alert') or decision.get('should_pause'):
-                        _print.alerted_at = timezone.now()
-                else:
-                    req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
-                    req.raise_for_status()
-                    detections = req.json()['detections']
-                    update_prediction_with_detections(last_prediction, detections, _print.printer)
-                    if is_failing(last_prediction, 1, escalating_factor=1):
-                        _print.alerted_at = timezone.now()
+                apply_fd_2nd_gen_prediction(last_prediction, fd2_result)
+                detections = fd2_result.get('detections', [])
+                decision = fd2_result.get('decision') or {}
+                if decision.get('should_alert') or decision.get('should_pause'):
+                    _print.alerted_at = timezone.now()
             else:
                 req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
                 req.raise_for_status()

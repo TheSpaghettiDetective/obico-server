@@ -12,15 +12,14 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework import viewsets, mixins
 from rest_framework import status
 from django.conf import settings
-from django.core import serializers
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404
-import requests
 import json
 import io
 import os
 import logging
+import importlib
 from python_ipware import IpWare
 from ipware import get_client_ip
 from binascii import hexlify
@@ -33,12 +32,9 @@ from lib.one_time_passcode import request_one_time_passcode
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
 from lib import cache
-from lib.image import overlay_detections
-from lib.utils import ml_api_auth_headers
 from lib.utils import save_pic, get_rotated_pic_url
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
 from notifications.handlers import handler
-from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
@@ -139,39 +135,17 @@ class OctoPrintPicView(APIView):
 
         cache.print_num_predictions_incr(printer.current_print.id)
 
-        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
-        req.raise_for_status()
-        detections = req.json()['detections']
-        if settings.DEBUG:
-            LOGGER.info(f'Detections: {detections}')
+        # Dynamic import of failure detection module (allows enterprise override)
+        fd_module = importlib.import_module(settings.FD_MODULE)
+        result = fd_module.detect(printer, pic, pic_id, raw_pic_url)
 
-        update_prediction_with_detections(prediction, detections, printer)
-        prediction.save()
+        # Note: detect() handles cache.printer_pic_set() internally
 
-        if prediction.current_p > settings.THRESHOLD_LOW * 0.2:  # Select predictions high enough for focused feedback
-            cache.print_high_prediction_add(printer.current_print.id, prediction.current_p, pic_id)
-
-        pic.file.seek(0)  # Reset file object pointer so that we can load it again
-        tagged_img = io.BytesIO()
-        detections_to_visualize = [d for d in detections if d[1] > VISUALIZATION_THRESH]
-        overlay_detections(Image.open(pic), detections_to_visualize).save(tagged_img, "JPEG")
-        tagged_img.seek(0)
-
-        pic_path = f'tagged/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        _, external_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
-        cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
-
-        prediction_json = serializers.serialize("json", [prediction, ])
-        p_out = io.BytesIO()
-        p_out.write(prediction_json.encode('UTF-8'))
-        p_out.seek(0)
-        save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
-
-        if is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR):
-            # The prediction is high enough to match the "escalated" level and hence print needs to be paused
-            pause_if_needed(printer, external_url)
-        elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
-            alert_if_needed(printer, external_url)
+        # Handle pause/alert actions based on detection result
+        if result['decision']['should_pause']:
+            pause_if_needed(printer, result['tagged_img_url'])
+        elif result['decision']['should_alert']:
+            alert_if_needed(printer, result['tagged_img_url'])
 
         return True
 

@@ -244,31 +244,6 @@ class PrinterViewSet(
 
         from lib.utils import ml_api_auth_headers
         from lib.prediction import update_prediction_with_detections
-        from lib.fd_2nd_gen import fd_2nd_gen_enabled, fd_2nd_gen_predict, apply_fd_2nd_gen_prediction
-
-        if fd_2nd_gen_enabled(printer.user):
-            try:
-                fd2_result = fd_2nd_gen_predict(external_url, prediction=prediction, printer=printer, return_detections=False)
-            except Exception as err:
-                return Response({'error': f'FD 2nd gen prediction failed: {err}'}, status=status.HTTP_502_BAD_GATEWAY)
-
-            apply_fd_2nd_gen_prediction(prediction, fd2_result)
-            prediction.save()
-            send_status_to_web(printer.id)
-            temporal_stats = fd2_result.get('temporal_stats', {})
-            return Response({
-                'result': {
-                    'p': prediction.current_p,
-                    'temporal_stats': {
-                        'ewm_mean': temporal_stats.get('ewm_mean', prediction.ewm_mean),
-                        'rolling_mean_short': temporal_stats.get('rolling_mean_short', prediction.rolling_mean_short),
-                        'rolling_mean_long': temporal_stats.get('rolling_mean_long', prediction.rolling_mean_long),
-                        'prediction_num': temporal_stats.get('prediction_num', prediction.current_frame_num),
-                        'prediction_num_lifetime': temporal_stats.get('prediction_num_lifetime', prediction.lifetime_frame_num),
-                    },
-                    'detections': fd2_result.get('detections', []),
-                }
-            })
 
         req = requests.get(settings.ML_API_HOST + '/p/', params={'img': external_url}, headers=ml_api_auth_headers(), verify=False, timeout=30)
         req.raise_for_status()

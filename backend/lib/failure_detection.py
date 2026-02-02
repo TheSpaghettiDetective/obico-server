@@ -12,11 +12,32 @@ from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from lib.prediction import update_prediction_with_detections, is_failing
-from app.models import PrinterPrediction, calc_normalized_p
+from app.models import PrinterPrediction
 
 LOGGER = logging.getLogger(__name__)
 
 IMG_URL_TTL_SECONDS = 60 * 30
+
+
+def calc_normalized_p(detective_sensitivity: float,
+                      pred: 'PrinterPrediction',
+                      params: dict) -> float:
+    """Calculate normalized prediction value (0-1 scale) for UI display."""
+    def scale(oldValue, oldMin, oldMax, newMin, newMax):
+        newValue = (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
+        return min(newMax, max(newMin, newValue))
+    thresh_warning = (pred.rolling_mean_short - pred.rolling_mean_long) * params['ROLLING_MEAN_SHORT_MULTIPLE']
+    thresh_warning = min(params['THRESHOLD_HIGH'], max(params['THRESHOLD_LOW'], thresh_warning))
+    thresh_failure = thresh_warning * params['ESCALATING_FACTOR']
+
+    p = (pred.ewm_mean - pred.rolling_mean_long) * detective_sensitivity
+
+    if p > thresh_failure:
+        return scale(p, thresh_failure, thresh_failure * 1.5, 2.0 / 3.0, 1.0)
+    elif p > thresh_warning:
+        return scale(p, thresh_warning, thresh_failure, 1.0 / 3.0, 2.0 / 3.0)
+    else:
+        return scale(p, 0, thresh_warning, 0, 1.0 / 3.0)
 
 
 def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint, params):

@@ -35,7 +35,8 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
+    SharedResource, OctoPrintTunnel, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
+from lib.failure_detection import calc_normalized_p
 from .serializers import (
     UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,

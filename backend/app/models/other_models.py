@@ -322,26 +322,6 @@ class PrinterCommand(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-def calc_normalized_p(detective_sensitivity: float,
-                      pred: 'PrinterPrediction',
-                      params: dict) -> float:
-    def scale(oldValue, oldMin, oldMax, newMin, newMax):
-        newValue = (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
-        return min(newMax, max(newMin, newValue))
-    thresh_warning = (pred.rolling_mean_short - pred.rolling_mean_long) * params['ROLLING_MEAN_SHORT_MULTIPLE']
-    thresh_warning = min(params['THRESHOLD_HIGH'], max(params['THRESHOLD_LOW'], thresh_warning))
-    thresh_failure = thresh_warning * params['ESCALATING_FACTOR']
-
-    p = (pred.ewm_mean - pred.rolling_mean_long) * detective_sensitivity
-
-    if p > thresh_failure:
-        return scale(p, thresh_failure, thresh_failure * 1.5, 2.0 / 3.0, 1.0)
-    elif p > thresh_warning:
-        return scale(p, thresh_warning, thresh_failure, 1.0 / 3.0, 2.0 / 3.0)
-    else:
-        return scale(p, 0, thresh_warning, 0, 1.0 / 3.0)
-
-
 class PrinterPrediction(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, primary_key=True)
     current_frame_num = models.IntegerField(null=False, default=0)

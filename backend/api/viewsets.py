@@ -35,7 +35,8 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
+    SharedResource, OctoPrintTunnel, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
+from lib.failure_detection import calc_normalized_p
 from .serializers import (
     UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
@@ -398,9 +399,11 @@ class PrintViewSet(
         )
 
         for raw_pred in data:
-            pred = PrinterPrediction(**raw_pred['fields'])
-            raw_pred['fields']['normalized_p'] = calc_normalized_p(
-                detective_sensitivity, pred)
+            # Use stored normalized_p if present, otherwise calculate (backward compatibility)
+            if 'normalized_p' not in raw_pred['fields']:
+                pred = PrinterPrediction(**raw_pred['fields'])
+                raw_pred['fields']['normalized_p'] = calc_normalized_p(
+                    detective_sensitivity, pred, settings.FD_1ST_GEN_PARAMS)
 
         return Response(
             data,

@@ -10,7 +10,7 @@ import json
 
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p,
+    SharedResource, OctoPrintTunnel,
     NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspection, FirstLayerInspectionImage,
 )
 
@@ -141,7 +141,7 @@ class PrinterSerializer(BasePrinterSerializer):
         read_only_fields = BasePrinterSerializer.Meta.read_only_fields + ('pic', 'status', 'settings', 'current_print', 'normalized_p',)
 
     def get_normalized_p(self, obj: Printer) -> float:
-        return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else 0
+        return obj.printerprediction.normalized_p if hasattr(obj, 'printerprediction') else 0
 
 
 class BaseGCodeFolderSerializer(serializers.ModelSerializer):

@@ -472,21 +472,25 @@ ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 PIC_POST_LIMIT_PER_MINUTE = int(os.environ.get('PIC_POST_LIMIT_PER_MINUTE') or '0') # 0 means no limits
 MIN_DETECTION_INTERVAL = 10 # 10s as the default interval between detections. Recommended not to change as the hyper parameters are tuned based on interval = 10s.
 
-# Hyper parameters for prediction model
-# Definitely not failing if ewm mean is below this level. =(0.4 - 0.02): 0.4 - optimal THRESHOLD_LOW in hyper params grid search; 0.02 - average of rolling_mean_short
-THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW') or '0.38')
-# Definitely failing if ewm mean is above this level. =(0.8 - 0.02): 0.8 - optimal THRESHOLD_HIGH in hyper params grid search; 0.02 - average of rolling_mean_short
-THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH') or '0.78')
-# The number of frames at the beginning of the print that are considered "safe"
-INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM') or '30')
-# Print is failing is ewm mean is this many times over the short rolling mean
-ROLLING_MEAN_SHORT_MULTIPLE = float(
-    os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE') or '3.8')
-# The multiplication factor to escalate "warning" to "error"
-ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR') or '1.75')
+# Failure Detection Hyperparameters (1st Gen - Darknet model)
+# All params in one dict for easier management and passing to functions
+FD_1ST_GEN_PARAMS = {
+    'EWM_SPAN': 12,                    # Optimal EWM span from hyperparameter grid search
+    'ROLLING_WIN_SHORT': 310,          # Rolling window for short-term mean
+    'ROLLING_WIN_LONG': 7200,          # Rolling window for long-term baseline (~20 hours)
+    'THRESHOLD_LOW': 0.38,             # Below this = definitely not failing (0.4 - 0.02 baseline)
+    'THRESHOLD_HIGH': 0.78,            # Above this = definitely failing (0.8 - 0.02 baseline)
+    'INIT_SAFE_FRAME_NUM': 30,         # Frames at print start considered "safe"
+    'ROLLING_MEAN_SHORT_MULTIPLE': 3.8,  # Failing if ewm > short_mean * this
+    'ESCALATING_FACTOR': 1.75,         # Factor to escalate warning to pause
+    'VISUALIZATION_THRESH': 0.2,       # Threshold for drawing detection boxes
+}
 
 # Event processing
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
+
+# Failure detection module - can be overridden in enterprise settings
+FD_MODULE = 'lib.failure_detection'
 
 WELL_KNOWN_PATH = None
 

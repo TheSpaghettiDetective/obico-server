@@ -19,7 +19,7 @@ from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
-from app.models import OctoPrintTunnel, calc_normalized_p
+from app.models import OctoPrintTunnel
 
 
 import logging
@@ -184,7 +184,7 @@ def tunnel_api(request, octoprinttunnel):
         )
 
     if request.path.lower() == '/_tsd_/prediction/':
-        p = calc_normalized_p(printer.detective_sensitivity, printer.printerprediction)
+        p = printer.printerprediction.normalized_p
         return HttpResponse(
             json.dumps({'normalized_p': p}),
             content_type='application/json',

@@ -398,9 +398,11 @@ class PrintViewSet(
         )
 
         for raw_pred in data:
-            pred = PrinterPrediction(**raw_pred['fields'])
-            raw_pred['fields']['normalized_p'] = calc_normalized_p(
-                detective_sensitivity, pred)
+            # Use stored normalized_p if present, otherwise calculate (backward compatibility)
+            if 'normalized_p' not in raw_pred['fields']:
+                pred = PrinterPrediction(**raw_pred['fields'])
+                raw_pred['fields']['normalized_p'] = calc_normalized_p(
+                    detective_sensitivity, pred, settings.FD_1ST_GEN_PARAMS)
 
         return Response(
             data,

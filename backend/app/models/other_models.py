@@ -323,12 +323,11 @@ class PrinterCommand(models.Model):
 
 
 def calc_normalized_p(detective_sensitivity: float,
-                      pred: 'PrinterPrediction') -> float:
+                      pred: 'PrinterPrediction',
+                      params: dict) -> float:
     def scale(oldValue, oldMin, oldMax, newMin, newMax):
         newValue = (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
         return min(newMax, max(newMin, newValue))
-
-    params = settings.FD_1ST_GEN_PARAMS
     thresh_warning = (pred.rolling_mean_short - pred.rolling_mean_long) * params['ROLLING_MEAN_SHORT_MULTIPLE']
     thresh_warning = min(params['THRESHOLD_HIGH'], max(params['THRESHOLD_LOW'], thresh_warning))
     thresh_failure = thresh_warning * params['ESCALATING_FACTOR']
@@ -351,6 +350,7 @@ class PrinterPrediction(models.Model):
     ewm_mean = models.FloatField(null=False, default=0.0)
     rolling_mean_long = models.FloatField(null=False, default=0.0)
     rolling_mean_short = models.FloatField(null=False, default=0.0)
+    normalized_p = models.FloatField(null=False, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -359,6 +359,7 @@ class PrinterPrediction(models.Model):
         self.current_p = 0.0
         self.ewm_mean = 0.0
         self.rolling_mean_short = 0.0
+        self.normalized_p = 0.0
         self.save()
 
     def __str__(self):

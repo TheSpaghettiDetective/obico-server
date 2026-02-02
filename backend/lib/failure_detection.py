@@ -12,7 +12,7 @@ from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from lib.prediction import update_prediction_with_detections, is_failing
-from app.models import PrinterPrediction
+from app.models import PrinterPrediction, calc_normalized_p
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint, params):
         LOGGER.info(f'Detections: {detections}')
 
     update_prediction_with_detections(prediction, detections, params, bending_factor=printer.detection_bending_factor)
+    prediction.normalized_p = calc_normalized_p(printer.detective_sensitivity, prediction, params)
     prediction.save()
 
     if prediction.current_p > params['THRESHOLD_LOW'] * 0.2:
@@ -57,6 +58,7 @@ def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint, params):
         'ewm_mean': prediction.ewm_mean,
         'rolling_mean_short': prediction.rolling_mean_short,
         'rolling_mean_long': prediction.rolling_mean_long,
+        'normalized_p': prediction.normalized_p,
     })
     p_out = io.BytesIO()
     p_out.write(prediction_json.encode('UTF-8'))

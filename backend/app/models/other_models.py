@@ -328,9 +328,10 @@ def calc_normalized_p(detective_sensitivity: float,
         newValue = (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
         return min(newMax, max(newMin, newValue))
 
-    thresh_warning = (pred.rolling_mean_short - pred.rolling_mean_long) * settings.ROLLING_MEAN_SHORT_MULTIPLE
-    thresh_warning = min(settings.THRESHOLD_HIGH, max(settings.THRESHOLD_LOW, thresh_warning))
-    thresh_failure = thresh_warning * settings.ESCALATING_FACTOR
+    params = settings.FD_1ST_GEN_PARAMS
+    thresh_warning = (pred.rolling_mean_short - pred.rolling_mean_long) * params['ROLLING_MEAN_SHORT_MULTIPLE']
+    thresh_warning = min(params['THRESHOLD_HIGH'], max(params['THRESHOLD_LOW'], thresh_warning))
+    thresh_failure = thresh_warning * params['ESCALATING_FACTOR']
 
     p = (pred.ewm_mean - pred.rolling_mean_long) * detective_sensitivity
 

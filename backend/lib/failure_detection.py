@@ -19,12 +19,10 @@ LOGGER = logging.getLogger(__name__)
 IMG_URL_TTL_SECONDS = 60 * 30
 
 
-def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint='/p/', params=None):
+def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint, params):
     """
     Perform failure detection. Returns dict with 'detections', 'decision', 'tagged_img_url'.
     """
-    if params is None:
-        params = settings.FD_1ST_GEN_PARAMS
 
     prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
 

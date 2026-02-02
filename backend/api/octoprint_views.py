@@ -137,7 +137,7 @@ class OctoPrintPicView(APIView):
 
         # Dynamic import of failure detection module (allows enterprise override)
         fd_module = importlib.import_module(settings.FD_MODULE)
-        result = fd_module.detect(printer, pic, pic_id, raw_pic_url)
+        result = fd_module.detect(printer, pic, pic_id, raw_pic_url, '/p/', settings.FD_1ST_GEN_PARAMS)
 
         # Note: detect() handles cache.printer_pic_set() internally
 

@@ -8,7 +8,6 @@ import PrintHistoryPage from '@src/views/PrintHistoryPage.vue'
 import StatsPage from '@src/views/StatsPage.vue'
 import PrintsPage from '@src/views/PrintsPage.vue'
 import PrintPage from '@src/views/PrintPage.vue'
-import UploadPrintPage from '@src/views/UploadPrintPage.vue'
 import PrinterListPage from '@src/views/PrinterListPage.vue'
 import SharedPrinterPage from '@src/views/SharedPrinterPage.vue'
 import PrinterSettingsPage from '@src/views/PrinterSettingsPage.vue'
@@ -84,7 +83,6 @@ const components = {
   PrintPage,
   PrintHistoryPage,
   StatsPage,
-  UploadPrintPage,
   UserPreferencesPage,
   PrinterEventsPage,
   PrinterTerminalPage,

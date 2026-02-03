@@ -10,15 +10,12 @@ import shutil
 import logging
 from django.utils import timezone
 from django.conf import settings
-from django.core import serializers
 from celery import shared_task
 from config.celery import PeriodicTask
 from datetime import timedelta
 import tempfile
-import requests
-from PIL import Image, ImageFile
+from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-import copy
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 from channels_presence.models import Room
@@ -26,9 +23,7 @@ from channels_presence.models import Room
 from .models import *
 from .models import Print, PrinterEvent
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
-from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, copy_pic, last_pic_of_print
-from lib.prediction import update_prediction_with_detections, is_failing
-from lib.image import overlay_detections
+from lib.utils import orientation_to_ffmpeg_options
 from lib import cache
 from lib import syndicate
 from notifications.handlers import handler
@@ -140,97 +135,6 @@ def compile_timelapse(print_id):
 
     shutil.rmtree(to_dir, ignore_errors=True)
     clean_up_print_pics(_print)
-
-
-@shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
-def preprocess_timelapse(self, user_id, video_path, filename):
-    tmp_file_path = os.path.join(tempfile.gettempdir(), video_path)
-    converted_mp4_path = tmp_file_path + '.mp4'
-    Path(tmp_file_path).parent.mkdir(parents=True, exist_ok=True)
-    with open(tmp_file_path, 'wb') as file_obj:
-        retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.TIMELAPSE_CONTAINER, long_term_storage=True)
-
-    subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
-
-    _print = Print.objects.create(user_id=user_id, filename=filename, uploaded_at=timezone.now(), started_at=timezone.now(), finished_at=timezone.now())
-    with open(converted_mp4_path, 'rb') as mp4_file:
-        _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
-    _print.video_url = video_url
-    _print.save(keep_deleted=True)
-
-    detect_timelapse.delay(_print.id)
-    os.remove(tmp_file_path)
-    os.remove(converted_mp4_path)
-
-
-@shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
-def detect_timelapse(self, print_id):
-    MAX_FRAME_NUM = 750
-
-    _print = Print.objects.get(pk=print_id)
-    tmp_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
-    mp4_filepath = f'private/{_print.id}.mp4'
-    tl_path = os.path.join(tmp_dir, mp4_filepath)
-    Path(tl_path).parent.mkdir(parents=True, exist_ok=True)
-    with open(tl_path, 'wb') as file_obj:
-        retrieve_to_file_obj(mp4_filepath, file_obj, settings.TIMELAPSE_CONTAINER)
-
-    jpgs_dir = os.path.join(tmp_dir, 'jpgs')
-    shutil.rmtree(jpgs_dir, ignore_errors=True)
-    os.makedirs(jpgs_dir)
-    tagged_jpgs_dir = os.path.join(tmp_dir, 'tagged_jpgs')
-    shutil.rmtree(tagged_jpgs_dir, ignore_errors=True)
-    os.makedirs(tagged_jpgs_dir)
-
-    ffprobe_cmd = subprocess.run(
-        f'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 {tl_path}'.split(), stdout=subprocess.PIPE)
-    frame_num = int(ffprobe_cmd.stdout.strip())
-    fps = 30*MAX_FRAME_NUM/frame_num if frame_num > MAX_FRAME_NUM else 30
-    subprocess.run(f'ffmpeg -y -i {tl_path} -vf fps={fps} -qscale:v 2 {jpgs_dir}/%5d.jpg'.split())
-
-    predictions = []
-    last_prediction = PrinterPrediction()
-    jpg_filenames = sorted(os.listdir(jpgs_dir))
-    for jpg_path in jpg_filenames:
-        jpg_abs_path = os.path.join(jpgs_dir, jpg_path)
-        with open(jpg_abs_path, 'rb') as pic:
-            pic_path = f'{_print.user.id}/{_print.id}/{jpg_path}'
-            internal_url, _ = save_file_obj(f'uploaded/{pic_path}', pic, settings.PICS_CONTAINER, _print.user.syndicate.name, long_term_storage=False)
-            req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
-            req.raise_for_status()
-            detections = req.json()['detections']
-            params = settings.FD_1ST_GEN_PARAMS
-            update_prediction_with_detections(last_prediction, detections, params, bending_factor=_print.printer.detection_bending_factor)
-            predictions.append(last_prediction)
-
-            if is_failing(last_prediction, 1, params, escalating_factor=1):
-                _print.alerted_at = timezone.now()
-
-            last_prediction = copy.deepcopy(last_prediction)
-            detections_to_visualize = [d for d in detections if d[1] > params['VISUALIZATION_THRESH']]
-            overlay_detections(Image.open(jpg_abs_path), detections_to_visualize).save(os.path.join(tagged_jpgs_dir, jpg_path), "JPEG")
-
-    predictions_json = serializers.serialize("json", predictions)
-    _, json_url = save_file_obj(f'private/{_print.id}_p.json', io.BytesIO(str.encode(predictions_json)), settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
-
-    mp4_filename = f'{_print.id}_tagged.mp4'
-    output_mp4 = os.path.join(tmp_dir, mp4_filename)
-    subprocess.run(
-        f'ffmpeg -y -r 30 -pattern_type glob -i {tagged_jpgs_dir}/*.jpg -c:v libx264 -pix_fmt yuv420p -vf pad=ceil(iw/2)*2:ceil(ih/2)*2 {output_mp4}'.split(), check=True)
-    with open(output_mp4, 'rb') as mp4_file:
-        _, mp4_file_url = save_file_obj(f'private/{mp4_filename}', mp4_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
-
-    with open(os.path.join(jpgs_dir, jpg_filenames[-1]), 'rb') as poster_file:
-        _, poster_file_url = save_file_obj(f'private/{_print.id}_poster.jpg', poster_file, settings.TIMELAPSE_CONTAINER, _print.user.syndicate.name)
-
-    _print.tagged_video_url = mp4_file_url
-    _print.prediction_json_url = json_url
-    _print.poster_url = poster_file_url
-    _print.save(keep_deleted=True)
-
-    shutil.rmtree(tmp_dir, ignore_errors=True)
-    send_timelapse_detection_done_email(_print)
-    delete_dir(f'uploaded/{_print.user.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
 
 
 # Websocket connection count house upkeep jobs

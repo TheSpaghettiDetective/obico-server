@@ -570,18 +570,10 @@ export default {
           await this.autoOrientAllObjects()
         } else if (action.name === 'auto_arrange_all_models') {
           await this.autoArrangeAllObjects()
-        } else if (action.name === 'set_print_troubleshooting_flow') {
-          this.current_workflow = 'print_troubleshooting'
-        } else if (action.name === 'confirm_print_troubleshooting_flow') {
-          this.confirmPrintTroubleshootingFlow()
-        } else if (action.name === 'confirm_end_troubleshooting') {
-          this.confirmEndTroubleshooting()
         } else if (action.name === 'ask_user_to_choose_from_options') {
           this.showOptionsAsQuickButtons(action.arguments)
         }
       }
-
-      this.populatePrintTroubleshootingQuickButtonsIfNeeded()
     },
 
     async applySettingsInMessage(message) {
@@ -1128,63 +1120,6 @@ export default {
       this.scrollToBottom()
     },
 
-    // Methods for handling the print troubleshooting flow
-    populatePrintTroubleshootingQuickButtonsIfNeeded() {
-      if (this.current_workflow === 'print_troubleshooting') {
-        // Check if the last message contains slicing settings
-        const lastMessage = this.messages[this.messages.length - 1]
-        if (lastMessage && this.slicingSettingsInMessage(lastMessage)) {
-          this.removeQuickButtons([this.cannedActions.sliceWithCurrentSettings])
-          this.setQuickButtons([this.cannedActions.sliceWithCurrentSettings, ...this.quickButtons])
-        }
-
-        this.removeQuickButtons([this.cannedActions.endTroubleshooting])
-        this.setQuickButtons([...this.quickButtons, this.cannedActions.endTroubleshooting])
-      }
-    },
-    confirmPrintTroubleshootingFlow() {
-      const startTroubleshootingMsg = this.$t('Troubleshoot settings in current project')
-      const startTroubleshootingOtherProjectMsg = this.$t('Troubleshoot settings in other project')
-      const startTroubleshootingFromGCodeMsg = this.$t('Troubleshoot settings from G-Code file')
-      const dontWantTroubleshootingMsg = this.$t("I don't want troubleshooting")
-      this.setQuickButtons([
-        {
-          message: startTroubleshootingMsg,
-          onClick: () => {
-            this.current_workflow = 'print_troubleshooting'
-            this.onUserQueryQuickButton(startTroubleshootingMsg)
-          },
-        },
-        {
-          message: startTroubleshootingOtherProjectMsg,
-          onClick: () => {
-            this.messages.push({
-              role: 'assistant',
-              content:
-                this.$t('Please close this project and open the project for the print that you want to troubleshoot.'),
-            })
-          },
-        },
-        {
-          message: startTroubleshootingFromGCodeMsg,
-          onClick: () => {
-            this.messages.push({
-              role: 'user',
-              content: this.$t('I want to do troubleshooting from a G-Code file.'),
-            })
-            this.messages.push({
-              role: 'assistant',
-              content:
-                this.$t('Go to the [3D Printing AI Tools](https://www.3dp-ai.tools/troubleshooting) website to troubleshoot your G-Code file.'),
-            })
-          },
-        },
-        {
-          message: dontWantTroubleshootingMsg,
-          onClick: () => this.onUserQueryQuickButton(dontWantTroubleshootingMsg),
-        },
-      ])
-    },
     showOptionsAsQuickButtons(args) {
       const options = args?.user_options_to_choose_from || []
       if (!options || !Array.isArray(options)) return
@@ -1200,13 +1135,6 @@ export default {
       // Add the new buttons to the existing ones
       this.pushQuickButtons([...this.quickButtons, ...newQuickButtons])
     },
-    confirmEndTroubleshooting() {
-      this.setQuickButtons([
-        this.cannedActions.endTroubleshooting,
-        this.cannedActions.stayInTroubleshooting,
-      ])
-    },
-    // End of methods for handling the print troubleshooting flow
 
     // Modal methods
     openUpgradeModal() {

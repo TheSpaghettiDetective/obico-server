@@ -3,7 +3,7 @@ title: Elegoo-Obico Chat Messages API
 unlisted: true
 ---
 
-The APIs documented on this page are designed for Elegoo partners to interact with Obico's AI-powered chat assistant for 3D printing slicer guidance. This system uses advanced AI models to help users with various tasks including query intent detection, slicing settings determination, and print troubleshooting.
+The APIs documented on this page are designed for Elegoo partners to interact with Obico's AI-powered chat assistant for 3D printing slicer guidance. This system uses advanced AI models to help users with various tasks including query intent detection and slicing settings determination.
 
 
 ## Authentication {#authentication}
@@ -50,9 +50,7 @@ This POST request should be sent as `application/json` format.
     - `role`: String. Either `"user"` or `"assistant"`.
     - `content`: String. The message content. Can be empty string but not null.
 - `chat_id`: String. Optional. Session identifier for the chat. Used for tracing and analytics only (not for retrieving stored messages).
-- `current_workflow`: String. Optional. Specifies the current workflow mode.
-  - `"print_troubleshooting"`: Routes to print troubleshooting workflow
-  - If not specified or `null`, defaults to query intent checking workflow
+- `current_workflow`: String. Optional. Reserved for future use. Currently defaults to query intent checking workflow.
 - `slicing_profiles`: Object. Optional. Contains slicing configuration information. Required when using `determine_slicing_settings` or `retrieve_slicing_settings` workflows.
   - `filament_presets`: Array of filament preset objects. Exactly one selected preset should be provided.
     - `name`: String. Name of the filament preset.
@@ -238,10 +236,6 @@ The following agent actions can be returned in the `agent_actions` array:
 |-------------|-------------|-----------|
 | `determine_slicing_settings` | Indicates slicing settings were determined. Response will include `slicing_profiles` and `per_override_explanations`. | `{}` |
 | `retrieve_slicing_settings` | Indicates current slicing settings were retrieved and explained. | `{}` |
-| `guide_print_issue_troubleshooting` | Start the print troubleshooting workflow | `{}` |
-| `confirm_print_troubleshooting_flow` | Request confirmation to enter troubleshooting mode | `{}` |
-| `set_print_troubleshooting_flow` | Indicates the client should set `current_workflow` to `"print_troubleshooting"` for subsequent requests | `{}` |
-| `confirm_end_troubleshooting` | Request confirmation to exit troubleshooting mode | `{}` |
 
 #### UI Actions
 
@@ -378,22 +372,9 @@ When `current_workflow` is not specified or is `null`, the API routes to the que
 - Routes to appropriate sub-workflows:
   - **Determine slicing settings**: When user wants to optimize or adjust slicing parameters
   - **Retrieve slicing settings**: When user asks about current parameter values
-  - **Print troubleshooting**: When user reports a print issue
 - Provides guidance on slicing settings, model preparation, and general 3D printing questions
 - Can trigger various agent actions based on user needs
 - Supports chat history summarization for long conversations (4+ user messages)
-
-### Print Troubleshooting {#print-troubleshooting}
-
-When `current_workflow` is set to `"print_troubleshooting"`, the API routes to the print troubleshooting workflow. This workflow:
-- Focuses on diagnosing and resolving print issues
-- Provides step-by-step troubleshooting guidance
-- Analyzes print problems and suggests solutions
-- Can suggest slicing parameter adjustments via `slicing_profiles` in the response
-- May present options for user to choose from via `ask_user_to_choose_from_options` action
-- Tracks whether a solution has been proposed and offers follow-up options
-
-**Note:** When the API returns `set_print_troubleshooting_flow` action, the client should set `current_workflow` to `"print_troubleshooting"` in subsequent requests to continue the troubleshooting session.
 
 ## Usage Example {#usage-example}
 

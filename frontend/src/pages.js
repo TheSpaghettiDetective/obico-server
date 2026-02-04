@@ -6,7 +6,6 @@ import OctoPrintTunnelPage from '@src/views/OctoPrintTunnelPage.vue'
 import PrintShotFeedbackApp from '@src/views/PrintShotFeedbackApp.vue'
 import PrintHistoryPage from '@src/views/PrintHistoryPage.vue'
 import StatsPage from '@src/views/StatsPage.vue'
-import PrintsPage from '@src/views/PrintsPage.vue'
 import PrintPage from '@src/views/PrintPage.vue'
 import PrinterListPage from '@src/views/PrinterListPage.vue'
 import SharedPrinterPage from '@src/views/SharedPrinterPage.vue'
@@ -79,7 +78,6 @@ const components = {
   PrinterControlPage,
   GCodeFoldersPage,
   GCodeFilePage,
-  PrintsPage,
   PrintPage,
   PrintHistoryPage,
   StatsPage,

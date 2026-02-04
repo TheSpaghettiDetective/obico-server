@@ -224,10 +224,6 @@ def stats(request, template_dir=None):
     return render(request, get_template_path('stats', template_dir))
 
 @login_required
-def prints(request, template_dir=None):
-    return render(request, get_template_path('prints', template_dir))
-
-@login_required
 def print(request, pk):
     _print = get_print_or_404(pk, request)
     return render(request, 'print.html', {'print': _print})

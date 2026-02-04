@@ -28,10 +28,8 @@ urlpatterns = [
     # TODO: Delete both after making sure it's no longer used from mobile app
     path('prints/<int:pk>/cancel/', web_views.cancel_print),
     path('prints/<int:pk>/resume/', web_views.resume_print),
-    # TODO: Delete both when mobile app get rid of legacy Prints (Time-Lapses) webview:
-    path('prints/', web_views.prints, name='prints'),
+    path('prints/', RedirectView.as_view(url='/print_history/', permanent=True)),
     path('prints/upload/', RedirectView.as_view(url='/ent/timelapse_upload/', permanent=True)),
-    # TODO: Change this to `/prints/` for consistency when mobile app get rid of legacy Prints (Time-Lapses) webview:
     path('print_history/', web_views.print_history, name='print_history'),
     path('stats/', web_views.stats, name='stats'),
 

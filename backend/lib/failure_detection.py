@@ -5,6 +5,7 @@ import json
 import logging
 import requests
 from django.conf import settings
+from django.core import serializers
 from PIL import Image
 
 from lib.file_storage import save_file_obj
@@ -71,16 +72,7 @@ def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint, params):
     _, tagged_img_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
     cache.printer_pic_set(printer.id, {'img_url': tagged_img_url}, ex=IMG_URL_TTL_SECONDS)
 
-    # Save prediction JSON
-    prediction_json = json.dumps({
-        'current_p': prediction.current_p,
-        'current_frame_num': prediction.current_frame_num,
-        'lifetime_frame_num': prediction.lifetime_frame_num,
-        'ewm_mean': prediction.ewm_mean,
-        'rolling_mean_short': prediction.rolling_mean_short,
-        'rolling_mean_long': prediction.rolling_mean_long,
-        'normalized_p': prediction.normalized_p,
-    })
+    prediction_json = serializers.serialize("json", [prediction, ])
     p_out = io.BytesIO()
     p_out.write(prediction_json.encode('UTF-8'))
     p_out.seek(0)

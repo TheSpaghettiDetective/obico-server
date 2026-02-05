@@ -23,7 +23,7 @@ from channels_presence.models import Room
 from .models import *
 from .models import Print, PrinterEvent
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
-from lib.utils import orientation_to_ffmpeg_options
+from lib.utils import orientation_to_ffmpeg_options, last_pic_of_print
 from lib import cache
 from lib import syndicate
 from notifications.handlers import handler

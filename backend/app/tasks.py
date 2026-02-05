@@ -33,7 +33,7 @@ from api.octoprint_views import IMG_URL_TTL_SECONDS
 LOGGER = logging.getLogger(__name__)
 
 
-@shared_task
+@shared_task(acks_late=True)
 def process_print_events(event_id):
     print_event = PrinterEvent.objects.select_related('print').get(id=event_id)
     if print_event.event_type == PrinterEvent.ENDED:

@@ -16,8 +16,6 @@ from datetime import timedelta
 import tempfile
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-from django.template.loader import render_to_string, get_template
-from django.core.mail import EmailMessage
 from channels_presence.models import Room
 
 from .models import *
@@ -195,31 +193,6 @@ def will_record_timelapse(_print):
 
     return True
 
-def send_timelapse_detection_done_email(_print):
-    syndicate_name = _print.user.syndicate.name
-    if syndicate_name != 'base':
-        return
-    if not settings.EMAIL_HOST:
-        LOGGER.warn("Email settings are missing. Ignored send requests")
-        return
-
-    subject = 'We are done detecting failures on the time-lapse you uploaded.'
-    from_email = settings.DEFAULT_FROM_EMAIL
-
-    ctx = {
-        'print': _print,
-        'unsub_url': 'https://app.obico.io/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
-        'prints_link': syndicate.build_full_url_for_syndicate('/print_history/', syndicate_name),
-    }
-    emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
-    message = get_template('email/upload_print_processed.html').render(ctx)
-    msg = EmailMessage(subject, message,
-                    to=emails,
-                    from_email=from_email,
-                    headers={'List-Unsubscribe': '<{}>, <mailto:support@obico.io?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
-                    )
-    msg.content_subtype = 'html'
-    msg.send()
 
 
 def select_print_shots_for_feedback(_print):

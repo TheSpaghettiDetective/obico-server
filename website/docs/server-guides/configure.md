@@ -56,6 +56,10 @@ The Django site is what you enter in the browser address bar to open the server 
 
 If you are running the Obico Server on your laptop and enter [http://localhost:3334](http://localhost:3334) in your browser to open the server page, there is nothing you need to do about the Django site. But if Obico Server is running on another computer, you will need to configure a Django site that matches your server's IP address or host name.
 
+:::warning
+Having multiple Django sites is highly discouraged as it may cause unexpected behavior. When you add a new site, you should remove the old one. Also, be aware that time-lapse videos or G-Code files created under the old site may become inaccessible after the site is changed.
+:::
+
 In this case, follow the steps below:
 
 ### 1. Determine the address part of the Django site {#1-determine-the-address-part-of-the-django-site}

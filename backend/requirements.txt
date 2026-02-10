@@ -147,6 +147,6 @@ websocket-client==1.8.0 ; python_version >= '3.8'
 whitenoise[brotli]==6.8.2
 yarl==1.18.3 ; python_version >= '3.9'
 zope.interface==7.2
-openai===1.57.2
-instructor===1.5.1
+openai==1.57.2
+instructor==1.5.1
 langfuse==2.57.6

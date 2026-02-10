@@ -77,11 +77,7 @@
           <template v-for="widget in widgets">
             <component
               :is="widget.component"
-              v-if="
-                widget.enabled &&
-                ((!printer.isOffline() && !printer.isDisconnected()) ||
-                  widget.component === 'PrintJobControlWidget')
-              "
+              v-if="isWidgetVisible(widget)"
               :key="widget.id"
               :printer="printer"
               :printer-comm="printerComm"
@@ -189,6 +185,7 @@ import ReorderModal from '@src/components/ReorderModal'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import SharePrinter from '@src/components/printers/SharePrinter.vue'
 import TerminalWidget from '../components/printer-control/TerminalWidget.vue'
+import DisplayStatusWidget from '../components/printer-control/DisplayStatusWidget.vue'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
@@ -197,6 +194,11 @@ const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
 // Widgets config (for local storage and params) format: [{id: 1, enabled: true}, ...]
 // WIDGETS below maps IDs to other useful info
 const WIDGETS = [
+  {
+    id: 7,
+    title: 'LCD Display Message',
+    component: 'DisplayStatusWidget',
+  },
   {
     id: 1,
     title: 'Print Job Control',
@@ -242,6 +244,7 @@ export default {
     TemperatureWidget,
     PrinterControlWidget,
     TerminalWidget,
+    DisplayStatusWidget,
   },
 
   data() {
@@ -350,6 +353,20 @@ export default {
   },
 
   methods: {
+    isWidgetVisible(widget) {
+      if (!widget.enabled) return false
+
+      // PrintJobControlWidget always shows
+      if (widget.component === 'PrintJobControlWidget') return true
+
+      // DisplayStatusWidget only shows when there's a message
+      if (widget.component === 'DisplayStatusWidget') {
+        return !!this.printer.status?.display_status?.message
+      }
+
+      // All other widgets require printer to be online and connected
+      return !this.printer.isOffline() && !this.printer.isDisconnected()
+    },
     isWebcamSelected(webcam) {
       if (this.preferredWebcam === null) {
         return true

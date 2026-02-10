@@ -28,7 +28,6 @@ from app.models import (User, Printer, SharedResource, GCodeFile, NotificationSe
 from app.forms import SocialAccountAwareLoginForm
 from lib import channels
 from lib.file_storage import save_file_obj
-from app.tasks import preprocess_timelapse
 from lib import cache
 from lib.syndicate import syndicate_from_request
 from allauth.account.views import EmailView
@@ -225,26 +224,9 @@ def stats(request, template_dir=None):
     return render(request, get_template_path('stats', template_dir))
 
 @login_required
-def prints(request, template_dir=None):
-    return render(request, get_template_path('prints', template_dir))
-
-@login_required
 def print(request, pk):
     _print = get_print_or_404(pk, request)
     return render(request, 'print.html', {'print': _print})
-
-
-@login_required
-def upload_print(request):
-    if request.method == 'POST':
-        _, file_extension = os.path.splitext(request.FILES['file'].name)
-        video_path = f'{request.user.id}/{str(timezone.now().timestamp())}{file_extension}'
-        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.TIMELAPSE_CONTAINER, request.user.syndicate.name, long_term_storage=True)
-        preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
-
-        return JsonResponse(dict(status='Ok'))
-    else:
-        return render(request, 'upload_print.html')
 
 
 @login_required

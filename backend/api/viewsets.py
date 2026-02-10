@@ -35,7 +35,8 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
+    SharedResource, OctoPrintTunnel, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
+from lib.failure_detection import calc_normalized_p
 from .serializers import (
     UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
@@ -84,8 +85,7 @@ class UserViewSet(viewsets.GenericViewSet):
 
 
 class PrinterViewSet(
-    # FIXME arbitrary update IS allowed, right?
-    # no create, no destroy
+    mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
@@ -104,6 +104,11 @@ class PrinterViewSet(
             qs = Printer.objects.filter(user=self.request.user)
 
         return qs.select_related('current_print', 'printerprediction', 'user')
+
+    def perform_create(self, serializer):
+        """Create a new printer with generated auth token."""
+        auth_token = hexlify(os.urandom(10)).decode()
+        serializer.save(user=self.request.user, auth_token=auth_token)
 
     @action(detail=True, methods=['post'])
     def archive(self, request, pk=None):
@@ -150,6 +155,118 @@ class PrinterViewSet(
 
         printer.current_print.alert_acknowledged(request.GET.get('alert_overwrite'))
         return self.send_command_response(printer, True)
+
+    @action(detail=True, methods=['post'])
+    def start_print(self, request, pk=None):
+        """
+        Start a new print session for this printer.
+        This is for OAuth apps that manage prints directly without an Agent.
+
+        If a print is already in progress, it will be automatically finished
+        before starting the new one.
+
+        Request body:
+            - filename (required): The name of the file being printed.
+        """
+        printer = get_printer_or_404(pk, request)
+
+        filename = request.data.get('filename')
+        if not filename:
+            raise ValidationError({'filename': 'This field is required.'})
+
+        # Auto-close any existing print before starting a new one
+        if printer.current_print:
+            printer.unset_current_print()
+            printer.refresh_from_db()
+
+        # Use current timestamp as ext_id for direct API prints
+        # If a print with this timestamp already exists, increment to find a unique one
+        current_print_ts = int(timezone.now().timestamp())
+        while Print.objects.filter(printer=printer, ext_id=current_print_ts).exists():
+            current_print_ts += 1
+        printer.set_current_print(filename, g_code_file_id=None, current_print_ts=current_print_ts)
+        printer.refresh_from_db()
+
+        return self.send_command_response(printer, True)
+
+    @action(detail=True, methods=['post'])
+    def finish_print(self, request, pk=None):
+        """
+        Finish the current print session for this printer.
+        This is for OAuth apps that manage prints directly without an Agent.
+
+        Request body:
+            - status (optional): 'success' (default) or 'cancelled'.
+        """
+        printer = get_printer_or_404(pk, request)
+
+        if not printer.current_print:
+            raise Http404('Printer is not currently printing.')
+
+        print_status = request.data.get('status', 'success')
+        if print_status == 'cancelled':
+            printer.current_print.cancelled()
+        printer.unset_current_print()
+        printer.refresh_from_db()
+
+        return self.send_command_response(printer, True)
+
+    @action(detail=True, methods=['post'], parser_classes=[MultiPartParser, FormParser])
+    def predict(self, request, pk=None):
+        """
+        Submit an image for failure detection on the current print.
+        This is for OAuth apps that manage prints directly without an Agent.
+
+        Request body (multipart/form-data):
+            - img (required): The image file to analyze (JPEG format).
+
+        Returns:
+            - result.p: Failure probability (0-1)
+            - result.temporal_stats: Stats for smoothing detection noise
+            - result.detections: List of [confidence, [xc, yc, w, h]] tuples
+        """
+        printer = get_printer_or_404(pk, request)
+
+        if not printer.current_print:
+            raise Http404('Printer is not currently printing.')
+
+        if not request.FILES.get('img'):
+            raise ValidationError({'img': 'This field is required.'})
+
+        img = request.FILES['img']
+
+        # Get or create prediction object
+        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
+
+        # Call ML API for detection
+        pic_id = str(timezone.now().timestamp())
+        pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
+        _, external_url = save_file_obj(pic_path, img, settings.PICS_CONTAINER, request.user.syndicate.name, long_term_storage=False)
+
+        from lib.utils import ml_api_auth_headers
+        from lib.prediction import update_prediction_with_detections
+
+        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': external_url}, headers=ml_api_auth_headers(), verify=False, timeout=30)
+        req.raise_for_status()
+        detections = req.json()['detections']
+
+        update_prediction_with_detections(prediction, detections, printer)
+        prediction.save()
+
+        send_status_to_web(printer.id)
+        return Response({
+            'result': {
+                'p': prediction.current_p,
+                'temporal_stats': {
+                    'ewm_mean': prediction.ewm_mean,
+                    'rolling_mean_short': prediction.rolling_mean_short,
+                    'rolling_mean_long': prediction.rolling_mean_long,
+                    'prediction_num': prediction.current_frame_num,
+                    'prediction_num_lifetime': prediction.lifetime_frame_num,
+                },
+                'detections': detections,
+            }
+        })
 
 
     def partial_update(self, request, pk=None):
@@ -282,9 +399,11 @@ class PrintViewSet(
         )
 
         for raw_pred in data:
-            pred = PrinterPrediction(**raw_pred['fields'])
-            raw_pred['fields']['normalized_p'] = calc_normalized_p(
-                detective_sensitivity, pred)
+            # Use stored normalized_p if present, otherwise calculate (backward compatibility)
+            if 'normalized_p' not in raw_pred['fields']:
+                pred = PrinterPrediction(**raw_pred['fields'])
+                raw_pred['fields']['normalized_p'] = calc_normalized_p(
+                    detective_sensitivity, pred, settings.FD_1ST_GEN_PARAMS)
 
         return Response(
             data,

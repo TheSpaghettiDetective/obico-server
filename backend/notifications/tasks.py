@@ -12,7 +12,7 @@ from .plugin import (PrinterNotificationContext, FailureAlertContext)
 LOGGER = logging.getLogger(__name__)
 
 
-@shared_task
+@shared_task(acks_late=True)
 def send_printer_notifications(
     printer_id: int,
     notification_type: str,
@@ -90,7 +90,7 @@ def send_printer_notifications(
             capture_exception()
 
 
-@shared_task
+@shared_task(acks_late=True)
 def send_failure_alerts(
     print_id: int,
     is_warning: bool,

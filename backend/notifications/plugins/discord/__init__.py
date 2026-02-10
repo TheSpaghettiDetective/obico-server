@@ -1,4 +1,5 @@
 from typing import Dict, Optional
+import json
 import logging
 from django.conf import settings
 from rest_framework.serializers import ValidationError
@@ -50,7 +51,12 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         embed.set_timestamp()
         embed.set_footer(text="The Obico app")
         webhook.add_embed(embed)
-        webhook.execute()
+        try:
+            webhook.execute()
+        except json.JSONDecodeError:
+            # Discord webhook library tries to decode response as JSON even if it is not.
+            # See https://sentry.obico.io/organizations/sentry/issues/10902/?project=2&query=is%3Aunresolved+JSONDecodeError&referrer=issue-stream&statsPeriod=14d
+            pass
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
         if 'webhook_url' not in context.config:

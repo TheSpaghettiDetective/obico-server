@@ -1,5 +1,4 @@
 from .query_intent_checking_step import query_intent_checking_step
-from .guide_print_issue_troubleshooting_step import guide_print_issue_troubleshooting_step
 
 def run_chain_on_chat(chat, openai_client):
     """
@@ -11,7 +10,7 @@ def run_chain_on_chat(chat, openai_client):
             {"role": "user", "content": "Hello, how are you?"},
             {"role": "assistant", "content": "I'm fine, thank you!"}
         ],
-        "current_workflow": "print_troubleshooting",  # Optional field to specify the current workflow
+        "current_workflow": None,  # Optional field to specify the current workflow
         "slicing_profiles": {
             "filament_presets": [
                 "name": "Filament name",
@@ -71,9 +70,5 @@ def run_chain_on_chat(chat, openai_client):
     for message in chat['messages']:
         if message.get('content') is None:
             message['content'] = ''
-
-    # Route to appropriate step based on current workflow
-    if chat.get('current_workflow') == 'print_troubleshooting':
-        return guide_print_issue_troubleshooting_step(chat, openai_client)
 
     return query_intent_checking_step(chat, openai_client)

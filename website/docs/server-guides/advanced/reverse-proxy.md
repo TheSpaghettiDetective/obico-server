@@ -15,6 +15,14 @@ This is a community-contributed guide. This guide is based on certain Obico comm
 Some Obico community members have found it easier to set up NGINX reverse proxy using NGINX Proxy Manager. You can try your luck by following [this community-contributed guide](nginx-proxy-manager.md).
 :::
 
+:::warning
+
+Watching or downloading recorded timelapses uses the domain saved into the timelapse when it was created. This means changing or loosing access to the domain saved in the timelapse will make render the website unable to load and show the timelapse. So if you change or go from using localhost to use a domain, previous timelapses will likely be inaccessable through the website. However new timelapses will work as expected. 
+
+So make sure to test with new timelapses after you have made changes to your domain or moved from localhost to a new site-domain. 
+
+:::
+
 You can set up a reverse proxy in front of your self-hosted Obico Server.
 
 Two configuration items need to be set differently if you are using a reverse proxy.

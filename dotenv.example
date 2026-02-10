@@ -26,6 +26,8 @@
 
 # SITE_IS_PUBLIC=False
 # set it to True if the site configured in django admin is accessible from the internet
+# NOTE: Timelapses are saved with path to its file, so changing/using domain instead of localhost will only work for future timelapses. 
+#  Existing timelapses will keep using whatever domain/localhost was configured when they were created which can make them inaccessible through the webpage
 
 # CSRF_TRUSTED_ORIGINS=
 # A list of trusted origins for unsafe requests (e.g. POST). For example: ["https://obico.mydomain.com", "https://*.example.com"]. Necessary if, for example, a Cloudflare tunnel is used for external access.

@@ -2,7 +2,6 @@ import json
 import os
 from textwrap import dedent
 from .determine_slicing_settings_step import determine_slicing_settings_step
-from .guide_print_issue_troubleshooting_step import guide_print_issue_troubleshooting_step
 from .retrieve_slicing_settings_step import retrieve_slicing_settings_step
 from .utils import add_agent_action_to_message, get_new_lines_as_string, get_brand_name
 
@@ -164,9 +163,6 @@ def query_intent_checking_step(chat, openai_client):
     def retrieve_slicing_settings_tool():
         return retrieve_slicing_settings_step(chat, openai_client)
 
-    def guide_print_issue_troubleshooting_tool():
-        return guide_print_issue_troubleshooting_step(chat, openai_client)
-
     def call_function(initial_message, name, args=None):
         assistant_message = {
             "role": "assistant",
@@ -194,8 +190,6 @@ def query_intent_checking_step(chat, openai_client):
             return determine_slicing_settings_tool()
         elif name == "retrieve_slicing_settings":
             return retrieve_slicing_settings_tool()
-        elif name == "guide_print_issue_troubleshooting":
-            return guide_print_issue_troubleshooting_tool()
 
         return {
             "message": assistant_message

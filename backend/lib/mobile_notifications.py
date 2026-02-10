@@ -6,7 +6,7 @@ import glob
 from sentry_sdk import capture_exception
 
 from .utils import shortform_duration, shortform_localtime, get_rotated_pic_url
-from app.models import calc_normalized_p, MobileDevice, PrinterEvent
+from app.models import MobileDevice, PrinterEvent
 from lib import cache
 
 PRINT_EVENT_MAP = {
@@ -137,7 +137,7 @@ def send_print_progress(_print, op_data):
         if printer.not_watching_reason():
             data['title'] += ' | 💤'
         else:
-            p = calc_normalized_p(printer.detective_sensitivity, printer.printerprediction)
+            p = printer.printerprediction.normalized_p
             if p < 0.33:
                 data['title'] += ' | 🟢'
             elif p < 0.66:

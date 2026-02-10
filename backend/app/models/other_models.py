@@ -108,11 +108,11 @@ class Printer(SafeDeleteModel):
         for key in ('flipV', 'flipH', 'rotate90', 'rotation', 'streamRatio'):
             p_settings['webcam_' + key] = webcam_settings.get(key)
 
-        if 'webcam_rotation' in p_settings:
+        if p_settings.get('webcam_rotation') is not None:
             rotation_int = int(p_settings['webcam_rotation'])
             p_settings['webcam_rotation'] = rotation_int if rotation_int in [0, 90, 180, 270] else 0
             p_settings['webcam_rotate90'] = rotation_int == 270 # backward compatibility with old mobile app
-        elif 'webcam_rotate90' in p_settings: # Backward compatibility with old plugins
+        elif p_settings.get('webcam_rotate90') is not None: # Backward compatibility with old plugins
             p_settings['webcam_rotation'] = int(270 if p_settings['webcam_rotate90'] else 0)
 
         p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '16:9') == '16:9'
@@ -322,26 +322,6 @@ class PrinterCommand(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-def calc_normalized_p(detective_sensitivity: float,
-                      pred: 'PrinterPrediction') -> float:
-    def scale(oldValue, oldMin, oldMax, newMin, newMax):
-        newValue = (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
-        return min(newMax, max(newMin, newValue))
-
-    thresh_warning = (pred.rolling_mean_short - pred.rolling_mean_long) * settings.ROLLING_MEAN_SHORT_MULTIPLE
-    thresh_warning = min(settings.THRESHOLD_HIGH, max(settings.THRESHOLD_LOW, thresh_warning))
-    thresh_failure = thresh_warning * settings.ESCALATING_FACTOR
-
-    p = (pred.ewm_mean - pred.rolling_mean_long) * detective_sensitivity
-
-    if p > thresh_failure:
-        return scale(p, thresh_failure, thresh_failure * 1.5, 2.0 / 3.0, 1.0)
-    elif p > thresh_warning:
-        return scale(p, thresh_warning, thresh_failure, 1.0 / 3.0, 2.0 / 3.0)
-    else:
-        return scale(p, 0, thresh_warning, 0, 1.0 / 3.0)
-
-
 class PrinterPrediction(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, primary_key=True)
     current_frame_num = models.IntegerField(null=False, default=0)
@@ -350,6 +330,7 @@ class PrinterPrediction(models.Model):
     ewm_mean = models.FloatField(null=False, default=0.0)
     rolling_mean_long = models.FloatField(null=False, default=0.0)
     rolling_mean_short = models.FloatField(null=False, default=0.0)
+    normalized_p = models.FloatField(null=False, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -358,6 +339,7 @@ class PrinterPrediction(models.Model):
         self.current_p = 0.0
         self.ewm_mean = 0.0
         self.rolling_mean_short = 0.0
+        self.normalized_p = 0.0
         self.save()
 
     def __str__(self):

@@ -352,7 +352,7 @@ if SENTRY_DSN:
         release=VERSION,
 
         # Performance monitoring
-        traces_sample_rate=0.1,
+        traces_sample_rate=0.02,
     )
 
 # REDIS client

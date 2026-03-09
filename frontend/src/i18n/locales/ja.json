@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "プリンタがシリアルポートに接続されていない",
   "Contacting OctoPrint": "OctoPrintへのお問い合わせ",
   "Connect": "接続する",
-  "{brandName} Plugin is Offline.": "{{brandName}} プラグインはオフラインです。"
+  "{brandName} Plugin is Offline.": "{{brandName}} プラグインはオフラインです。",
   "Why?": "なぜ？",
   "Print Progress": "印刷の進行状況",
   "Last Print": "最後の印刷",

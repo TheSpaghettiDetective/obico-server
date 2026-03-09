@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "Drukarka nie jest podłączona do portu szeregowego",
   "Contacting OctoPrint": "Kontakt z OctoPrint",
   "Connect": "Łączyć",
-  "{brandName} for {name} is Offline.": "{{brandName}} dla {{name}} jest offline.",
+  "{brandName} Plugin is Offline.": "Wtyczka {{brandName}} jest offline.",
   "Why?": "Dlaczego?",
   "Print Progress": "Postęp drukowania",
   "Last Print": "Ostatni wydruk",

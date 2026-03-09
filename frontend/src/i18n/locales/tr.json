@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "Yazıcı Seri Porta Bağlı Değil",
   "Contacting OctoPrint": "OctoPrint ile İletişime Geçme",
   "Connect": "Bağlamak",
-  "{brandName} for {name} is Offline.": "{{brandName}} {{name}} için Çevrimdışı.",
+  "{brandName} Plugin is Offline.": "{{brandName}} Eklentisi Çevrimdışı.",
   "Why?": "Neden?",
   "Print Progress": "Baskı İlerlemesi",
   "Last Print": "Son Baskı",

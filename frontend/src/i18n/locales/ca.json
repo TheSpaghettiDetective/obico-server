@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "Impressora no connectada al port sèrie",
   "Contacting OctoPrint": "Contactar amb OctoPrint",
   "Connect": "Connecta",
-  "{brandName} for {name} is Offline.": "{{brandName}} per a {{name}} està fora de línia.",
+  "{brandName} Plugin is Offline.": "El plugin {{brandName}} està fora de línia.",
   "Why?": "Per què?",
   "Print Progress": "Progrés d'impressió",
   "Last Print": "Última impressió",

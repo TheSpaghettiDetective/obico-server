@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "Skrivaren är inte ansluten till serieporten",
   "Contacting OctoPrint": "Kontakta OctoPrint",
   "Connect": "Ansluta",
-  "{brandName} for {name} is Offline.": "{{brandName}} för {{name}} är offline.",
+  "{brandName} Plugin is Offline.": "{{brandName}} Plugin är offline.",
   "Why?": "Varför?",
   "Print Progress": "Utskriftsförlopp",
   "Last Print": "Senaste utskrift",

@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "Tiskárna není připojena k sériovému portu",
   "Contacting OctoPrint": "Kontaktování OctoPrintu",
   "Connect": "Připojit",
-  "{brandName} for {name} is Offline.": "{{brandName}} pro {{name}} je offline.",
+  "{brandName} Plugin is Offline.": "Plugin {{brandName}} je offline.",
   "Why?": "Proč?",
   "Print Progress": "Průběh tisku",
   "Last Print": "Poslední tisk",

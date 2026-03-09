@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "A nyomtató nincs csatlakoztatva a soros porthoz",
   "Contacting OctoPrint": "Kapcsolatfelvétel az OctoPrinttel",
   "Connect": "Csatlakozás",
-  "{brandName} for {name} is Offline.": "{{brandName}} a {{name}} felhasználóhoz offline állapotban van.",
+  "{brandName} Plugin is Offline.": "A {{brandName}} plugin offline állapotban van.",
   "Why?": "Miért?",
   "Print Progress": "Nyomtatási folyamat",
   "Last Print": "Utolsó nyomtatás",

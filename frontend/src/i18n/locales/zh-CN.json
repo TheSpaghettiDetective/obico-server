@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "打印机未在串行端口连接",
   "Contacting OctoPrint": "正在联系OctoPrint",
   "Connect": "连接",
-  "{brandName} for {name} is Offline.": "{{brandName}} 为 {{name}} 处于离线状态。",
+  "{brandName} Plugin is Offline.": "{{brandName}} 插件处于离线状态。"
   "Why?": "为什么？",
   "Print Progress": "打印进度",
   "Last Print": "上次打印",

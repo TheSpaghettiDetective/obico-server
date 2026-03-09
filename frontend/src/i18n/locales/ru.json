@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "Принтер не подключен к последовательному порту",
   "Contacting OctoPrint": "Связаться с OctoPrint",
   "Connect": "Соединять",
-  "{brandName} for {name} is Offline.": "{{brandName}} для {{name}} находится в автономном режиме.",
+  "{brandName} Plugin is Offline.": "Плагин {{brandName}} находится в автономном режиме.",
   "Why?": "Почему?",
   "Print Progress": "Прогресс печати",
   "Last Print": "Последняя печать",

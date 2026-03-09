@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "프린터가 직렬 포트에 연결되지 않았습니다",
   "Contacting OctoPrint": "OctoPrint에 문의하기",
   "Connect": "연결하다",
-  "{brandName} for {name} is Offline.": "{{brandName}}의 {{name}}이(가) 오프라인입니다.",
+  "{brandName} Plugin is Offline.": "{{brandName}} 플러그인이 오프라인입니다."
   "Why?": "왜?",
   "Print Progress": "인쇄 진행 상황",
   "Last Print": "마지막 인쇄",

@@ -225,7 +225,7 @@
   "Printer Not Connected at the Serial Port": "Принтер не підключено до послідовного порту",
   "Contacting OctoPrint": "Зв'язок з OctoPrint",
   "Connect": "Підключитися",
-  "{brandName} for {name} is Offline.": "{{brandName}} для {{name}} не в мережі.",
+  "{brandName} Plugin is Offline.": "Плагін {{brandName}} не в мережі.",
   "Why?": "Чому?",
   "Print Progress": "Хід друку",
   "Last Print": "Останній друк",

@@ -6,7 +6,7 @@ title: Troubleshoot connection issues
 This troubleshooting guide is written for Obico for OctoPrint. If you are using Obico for Klipper, you can follow the similar steps to trace the root cause.
 :::
 
-## <span className="text--warning">Obico for OctoPrint is Offline</span> {#span-classnametext--warningobico-for-octoprint-is-offlinespan}
+## <span className="text--warning">Obico Plugin is Offline</span> {#span-classnametext--warningobico-for-octoprint-is-offlinespan}
 
 When you see this warning in the Obico app, it usually means Obico for Octoprint is either powered off, or having problems connecting to the Obico Server.
 

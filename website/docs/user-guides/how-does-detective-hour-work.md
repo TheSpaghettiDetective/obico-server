@@ -16,7 +16,7 @@ You need a positive balance of AI Detection Hours on your account to have the fa
 
 You do **NOT** need AI Detection Hours to watch your printer feed in the app. You can watch it for as long as you want. There is no limit to it!
 
-## How do I get AI Detection Hours? {#how-do-i-get-ai-detection-hours}
+## How do I get AI Detection Hours? {#how-do-i-get-detective-hours}
 
 There are several ways to get AI Detection Hours:
 

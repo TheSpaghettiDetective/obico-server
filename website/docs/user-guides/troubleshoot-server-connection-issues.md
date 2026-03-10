@@ -47,7 +47,7 @@ Based on what the test result shows, click one of the following links to continu
 * [<span className="text--danger">Invalid account credentials</span>](#22-if-the-test-result-is-invalid-account-credentials)
 * [<span className="text--success">Succeeded</span>](#23-if-the-test-result-is-succeeded)
 
-### 2.1 If the test result is "<span className="text--danger">Failed to contact server</span>": {#21-if-the-test-result-is-span-classnametext--dangerfailed-to-contact-serverspan}
+### 2.1 If the test result is "<span className="text--danger">Failed to contact server</span>": {#21-if-the-test-result-is-failed-to-contact-server}
 
 Most likely, this error means the plugin is configured to point to the wrong server address. To check it:
 
@@ -68,7 +68,7 @@ Most likely, this error means the plugin is configured to point to the wrong ser
 
 If the server address is correct, and you still have server connection error, most likely the OctoPrint has issues with its Internet connection.
 
-### 2.2 If the test result is "<span className="text--danger">Invalid account credentials</span>": {#22-if-the-test-result-is-span-classnametext--dangerinvalid-account-credentialsspan}
+### 2.2 If the test result is "<span className="text--danger">Invalid account credentials</span>": {#22-if-the-test-result-is-invalid-account-credentials}
 
 When you [set up Obico for OctoPrint plugin for the first time](/docs/user-guides/octoprint-plugin-setup), account credentials were established so that the plugin can connect to the server securely.
 
@@ -103,7 +103,7 @@ If the plugin troubleshooting page shows "invalid account credentials", and you 
 
 Something weird is going on. You will need to [get help from a human](/docs/user-guides/contact-us-for-support).
 
-### 2.3 If the test result is "<span className="text--success">Succeeded</span>": {#23-if-the-test-result-is-span-classnametext--successsucceededspan}
+### 2.3 If the test result is "<span className="text--success">Succeeded</span>": {#23-if-the-test-result-is-succeeded}
 
 If the server test button shows "succeeded" but you still experience server connection issues, continue to the next step to check the detailed server connection status.
 
@@ -119,13 +119,13 @@ Based on what the status shows, click one of the following links to continue tro
 * [<span className="text--danger">Disconnect</span>](#32-if-the-connection-status-is-disconnect)
 * [<span className="text--danger">Error</span>](#21-if-the-test-result-is-failed-to-contact-server)
 
-### 3.1 If the connection status is "<span className="text--success">Okay</span>": {#31-if-the-connection-status-is-span-classnametext--successokayspan}
+### 3.1 If the connection status is "<span className="text--success">Okay</span>": {#31-if-the-connection-status-is-okay}
 
 Hmm, you got us. It looks like you are experiencing a problem the plugin's self-diagnostic tool failed to detect.
 
 When robots failed, [humans will pitch in to help](/docs/user-guides/contact-us-for-support).
 
-### 3.2 If the connection status is "<span className="text--danger">Disconnected</span>": {#32-if-the-connection-status-is-span-classnametext--dangerdisconnectedspan}
+### 3.2 If the connection status is "<span className="text--danger">Disconnected</span>": {#32-if-the-connection-status-is-disconnect}
 
 If the server test button shows "succeeded" but the "Connection to sever" row indicates "Disconnected", it is possible that you have run into a rare situation when the HTTP connection works, but the WebSocket connection doesn't.
 
@@ -137,7 +137,7 @@ This is probably a situation in which you will have fun with your "Google-fu". H
 The plugin connects to the server via 2 connections: HTTP and WebSocket. 99% of the time when one connection works, so will the other. But there are rare situations when HTTP connection works but the WebSocket connection doesn't.
 :::
 
-### 3.3 If the connection status is "<span className="text--danger">Error</span>": {#33-if-the-connection-status-is-span-classnametext--dangererrorspan}
+### 3.3 If the connection status is "<span className="text--danger">Error</span>": {#33-if-the-connection-status-is-error}
 
 When the status is "<span className="text--danger">Connection to server: Error</span>", it usually means your Raspberry Pi has an unreliable Internet connection. The problems can range from very occasional server glitches that doesn't affect the app at all, to a weak Wi-Fi signal strength that results in 50+% loss of network packets and an unusable app.
 

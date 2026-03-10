@@ -3,7 +3,7 @@ id: premium-streaming-failed-to-start
 title: Why do I get the "Premium webcam streaming failed to start" message?
 ---
 
-[Premium webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes#1-premium-webcam-streaming) occasionally fails. When that happens, Obico will automatically switch to [basic webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes#2-basic-webcam-streaming). At that moment, it'll display a warning in OctoPrint to keep you informed.
+[Premium webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes) occasionally fails. When that happens, Obico will automatically switch to [basic webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes). At that moment, it'll display a warning in OctoPrint to keep you informed.
 
 Premium webcam streaming may fail for a few reasons:
 

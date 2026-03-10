@@ -399,7 +399,7 @@ Skip this part if your plugin doesn't need any new environment variables.
 
 ### Set up environment variables {#set-up-environment-variables}
 
-Follow [this guide](/docs/server-guides/configure/#if-you-need-to-add-a-new-environment-variable) to add new environment variables to the self-hosted Obico Server.
+Follow [this guide](/docs/server-guides/advanced/#configure-obico-server-using-env) to add new environment variables to the self-hosted Obico Server.
 
 ### Declare the environment variable requirements in the plugin {#declare-the-environment-variable-requirements-in-the-plugin}
 

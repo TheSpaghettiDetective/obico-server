@@ -143,6 +143,106 @@ This error occurs when the `bed_polygon` coordinates do not match the actual pri
 For most use cases, sensitivity level 5 provides the best balance between accuracy and false positive reduction. Higher sensitivity may detect very small particles that don't actually affect print quality.
 :::
 
+## POST `/ent/partners/api/elegoo/bed_readiness_ref/` {#post-entpartnersapielegoobed-readiness-ref}
+
+This endpoint establishes a reference image of the clean print bed. The server stores this reference and uses it in subsequent calls to [`/ent/partners/api/elegoo/bed_readiness/`](#post-entpartnersapielegoobed-readiness) to improve detection accuracy.
+
+### Request {#request-ref}
+
+This POST request should be sent as `multipart/form-data` format.
+
+#### Form parameters {#form-parameters-ref}
+
+- `serial_no`: The device serial number. Required for authentication.
+- `access_token`: The access token for the device. Required for authentication.
+- `img`: Snapshot from the webcam of the clean print bed. In JPEG format. Required.
+- `bed_polygon`: JSON array of [x, y] coordinate pairs defining the bed region of interest. Must contain at least 3 points to form a valid polygon. Required.
+- `sensitivity`: Integer between 1-10 (default: 5). Higher values make the detection more sensitive to smaller debris. Optional.
+  - **1-3**: Low sensitivity - only detects large, obvious debris
+  - **4-6**: Medium sensitivity (default: 5) - balanced detection
+  - **7-10**: High sensitivity - detects small debris and fine particles
+
+### Response {#response-ref}
+
+#### Status code: `200` {#status-code-ref-200}
+
+Reference image was accepted and stored successfully. The response body is empty.
+
+#### Status code: `400` {#status-code-ref-400}
+
+API request was NOT processed successfully due to validation errors or processing failures.
+
+#### Body {#body-ref-1}
+
+```
+{
+  "score": null,
+  "message": "Detailed error message"
+}
+```
+
+Examples of error messages:
+- `"Invalid JSON in bed_polygon parameter: {error details}"`
+- `"Invalid parameter: bed_polygon must be a list of at least 3 points"`
+- `"Invalid parameter: Each polygon point must be [x, y]"`
+- `"Invalid parameter: sensitivity must be between 1 and 10"`
+- `"Failed to process request: {error details}"`
+
+#### Status code: `401` {#status-code-ref-401}
+
+Authentication failed. This can occur when:
+- Missing `serial_no` or `access_token`
+- Invalid credentials or expired access token
+
+#### Body {#body-ref-2}
+
+```
+{
+  "error": "serial_no and access_token are required"
+}
+```
+
+or
+
+```
+{
+  "error": "Invalid credentials"
+}
+```
+
+**Note:** Expired access tokens will also return the "Invalid credentials" error message.
+
+#### Status code: `422` {#status-code-ref-422}
+
+API request was NOT processed successfully due to missing required parameters or semantic validation errors.
+
+#### Body {#body-ref-3}
+
+**Missing required parameters:**
+```
+{
+  "score": null,
+  "message": "Error message"
+}
+```
+
+Examples of error messages:
+- `"Missing 'img' file parameter"`
+- `"Missing 'bed_polygon' parameter"`
+
+**Platform not found (semantic validation error):**
+```
+{
+  "score": null,
+  "message": "Print bed is not found in the expected position."
+}
+```
+
+This error occurs when the `bed_polygon` coordinates do not match the actual print bed position in the image. This may indicate:
+- Incorrect `bed_polygon` coordinates
+- The print bed is not visible in the image
+- The image does not contain the expected print bed area
+
 ## Usage Example {#usage-example}
 
 ```bash

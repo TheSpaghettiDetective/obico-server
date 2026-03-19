@@ -243,6 +243,49 @@ This error occurs when the `bed_polygon` coordinates do not match the actual pri
 - The print bed is not visible in the image
 - The image does not contain the expected print bed area
 
+## DELETE `/ent/partners/api/elegoo/bed_readiness_ref/` {#delete-entpartnersapielegoobed-readiness-ref}
+
+Resets the stored reference image for the device. After this call, subsequent calls to [`/ent/partners/api/elegoo/bed_readiness/`](#post-entpartnersapielegoobed-readiness) will operate without a reference until a new one is established via [`POST /ent/partners/api/elegoo/bed_readiness_ref/`](#post-entpartnersapielegoobed-readiness-ref).
+
+### Request {#request-delete-ref}
+
+This DELETE request should be sent as `multipart/form-data` format.
+
+#### Form parameters {#form-parameters-delete-ref}
+
+- `serial_no`: The device serial number. Required for authentication.
+- `access_token`: The access token for the device. Required for authentication.
+
+### Response {#response-delete-ref}
+
+#### Status code: `200` {#status-code-delete-ref-200}
+
+Reference image was reset successfully. The response body is empty.
+
+#### Status code: `401` {#status-code-delete-ref-401}
+
+Authentication failed. This can occur when:
+- Missing `serial_no` or `access_token`
+- Invalid credentials or expired access token
+
+#### Body {#body-delete-ref-1}
+
+```
+{
+  "error": "serial_no and access_token are required"
+}
+```
+
+or
+
+```
+{
+  "error": "Invalid credentials"
+}
+```
+
+**Note:** Expired access tokens will also return the "Invalid credentials" error message.
+
 ## Usage Example {#usage-example}
 
 ```bash

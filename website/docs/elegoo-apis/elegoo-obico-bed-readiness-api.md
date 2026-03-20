@@ -37,7 +37,7 @@ This POST request should be sent as `multipart/form-data` format.
 - `serial_no`: The device serial number. Required for authentication.
 - `access_token`: The access token for the device. Required for authentication.
 - `img`: Snapshot from the webcam for bed readiness detection. In JPEG format. Required.
-- `bed_polygon`: JSON array of [x, y] coordinate pairs defining the bed region of interest. Must contain at least 3 points to form a valid polygon. Required.
+- `bed_polygon`: JSON array of exactly 5 [x, y] coordinate pairs defining the bed region of interest. Required.
 - `sensitivity`: Integer between 1-10 (default: 5). Higher values make the detection more sensitive to smaller debris. Optional.
   - **1-3**: Low sensitivity - only detects large, obvious debris
   - **4-6**: Medium sensitivity (default: 5) - balanced detection
@@ -79,7 +79,7 @@ API request was NOT processed successfully due to validation errors or processin
 
 Examples of error messages:
 - `"Invalid JSON in bed_polygon parameter: {error details}"`
-- `"Invalid parameter: bed_polygon must be a list of at least 3 points"`
+- `"Invalid parameter: bed_polygon must be a list of exactly 5 points"`
 - `"Invalid parameter: Each polygon point must be [x, y]"`
 - `"Invalid parameter: sensitivity must be between 1 and 10"`
 - `"Failed to process request: {error details}"`
@@ -156,7 +156,7 @@ This POST request should be sent as `multipart/form-data` format.
 - `serial_no`: The device serial number. Required for authentication.
 - `access_token`: The access token for the device. Required for authentication.
 - `img`: Snapshot from the webcam of the clean print bed. In JPEG format. Required.
-- `bed_polygon`: JSON array of [x, y] coordinate pairs defining the bed region of interest. Must contain at least 3 points to form a valid polygon. Required.
+- `bed_polygon`: JSON array of exactly 5 [x, y] coordinate pairs defining the bed region of interest. Required.
 - `sensitivity`: Integer between 1-10 (default: 5). Higher values make the detection more sensitive to smaller debris. Optional.
   - **1-3**: Low sensitivity - only detects large, obvious debris
   - **4-6**: Medium sensitivity (default: 5) - balanced detection
@@ -183,7 +183,7 @@ API request was NOT processed successfully due to validation errors or processin
 
 Examples of error messages:
 - `"Invalid JSON in bed_polygon parameter: {error details}"`
-- `"Invalid parameter: bed_polygon must be a list of at least 3 points"`
+- `"Invalid parameter: bed_polygon must be a list of exactly 5 points"`
 - `"Invalid parameter: Each polygon point must be [x, y]"`
 - `"Invalid parameter: sensitivity must be between 1 and 10"`
 - `"Failed to process request: {error details}"`

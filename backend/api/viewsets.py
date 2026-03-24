@@ -241,16 +241,16 @@ class PrinterViewSet(
         # Call ML API for detection
         pic_id = str(timezone.now().timestamp())
         pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        _, external_url = save_file_obj(pic_path, img, settings.PICS_CONTAINER, request.user.syndicate.name, long_term_storage=False)
+        internal_url, external_url = save_file_obj(pic_path, img, settings.PICS_CONTAINER, request.user.syndicate.name, long_term_storage=False)
 
         from lib.utils import ml_api_auth_headers
         from lib.prediction import update_prediction_with_detections
 
-        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': external_url}, headers=ml_api_auth_headers(), verify=False, timeout=30)
+        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False, timeout=30)
         req.raise_for_status()
         detections = req.json()['detections']
 
-        update_prediction_with_detections(prediction, detections, printer)
+        update_prediction_with_detections(prediction, detections, settings.FD_1ST_GEN_PARAMS, bending_factor=printer.detection_bending_factor)
         prediction.save()
 
         send_status_to_web(printer.id)

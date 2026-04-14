@@ -1,0 +1,17 @@
+# RK3588-specific base image (e.g. Turing Pi RK1)
+# No CUDA/TensorRT - uses Rockchip NPU via rknn-toolkit-lite2
+
+FROM ubuntu:22.04 as ml_api_base_rk3588
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt install --no-install-recommends -y \
+    ca-certificates python3-pip wget curl
+
+WORKDIR /app
+RUN pip install --upgrade pip
+RUN pip install opencv_python_headless
+
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+
+EXPOSE 3333

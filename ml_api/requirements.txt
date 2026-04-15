@@ -6,3 +6,5 @@ requests==2.31.0
 sentry_sdk[flask]==1.40.3
 Flask-Compress==1.15
 backoff
+# RKNN Toolkit Lite2 - only installed on aarch64 (RK3588 hardware)
+rknn-toolkit-lite2 ; platform_machine == "aarch64"

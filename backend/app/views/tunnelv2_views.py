@@ -49,7 +49,7 @@ OVER_FREE_LIMIT_HTML = """
                 tunnel data by
                 <a target="_blank"
                    href="https://app.obico.io/ent_pub/pricing/"
-                >upgrading to the Obico app Pro plan</a>,
+                >upgrading to the Obico app {pro_plan_name} plan</a>,
                 or wait for the reset of free limit at the start of
                 the next month.
             </h3>
@@ -289,7 +289,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     if user.tunnel_usage_over_cap():
         return HttpResponse(
-            OVER_FREE_LIMIT_HTML,
+            OVER_FREE_LIMIT_HTML.format(pro_plan_name=getattr(settings, 'PRO_PLAN_NAME', 'Pro')),
             status=OVER_FREE_LIMIT_STATUS_CODE)
 
     # if plugin is disconnected, halt

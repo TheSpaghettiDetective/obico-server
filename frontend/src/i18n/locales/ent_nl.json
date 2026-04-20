@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "Eerste-generatie AI-model voor storingdetectie",
+  "Next-gen failure detection AI model": "Nieuwe-generatie AI-model voor storingdetectie",
+  "Our original AI failure detection model.": "Ons originele AI-model voor storingdetectie.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Upgrade naar AI Premium voor het nieuwe-generatie AI-model met 63% minder gemiste storingen en 56% minder valse meldingen.",
+  "Our latest AI failure detection model.": "Ons nieuwste AI-model voor storingdetectie.",
+  "63% fewer missed failures than the First-gen AI model.": "63% minder gemiste storingen dan het eerste-generatie AI-model.",
+  "56% fewer false alerts than the First-gen AI model.": "56% minder valse meldingen dan het eerste-generatie AI-model.",
   "Printers": "Drukkers",
   "Print History": "Geschiedenis afdrukken",
   "G-Codes": "G-codes",

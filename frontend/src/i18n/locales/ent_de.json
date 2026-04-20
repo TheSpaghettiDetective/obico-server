@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "First-Gen KI-Fehlererkennungsmodell",
+  "Next-gen failure detection AI model": "Next-Gen KI-Fehlererkennungsmodell",
+  "Our original AI failure detection model.": "Unser ursprüngliches KI-Fehlererkennungsmodell.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Upgrade auf AI Premium für das Next-Gen KI-Modell mit 63 % weniger übersehenen Fehlern und 56 % weniger Fehlalarmen.",
+  "Our latest AI failure detection model.": "Unser neuestes KI-Fehlererkennungsmodell.",
+  "63% fewer missed failures than the First-gen AI model.": "63 % weniger übersehene Fehler als beim First-Gen KI-Modell.",
+  "56% fewer false alerts than the First-gen AI model.": "56 % weniger Fehlalarme als beim First-Gen KI-Modell.",
   "Printers": "Drucker",
   "Print History": "Druckverlauf",
   "G-Codes": "G-Codes",

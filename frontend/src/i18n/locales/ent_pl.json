@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "Model SI wykrywania awarii pierwszej generacji",
+  "Next-gen failure detection AI model": "Model SI wykrywania awarii nowej generacji",
+  "Our original AI failure detection model.": "Nasz oryginalny model SI wykrywania awarii.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Przejdź na AI Premium, aby korzystać z modelu SI nowej generacji z 63% mniejszą liczbą niewykrytych awarii i 56% mniejszą liczbą fałszywych alarmów.",
+  "Our latest AI failure detection model.": "Nasz najnowszy model SI wykrywania awarii.",
+  "63% fewer missed failures than the First-gen AI model.": "O 63% mniej niewykrytych awarii niż w modelu SI pierwszej generacji.",
+  "56% fewer false alerts than the First-gen AI model.": "O 56% mniej fałszywych alarmów niż w modelu SI pierwszej generacji.",
   "Printers": "Drukarki",
   "Print History": "Historia wydruku",
   "G-Codes": "Kody G",

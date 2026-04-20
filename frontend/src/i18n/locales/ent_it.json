@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "Modello IA di rilevamento guasti di prima generazione",
+  "Next-gen failure detection AI model": "Modello IA di rilevamento guasti di nuova generazione",
+  "Our original AI failure detection model.": "Il nostro modello IA di rilevamento guasti originale.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Passa a AI Premium per il modello IA di nuova generazione con il 63 % di guasti non rilevati in meno e il 56 % di falsi avvisi in meno.",
+  "Our latest AI failure detection model.": "Il nostro ultimo modello IA di rilevamento guasti.",
+  "63% fewer missed failures than the First-gen AI model.": "63 % di guasti non rilevati in meno rispetto al modello IA di prima generazione.",
+  "56% fewer false alerts than the First-gen AI model.": "56 % di falsi avvisi in meno rispetto al modello IA di prima generazione.",
   "Printers": "Stampanti",
   "Print History": "Cronologia di stampa",
   "G-Codes": "Codici G",

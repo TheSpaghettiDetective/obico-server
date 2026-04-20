@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "První generace AI modelu detekce selhání",
+  "Next-gen failure detection AI model": "Nová generace AI modelu detekce selhání",
+  "Our original AI failure detection model.": "Náš původní AI model detekce selhání.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Přejděte na AI Premium pro AI model nové generace s o 63 % méně zmeškanými selháními a o 56 % méně falešnými upozorněními.",
+  "Our latest AI failure detection model.": "Náš nejnovější AI model detekce selhání.",
+  "63% fewer missed failures than the First-gen AI model.": "O 63 % méně zmeškaných selhání než u AI modelu první generace.",
+  "56% fewer false alerts than the First-gen AI model.": "O 56 % méně falešných upozornění než u AI modelu první generace.",
   "Printers": "Tiskárny",
   "Print History": "Historie tisku",
   "G-Codes": "G-kódy",

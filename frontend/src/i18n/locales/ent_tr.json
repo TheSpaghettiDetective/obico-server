@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "Birinci nesil arıza tespit AI modeli",
+  "Next-gen failure detection AI model": "Yeni nesil arıza tespit AI modeli",
+  "Our original AI failure detection model.": "Orijinal arıza tespit AI modelimiz.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Birinci nesil AI modeline göre %63 daha az kaçırılan arıza ve %56 daha az yanlış uyarı sunan yeni nesil AI modeli için AI Premium'a yükseltin.",
+  "Our latest AI failure detection model.": "En yeni arıza tespit AI modelimiz.",
+  "63% fewer missed failures than the First-gen AI model.": "Birinci nesil AI modeline göre %63 daha az kaçırılan arıza.",
+  "56% fewer false alerts than the First-gen AI model.": "Birinci nesil AI modeline göre %56 daha az yanlış uyarı.",
   "Printers": "Yazıcılar",
   "Print History": "Baskı Geçmişi",
   "G-Codes": "G-Kodları",

@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "Első generációs AI hibafelismerő modell",
+  "Next-gen failure detection AI model": "Új generációs AI hibafelismerő modell",
+  "Our original AI failure detection model.": "Eredeti AI hibafelismerő modellünk.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Frissítsen AI Premiumra az új generációs AI modellért, amely 63%-kal kevesebb felderítetlen hibát és 56%-kal kevesebb téves riasztást eredményez.",
+  "Our latest AI failure detection model.": "Legújabb AI hibafelismerő modellünk.",
+  "63% fewer missed failures than the First-gen AI model.": "63%-kal kevesebb felderítetlen hiba, mint az első generációs AI modellnél.",
+  "56% fewer false alerts than the First-gen AI model.": "56%-kal kevesebb téves riasztás, mint az első generációs AI modellnél.",
   "Printers": "Nyomtatók",
   "Print History": "Nyomtatási előzmények",
   "G-Codes": "G-kódok",

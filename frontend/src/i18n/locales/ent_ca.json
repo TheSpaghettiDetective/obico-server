@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "Model d'IA de detecció de fallades de primera generació",
+  "Next-gen failure detection AI model": "Model d'IA de detecció de fallades de nova generació",
+  "Our original AI failure detection model.": "El nostre model d'IA de detecció de fallades original.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Actualitza a AI Premium per al model d'IA de nova generació amb un 63% menys de fallades no detectades i un 56% menys de falses alertes.",
+  "Our latest AI failure detection model.": "El nostre últim model d'IA de detecció de fallades.",
+  "63% fewer missed failures than the First-gen AI model.": "63% menys fallades no detectades que el model d'IA de primera generació.",
+  "56% fewer false alerts than the First-gen AI model.": "56% menys falses alertes que el model d'IA de primera generació.",
   "Printers": "Impressores",
   "Print History": "Historial d'impressió",
   "G-Codes": "Codis G",

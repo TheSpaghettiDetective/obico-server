@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "Första generationens AI-modell för felupptäckt",
+  "Next-gen failure detection AI model": "Nästa generations AI-modell för felupptäckt",
+  "Our original AI failure detection model.": "Vår ursprungliga AI-modell för felupptäckt.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Uppgradera till AI Premium för nästa generations AI-modell med 63 % färre missade fel och 56 % färre falska varningar.",
+  "Our latest AI failure detection model.": "Vår senaste AI-modell för felupptäckt.",
+  "63% fewer missed failures than the First-gen AI model.": "63 % färre missade fel än första generationens AI-modell.",
+  "56% fewer false alerts than the First-gen AI model.": "56 % färre falska varningar än första generationens AI-modell.",
   "Printers": "Skrivare",
   "Print History": "Utskriftshistorik",
   "G-Codes": "G-koder",

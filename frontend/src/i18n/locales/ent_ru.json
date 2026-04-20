@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "ИИ-модель обнаружения сбоев первого поколения",
+  "Next-gen failure detection AI model": "ИИ-модель обнаружения сбоев нового поколения",
+  "Our original AI failure detection model.": "Наша оригинальная ИИ-модель обнаружения сбоев.",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Обновитесь до AI Premium, чтобы получить ИИ-модель нового поколения: на 63 % меньше пропущенных сбоев и на 56 % меньше ложных срабатываний.",
+  "Our latest AI failure detection model.": "Наша новейшая ИИ-модель обнаружения сбоев.",
+  "63% fewer missed failures than the First-gen AI model.": "На 63 % меньше пропущенных сбоев по сравнению с ИИ-моделью первого поколения.",
+  "56% fewer false alerts than the First-gen AI model.": "На 56 % меньше ложных срабатываний по сравнению с ИИ-моделью первого поколения.",
   "Printers": "Принтеры",
   "Print History": "История печати",
   "G-Codes": "G-коды",

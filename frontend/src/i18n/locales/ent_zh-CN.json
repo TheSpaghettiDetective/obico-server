@@ -1,4 +1,11 @@
 {
+  "First-gen failure detection AI model": "第一代故障检测 AI 模型",
+  "Next-gen failure detection AI model": "新一代故障检测 AI 模型",
+  "Our original AI failure detection model.": "我们最初的故障检测 AI 模型。",
+  "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "升级到 AI Premium 即可使用新一代 AI 模型，比第一代 AI 模型减少 63% 的漏报和 56% 的误报。",
+  "Our latest AI failure detection model.": "我们最新的故障检测 AI 模型。",
+  "63% fewer missed failures than the First-gen AI model.": "比第一代 AI 模型减少 63% 的漏报。",
+  "56% fewer false alerts than the First-gen AI model.": "比第一代 AI 模型减少 56% 的误报。",
   "Printers": "打印机",
   "Print History": "打印历史",
   "G-Codes": "G-代码",

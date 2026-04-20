@@ -148,6 +148,8 @@
   "upgrade to the": "upgradovat na",
   "Compare the plans >>>": "Porovnejte tarify >>>",
   "Complimentary": "Bezplatný",
+  "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.": "Bezplatný plán zahrnuje naši {aiTech}, 10 bezplatných {dhLink} měsíčně a {basicStream}.",
+  "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.": "Upgradujte na {planName} pro více AI Detection Hours a naši {aiTech} — o 63 % méně zmeškaných selhání a o 56 % méně falešných poplachů. {planName2} také zahrnuje neomezené {premiumStream}.",
   "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.": "plán neumožňuje balíčky Subscribe&Save jako doplňky. Pokud potřebujete více hodin detekce AI, můžete si pořídit předplacený balíček.",
   "Next-gen AI failure detection — launching May 1, 2026": "Detekce selhání AI nové generace — spuštění 1. května 2026",
   "A faster, sharper AI model.": "Rychlejší a přesnější model AI.",

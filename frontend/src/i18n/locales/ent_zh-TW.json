@@ -148,6 +148,8 @@
   "upgrade to the": "升級到",
   "Compare the plans >>>": "比较計劃 >>>",
   "Complimentary": "免費",
+  "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.": "免費方案包含我們的{aiTech}、每月10小時免費{dhLink}以及{basicStream}。",
+  "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.": "升級到{planName}即可獲得更多 AI Detection Hours 以及我們的{aiTech} — 漏檢減少63%，誤報減少56%。{planName2}還包含無限的{premiumStream}。",
   "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.": "方案不允許添加Subscribe&Save偵測小時包。如果需要更多AI偵測小時，可以購買預付包。",
   "Next-gen AI failure detection — launching May 1, 2026": "新一代AI故障偵測 — 2026年5月1日上線",
   "A faster, sharper AI model.": "更快、更精準的AI模型。",

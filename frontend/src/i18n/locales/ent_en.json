@@ -152,6 +152,8 @@
   "upgrade to the": "upgrade to the",
   "Compare the plans >>>": "Compare the plans >>>",
   "Complimentary": "Complimentary",
+  "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.": "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.",
+  "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.": "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.",
   "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.": "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.",
   "Next-gen AI failure detection — launching May 1, 2026": "Next-gen AI failure detection — launching May 1, 2026",
   "A faster, sharper AI model.": "A faster, sharper AI model.",

@@ -148,6 +148,8 @@
   "upgrade to the": "frissítés a",
   "Compare the plans >>>": "Hasonlítsa össze a csomagokat >>>",
   "Complimentary": "Ingyenes",
+  "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.": "Az ingyenes csomag tartalmazza a mi {aiTech}-nkat, havi 10 ingyenes {dhLink}-t és a {basicStream}-et.",
+  "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.": "Frissítsen {planName}-ra több AI Detection Hours-ért és a mi {aiTech}-nkért — 63%-kal kevesebb elmaradt hiba és 56%-kal kevesebb téves riasztás. A {planName2} korlátlan {premiumStream}-et is tartalmaz.",
   "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.": "csomaghoz nem adhatók hozzá Subscribe&Save csomagok. Ha több AI Detection Hourra van szüksége, előfizethet egy előre fizetett csomagra.",
   "Next-gen AI failure detection — launching May 1, 2026": "Újgenerációs AI hibaérzékelés — indulás 2026. május 1-jén",
   "A faster, sharper AI model.": "Gyorsabb, pontosabb AI-modell.",

@@ -148,6 +148,8 @@
   "upgrade to the": "перейти на",
   "Compare the plans >>>": "Сравните планы >>>",
   "Complimentary": "Бесплатный",
+  "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.": "Бесплатный план включает нашу {aiTech}, 10 бесплатных {dhLink} в месяц и {basicStream}.",
+  "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.": "Обновите до {planName}, чтобы получить больше AI Detection Hours и нашу {aiTech} — на 63 % меньше пропущенных сбоев и на 56 % меньше ложных срабатываний. {planName2} также включает неограниченный {premiumStream}.",
   "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.": "тариф не позволяет использовать пакеты Subscribe&Save как дополнение. Если вам нужно больше часов обнаружения ИИ, вы можете приобрести предоплаченный пакет.",
   "Next-gen AI failure detection — launching May 1, 2026": "Обнаружение дефектов ИИ нового поколения — запуск 1 мая 2026",
   "A faster, sharper AI model.": "Более быстрая и точная модель ИИ.",

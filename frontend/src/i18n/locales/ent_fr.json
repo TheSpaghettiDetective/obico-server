@@ -148,6 +148,8 @@
   "upgrade to the": "passer au",
   "Compare the plans >>>": "Comparez les plans >>>",
   "Complimentary": "Gratuit",
+  "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.": "Le plan gratuit inclut notre {aiTech}, 10 {dhLink} gratuites par mois et {basicStream}.",
+  "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.": "Passez à {planName} pour plus de AI Detection Hours et notre {aiTech} — 63 % d'échecs manqués en moins et 56 % de fausses alertes en moins. {planName2} inclut également le {premiumStream} illimité.",
   "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.": "forfait ne permet pas les packs Subscribe&Save en complément. Si vous avez besoin de plus d'heures de détection IA, vous pouvez acheter un pack prépayé.",
   "Next-gen AI failure detection — launching May 1, 2026": "Détection de défauts IA nouvelle génération — lancement le 1er mai 2026",
   "A faster, sharper AI model.": "Un modèle d'IA plus rapide et plus précis.",

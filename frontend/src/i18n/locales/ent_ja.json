@@ -148,6 +148,8 @@
   "upgrade to the": "へのアップグレード",
   "Compare the plans >>>": "プランを比較する >>>",
   "Complimentary": "無料",
+  "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.": "無料プランには{aiTech}、月10時間の無料{dhLink}、{basicStream}が含まれています。",
+  "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.": "より多くの AI Detection Hours と{aiTech}のために{planName}にアップグレード — 見逃し63%減、誤報56%減。{planName2}には無制限の{premiumStream}も含まれます。",
   "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.": "プランではSubscribe&Saveパックをアドオンとして追加できません。追加のAI検出時間が必要な場合は、プリペイドパックをご購入ください。",
   "Next-gen AI failure detection — launching May 1, 2026": "次世代AI故障検出 — 2026年5月1日開始",
   "A faster, sharper AI model.": "より高速で精度の高いAIモデル。",

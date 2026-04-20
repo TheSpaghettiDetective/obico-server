@@ -148,6 +148,8 @@
   "upgrade to the": "yükseltmek:",
   "Compare the plans >>>": "Planları karşılaştırın >>>",
   "Complimentary": "Ücretsiz",
+  "The Free plan includes our {aiTech}, 10 free {dhLink} per month, and {basicStream}.": "Ücretsiz plan {aiTech}'mızı, aylık 10 ücretsiz {dhLink} ve {basicStream}'i içerir.",
+  "Upgrade to {planName} for more AI Detection Hours and our {aiTech} — 63% fewer missed failures and 56% fewer false alerts. {planName2} also comes with unlimited {premiumStream}.": "Daha fazla AI Detection Hours ve {aiTech}'mız için {planName}'a yükseltin — %63 daha az kaçırılan hata ve %56 daha az yanlış uyarı. {planName2} ayrıca sınırsız {premiumStream} içerir.",
   "plan doesn't allows Subscribe&Save AI Detection Hour Pack as add-ons. If you need more AI Detection Hours, you can get Pre-paid AI Detection Hour Pack.": "plan, Subscribe&Save paketlerini ek olarak desteklemez. Daha fazla AI Algılama Saati gerekiyorsa ön ödemeli bir paket satın alabilirsiniz.",
   "Next-gen AI failure detection — launching May 1, 2026": "Yeni nesil AI hata algılama — 1 Mayıs 2026'da başlıyor",
   "A faster, sharper AI model.": "Daha hızlı, daha keskin bir AI modeli.",

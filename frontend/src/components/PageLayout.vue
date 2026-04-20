@@ -12,7 +12,7 @@
         <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">
           <a href="/ent_pub/pricing/" class="primary">
             <font-awesome-icon icon="star" />
-            {{$t("Upgrade to Pro")}}
+            {{$t("Upgrade to AI Premium")}}
           </a>
         </li>
         <li v-if="user" :class="{ active: path.includes('/printers/') }">

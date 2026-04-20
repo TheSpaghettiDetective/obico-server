@@ -1,6 +1,6 @@
 {
-  "First-gen failure detection AI model": "1세대 장애 감지 AI 모델",
-  "Next-gen failure detection AI model": "차세대 장애 감지 AI 모델",
+  "First-gen AI failure detection technology": "1세대 AI 장애 감지 기술",
+  "Next-gen AI failure detection technology": "차세대 AI 장애 감지 기술",
   "Our original AI failure detection model.": "기존 장애 감지 AI 모델입니다.",
   "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "AI Premium으로 업그레이드하면 1세대 AI 모델보다 놓치는 장애가 63% 적고 오경보가 56% 적은 차세대 AI 모델을 사용할 수 있습니다.",
   "Our latest AI failure detection model.": "최신 장애 감지 AI 모델입니다.",
@@ -135,7 +135,7 @@
   "Upgrade to": "업그레이드:",
   "Now (30-Day Money Back Guarantee)": "지금 (30일 환불 보장)",
   "About the free trial": "무료 체험에 관하여",
-  "During the 1 month trial period, you have access to all": "1개월 체험 기간 동안 모든",
+  "You have access to the next-gen AI failure detection technology, as well as all other": "차세대 장애 감지 기술을 포함한 모든",
   "features.": "기능.",
   "We also gave you 250 free {localizedDom}": "또한 250개의 무료 {localizedDom}을 제공했습니다.",
   "so you would be able to fully experience the power of {brandName} without having to worry about running out.": "그러면 {{brandName}}의 힘을 마음껏 체험할 수 있고, 부족함을 걱정할 필요가 없습니다.",

@@ -1,6 +1,6 @@
 {
-  "First-gen failure detection AI model": "Model SI wykrywania awarii pierwszej generacji",
-  "Next-gen failure detection AI model": "Model SI wykrywania awarii nowej generacji",
+  "First-gen AI failure detection technology": "Technologia wykrywania awarii SI pierwszej generacji",
+  "Next-gen AI failure detection technology": "Technologia wykrywania awarii SI nowej generacji",
   "Our original AI failure detection model.": "Nasz oryginalny model SI wykrywania awarii.",
   "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Przejdź na AI Premium, aby korzystać z modelu SI nowej generacji z 63% mniejszą liczbą niewykrytych awarii i 56% mniejszą liczbą fałszywych alarmów.",
   "Our latest AI failure detection model.": "Nasz najnowszy model SI wykrywania awarii.",
@@ -135,7 +135,7 @@
   "Upgrade to": "Przejdź na",
   "Now (30-Day Money Back Guarantee)": "Teraz (30-dniowa gwarancja zwrotu pieniędzy)",
   "About the free trial": "O bezpłatnej wersji próbnej",
-  "During the 1 month trial period, you have access to all": "Podczas 1-miesięcznego okresu próbnego masz dostęp do wszystkich",
+  "You have access to the next-gen AI failure detection technology, as well as all other": "Masz dostęp do technologii wykrywania awarii nowej generacji oraz wszystkich innych",
   "features.": "funkcje.",
   "We also gave you 250 free {localizedDom}": "Daliśmy Ci również 250 darmowych {localizedDom}",
   "so you would be able to fully experience the power of {brandName} without having to worry about running out.": "dzięki temu będziesz mógł w pełni doświadczyć mocy {{brandName}}, nie martwiąc się, że Ci jej zabraknie.",

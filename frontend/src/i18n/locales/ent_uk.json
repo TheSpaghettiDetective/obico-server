@@ -1,6 +1,6 @@
 {
-  "First-gen failure detection AI model": "ШІ-модель виявлення збоїв першого покоління",
-  "Next-gen failure detection AI model": "ШІ-модель виявлення збоїв нового покоління",
+  "First-gen AI failure detection technology": "Технологія виявлення збоїв зі ШІ першого покоління",
+  "Next-gen AI failure detection technology": "Технологія виявлення збоїв зі ШІ нового покоління",
   "Our original AI failure detection model.": "Наша оригінальна ШІ-модель виявлення збоїв.",
   "Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.": "Оновіться до AI Premium, щоб отримати ШІ-модель нового покоління з 63 % меншою кількістю пропущених збоїв і 56 % меншою кількістю хибних сповіщень.",
   "Our latest AI failure detection model.": "Наша найновіша ШІ-модель виявлення збоїв.",
@@ -135,7 +135,7 @@
   "Upgrade to": "Оновити до",
   "Now (30-Day Money Back Guarantee)": "Зараз (30-денна гарантія повернення коштів)",
   "About the free trial": "Про безкоштовний пробний період",
-  "During the 1 month trial period, you have access to all": "Протягом 1-місячного пробного періоду ви маєте доступ до всіх",
+  "You have access to the next-gen AI failure detection technology, as well as all other": "Ви маєте доступ до технології виявлення збоїв нового покоління, а також до всіх інших",
   "features.": "функції.",
   "We also gave you 250 free {localizedDom}": "Ми також надали вам 250 безкоштовних {localizedDom}",
   "so you would be able to fully experience the power of {brandName} without having to worry about running out.": "тож ви зможете повною мірою відчути силу {{brandName}}, не турбуючись про те, що він закінчиться.",

@@ -23,7 +23,7 @@ export default function BlogSidebar({sidebar, tags}) {
           <img src='/img/AI_BETA_BANNER.jpg' alt='AI Failure Detection Beta'/>
         </div>
         <div>
-          <a href='https://app.obico.io/ent/timelapse_upload/'>
+          <a href='https://www.obico.io/blog/next-gen-ai-failure-detection-general-release/'>
             <button className={styles.learnMoreButton}>Check it out</button>
           </a>
         </div>

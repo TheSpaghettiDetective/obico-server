@@ -18,13 +18,13 @@ export default function BlogSidebar({sidebar, tags}) {
     <>
       <div className={styles.nozzleNinzaBlock}>
         <h2>Next-Gen AI</h2>
-        <h3>Failure Detection <span className={styles.obicoAccent}>Private Beta</span></h3>
+        <h3>Failure Detection <span className={styles.obicoAccent}>General Release</span></h3>
         <div className={styles.nozzleNizaBadgeImage}>
           <img src='/img/AI_BETA_BANNER.jpg' alt='AI Failure Detection Beta'/>
         </div>
         <div>
           <a href='https://app.obico.io/ent/timelapse_upload/'>
-            <button className={styles.learnMoreButton}>Join the Beta</button>
+            <button className={styles.learnMoreButton}>Check it out</button>
           </a>
         </div>
       </div>

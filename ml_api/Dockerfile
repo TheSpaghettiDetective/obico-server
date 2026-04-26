@@ -1,4 +1,5 @@
-FROM thespaghettidetective/ml_api_base:1.4
+ARG IMAGE_TAG_SUFFIX=
+FROM thespaghettidetective/ml_api_base:1.4${IMAGE_TAG_SUFFIX}
 
 RUN apt update && apt install -y curl
 

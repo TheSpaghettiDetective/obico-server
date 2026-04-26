@@ -33,3 +33,9 @@ docker build --platform linux/arm64 -f Dockerfile.base_arm64 -t ${VERSION_BASE}-
 docker push ${VERSION_BASE}-linux-arm64
 docker manifest create ${INSECURE} ${VERSION_BASE} --amend ${VERSION_BASE}-linux-amd64 --amend ${VERSION_BASE}-linux-arm64
 docker manifest push ${INSECURE} ${VERSION_BASE}
+
+# arm64(rk3588)
+RK3588_VERSION=${VERSION_BASE}-rk3588
+echo Building $RK3588_VERSION
+docker build --platform linux/arm64 -f Dockerfile.base_rk3588 -t ${RK3588_VERSION} .
+docker push ${RK3588_VERSION}

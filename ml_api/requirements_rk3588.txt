@@ -1,0 +1,2 @@
+# RKNN Toolkit Lite2 - only installed on aarch64 and RK3588 hardware
+rknn-toolkit-lite2

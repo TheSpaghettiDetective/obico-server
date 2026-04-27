@@ -7,11 +7,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install --no-install-recommends -y \
     ca-certificates python3-pip wget curl
 
+RUN wget -q https://github.com/airockchip/rknn-toolkit2/raw/master/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so \
+    -O /usr/lib/librknnrt.so \
+    && chmod 755 /usr/lib/librknnrt.so
+
 WORKDIR /app
 RUN pip install --upgrade pip
 RUN pip install opencv_python_headless
 
 ADD requirements.txt ./
-RUN pip install -r requirements.txt
+ADD requirements_rk3588.txt ./
+RUN pip install -r requirements.txt -r requirements_rk3588.txt
 
 EXPOSE 3333

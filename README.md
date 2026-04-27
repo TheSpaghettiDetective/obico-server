@@ -44,6 +44,11 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
     - If you are on Mac: `cd obico-server && docker-compose up -d`
     - If you are on Windows: `cd obico-server; docker-compose up -d`
 
+To use the NPU acceleration for RK3588 boards:
+```bash
+cd obico-server && sudo docker compose -f docker-compose.yml -f docker-compose-rk3588.yml up -d
+```
+
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
 4. If the Obico Server is running on `localhost`, there will be no step 4. If it is running on a different host, such as a VM in the cloud, go ahead to [configure the Django site](https://www.obico.io/docs/server-guides/configure/#django-site).

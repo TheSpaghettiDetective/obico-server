@@ -41,10 +41,12 @@ def calc_normalized_p(detective_sensitivity: float,
         return scale(p, 0, thresh_warning, 0, 1.0 / 3.0)
 
 
-def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint, params):
+def detect(printer, pic, pic_id, raw_pic_url, *, ml_api_endpoint='/p/', params=None):
     """
     Perform failure detection. Returns dict with 'detections', 'decision', 'tagged_img_url'.
     """
+    if params is None:
+        params = settings.FD_1ST_GEN_PARAMS
 
     prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
 

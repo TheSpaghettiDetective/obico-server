@@ -29,7 +29,7 @@ The Obico Cloud offers two plan options to our users:
 
 #### How much will the AI Premium plan costs me? {#how-much-will-the-pro-plan-costs-me}
 
-The AI Premium plan costs $4 per month if you subscribe to the annual plan. This is barely 1 coffee each month. If you go with the monthly plan, it'll cost $6 per month.
+The AI Premium plan costs $6.99 per month if you subscribe to the annual plan — still less than the price of a couple of coffees each month. If you go with the monthly plan, it'll cost $8.99 per month.
 
 The base plan is limited to 1 printer. If you have more printers, you can add them at $2 per month per additional printer.
 

@@ -8,7 +8,7 @@ There are a few critical differences between the **Premium Streaming** and the *
 
 | | Premium Streaming | Basic Streaming |
 |-|-------|---------|
-| Eligibility | Pro subscribers only | Free users |
+| Eligibility | AI Premium subscribers only | Free users |
 | Frame rate | Up to 25 FPS (frames per second) | Up to 5 FPS (frames per second) |
 | Throttle | Always available. No any throttle or limitation. | Throttled for 30 seconds every minute * |
 
@@ -21,7 +21,7 @@ Whereas the Basic Streaming in OctoPrint or Klipper (Mainsail or Fluidd) is base
 :::
 
 :::info
-The Premium Streaming uses a great amount of resources on the Obico Server, such as the cloud storage and the network bandwidth. This is why we can make it available only to the Pro subscribers.
+The Premium Streaming uses a great amount of resources on the Obico Server, such as the cloud storage and the network bandwidth. This is why we can make it available only to the AI Premium subscribers.
 :::
 
 ## Premium Streaming FAQs {#premium-streaming-faqs}

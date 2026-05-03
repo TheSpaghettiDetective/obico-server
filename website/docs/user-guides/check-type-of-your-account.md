@@ -1,6 +1,6 @@
 ---
 id: check-type-of-your-account
-title: How to check if you have a Free or a Pro account
+title: How to check if you have a Free or AI Premium account
 ---
 
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
@@ -14,7 +14,11 @@ title: How to check if you have a Free or a Pro account
 
 ![](/img/user-guides/helpdocs/tsd-plugin-account-type.png)
 
-* **Pro** means either you have subscribed to the Pro plan (thank you!), or you are still in the free trial period, which is the first month after you sign up for an Obico Cloud account.
-* **Free** means your free trial period has expired and you haven't upgraded to the Pro plan afterward.
+* **Pro** means either you have subscribed to the AI Premium plan (thank you!), or you are still in the free trial period, which is the first month after you sign up for an Obico Cloud account.
+* **Free** means your free trial period has expired and you haven't upgraded to the AI Premium plan afterward.
 
-Learn more about [the difference between Free and Pro](/docs/user-guides/upgrade-to-pro).
+:::note
+The plugin currently labels the AI Premium plan as "Pro" in the **Account status** row. The label will be updated to "AI Premium" in a future plugin release. Either way, "Pro" and "AI Premium" refer to the same plan.
+:::
+
+Learn more about [the difference between Free and AI Premium](/docs/user-guides/upgrade-to-pro).

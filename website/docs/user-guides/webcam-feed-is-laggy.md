@@ -20,11 +20,11 @@ Just like any other live video streaming or video conferencing, the Obico Premiu
 
 If your webcam only refreshes once about every 10 seconds (0.1FPS webcam stream), follow [this guide for troubleshooting](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/).
 
-## You don't have an Obico Pro subscription
+## You don't have an Obico AI Premium subscription
 
 If you are on the Obico Cloud's Free plan, you are only eligible for the Basic Streaming, which can appear to be quite choppy. Learn more about the difference between [Premium Streaming and Basic Streaming](/docs/user-guides/webcam-streaming-for-human-eyes).
 
-[Upgrade to the Obico Pro plan](https://app.obico.io/ent_pub/pricing/) to get 25FPS Premium Streaming.
+[Upgrade to the Obico AI Premium plan](https://app.obico.io/ent_pub/pricing/) to get 25FPS Premium Streaming.
 
 ## The hardware or OS doesn't support H.264 encoding
 

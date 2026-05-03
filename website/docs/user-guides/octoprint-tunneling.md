@@ -43,7 +43,7 @@ Easy.
 
 Yes and No. All users can use OctoPrint/Klipper Tunnel function. However, if you have a Free account, you are limited to tunnel up to 300MB per month. Once you have reached your monthly limit, you won't be able to tunnel to OctoPrint/Klipper any more until your usage is reset at the beginning of the next month.
 
-The Pro plan subscribers get unlimited tunnel data.
+The AI Premium plan subscribers get unlimited tunnel data.
 
 ## Why is monthly data cap limited to 300MB for a Free account? {#why-is-the-limit-on-free-account-only-100mb}
 
@@ -51,7 +51,7 @@ The reason why we can't give unlimited data to all accounts is because we need t
 
 Another reason for this limit is that every time OctoPrint/Klipper is being loaded via the tunnel, there is a big "spike" of server requests. Therefore, we have to "over-provision" Obico servers to be able to respond to these spikes if multiple users happen to be using OctoPrint/Klipper tunnel at the same time. Limiting the usage will help keep the server cost at a reasonable level while still providing a responsive experience anyone who wants to use OctoPrint/Klipper tunnel.
 
-The good news is we have optimized how the tunnel works so that, for any file that has been downloaded to and cached in your browser, you won't need to download again. Therefore, although it'll cost a good chunk of your Free limit when you tunnel to your OctoPrint/Klipper for the first time, subsequent uses of the tunnel won't take nearly as much. Plus, the webcam streaming is not counted against this cap. For most people, 300MB is enough for you to tunnel to OctoPrint/Klipper for 3-6 hours. Assuming each time you spend 5 minutes in the tunnel, that's using the tunnel for 30-60 times, which should be good enough for most casual users in a month. If you need to tunnel to OctoPrint/Klipper frequently, your best option is to upgrade to the Obico Cloud Pro plan and enjoy unlimited tunnel data.
+The good news is we have optimized how the tunnel works so that, for any file that has been downloaded to and cached in your browser, you won't need to download again. Therefore, although it'll cost a good chunk of your Free limit when you tunnel to your OctoPrint/Klipper for the first time, subsequent uses of the tunnel won't take nearly as much. Plus, the webcam streaming is not counted against this cap. For most people, 300MB is enough for you to tunnel to OctoPrint/Klipper for 3-6 hours. Assuming each time you spend 5 minutes in the tunnel, that's using the tunnel for 30-60 times, which should be good enough for most casual users in a month. If you need to tunnel to OctoPrint/Klipper frequently, your best option is to upgrade to the Obico Cloud AI Premium plan and enjoy unlimited tunnel data.
 
 ## Why does it take so long to load the OctoPrint/Klipper page in the Tunnel? {#why-does-it-take-so-long-to-load-the-octoprint-page-in-the-tunnel}
 

@@ -1,14 +1,14 @@
 ---
 id: upgrade-to-pro
-title: The Pro plan vs the Free plan
+title: The AI Premium plan vs the Free plan
 ---
 
 The Obico Cloud offers two plan options to our users:
 
-* The Pro plan
+* The AI Premium plan (formerly known as the Pro plan)
 * The Free plan.
 
-| | Pro plan | Free plan |
+| | AI Premium plan | Free plan |
 |-|----------|----------|
 | [Webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes) | Unlimited 25 FPS (frames per second) Premium Streaming. | Basic Streaming up to 5 FPS. Throttled for 30 seconds per minute. |
 | Free [AI Detection Hours](/docs/user-guides/how-does-detective-hour-work) | 50 per month | 10 per month |
@@ -17,7 +17,7 @@ The Obico Cloud offers two plan options to our users:
 | [OctoPrint Tunneling](/docs/user-guides/octoprint-tunneling) | Unlimited | Limited to 300MB/month |
 | Multiple printers | Each additional printer costs 50% of that of the 1st printer | Can have only 1 printer |
 
-#### Other perks included only in the Pro plan {#other-perks-included-only-in-the-pro-plan}
+#### Other perks included only in the AI Premium plan {#other-perks-included-only-in-the-pro-plan}
 
 * Concierge technical support. 8 business hours turn around time guaranteed.
 * G-Code remote upload and printing.
@@ -27,9 +27,9 @@ The Obico Cloud offers two plan options to our users:
 
 ## FAQs {#faqs}
 
-#### How much will the Pro plan costs me? {#how-much-will-the-pro-plan-costs-me}
+#### How much will the AI Premium plan costs me? {#how-much-will-the-pro-plan-costs-me}
 
-The Pro plan costs $4 per month if you subscribe to the annual plan. This is barely 1 coffee each month. If you go with the monthly plan, it'll cost $6 per month.
+The AI Premium plan costs $4 per month if you subscribe to the annual plan. This is barely 1 coffee each month. If you go with the monthly plan, it'll cost $6 per month.
 
 The base plan is limited to 1 printer. If you have more printers, you can add them at $2 per month per additional printer.
 

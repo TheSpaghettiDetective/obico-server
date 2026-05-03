@@ -25,9 +25,9 @@ Follow [this guide](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/) for othe
 
 ## Webcam stream is choppy
 
-The most common reason why your webcam stream appears choppy is because you don't have an Obico Pro subscription.
+The most common reason why your webcam stream appears choppy is because you don't have an Obico AI Premium subscription.
 
-* You are eligible for the Premium Streaming (25 frames-per-second) if you are currently a Pro plan subscriber or in the free 1-month Pro trial.
+* You are eligible for the Premium Streaming (25 frames-per-second) if you are currently an AI Premium plan subscriber or in the free 1-month AI Premium trial.
 * You are eligible for only the Basic Streaming if you are on the Free plan. In this case, the webcam stream is up to 5 frames-per-second, which can appear to be quite choppy. Also it's throttled for 30 seconds every minutes.
 
 Visit [your Obico account subscription page](https://app.obico.io/user_preferences/subscription/) if you are not sure.
@@ -36,7 +36,7 @@ Visit [your Obico account subscription page](https://app.obico.io/user_preferenc
 Learn more about [Premium Streaming vs Basic Streaming](/docs/user-guides/webcam-streaming-for-human-eyes).
 :::
 
-If you already have a Pro subscription but your webcam stream is still choppy, follow [this complete troubleshooting guide](/docs/user-guides/webcam-feed-is-laggy/).
+If you already have an AI Premium subscription but your webcam stream is still choppy, follow [this complete troubleshooting guide](/docs/user-guides/webcam-feed-is-laggy/).
 
 ## No webcam in the Obico app
 

@@ -20,7 +20,7 @@ Until now. [The Obico team](https://obico.io/) has decided to take stab at this 
 
 ## Hardwares required {#hardwares-required}
 
-- An Orange Pi board. You can source the board from [Orange Pi's official website](http://www.orangepi.org/) yourself. If you are located in North America, you can also buy [an Orange Pi kit from us](https://store.obico.io/collections/orange-pi-for-octoprint), which will come with 1-year Obico Pro plan as well as warranty and technical support from the Obico team.
+- An Orange Pi board. You can source the board from [Orange Pi's official website](http://www.orangepi.org/) yourself. If you are located in North America, you can also buy [an Orange Pi kit from us](https://store.obico.io/collections/orange-pi-for-octoprint), which will come with 1-year Obico AI Premium plan as well as warranty and technical support from the Obico team.
 - A high quality SD card (class 10 or better) with at least 8GB of storage
 - An Ethernet cable
 - USB cable to connect your 3D printer to the Orange Pi (comes with most printers)

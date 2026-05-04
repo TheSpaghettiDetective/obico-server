@@ -159,6 +159,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         ctx['layout_template_path'] = layout_template_path
         ctx['user'] = user
+        ctx['settings'] = settings
         # Strip any trailing slashes from mailing_list to prevent URL parsing issues
         clean_mailing_list = mailing_list.rstrip('/')
         unsub_url = syndicate.build_full_url_for_syndicate(

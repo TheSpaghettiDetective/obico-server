@@ -1,10 +1,56 @@
-time image.
+# 1. JetPack 7 / L4T R38.4 base.
+#    This is intentionally large but safest for first validation.
+FROM nvcr.io/nvidia/cuda:13.0.2-devel-ubuntu24.04 AS darknet_builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    cmake \
+    git \
+    curl \
+    python3 \
+    python3-pip \
+    python3-setuptools \
+    python3-wheel \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /
+
+RUN git clone https://github.com/AlexeyAB/darknet \
+ && cd darknet \
+ && git checkout 59c86222c5387bffd9108a21885f80e980ece234
+
+# 2. Jetson Thor = sm_110.
+#    Also fix CUDA library path for Jetson aarch64 layout.
+RUN cd /darknet \
+ && perl -0pi -e 's/^ARCH=.*?^OS :=/ARCH= -gencode arch=compute_110,code=[sm_110,compute_110]\nOS :=/ms' Makefile \
+ && sed -i 's|-L/usr/local/cuda/lib64|-L/usr/local/cuda/lib64 -L/usr/local/cuda/targets/aarch64-linux/lib|g' Makefile
+
+# 3. CPU lib.
+RUN cd /darknet \
+ && sed -i 's/^LIBSO=0/LIBSO=1/' Makefile \
+ && make clean \
+ && make -j"$(nproc)" \
+ && mv libdarknet.so libdarknet_cpu.so
+
+# 4. GPU lib.
+RUN cd /darknet \
+ && sed -i 's/^GPU=0/GPU=1/' Makefile \
+ && sed -i 's/^CUDNN=1/CUDNN=0/' Makefile \
+ && make clean \
+ && make -j"$(nproc)" \
+ && mv libdarknet.so libdarknet_gpu.so
+
+
 FROM nvcr.io/nvidia/cuda:13.0.2-runtime-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib:/usr/local/cuda/lib64"
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -12,6 +58,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     python3 \
     python3-pip \
+    python3-setuptools \
+    python3-wheel \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=darknet_builder /darknet /darknet
@@ -19,7 +67,6 @@ COPY --from=darknet_builder /darknet /darknet
 WORKDIR /app
 
 COPY requirements.txt ./
-
 RUN python3 -m pip install --upgrade pip \
  && python3 -m pip install --no-cache-dir opencv_python_headless \
  && python3 -m pip install --no-cache-dir -r requirements.txt

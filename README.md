@@ -1,6 +1,6 @@
 # The Obico Server
 
-This repo is everything you need to run a self-hosted Obico Server.
+This repo is everything you need to run a self-hosted Obico Server. This is an adapted version running on NVIDIA Jetson Orin AGX with Jetpack 6 and Jetson Thor with Jetpack 7. For convinience a dedicated yaml is available, see installation instructions below.
 
 [Obico](https://www.obico.io) is a community-built, open-source smart 3D printing platform used by makers, enthusiasts, and tinkerers around the world.
 
@@ -36,17 +36,25 @@ You will also need an email account that has SMTP access enabled (gmail will not
 1. Get the code:
 
 ```
-git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
+git clone -b release https://github.com/NODeeJay/obico-server/obico-server.git
 ```
 
-2. Run it! Do **either** one of these based on what OS you are using:
-    - If you are on Linux: `cd obico-server && sudo docker compose up -d`
-    - If you are on Mac: `cd obico-server && docker-compose up -d`
-    - If you are on Windows: `cd obico-server; docker-compose up -d`
+2. Depending on the Jetson run the appropriate command:
+    - Orin AGX (Jetpack 6, R36.4): `cd obico-server && sudo docker compose -f docker-compose-jetson-r36.4.yaml up -d`
+    - Thor (Jetpack7, R38.4): `cd obico-server && sudo docker compose -f docker-compose-jetson-r38.4.yaml up -d`
 
-3. Go grab a coffee. Step 2 will take 15-30 minutes.
+3. Go grab a coffee. Step 2 will take 15-30 minutes and a bit less on the Thor.
 
-4. If the Obico Server is running on `localhost`, there will be no step 4. If it is running on a different host, such as a VM in the cloud, go ahead to [configure the Django site](https://www.obico.io/docs/server-guides/configure/#django-site).
+4. To ensure you are running on the jetson module and not on CPU check the log
+
+```
+> Let's try darknet lib built with GPU support - /darknet/libdarknet_gpu.so
+> Done! Hooray! Now we have darknet with GPU support.
+```
+and you will realize it since the container is up ridiculously fast.
+
+
+5. If the Obico Server is running on `localhost`, there will be no step 4. If it is running on a different host, such as a VM in the cloud, go ahead to [configure the Django site](https://www.obico.io/docs/server-guides/configure/#django-site).
 
 Open "http://localhost:3334" on the same computer. Voila - your self-hosted Obico Server is now up and running!
 

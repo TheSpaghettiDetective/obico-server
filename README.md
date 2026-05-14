@@ -1,6 +1,6 @@
 # The Obico Server
 
-This repo is everything you need to run a self-hosted Obico Server. This is an adapted version running on NVIDIA Jetson Orin AGX with Jetpack 6 and Jetson Thor with Jetpack 7. For convinience a dedicated yaml is available, see installation instructions below.
+This repo is everything you need to run a self-hosted Obico Server. This is an adapted version running on NVIDIA Jetson Orin AGX with Jetpack 6 and Jetson Thor with Jetpack 7. For convenience a dedicated yaml is available for the older Jetson based on Jetpack 4 (patch neeed before), Orin and Thor, see installation instructions below.
 
 [Obico](https://www.obico.io) is a community-built, open-source smart 3D printing platform used by makers, enthusiasts, and tinkerers around the world.
 

@@ -1,0 +1,108 @@
+x-web-defaults: &web-defaults
+  restart: unless-stopped
+  build:
+    context: backend
+    dockerfile: 'Dockerfile'
+  volumes:
+    - ./backend:/app
+    - ./frontend:/frontend
+  depends_on:
+    - redis
+  environment:
+    OCTOPRINT_TUNNEL_PORT_RANGE: '0-0'
+    EMAIL_HOST: '${EMAIL_HOST-}'
+    EMAIL_HOST_USER: '${EMAIL_HOST_USER-}'
+    EMAIL_HOST_PASSWORD: '${EMAIL_HOST_PASSWORD-}'
+    EMAIL_PORT: '${EMAIL_PORT-587}'
+    EMAIL_USE_TLS: '${EMAIL_USE_TLS-True}'
+    DEFAULT_FROM_EMAIL: '${DEFAULT_FROM_EMAIL-changeme@example.com}'
+    DEBUG: '${DEBUG-False}'    # Don't set DEBUG to True unless you know what you are doing. Otherwise the static files will be cached in browser until hard-refresh
+    ADMIN_IP_WHITELIST: '${ADMIN_IP_WHITELIST-}'
+    SITE_USES_HTTPS: '${SITE_USES_HTTPS-False}'
+    SITE_IS_PUBLIC: '${SITE_IS_PUBLIC-False}'
+    CSRF_TRUSTED_ORIGINS: '${CSRF_TRUSTED_ORIGINS-}'
+    SOCIAL_LOGIN: '${SOCIAL_LOGIN-False}'
+    REDIS_URL: '${REDIS_URL-redis://redis:6379}'
+    DATABASE_URL: '${DATABASE_URL-sqlite:////app/db.sqlite3}'
+    INTERNAL_MEDIA_HOST: '${INTERNAL_MEDIA_HOST-http://web:3334}'
+    ML_API_HOST: '${ML_API_HOST-http://ml_api:3333}'
+    ACCOUNT_ALLOW_SIGN_UP: '${ACCOUNT_ALLOW_SIGN_UP-False}'
+    WEBPACK_LOADER_ENABLED: '${WEBPACK_LOADER_ENABLED-False}'
+    TELEGRAM_BOT_TOKEN: '${TELEGRAM_BOT_TOKEN-}'
+    TWILIO_ACCOUNT_SID: '${TWILIO_ACCOUNT_SID-}'
+    TWILIO_AUTH_TOKEN: '${TWILIO_AUTH_TOKEN-}'
+    TWILIO_FROM_NUMBER: '${TWILIO_FROM_NUMBER-}'
+    SENTRY_DSN: '${SENTRY_DSN-}'
+    PUSHOVER_APP_TOKEN: '${PUSHOVER_APP_TOKEN-}'
+    SLACK_CLIENT_ID: '${SLACK_CLIENT_ID-}'
+    SLACK_CLIENT_SECRET: '${SLACK_CLIENT_SECRET-}'
+    DJANGO_SECRET_KEY: '${DJANGO_SECRET_KEY-}'
+    SYNDICATE: '${SYNDICATE-}'
+    VERSION:
+    LLM_API_KEY: '${LLM_API_KEY-}'
+    LLM_BASE_URL: '${LLM_BASE_URL-https://api.openai.com/v1}'
+    LLM_MODEL_NAME: '${LLM_MODEL_NAME-gpt-4o}'
+    VLM_API_KEY: '${VLM_API_KEY-}'
+    VLM_BASE_URL: '${VLM_BASE_URL-https://api.openai.com/v1}'
+    VLM_MODEL_NAME: '${VLM_MODEL_NAME-gpt-4o}'
+    JUSPRIN_BRAND_NAME: '${JUSPRIN_BRAND_NAME-JusPrin}'
+
+
+services:
+  ml_api:
+    runtime: nvidia
+    hostname: ml_api
+    restart: unless-stopped
+    build:
+      context: ml_api
+      dockerfile: Dockerfile.jetson-r36
+    environment:
+      DEBUG: 'True'
+      FLASK_APP: 'server.py'
+      # ML_API_TOKEN:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    tty: true
+    command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://ml_api:3333/hc/"]
+      start_period: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  web:
+    <<: *web-defaults
+    hostname: web
+    ports:
+      - "3334:3334"
+    depends_on:
+      - ml_api
+    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://web:3334/hc/"]
+      start_period: 30s
+      interval: 90s
+      timeout: 20s
+      retries: 3
+
+  tasks:
+    <<: *web-defaults
+    hostname: tasks
+    command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A config inspect ping"]
+      start_period: 15s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    restart: unless-stopped
+    image: redis:7.2-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping" ]
+      start_period: 15s
+      interval: 15s
+      timeout: 10s
+      retries: 20

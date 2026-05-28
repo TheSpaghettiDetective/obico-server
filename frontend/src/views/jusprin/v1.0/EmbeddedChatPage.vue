@@ -864,6 +864,10 @@ export default {
         return
       }
 
+      if (this.slicingProgress.fadeOut) {
+        return
+      }
+
       const quickButtons = [this.cannedActions.startOver, this.cannedActions.moreOptions]
 
       if (this.slicingProgress.errors && this.slicingProgress.errors.length > 0) {

@@ -264,6 +264,7 @@ export default {
       haveDonePlateAnalysis: false,
       showScrollButton: false,
       slicingProgress: null,
+      slicingProgressCompletionTimeout: null,
       current_workflow: null,
       showUpgradeModal: false,
       creditsInfo: null, // Will be populated from API responses
@@ -445,6 +446,10 @@ export default {
       }
     },
     startOver() {
+      if (this.slicingProgressCompletionTimeout) {
+        clearTimeout(this.slicingProgressCompletionTimeout)
+        this.slicingProgressCompletionTimeout = null
+      }
       this.slicingProgress = null
       this.processedNotifications = new Set()
       this.current_workflow = null
@@ -855,17 +860,27 @@ export default {
         return
       }
 
+      if (this.slicingProgress.fadeOut) {
+        return
+      }
+
       // Add fade-out class first
       this.slicingProgress.fadeOut = true
 
       // Remove the progress bar after fade out animation completes
-      setTimeout(() => {
+      this.slicingProgressCompletionTimeout = setTimeout(() => {
+        this.slicingProgressCompletionTimeout = null
+        const progress = this.slicingProgress
+        if (!progress) {
+          return
+        }
+
         const quickButtons = [this.cannedActions.startOver, this.cannedActions.moreOptions]
 
-        if (this.slicingProgress.errors && this.slicingProgress.errors.length > 0) {
+        if (progress.errors && progress.errors.length > 0) {
           this.messages.push({
             role: 'assistant',
-            content: `${this.$t("My slicing algorithm lord just said:")}\n *"${this.slicingProgress.errors.join(
+            content: `${this.$t("My slicing algorithm lord just said:")}\n *"${progress.errors.join(
               '\n'
             )}"*`,
           })

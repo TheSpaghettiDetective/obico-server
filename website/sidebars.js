@@ -66,6 +66,10 @@ module.exports = {
       label: 'Webcam Streaming',
       items: [
         'user-guides/webcam-streaming-for-human-eyes',
+        'user-guides/webcam-feed-is-not-showing',
+        'user-guides/webcam-feed-is-laggy',
+        'user-guides/webcam-stream-stuck-at-1-10-fps',
+        'user-guides/webcam-install-janus',
         {
           type: 'doc',
           id: 'user-guides/moonraker-obico/webcam',
@@ -73,14 +77,10 @@ module.exports = {
         },
         'user-guides/multiple-cameras-octoprint',
         'user-guides/webcam-streaming-resolution-framerate',
-        'user-guides/webcam-feed-is-not-showing',
         {
           type: 'category',
           label: 'More... ',
           items: [
-            'user-guides/webcam-feed-is-laggy',
-            'user-guides/webcam-install-janus',
-            'user-guides/webcam-stream-stuck-at-1-10-fps',
             'user-guides/internet-speed-requirement-premium-streaming',
             'user-guides/premium-streaming-raspberry-pi-connection-speed',
             'user-guides/premium-streaming-computer-phone-connection-speed',

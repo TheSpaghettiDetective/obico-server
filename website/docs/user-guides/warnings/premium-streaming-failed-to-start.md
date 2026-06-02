@@ -7,10 +7,12 @@ title: Why do I get the "Premium webcam streaming failed to start" message?
 
 Premium webcam streaming may fail for a few reasons:
 
-- The SBC or 3D printer you are using doesn't have the `janus` system package required to create a WebRTC connection between your SBC and the Obico app. To fix it, make sure you have installed `janus` on your SBC. If your SBC is using a Debian-based OS, such as Raspberry Pi OS, you can SSH to the board and run `sudo apt-get install janus`.
+- The SBC or 3D printer you are using doesn't have the `janus` system package required to create a WebRTC connection between your SBC and the Obico app. To fix it, make sure you have installed `janus` on your SBC. If your SBC is using a Debian-based OS, such as Raspberry Pi OS, you can SSH to the board and run `sudo apt-get install janus`. See also [Janus not installed](/docs/user-guides/webcam-install-janus/).
 
-- The SBC or 3D printer you are using doesn't have a hardware accelerator to encode H.264 stream using `ffmpeg`.
+- The SBC or 3D printer you are using doesn't have a hardware accelerator to encode H.264 stream using `ffmpeg`. See [OS compatibility for webcam streaming](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/#4-did-you-use-the-official-octopi-image-to-flash-the-sd-card).
+
+- The local webcam server (crowsnest, ustreamer, or camera-streamer) is not running or returning errors. See the [webcam troubleshooting guide](/docs/user-guides/webcam-feed-is-not-showing/#webcam-streaming-failed).
 
 - Occasionally the Raspberry Pi or the webcam will decide that they want to take a break - just kidding. But if premium webcam streaming usually works for you, try to restart the Raspberry Pi to see if the problem will go away. Most of the times it will.
 
-Learn more abut [why premium webcam streaming is not working](/docs/user-guides/webcam-feed-is-laggy).
+Learn more about [choppy or jerky Premium Streaming](/docs/user-guides/webcam-feed-is-laggy/) or the full [webcam troubleshooting guide](/docs/user-guides/webcam-feed-is-not-showing/).

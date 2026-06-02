@@ -7,6 +7,8 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::info
+This page is part of the [Webcam Streaming Troubleshooting Guide](/docs/user-guides/webcam-feed-is-not-showing/). For the fastest path, start with the [0.1 FPS section](/docs/user-guides/webcam-feed-is-not-showing/#0.1-fps) there.
+
 The failure detection is not impacted in any way even if the webcam stream is stuck in 0.1 FPS. This is because the failure detection is designed to work best at 0.1 FPS.
 :::
 

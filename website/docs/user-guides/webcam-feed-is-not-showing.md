@@ -22,6 +22,8 @@ If you see a **Webcam Streaming Failed** notification in the Obico app, work thr
 
 Check that the webcam stream works in Mainsail, Fluidd, or OctoPrint — not just in the Obico app. If it doesn't work there either, fix your webcam setup first (USB connection, camera service, etc.).
 
+On the Pi or SBC, open the webcam stream URL in a browser (the same URL Mainsail/Fluidd uses, usually `http://127.0.0.1/webcam/?action=stream`). You should see a live video feed. If it fails here, the problem is with your webcam service — not Obico.
+
 ### Step 2: Restart in the right order
 
 On Klipper setups:
@@ -31,7 +33,15 @@ On Klipper setups:
 
 On OctoPrint: restart OctoPrint.
 
-### Step 3: Pick what you still see in the Obico app
+If the notification only appears right after boot, the webcam service may not be ready when Obico starts. The restart order above usually fixes it. Also make sure the webcam service is enabled on boot (`sudo systemctl enable crowsnest` or `camera-streamer`).
+
+### Step 3: Check your stream URL (if you use a custom or remote camera)
+
+If you configured a custom or remote webcam URL in Obico (not the default local one), open that URL in a browser **from the Pi or SBC** — not from your laptop. If it doesn't load there, Obico can't reach it either.
+
+See the [Obico for Klipper webcam configuration guide](/docs/user-guides/moonraker-obico/webcam/) for valid `stream_url` values (e.g. `http://127.0.0.1/webcam/?action=stream`).
+
+### Step 4: Pick what you still see in the Obico app
 
 The notification can mean several different things. Jump to the section that matches what you see **after** the steps above:
 
@@ -39,7 +49,9 @@ The notification can mean several different things. Jump to the section that mat
 - Stream updates only about every 10 seconds → [0.1 FPS troubleshooting](#0.1-fps)
 - Stream plays but is choppy or buffers a lot → [Choppy webcam stream](#choppy-premium)
 
-### Step 4: Still stuck?
+If the webcam looks fine in Mainsail/Fluidd but is very choppy in Obico, see [Troubleshoot choppy/jerky Premium Streaming](/docs/user-guides/webcam-feed-is-laggy/) — your hardware or OS may not support H.264 encoding. See also [OS compatibility for webcam streaming](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/#4-did-you-use-the-official-octopi-image-to-flash-the-sd-card).
+
+### Step 5: Still stuck?
 
 [Get help from a human](/docs/user-guides/contact-us-for-support). If support asks you to send log files, see how to download them for [Obico for Klipper](/docs/user-guides/moonraker-obico/logging-file/) or [Obico for OctoPrint](/docs/user-guides/turn-on-debug-logging/).
 

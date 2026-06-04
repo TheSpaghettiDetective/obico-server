@@ -289,7 +289,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     if user.tunnel_usage_over_cap():
         return HttpResponse(
-            OVER_FREE_LIMIT_HTML.format(pro_plan_name=getattr(settings, 'PRO_PLAN_NAME', 'Pro')),
+            OVER_FREE_LIMIT_HTML.format(pro_plan_name='AI Premium'),
             status=OVER_FREE_LIMIT_STATUS_CODE)
 
     # if plugin is disconnected, halt

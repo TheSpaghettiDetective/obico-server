@@ -20,7 +20,7 @@ export default function BlogSidebar({sidebar, tags}) {
         <h2>Next-Gen AI</h2>
         <h3>Failure Detection <span className={styles.obicoAccent}>General Release</span></h3>
         <div className={styles.nozzleNizaBadgeImage}>
-          <img src='/img/AI_BETA_BANNER.jpg' alt='AI Failure Detection Beta'/>
+          <img src='/img/AI_GENERAL_RELEASE_BANNER.jpg' alt='Next-Gen AI failure detection general release'/>
         </div>
         <div>
           <a href='https://www.obico.io/blog/next-gen-ai-failure-detection-general-release/'>

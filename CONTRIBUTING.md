@@ -38,11 +38,11 @@ Thanks for taking the time to improve Obico Server. This guide covers the normal
 
    ```bash
    cd frontend
-   yarn
-   yarn serve
+   npm ci
+   npm run serve
    ```
 
-   Do not submit bundled frontend output from `yarn build` in your pull request. Commit source changes only.
+   Do not submit bundled frontend output from `npm run build` in your pull request. Commit source changes only.
 
 5. Run the docs site locally when your change affects documentation under `website/`.
 
@@ -58,7 +58,7 @@ Thanks for taking the time to improve Obico Server. This guide covers the normal
 
    ```bash
    cd frontend
-   yarn lint
+   npm run lint
    ```
 
    For backend changes:

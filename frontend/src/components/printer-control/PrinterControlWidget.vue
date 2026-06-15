@@ -136,6 +136,20 @@
               </b-form-select-option>
             </b-form-select>
           </div>
+          <div v-if="activeToolTemperature" class="extrude-temperature">
+            <div class="temperature-icon">
+              <svg>
+                <use href="#extruder" />
+              </svg>
+            </div>
+            <div class="temperature-tool truncated">{{ activeToolDisplayName }}</div>
+            <div class="temperature-value">
+              <span>{{ activeToolActualTemperature }}</span>
+              <span v-if="activeToolTargetTemperature" class="temperature-target">
+                / {{ activeToolTargetTemperature }}
+              </span>
+            </div>
+          </div>
         </div>
 
         <!-- Baby Step Z -->
@@ -424,6 +438,25 @@ export default {
     showToolsSelector() {
       return Object.keys(this.tools).length > 1
     },
+    activeToolTemperature() {
+      return this.activeTool ? this.tools[this.activeTool] : null
+    },
+    activeToolDisplayName() {
+      return this.activeTool ? temperatureDisplayName(this.activeTool) : ''
+    },
+    activeToolActualTemperature() {
+      if (!this.activeToolTemperature || isNaN(this.activeToolTemperature.actual)) {
+        return null
+      }
+      return `${parseFloat(this.activeToolTemperature.actual).toFixed(1)} °C`
+    },
+    activeToolTargetTemperature() {
+      const target = this.activeToolTemperature?.target
+      if (target === null || target === undefined || isNaN(target)) {
+        return null
+      }
+      return `${Math.round(target)} °C`
+    },
     currentFeedRate() {
       const val = this.printer.status?.currentFeedRate
       return val !== undefined ? val : null
@@ -449,8 +482,14 @@ export default {
   watch: {
     tools: {
       handler: function (newValue, prevValue) {
-        if (newValue) {
-          this.activeTool = Object.keys(newValue)[0]
+        const toolKeys = Object.keys(newValue || {})
+        if (toolKeys.length === 0) {
+          this.activeTool = null
+        } else if (
+          !this.activeTool ||
+          !Object.prototype.hasOwnProperty.call(newValue, this.activeTool)
+        ) {
+          this.activeTool = toolKeys[0]
         }
       },
       immediate: true,
@@ -939,6 +978,45 @@ export default {
 
 .tool-select
   width: 80%
+
+.extrude-temperature
+  display: flex
+  align-items: center
+  gap: .875rem
+  width: 100%
+  min-height: 62px
+  margin-top: 1rem
+  padding: .8125rem
+  border-radius: var(--border-radius-md)
+  background-color: var(--color-background)
+  color: var(--color-text-primary)
+  .temperature-icon
+    width: 36px
+    height: 36px
+    flex-shrink: 0
+    display: flex
+    align-items: center
+    justify-content: center
+    background-color: var(--color-primary)
+    color: var(--color-on-primary)
+    border-radius: var(--border-radius-sm)
+    svg
+      width: 20px
+      height: 20px
+  .temperature-tool
+    min-width: 0
+    font-size: 1rem
+    font-weight: 600
+  .temperature-value
+    display: flex
+    gap: .375rem
+    align-items: baseline
+    margin-left: auto
+    white-space: nowrap
+    font-size: 1rem
+    font-weight: bold
+  .temperature-target
+    color: var(--color-text-secondary)
 
 .tune-printer
   display: flex

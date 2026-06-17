@@ -61,11 +61,12 @@ def extract_metadata(file_path: str, check_objects: bool, f: BinaryIO, size: int
 def parse(f: BinaryIO, size: int, encoding: str):
     random_file_prefix = random.randint(0,1000000)
     stub_gcode_path = os.path.join(tempfile.gettempdir(), f'{random_file_prefix}.gcode')
-    Path(stub_gcode_path).touch()   # extract_metadata needs a path to a real file, in addition to a BytesIO.
-    metadata = extract_metadata(stub_gcode_path, False, f, size, encoding)
-
-    # Clean up the stub g_code file s to free up disk space
-    Path(stub_gcode_path).unlink()
+    stub_gcode_file = Path(stub_gcode_path)
+    stub_gcode_file.touch()   # extract_metadata needs a path to a real file, in addition to a BytesIO.
+    try:
+        metadata = extract_metadata(stub_gcode_path, False, f, size, encoding)
+    finally:
+        stub_gcode_file.unlink(missing_ok=True)
 
     # Turn thumbnail files to bytes, and delete them to free up disk space
     thumbnails = []

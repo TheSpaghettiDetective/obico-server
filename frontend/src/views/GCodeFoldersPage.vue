@@ -812,10 +812,35 @@ export default {
       this.files = []
       this.fetchFilesAndFolders(true, printAfterUpload)
     },
-    gcodeUploadError(file, message) {
+    gcodeUploadError(file, message, xhr) {
       this.$swal.Reject.fire({
-        html: `<p class="text-center">${message}</p>`,
+        text: this.gcodeUploadErrorMessage(message, xhr),
       })
+    },
+    gcodeUploadErrorMessage(message, xhr) {
+      if (xhr && xhr.responseText) {
+        try {
+          return this.gcodeUploadErrorMessage(JSON.parse(xhr.responseText))
+        } catch (e) {
+          return xhr.responseText
+        }
+      }
+
+      if (message && typeof message === 'object') {
+        if (message.error) {
+          return message.error
+        }
+        if (message.detail) {
+          return message.detail
+        }
+
+        const fieldErrors = Object.values(message).flat().filter(Boolean)
+        if (fieldErrors.length > 0) {
+          return fieldErrors.join(' ')
+        }
+      }
+
+      return message || this.$i18next.t('Upload failed')
     },
     renameItem(item) {
       this.activeItem = item

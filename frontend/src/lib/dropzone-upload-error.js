@@ -1,10 +1,4 @@
-const DEFAULT_UPLOAD_ERROR_MESSAGE = 'Upload failed. Please try again.'
-const NETWORK_UPLOAD_ERROR_MESSAGE =
-  'Upload failed because the connection was interrupted. Please check your network and try again.'
-const SERVER_UPLOAD_ERROR_MESSAGE =
-  'Upload failed because the server temporarily could not complete the request. Please try again later.'
-const FILE_TOO_LARGE_ERROR_MESSAGE =
-  'Upload failed because the file is larger than the upload limit.'
+import i18n from '@src/i18n/i18n.js'
 
 const MAX_USER_MESSAGE_LENGTH = 500
 const MAX_SENTRY_MESSAGE_LENGTH = 1000
@@ -159,24 +153,30 @@ const userMessageFromApiBody = (body) => {
   return errors.length ? errors.join(' ') : null
 }
 
+const defaultUploadErrorMessage = () => i18n.t('Upload failed. Please try again.')
+
 const fallbackMessageForStatus = (status, defaultMessage) => {
   if (status === 0) {
-    return NETWORK_UPLOAD_ERROR_MESSAGE
+    return i18n.t(
+      'Upload failed because the connection was interrupted. Please check your network and try again.'
+    )
   }
 
   if (status === 413) {
-    return FILE_TOO_LARGE_ERROR_MESSAGE
+    return i18n.t('Upload failed because the file is larger than the upload limit.')
   }
 
   if (status >= 500) {
-    return SERVER_UPLOAD_ERROR_MESSAGE
+    return i18n.t(
+      'Upload failed because the server temporarily could not complete the request. Please try again later.'
+    )
   }
 
-  return defaultMessage
+  return defaultMessage || defaultUploadErrorMessage()
 }
 
 export const normalizeDropzoneUploadError = (file, message, xhr, options = {}) => {
-  const defaultMessage = options.defaultMessage || DEFAULT_UPLOAD_ERROR_MESSAGE
+  const defaultMessage = options.defaultMessage || defaultUploadErrorMessage()
   const status = getStatus(xhr)
   const responseText = getResponseText(xhr)
   const contentType = getHeader(xhr, 'content-type') || getHeader(xhr, 'Content-Type')

@@ -815,7 +815,7 @@ export default {
     },
     gcodeUploadError(file, message, xhr) {
       this.$swal.Reject.fire({
-        text: this.$i18next.t(getDropzoneUploadErrorMessage(file, message, xhr)),
+        text: getDropzoneUploadErrorMessage(file, message, xhr),
       })
     },
     renameItem(item) {

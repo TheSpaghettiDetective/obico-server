@@ -885,8 +885,8 @@
   "Can not update your preferences": "Nie można zaktualizować Twoich preferencji",
   "Account": "Konto",
   "Apprise": "Apprise",
-  "Apprise URL": "Apprise URL",
-  "e.g. ntfy://user:pass@ntfy.sh/obico": "e.g. ntfy://user:pass@ntfy.sh/obico",
-  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.",
-  "Apprise wiki": "Apprise wiki"
+  "Apprise URL": "Adres URL Apprise",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "np. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Wysyłaj powiadomienia przez Apprise. Wprowadź adres URL Apprise dla swojej usługi, a format adresu URL znajdziesz w {localizedDom}.",
+  "Apprise wiki": "wiki Apprise"
 }

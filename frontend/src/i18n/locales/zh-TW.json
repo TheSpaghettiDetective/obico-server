@@ -886,7 +886,7 @@
   "Account": "账戶",
   "Apprise": "Apprise",
   "Apprise URL": "Apprise URL",
-  "e.g. ntfy://user:pass@ntfy.sh/obico": "e.g. ntfy://user:pass@ntfy.sh/obico",
-  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.",
-  "Apprise wiki": "Apprise wiki"
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "例如：ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "透過 Apprise 傳送通知。輸入您服務的 Apprise URL，URL 格式請參閱 {localizedDom}。",
+  "Apprise wiki": "Apprise 維基"
 }

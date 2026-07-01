@@ -885,8 +885,8 @@
   "Can not update your preferences": "Tercihlerinizi güncelleyemiyorsunuz",
   "Account": "Hesap",
   "Apprise": "Apprise",
-  "Apprise URL": "Apprise URL",
-  "e.g. ntfy://user:pass@ntfy.sh/obico": "e.g. ntfy://user:pass@ntfy.sh/obico",
-  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.",
+  "Apprise URL": "Apprise URL'si",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "örn. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Bildirimleri Apprise üzerinden gönderin. Hizmetiniz için bir Apprise URL'si girin ve URL biçimi için {localizedDom} bölümüne bakın.",
   "Apprise wiki": "Apprise wiki"
 }

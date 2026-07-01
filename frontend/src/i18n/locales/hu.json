@@ -886,7 +886,7 @@
   "Account": "Fiók",
   "Apprise": "Apprise",
   "Apprise URL": "Apprise URL",
-  "e.g. ntfy://user:pass@ntfy.sh/obico": "e.g. ntfy://user:pass@ntfy.sh/obico",
-  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "pl. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Küldjön értesítéseket az Apprise-on keresztül. Adja meg a szolgáltatásának Apprise URL-címét, az URL formátumát pedig itt találja: {localizedDom}.",
   "Apprise wiki": "Apprise wiki"
 }

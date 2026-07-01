@@ -886,7 +886,7 @@
   "Account": "アカウント",
   "Apprise": "Apprise",
   "Apprise URL": "Apprise URL",
-  "e.g. ntfy://user:pass@ntfy.sh/obico": "e.g. ntfy://user:pass@ntfy.sh/obico",
-  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "例: ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Apprise 経由で通知を送信します。ご利用のサービスの Apprise URL を入力してください。URL の形式については {localizedDom} を参照してください。",
   "Apprise wiki": "Apprise wiki"
 }

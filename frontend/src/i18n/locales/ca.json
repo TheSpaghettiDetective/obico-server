@@ -883,5 +883,10 @@
   "You a going to logout from your account": "Tancaràs la sessió del teu compte",
   "Logout": "Tanca la sessió",
   "Can not update your preferences": "No es poden actualitzar les preferències",
-  "Account": "Compte"
+  "Account": "Compte",
+  "Apprise": "Apprise",
+  "Apprise URL": "Apprise URL",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "e.g. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.",
+  "Apprise wiki": "Apprise wiki"
 }

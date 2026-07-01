@@ -883,5 +883,10 @@
   "You a going to logout from your account": "Vous allez vous déconnecter de votre compte",
   "Logout": "Déconnexion",
   "Can not update your preferences": "Impossible de mettre à jour vos préférences",
-  "Account": "Compte"
+  "Account": "Compte",
+  "Apprise": "Apprise",
+  "Apprise URL": "Apprise URL",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "e.g. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.",
+  "Apprise wiki": "Apprise wiki"
 }

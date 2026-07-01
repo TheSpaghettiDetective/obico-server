@@ -883,5 +883,10 @@
   "You a going to logout from your account": "您即将从您的账户登出",
   "Logout": "登出",
   "Can not update your preferences": "无法更新您的偏好设置",
-  "Account": "账户"
+  "Account": "账户",
+  "Apprise": "Apprise",
+  "Apprise URL": "Apprise URL",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "e.g. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.",
+  "Apprise wiki": "Apprise wiki"
 }

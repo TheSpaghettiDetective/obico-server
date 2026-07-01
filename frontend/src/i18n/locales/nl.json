@@ -883,5 +883,10 @@
   "You a going to logout from your account": "U gaat uitloggen van uw account",
   "Logout": "Uitloggen",
   "Can not update your preferences": "Kan uw voorkeuren niet bijwerken",
-  "Account": "Rekening"
+  "Account": "Rekening",
+  "Apprise": "Apprise",
+  "Apprise URL": "Apprise-URL",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "bijv. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Verstuur meldingen via Apprise. Voer een Apprise-URL voor je dienst in en zie {localizedDom} voor het URL-formaat.",
+  "Apprise wiki": "Apprise-wiki"
 }

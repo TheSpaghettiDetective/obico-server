@@ -883,5 +883,10 @@
   "You a going to logout from your account": "Ви збираєтеся вийти зі свого облікового запису",
   "Logout": "Вийти",
   "Can not update your preferences": "Не вдається оновити ваші налаштування",
-  "Account": "Обліковий запис"
+  "Account": "Обліковий запис",
+  "Apprise": "Apprise",
+  "Apprise URL": "URL-адреса Apprise",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "напр. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Надсилайте сповіщення через Apprise. Введіть URL-адресу Apprise для вашого сервісу, а формат URL дивіться в {localizedDom}.",
+  "Apprise wiki": "вікі Apprise"
 }

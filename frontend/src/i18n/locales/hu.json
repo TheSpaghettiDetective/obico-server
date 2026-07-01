@@ -883,5 +883,10 @@
   "You a going to logout from your account": "Ki fogsz jelentkezni a fiókodból",
   "Logout": "Kijelentkezés",
   "Can not update your preferences": "Nem sikerült frissíteni a beállításait",
-  "Account": "Fiók"
+  "Account": "Fiók",
+  "Apprise": "Apprise",
+  "Apprise URL": "Apprise URL",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "pl. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Küldjön értesítéseket az Apprise-on keresztül. Adja meg a szolgáltatásának Apprise URL-címét, az URL formátumát pedig itt találja: {localizedDom}.",
+  "Apprise wiki": "Apprise wiki"
 }

@@ -883,5 +883,10 @@
   "You a going to logout from your account": "Odhlásíte se ze svého účtu",
   "Logout": "Odhlásit se",
   "Can not update your preferences": "Nelze aktualizovat vaše preference",
-  "Account": "Účet"
+  "Account": "Účet",
+  "Apprise": "Apprise",
+  "Apprise URL": "URL adresa Apprise",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "např. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Odesílejte oznámení přes Apprise. Zadejte URL adresu Apprise pro svou službu a formát URL najdete na {localizedDom}.",
+  "Apprise wiki": "wiki Apprise"
 }

@@ -883,5 +883,10 @@
   "You a going to logout from your account": "계정에서 로그아웃하려고 합니다.",
   "Logout": "로그아웃",
   "Can not update your preferences": "기본 설정을 업데이트할 수 없습니다.",
-  "Account": "계정"
+  "Account": "계정",
+  "Apprise": "Apprise",
+  "Apprise URL": "Apprise URL",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "예: ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Apprise를 통해 알림을 보냅니다. 사용하는 서비스의 Apprise URL을 입력하고 URL 형식은 {localizedDom}을(를) 참조하세요.",
+  "Apprise wiki": "Apprise 위키"
 }

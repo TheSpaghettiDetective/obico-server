@@ -883,5 +883,10 @@
   "You a going to logout from your account": "Du kommer att logga ut från ditt konto",
   "Logout": "Utloggning",
   "Can not update your preferences": "Det går inte att uppdatera dina inställningar",
-  "Account": "Konto"
+  "Account": "Konto",
+  "Apprise": "Apprise",
+  "Apprise URL": "Apprise-URL",
+  "e.g. ntfy://user:pass@ntfy.sh/obico": "t.ex. ntfy://user:pass@ntfy.sh/obico",
+  "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Skicka aviseringar via Apprise. Ange en Apprise-URL för din tjänst och se {localizedDom} för URL-formatet.",
+  "Apprise wiki": "Apprise-wiki"
 }

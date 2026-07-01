@@ -33,4 +33,8 @@ export default {
     displayName: `${i18n.t('Webhook')}`,
     componentName: 'WebhookPlugin',
   },
+  apprise: {
+    displayName: `${i18n.t('Apprise')}`,
+    componentName: 'ApprisePlugin',
+  },
 }

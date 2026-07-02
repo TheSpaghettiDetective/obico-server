@@ -89,6 +89,10 @@ def printer_pic_set(printer_id, mapping, ex=None):
         REDIS.expire(prefix, ex)
 
 
+def printer_pic_delete(printer_id):
+    REDIS.delete(printer_key_prefix(printer_id) + 'pic')
+
+
 def printer_pic_get(printer_id, key=None):
     prefix = printer_key_prefix(printer_id) + 'pic'
     if key:

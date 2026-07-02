@@ -234,6 +234,7 @@ class Printer(SafeDeleteModel):
         self.current_print = cur_print
         self.save()
 
+        drop_stale_cached_print_pic(cur_print)
         self.printerprediction.reset_for_new_print()
         PrinterEvent.create(print=cur_print, event_type=PrinterEvent.STARTED, task_handler=True)
         self.send_should_watch_status()
@@ -445,14 +446,19 @@ def cached_print_pic_path(print_):
     if not img_url:
         return None
 
-    printer_id = re.escape(str(print_.printer.id))
-    print_id = re.escape(str(print_.id))
+    matched = cached_print_pic_match(img_url)
+    if matched and matched.group('printer_id') == str(print_.printer.id) and matched.group('print_id') == str(print_.id):
+        return matched.group('path')
+
+    return None
+
+
+def cached_print_pic_match(img_url):
     pics_container = re.escape(settings.PICS_CONTAINER)
-    matched = re.search(
-        f'{pics_container}/((?:raw|tagged)/{printer_id}/{print_id}/[^?&]+\\.jpg)',
+    return re.search(
+        f'{pics_container}/(?P<path>(?:raw|tagged)/(?P<printer_id>\\d+)/(?P<print_id>\\d+)/[^?&]+\\.jpg)',
         img_url,
     )
-    return matched.group(1) if matched else None
 
 
 def preserve_cached_print_pic(print_):
@@ -468,6 +474,19 @@ def preserve_cached_print_pic(print_):
         to_long_term_storage=False
     )
     cache.printer_pic_set(print_.printer.id, {'img_url': snapshot_url}, ex=cache.IMG_URL_TTL_SECONDS)
+
+
+def drop_stale_cached_print_pic(print_):
+    img_url = cache.printer_pic_get(print_.printer.id, 'img_url')
+    if not img_url:
+        return
+
+    matched = cached_print_pic_match(img_url)
+    if not matched:
+        return
+
+    if matched.group('printer_id') != str(print_.printer.id) or matched.group('print_id') != str(print_.id):
+        cache.printer_pic_delete(print_.printer.id)
 
 
 class PrinterEvent(models.Model):

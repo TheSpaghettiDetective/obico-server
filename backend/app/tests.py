@@ -1,10 +1,11 @@
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.utils import timezone
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 
 from app.models import Print, Printer, PrinterEvent, User
 from app.models.syndicate_models import Syndicate
+from lib.utils import get_rotated_pic_url
 
 
 class PrinterEventTestCase(TestCase):
@@ -127,3 +128,68 @@ class PrinterEventTestCase(TestCase):
             self.printer.update_current_print(2, None, 'new.gcode')
 
         self.assertEqual(seen_event_pic_urls, ['cached-image-url', 'cached-image-url'])
+
+    def test_new_print_start_drops_stale_cached_raw_pic(self):
+        raw_path = f'raw/{self.printer.id}/{self.print.id}/123.jpg'
+        cache_pic = {
+            'img_url': f'https://app.obico.io/ent/object_store/?t=1/tsd-pics/{raw_path}&d=x',
+        }
+
+        def printer_pic_get(printer_id, key=None):
+            return cache_pic.get(key) if key else cache_pic.copy()
+
+        def printer_pic_delete(printer_id):
+            cache_pic.clear()
+
+        def get_rotated_pic_url(printer, force_snapshot=False):
+            if printer.pic and printer.pic.get('img_url'):
+                raise Exception('stale cached pic used')
+            return None
+
+        with patch('app.models.other_models.cache.printer_pic_get', side_effect=printer_pic_get), \
+                patch('app.models.other_models.cache.printer_pic_delete', side_effect=printer_pic_delete) as printer_pic_delete, \
+                patch('app.models.other_models.get_rotated_pic_url', side_effect=get_rotated_pic_url), \
+                patch('app.models.other_models.celery_app'):
+            self.printer.set_current_print('new.gcode', None, 2)
+
+        printer_pic_delete.assert_called_once_with(self.printer.id)
+        self.assertEqual(cache_pic, {})
+        self.assertTrue(PrinterEvent.objects.filter(print=self.printer.current_print, event_type=PrinterEvent.STARTED).exists())
+
+    def test_new_print_start_keeps_matching_cached_raw_pic(self):
+        cur_print = Print.objects.create(
+            user=self.user,
+            printer=self.printer,
+            filename='new.gcode',
+            ext_id=2,
+            started_at=timezone.now(),
+        )
+        raw_path = f'raw/{self.printer.id}/{cur_print.id}/123.jpg'
+        cache_pic = {
+            'img_url': f'https://app.obico.io/ent/object_store/?t=1/tsd-pics/{raw_path}&d=x',
+        }
+
+        def printer_pic_get(printer_id, key=None):
+            return cache_pic.get(key) if key else cache_pic.copy()
+
+        with patch('app.models.other_models.cache.printer_pic_get', side_effect=printer_pic_get), \
+                patch('app.models.other_models.cache.printer_pic_delete') as printer_pic_delete, \
+                patch('app.models.other_models.get_rotated_pic_url', return_value='event-image-url'), \
+                patch('app.models.other_models.celery_app'):
+            self.printer.set_current_print('new.gcode', None, 2)
+
+        printer_pic_delete.assert_not_called()
+
+    def test_get_rotated_pic_url_reads_cached_pic_once(self):
+        img_url = 'https://app.obico.io/ent/object_store/?t=1/tsd-pics/snapshots/1/latest_unrotated.jpg&d=x'
+
+        with patch.object(Printer, 'pic', new_callable=PropertyMock) as pic, \
+                patch.object(Printer, 'settings', new_callable=PropertyMock) as settings:
+            pic.side_effect = [{'img_url': img_url}, None]
+            settings.return_value = {
+                'webcam_flipV': False,
+                'webcam_flipH': False,
+                'webcam_rotation': 0,
+            }
+
+            self.assertEqual(get_rotated_pic_url(self.printer), img_url)

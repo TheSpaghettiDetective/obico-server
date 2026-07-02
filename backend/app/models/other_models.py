@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import logging
 import os
 import json
+import re
 from secrets import token_hex
 from django.db import models, IntegrityError
 from jsonfield import JSONField
@@ -23,7 +24,7 @@ from django.contrib.sites.models import Site
 
 from config.celery import celery_app
 from lib import cache, channels
-from lib.utils import dict_or_none, get_rotated_pic_url
+from lib.utils import copy_pic, dict_or_none, get_rotated_pic_url
 from .syndicate_models import Syndicate, User
 
 LOGGER = logging.getLogger(__name__)
@@ -439,6 +440,36 @@ class Print(SafeDeleteModel):
         return self.tagged_video_url or self.uploaded_at
 
 
+def cached_print_pic_path(print_):
+    img_url = cache.printer_pic_get(print_.printer.id, 'img_url')
+    if not img_url:
+        return None
+
+    printer_id = re.escape(str(print_.printer.id))
+    print_id = re.escape(str(print_.id))
+    pics_container = re.escape(settings.PICS_CONTAINER)
+    matched = re.search(
+        f'{pics_container}/((?:raw|tagged)/{printer_id}/{print_id}/[^?&]+\\.jpg)',
+        img_url,
+    )
+    return matched.group(1) if matched else None
+
+
+def preserve_cached_print_pic(print_):
+    cached_pic_path = cached_print_pic_path(print_)
+    if not cached_pic_path:
+        return
+
+    snapshot_url = copy_pic(
+        cached_pic_path,
+        f'snapshots/{print_.printer.id}/latest_unrotated.jpg',
+        print_.user.syndicate.name,
+        rotated=False,
+        to_long_term_storage=False
+    )
+    cache.printer_pic_set(print_.printer.id, {'img_url': snapshot_url}, ex=cache.IMG_URL_TTL_SECONDS)
+
+
 class PrinterEvent(models.Model):
 
     STARTED = 'STARTED'
@@ -546,6 +577,9 @@ class PrinterEvent(models.Model):
             if is_print_job_event and kwargs.get('event_title') is None and kwargs.get('event_class') is None:
                 attrs = printer_event_attrs_from_print(kwargs.get('event_type'), kwargs.get('print'))
                 kwargs.update(attrs)
+
+            if kwargs.get('event_type') == PrinterEvent.ENDED:
+                preserve_cached_print_pic(kwargs.get('print'))
 
             if kwargs.get('image_url') is None:
                 kwargs.update({'image_url': get_rotated_pic_url(kwargs.get('print').printer, force_snapshot=True)})

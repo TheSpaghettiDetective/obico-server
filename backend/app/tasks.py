@@ -1,6 +1,5 @@
 # Create your tasks here
 from __future__ import absolute_import, unicode_literals
-import re
 import os
 import io
 import json
@@ -26,7 +25,6 @@ from lib import cache
 from lib import syndicate
 from notifications.handlers import handler
 from notifications import notification_types
-from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -163,44 +161,7 @@ def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
     return output_files
 
 
-def cached_print_pic_path(_print):
-    img_url = cache.printer_pic_get(_print.printer.id, 'img_url')
-    if not img_url:
-        return None
-
-    printer_id = re.escape(str(_print.printer.id))
-    print_id = re.escape(str(_print.id))
-    pics_container = re.escape(settings.PICS_CONTAINER)
-    matched = re.search(
-        f'{pics_container}/((?:raw|tagged)/{printer_id}/{print_id}/[^?&]+\\.jpg)',
-        img_url,
-    )
-    return matched.group(1) if matched else None
-
-
-def preserve_cached_print_pic(_print):
-    cached_pic_path = cached_print_pic_path(_print)
-    if not cached_pic_path:
-        return
-
-    try:
-        snapshot_url = copy_pic(
-            cached_pic_path,
-            f'snapshots/{_print.printer.id}/latest_unrotated.jpg',
-            _print.user.syndicate.name,
-            rotated=False,
-            to_long_term_storage=False
-        )
-    except Exception:
-        LOGGER.warning('Failed to preserve cached print pic before cleanup. print_id: %s', _print.id)
-        return
-
-    cache.printer_pic_set(_print.printer.id, {'img_url': snapshot_url}, ex=IMG_URL_TTL_SECONDS)
-
-
 def clean_up_print_pics(_print):
-    preserve_cached_print_pic(_print)
-
     pic_dir = f'{_print.printer.id}/{_print.id}'
     delete_dir('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
     delete_dir('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)

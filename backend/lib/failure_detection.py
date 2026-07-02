@@ -17,8 +17,6 @@ from app.models import PrinterPrediction
 
 LOGGER = logging.getLogger(__name__)
 
-IMG_URL_TTL_SECONDS = 60 * 30
-
 
 def calc_normalized_p(detective_sensitivity: float,
                       pred: 'PrinterPrediction',
@@ -70,7 +68,7 @@ def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint, params):
 
     pic_path = f'tagged/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
     _, tagged_img_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, printer.user.syndicate.name, long_term_storage=False)
-    cache.printer_pic_set(printer.id, {'img_url': tagged_img_url}, ex=IMG_URL_TTL_SECONDS)
+    cache.printer_pic_set(printer.id, {'img_url': tagged_img_url}, ex=cache.IMG_URL_TTL_SECONDS)
 
     prediction_json = serializers.serialize("json", [prediction, ])
     p_out = io.BytesIO()

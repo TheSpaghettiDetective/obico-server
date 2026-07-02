@@ -27,6 +27,9 @@ TUNNEL_STATS_EXPIRE_SECS = 3600 * 24 * 30 * 6
 # etag cache expiration
 TUNNEL_ETAG_EXPIRE_SECS = 3600 * 24 * 3
 
+# cached printer image expiration
+IMG_URL_TTL_SECONDS = 60 * 30
+
 
 def disco_device_presence_key(client_ip: str) -> str:
     return f'printer_discovery:{client_ip}:presence'

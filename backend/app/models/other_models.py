@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import logging
 import os
 import json
-import re
 from secrets import token_hex
 from django.db import models, IntegrityError
 from jsonfield import JSONField
@@ -24,7 +23,7 @@ from django.contrib.sites.models import Site
 
 from config.celery import celery_app
 from lib import cache, channels
-from lib.utils import copy_pic, dict_or_none, get_rotated_pic_url
+from lib.utils import dict_or_none, get_rotated_pic_url
 from .syndicate_models import Syndicate, User
 
 LOGGER = logging.getLogger(__name__)
@@ -234,7 +233,6 @@ class Printer(SafeDeleteModel):
         self.current_print = cur_print
         self.save()
 
-        drop_stale_cached_print_pic(cur_print)
         self.printerprediction.reset_for_new_print()
         PrinterEvent.create(print=cur_print, event_type=PrinterEvent.STARTED, task_handler=True)
         self.send_should_watch_status()
@@ -441,54 +439,6 @@ class Print(SafeDeleteModel):
         return self.tagged_video_url or self.uploaded_at
 
 
-def cached_print_pic_path(print_):
-    img_url = cache.printer_pic_get(print_.printer.id, 'img_url')
-    if not img_url:
-        return None
-
-    matched = cached_print_pic_match(img_url)
-    if matched and matched.group('printer_id') == str(print_.printer.id) and matched.group('print_id') == str(print_.id):
-        return matched.group('path')
-
-    return None
-
-
-def cached_print_pic_match(img_url):
-    pics_container = re.escape(settings.PICS_CONTAINER)
-    return re.search(
-        f'{pics_container}/(?P<path>(?:raw|tagged)/(?P<printer_id>\\d+)/(?P<print_id>\\d+)/[^?&]+\\.jpg)',
-        img_url,
-    )
-
-
-def preserve_cached_print_pic(print_):
-    cached_pic_path = cached_print_pic_path(print_)
-    if not cached_pic_path:
-        return
-
-    snapshot_url = copy_pic(
-        cached_pic_path,
-        f'snapshots/{print_.printer.id}/latest_unrotated.jpg',
-        print_.user.syndicate.name,
-        rotated=False,
-        to_long_term_storage=False
-    )
-    cache.printer_pic_set(print_.printer.id, {'img_url': snapshot_url}, ex=cache.IMG_URL_TTL_SECONDS)
-
-
-def drop_stale_cached_print_pic(print_):
-    img_url = cache.printer_pic_get(print_.printer.id, 'img_url')
-    if not img_url:
-        return
-
-    matched = cached_print_pic_match(img_url)
-    if not matched:
-        return
-
-    if matched.group('printer_id') != str(print_.printer.id) or matched.group('print_id') != str(print_.id):
-        cache.printer_pic_delete(print_.printer.id)
-
-
 class PrinterEvent(models.Model):
 
     STARTED = 'STARTED'
@@ -597,11 +547,14 @@ class PrinterEvent(models.Model):
                 attrs = printer_event_attrs_from_print(kwargs.get('event_type'), kwargs.get('print'))
                 kwargs.update(attrs)
 
-            if kwargs.get('event_type') == PrinterEvent.ENDED:
-                preserve_cached_print_pic(kwargs.get('print'))
-
             if kwargs.get('image_url') is None:
-                kwargs.update({'image_url': get_rotated_pic_url(kwargs.get('print').printer, force_snapshot=True)})
+                kwargs.update({
+                    'image_url': get_rotated_pic_url(
+                        kwargs.get('print').printer,
+                        force_snapshot=True,
+                        missing_ok=True,
+                    )
+                })
 
         printer_event = PrinterEvent.objects.create(**kwargs)
 

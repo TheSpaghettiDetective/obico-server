@@ -97,7 +97,7 @@ def send_print_progress(_print, op_data):
     if not _print.user.notification_enabled:
         return
 
-    rotated_jpg_url = get_rotated_pic_url(_print.printer)
+    rotated_jpg_url = get_rotated_pic_url(_print.printer, missing_ok=True)
 
     pushed_platforms = set()
 
@@ -146,7 +146,7 @@ def send_print_progress(_print, op_data):
                 data['title'] += ' | 🔴'
 
         if not rotated_jpg_url:
-            rotated_jpg_url = get_rotated_pic_url(_print.printer)
+            rotated_jpg_url = get_rotated_pic_url(_print.printer, missing_ok=True)
         if rotated_jpg_url:
             data['picUrl'] = rotated_jpg_url
 

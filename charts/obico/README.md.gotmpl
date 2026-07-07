@@ -1,0 +1,174 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## About
+
+[Obico](https://www.obico.io/) (formerly The Spaghetti Detective) is a self-hosted server that adds remote access, webcam streaming and AI-powered failure detection to OctoPrint and Klipper 3D printers.
+
+This chart deploys the full stack:
+
+* **web** — Django application served by Daphne (API, frontend, websockets)
+* **tasks** — Celery worker + beat scheduler (runs in the same pod as web)
+* **ml-api** — Flask/Gunicorn AI inference service for print-failure detection
+* **redis** — bundled Celery broker / Django Channels layer / cache
+
+## Images
+
+Obico's docker-compose builds the server images from source. This chart consumes prebuilt, tagged equivalents produced by the repository's own workflow (`.github/workflows/build-images.yaml`), which builds from the release branch and publishes to GHCR:
+
+* `obico-web` — Django/Daphne app + Celery worker
+* `obico-ml-api-cpu` — slim CPU inference image (chart default)
+* `obico-ml-api-gpu` — CUDA inference image for GPU nodes
+
+By default the chart pulls the `release` moving tag — the latest images built from the release branch at deploy time. Because that tag moves and `pullPolicy` defaults to `IfNotPresent`, already-running pods keep their pulled image until they restart. For a reproducible deployment, pin `image.*.tag`: `sha-<short>` is immutable per commit, while a CalVer like `2026.7.1` is day-granular (it moves if two commits land the same UTC day). Alternatively set the image `pullPolicy` to `Always` to re-pull on every pod start.
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+## Installing the Chart
+
+```bash
+# From a checkout of this repository
+helm install obico ./charts/obico
+
+# With custom values
+helm install obico ./charts/obico --values my-values.yaml
+```
+
+## Uninstalling the Chart
+
+```bash
+helm uninstall obico
+```
+
+The data and media PVCs are annotated with `helm.sh/resource-policy: keep` and survive uninstall. Delete them manually if you no longer need the data.
+
+## Secret key (read before using GitOps)
+
+Obico needs a stable Django `SECRET_KEY`. Rotating it logs every user out and breaks signed tokens. Leaving `obico.secretKey` empty is only safe for a throwaway `helm install`: the empty-value fallback reuses the live Secret on upgrades, but **regenerates the key on every render-only path** — `helm template`, `--dry-run`, `helm diff` and ArgoCD (which renders with `helm template` and never reads the cluster). Under ArgoCD this rotates the key on every sync.
+
+For GitOps, do one of the following:
+
+```yaml
+# Set a stable key directly (e.g. openssl rand -base64 48)
+obico:
+  secretKey: "your-long-random-string"
+```
+
+```yaml
+# Or reference a Secret you manage (sealed-secrets, external-secrets, ...)
+# It must contain DJANGO_SECRET_KEY and any other sensitive env vars.
+obico:
+  existingSecret: obico-secrets
+```
+
+## Database
+
+The default configuration uses SQLite on the data volume so the chart installs with no external dependencies. **SQLite is for evaluation only:** the web server and the Celery worker are separate processes writing the same database file, so under real load they hit `database is locked` errors. Upstream Obico ships PostgreSQL only. For anything beyond a quick try-out, point `database.url` at an external PostgreSQL, reference a Secret holding the full DSN, or compose the DSN from parts with the password kept in a Secret:
+
+```yaml
+# Plain connection string
+database:
+  url: "postgresql://obico:password@postgres:5432/obico"
+```
+
+```yaml
+# Connection string from an existing Secret
+database:
+  existingSecret: obico-db
+  existingSecretKey: DATABASE_URL
+```
+
+```yaml
+# Compose the DSN from parts, with the password kept in a Secret. Point host at a
+# connection pooler (e.g. a CloudNativePG Pooler / PgBouncer) to multiplex many
+# app connections onto a few server connections. Mutually exclusive with
+# existingSecret; the password is used verbatim and must be URL-safe.
+database:
+  host: obico-db-pooler
+  port: 5432
+  name: obico
+  user: obico
+  passwordSecret: obico-db-app
+  passwordSecretKey: password
+```
+
+When `host` points at a connection pooler, run the pooler in **transaction** pooling mode, not session. Obico keeps connections open (Django `CONN_MAX_AGE=600`), so in session mode every idle connection pins one server connection and the pool is exhausted at zero query load — the app then stalls waiting for a connection that never frees. Transaction mode holds a server connection only for the duration of a transaction, so idle clients cost nothing. Obico is safe in transaction mode for the workloads this chart runs: its Channels layer runs on Redis (no PostgreSQL `LISTEN`/`NOTIFY`), and the web server and Celery worker issue no server-side cursors. (The only `QuerySet.iterator()` caller in the codebase is the `extract_prints_from_hist` management command, which this chart never runs; if you run it by hand against the pooler, expect cursor errors.) For a CloudNativePG `Pooler` this is `spec.pgbouncer.poolMode: transaction`.
+
+## Exposing the Web UI
+
+Either classic Ingress or Gateway API (HTTPRoute) can be used. Remember to set `obico.siteUsesHttps=true` when serving over HTTPS — Django 4 rejects HTTPS form posts (login, signup, admin) from untrusted origins. The chart derives `CSRF_TRUSTED_ORIGINS` automatically from the enabled ingress hosts / HTTPRoute hostnames using that scheme; override with `obico.csrfTrustedOrigins` if you front the app with a different hostname.
+
+```yaml
+# Ingress
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: obico.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: obico-tls
+      hosts:
+        - obico.example.com
+obico:
+  siteUsesHttps: true
+```
+
+```yaml
+# Gateway API
+httpRoute:
+  enabled: true
+  parentRefs:
+    - name: my-gateway
+      namespace: gateway-system
+  hostnames:
+    - obico.example.com
+obico:
+  siteUsesHttps: true
+```
+
+## Scaling notes
+
+The web pod runs a single replica because the default SQLite database lives on a ReadWriteOnce volume. It uses the `Recreate` update strategy, so every upgrade or config change tears the pod down before starting the new one — expect a brief outage on each rollout. To run multiple replicas, use an external PostgreSQL and a ReadWriteMany media volume (NFS, Longhorn RWX, CephFS, EFS, ...).
+
+## Bundled Redis
+
+The bundled Redis (`redis.enabled: true`) is a minimal, **unauthenticated** single instance intended for in-cluster use only. Do not expose it outside the cluster. For a hardened or shared Redis, set `redis.enabled: false` and point `redis.externalUrl` at your own instance.
+
+## ML inference image (CPU / GPU)
+
+The `ml-api` service ships as two images built from the same source:
+
+* **CPU (default)** — `obico-ml-api-cpu`, a slim image that runs failure detection on the CPU via ONNX Runtime. No CUDA layers and no NVIDIA toolchain, an order of magnitude smaller than the GPU image. This is what the chart deploys by default and it runs on any node.
+* **GPU** — `obico-ml-api-gpu`, the CUDA image for NVIDIA GPU inference. Much larger, since the CUDA / cuDNN runtime ships inside it.
+
+Most self-hosted deployments run CPU inference and should keep the default. Enable the GPU image only if you have an NVIDIA GPU with the device plugin configured:
+
+```yaml
+mlApi:
+  gpu: true
+  # Adjust for non-NVIDIA / MIG / time-sliced GPUs.
+  gpuResources:
+    nvidia.com/gpu: 1
+```
+
+When `gpu` is true the chart uses the CUDA image and adds `gpuResources` to the container limits, so the scheduler places the pod on a GPU node.
+
+To skip AI failure detection entirely, set `mlApi.enabled: false`. Obico still calls the ML API for any printer that has detection enabled, so when you disable the bundled ml-api either turn detection off on every printer or point `mlApi.externalHost` at an external instance — otherwise those picture uploads will error.
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

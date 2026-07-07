@@ -1,0 +1,610 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Obico Values",
+  "type": "object",
+  "properties": {
+    "image": {
+      "type": "object",
+      "properties": {
+        "web": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "description": "Web image repository"
+            },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "description": "Web image pull policy"
+            },
+            "tag": {
+              "type": "string",
+              "description": "Overrides the web image tag whose default is the 'release' moving tag"
+            }
+          },
+          "required": ["repository", "pullPolicy"]
+        },
+        "mlApi": {
+          "type": "object",
+          "properties": {
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "description": "ML API image pull policy"
+            },
+            "cpu": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "description": "CPU-only ml-api image repository"
+                },
+                "tag": {
+                  "type": "string",
+                  "description": "Overrides the CPU ml-api image tag whose default is the 'release' moving tag"
+                }
+              },
+              "required": ["repository"]
+            },
+            "gpu": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "description": "CUDA (GPU) ml-api image repository"
+                },
+                "tag": {
+                  "type": "string",
+                  "description": "Overrides the GPU ml-api image tag whose default is the 'release' moving tag"
+                }
+              },
+              "required": ["repository"]
+            }
+          },
+          "required": ["pullPolicy", "cpu", "gpu"]
+        }
+      },
+      "required": ["web", "mlApi"]
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Image pull secrets"
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the name of the chart"
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "Override the fullname of the chart"
+    },
+    "obico": {
+      "type": "object",
+      "properties": {
+        "debug": {
+          "type": "boolean",
+          "description": "Enable Django debug mode"
+        },
+        "siteUsesHttps": {
+          "type": "boolean",
+          "description": "Set true when served over HTTPS"
+        },
+        "csrfTrustedOrigins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "CSRF trusted origins; auto-derived from ingress/httpRoute when empty"
+        },
+        "secretKey": {
+          "type": "string",
+          "description": "Django SECRET_KEY (set explicitly for GitOps; empty regenerates on render-only paths)"
+        },
+        "existingSecret": {
+          "type": "string",
+          "description": "Pre-created Secret holding DJANGO_SECRET_KEY and other sensitive env"
+        },
+        "extraEnv": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Extra non-sensitive environment variables (string key-value pairs)"
+        },
+        "extraSecretEnv": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Extra sensitive environment variables (string key-value pairs)"
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Django DATABASE_URL connection string"
+        },
+        "existingSecret": {
+          "type": "string",
+          "description": "Existing Secret holding DATABASE_URL"
+        },
+        "existingSecretKey": {
+          "type": "string",
+          "description": "Key in existingSecret holding DATABASE_URL"
+        },
+        "host": {
+          "type": "string",
+          "description": "PostgreSQL host; when set, DATABASE_URL is composed from the fields below (mutually exclusive with existingSecret)"
+        },
+        "port": {
+          "type": "integer",
+          "description": "PostgreSQL port (compose mode)"
+        },
+        "name": {
+          "type": "string",
+          "description": "PostgreSQL database name (compose mode)"
+        },
+        "user": {
+          "type": "string",
+          "description": "PostgreSQL user (compose mode)"
+        },
+        "passwordSecret": {
+          "type": "string",
+          "description": "Existing Secret holding the PostgreSQL password (compose mode)"
+        },
+        "passwordSecretKey": {
+          "type": "string",
+          "description": "Key in passwordSecret holding the password"
+        }
+      }
+    },
+    "web": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Command for the Daphne ASGI server"
+        },
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      }
+    },
+    "tasks": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Command for the Celery worker"
+        },
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      }
+    },
+    "mlApi": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Deploy the ML inference API"
+        },
+        "externalHost": {
+          "type": "string",
+          "description": "External ML inference API URL, used when enabled is false"
+        },
+        "gpu": {
+          "type": "boolean",
+          "description": "Run the CUDA (GPU) ml-api image and request the accelerator; defaults to the slim CPU image"
+        },
+        "gpuResources": {
+          "type": "object",
+          "additionalProperties": {
+            "type": ["integer", "string"]
+          },
+          "description": "Accelerator resources merged into the ml-api container limits when gpu is true"
+        },
+        "replicaCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of ml-api replicas"
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Command for the gunicorn inference server"
+        },
+        "securityContext": {
+          "type": "object",
+          "description": "Security context for the ml-api container"
+        },
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      },
+      "required": ["enabled"]
+    },
+    "redis": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Deploy a bundled in-cluster Redis"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "description": "Redis image repository"
+            },
+            "tag": {
+              "type": "string",
+              "description": "Redis image tag"
+            },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "description": "Redis image pull policy"
+            }
+          },
+          "required": ["repository", "tag"]
+        },
+        "externalUrl": {
+          "type": "string",
+          "description": "External Redis URL used when redis.enabled is false"
+        },
+        "securityContext": {
+          "type": "object",
+          "description": "Security context for the redis container"
+        },
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      },
+      "required": ["enabled"]
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "web": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["ClusterIP", "NodePort", "LoadBalancer"],
+              "description": "Service type for the web UI"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535,
+              "description": "Web HTTP port"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Annotations for the web service (must be string key-value pairs)"
+            }
+          },
+          "required": ["type", "port"]
+        },
+        "mlApi": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["ClusterIP", "NodePort", "LoadBalancer"],
+              "description": "Service type for the ml-api"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535,
+              "description": "ML API HTTP port"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Annotations for the ml-api service (must be string key-value pairs)"
+            }
+          },
+          "required": ["type", "port"]
+        }
+      },
+      "required": ["web", "mlApi"]
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable ingress"
+        },
+        "className": {
+          "type": "string",
+          "description": "Ingress class name"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Ingress annotations (must be string key-value pairs)"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "description": "Hostname"
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "pathType": {
+                      "type": "string",
+                      "enum": ["Prefix", "Exact", "ImplementationSpecific"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "secretName": {
+                "type": "string"
+              },
+              "hosts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": ["enabled"]
+    },
+    "httpRoute": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable HTTPRoute (Gateway API)"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "HTTPRoute annotations (must be string key-value pairs)"
+        },
+        "parentRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Gateway name"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Gateway namespace"
+              },
+              "sectionName": {
+                "type": "string",
+                "description": "Optional: specific listener on the Gateway"
+              }
+            }
+          },
+          "description": "Parent Gateway references"
+        },
+        "hostnames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Hostnames for the route"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "matches": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "filters": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "weight": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000
+              }
+            }
+          },
+          "description": "Routing rules"
+        }
+      },
+      "required": ["enabled"]
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/volume"
+        },
+        "media": {
+          "$ref": "#/definitions/volume"
+        }
+      },
+      "required": ["data", "media"]
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "description": "Security context for the pod"
+    },
+    "securityContext": {
+      "type": "object",
+      "description": "Security context for the server, tasks and migrate containers"
+    },
+    "podAnnotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Pod annotations (must be string key-value pairs)"
+    },
+    "podLabels": {
+      "type": "object",
+      "description": "Pod labels"
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Specifies whether a service account should be created"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Annotations to add to the service account (must be string key-value pairs)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the service account to use"
+        }
+      },
+      "required": ["create"]
+    },
+    "nodeSelector": {
+      "type": "object",
+      "description": "Node selector"
+    },
+    "tolerations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Tolerations"
+    },
+    "affinity": {
+      "type": "object",
+      "description": "Affinity rules"
+    }
+  },
+  "required": ["image", "service", "persistence", "redis", "mlApi"],
+  "definitions": {
+    "resources": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "object",
+          "properties": {
+            "memory": {
+              "type": "string",
+              "pattern": "^[0-9]+(\\.[0-9]+)?(Ki|Mi|Gi|Ti|Pi|Ei|K|M|G|T|P|E)?$",
+              "description": "Memory request"
+            },
+            "cpu": {
+              "type": "string",
+              "pattern": "^[0-9]+(\\.[0-9]+)?m?$",
+              "description": "CPU request"
+            }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "memory": {
+              "type": "string",
+              "pattern": "^[0-9]+(\\.[0-9]+)?(Ki|Mi|Gi|Ti|Pi|Ei|K|M|G|T|P|E)?$",
+              "description": "Memory limit"
+            },
+            "cpu": {
+              "type": "string",
+              "pattern": "^[0-9]+(\\.[0-9]+)?m?$",
+              "description": "CPU limit"
+            }
+          }
+        }
+      }
+    },
+    "volume": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable this volume"
+        },
+        "storageClassName": {
+          "type": "string",
+          "description": "Storage class name"
+        },
+        "accessMode": {
+          "type": "string",
+          "enum": ["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany"],
+          "description": "Access mode"
+        },
+        "size": {
+          "type": "string",
+          "pattern": "^[0-9]+(\\.[0-9]+)?(Ki|Mi|Gi|Ti|Pi|Ei|K|M|G|T|P|E)?$",
+          "description": "Size of the volume"
+        },
+        "existingClaim": {
+          "type": "string",
+          "description": "Use an existing PVC"
+        },
+        "retain": {
+          "type": "boolean",
+          "description": "Keep the PVC on uninstall"
+        }
+      },
+      "required": ["enabled"]
+    }
+  }
+}

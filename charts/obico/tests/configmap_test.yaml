@@ -1,0 +1,219 @@
+suite: test env configmap
+templates:
+  - configmap.yaml
+tests:
+  - it: should create a ConfigMap
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: ConfigMap
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-obico
+
+  - it: should default DATABASE_URL to SQLite
+    asserts:
+      - equal:
+          path: data.DATABASE_URL
+          value: "sqlite:////data/db.sqlite3"
+
+  - it: should point REDIS_URL at the bundled redis
+    asserts:
+      - equal:
+          path: data.REDIS_URL
+          value: "redis://RELEASE-NAME-obico-redis:6379/0"
+
+  - it: should point ML_API_HOST at the ml-api service
+    asserts:
+      - equal:
+          path: data.ML_API_HOST
+          value: "http://RELEASE-NAME-obico-ml-api:3333"
+
+  - it: should set INTERNAL_MEDIA_HOST at the web service
+    asserts:
+      - equal:
+          path: data.INTERNAL_MEDIA_HOST
+          value: "http://RELEASE-NAME-obico-web:3334"
+
+  - it: should disable debug and webpack loader by default
+    asserts:
+      - equal:
+          path: data.DEBUG
+          value: "False"
+      - equal:
+          path: data.WEBPACK_LOADER_ENABLED
+          value: "False"
+
+  - it: should set SITE_USES_HTTPS to False by default
+    asserts:
+      - equal:
+          path: data.SITE_USES_HTTPS
+          value: "False"
+
+  - it: should reflect siteUsesHttps when enabled
+    set:
+      obico.siteUsesHttps: true
+    asserts:
+      - equal:
+          path: data.SITE_USES_HTTPS
+          value: "True"
+
+  - it: should allow overriding DATABASE_URL
+    set:
+      database.url: "postgresql://u:p@db:5432/obico"
+    asserts:
+      - equal:
+          path: data.DATABASE_URL
+          value: "postgresql://u:p@db:5432/obico"
+
+  - it: should use the external redis url when redis disabled
+    set:
+      redis.enabled: false
+      redis.externalUrl: "redis://my-redis:6379/1"
+    asserts:
+      - equal:
+          path: data.REDIS_URL
+          value: "redis://my-redis:6379/1"
+
+  - it: should merge extra env
+    set:
+      obico.extraEnv:
+        EMAIL_HOST: smtp.example.com
+    asserts:
+      - equal:
+          path: data.EMAIL_HOST
+          value: "smtp.example.com"
+
+  - it: should not set DATABASE_URL in the ConfigMap when using existingSecret
+    set:
+      database.existingSecret: my-db-secret
+    asserts:
+      - notExists:
+          path: data.DATABASE_URL
+
+  - it: should not set DATABASE_URL in the ConfigMap when composing from host
+    set:
+      database.host: obico-db-pooler
+      database.user: obico
+      database.name: obico
+      database.passwordSecret: obico-db-app
+    asserts:
+      - notExists:
+          path: data.DATABASE_URL
+
+  - it: should reject setting both existingSecret and host
+    set:
+      database.existingSecret: my-db-secret
+      database.host: obico-db-pooler
+    asserts:
+      - failedTemplate:
+          errorMessage: "database.existingSecret and database.host are mutually exclusive: set one or the other"
+
+  - it: should require user when composing from host
+    set:
+      database.host: obico-db-pooler
+      database.name: obico
+      database.passwordSecret: obico-db-app
+    asserts:
+      - failedTemplate:
+          errorMessage: "database.host is set: database.user is required to compose DATABASE_URL"
+
+  - it: should require name when composing from host
+    set:
+      database.host: obico-db-pooler
+      database.user: obico
+      database.passwordSecret: obico-db-app
+    asserts:
+      - failedTemplate:
+          errorMessage: "database.host is set: database.name is required to compose DATABASE_URL"
+
+  - it: should require passwordSecret when composing from host
+    set:
+      database.host: obico-db-pooler
+      database.user: obico
+      database.name: obico
+    asserts:
+      - failedTemplate:
+          errorMessage: "database.host is set: database.passwordSecret is required to source the password"
+
+  - it: should default CSRF_TRUSTED_ORIGINS to an empty list
+    asserts:
+      - equal:
+          path: data.CSRF_TRUSTED_ORIGINS
+          value: "[]"
+
+  - it: should derive CSRF_TRUSTED_ORIGINS from the ingress host over https
+    set:
+      ingress.enabled: true
+      obico.siteUsesHttps: true
+    asserts:
+      - equal:
+          path: data.CSRF_TRUSTED_ORIGINS
+          value: '["https://obico.example.com"]'
+
+  - it: should derive CSRF_TRUSTED_ORIGINS from the httpRoute hostname
+    set:
+      httpRoute.enabled: true
+      obico.siteUsesHttps: true
+    asserts:
+      - equal:
+          path: data.CSRF_TRUSTED_ORIGINS
+          value: '["https://obico.example.com"]'
+
+  - it: should use explicit csrfTrustedOrigins when set
+    set:
+      obico.csrfTrustedOrigins:
+        - https://custom.example.com
+    asserts:
+      - equal:
+          path: data.CSRF_TRUSTED_ORIGINS
+          value: '["https://custom.example.com"]'
+
+  - it: should omit ML_API_HOST when ml-api is disabled and no external host is set
+    set:
+      mlApi.enabled: false
+    asserts:
+      - notExists:
+          path: data.ML_API_HOST
+
+  - it: should point ML_API_HOST at externalHost when ml-api is disabled
+    set:
+      mlApi.enabled: false
+      mlApi.externalHost: http://ml-api.example:3333
+    asserts:
+      - equal:
+          path: data.ML_API_HOST
+          value: http://ml-api.example:3333
+
+  - it: should reject CSRF_TRUSTED_ORIGINS in extraEnv
+    set:
+      obico.extraEnv:
+        CSRF_TRUSTED_ORIGINS: "[]"
+    asserts:
+      - failedTemplate:
+          errorMessage: 'obico.extraEnv must not set the chart-managed key "CSRF_TRUSTED_ORIGINS"; configure it via its dedicated value instead'
+
+  - it: should reject a chart-managed key in extraEnv
+    set:
+      obico.extraEnv:
+        REDIS_URL: redis://evil:6379
+    asserts:
+      - failedTemplate:
+          errorMessage: 'obico.extraEnv must not set the chart-managed key "REDIS_URL"; configure it via its dedicated value instead'
+
+  - it: should reject a chart-managed key in extraSecretEnv
+    set:
+      obico.extraSecretEnv:
+        DJANGO_SECRET_KEY: hunter2
+    asserts:
+      - failedTemplate:
+          errorMessage: 'obico.extraSecretEnv must not set the chart-managed key "DJANGO_SECRET_KEY"; configure it via its dedicated value instead'
+
+  - it: should reject the compose-mode password key in extraEnv
+    set:
+      obico.extraEnv:
+        OBICO_DB_PASSWORD: hunter2
+    asserts:
+      - failedTemplate:
+          errorMessage: 'obico.extraEnv must not set the chart-managed key "OBICO_DB_PASSWORD"; configure it via its dedicated value instead'

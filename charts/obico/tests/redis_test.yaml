@@ -1,0 +1,71 @@
+suite: test bundled redis
+templates:
+  - redis.yaml
+tests:
+  - it: should create redis Deployment and Service by default
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: should not create redis when disabled
+    set:
+      redis.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create a redis Deployment
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-obico-redis
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: '^redis:[0-9]'
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: redis
+            containerPort: 6379
+            protocol: TCP
+
+  - it: should label the redis pod with its component
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/component"]
+          value: redis
+
+  - it: should not automount the service account token
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+
+  - it: should create a redis Service
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-obico-redis
+      - equal:
+          path: spec.ports[0].port
+          value: 6379
+      - equal:
+          path: spec.selector["app.kubernetes.io/component"]
+          value: redis
+
+  - it: should allow a custom redis image tag
+    documentIndex: 0
+    set:
+      redis.image.tag: "8.0-alpine"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: redis:8.0-alpine

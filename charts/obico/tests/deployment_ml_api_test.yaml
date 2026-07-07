@@ -1,0 +1,107 @@
+suite: test ml-api deployment
+templates:
+  - deployment-ml-api.yaml
+tests:
+  - it: should create an ml-api Deployment by default
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-obico-ml-api
+
+  - it: should not create ml-api when disabled
+    set:
+      mlApi.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should use the slim CPU ml-api image by default
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: '^ghcr\.io/thespaghettidetective/obico-ml-api-cpu:release$'
+      - notExists:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+
+  - it: should use the CUDA image and request a GPU when gpu is enabled
+    set:
+      mlApi.gpu: true
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: '^ghcr\.io/thespaghettidetective/obico-ml-api-gpu:release$'
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+          value: 1
+
+  - it: should honor a custom gpu resource name
+    set:
+      mlApi.gpu: true
+      mlApi.gpuResources:
+        nvidia.com/mig-1g.5gb: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/mig-1g.5gb"]
+          value: 2
+
+  - it: should expose port 3333
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: http
+            containerPort: 3333
+            protocol: TCP
+
+  - it: should run gunicorn
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: gunicorn
+
+  - it: should set the ml-api component label
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/component"]
+          value: ml-api
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/component"]
+          value: ml-api
+
+  - it: should honor replicaCount
+    set:
+      mlApi.replicaCount: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: should use a cheap socket liveness probe and an http readiness probe
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[0].livenessProbe.tcpSocket
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /hc/
+
+  - it: should not automount the service account token
+    asserts:
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+
+  - it: should keep the name within 63 chars for a long release name
+    # ml-api carries the longest component suffix (-ml-api); the fullname helper
+    # reserves room so the DNS label stays valid even at a max-length release name.
+    release:
+      name: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    asserts:
+      - matchRegex:
+          path: metadata.name
+          pattern: '^.{1,63}$'

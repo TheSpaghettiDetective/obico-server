@@ -1,0 +1,34 @@
+suite: test NOTES output
+templates:
+  - NOTES.txt
+tests:
+  - it: should report the SQLite default in NOTES
+    asserts:
+      - matchRegexRaw:
+          pattern: 'Database: sqlite:////data/db\.sqlite3'
+
+  - it: should report an existingSecret database in NOTES
+    set:
+      database.existingSecret: obico-db
+    asserts:
+      - matchRegexRaw:
+          pattern: 'Database: external \(full DSN from secret obico-db\)'
+
+  - it: should report the composed database in NOTES
+    set:
+      database.host: obico-db-pooler
+      database.user: obico
+      database.name: obico
+      database.passwordSecret: obico-db-app
+    asserts:
+      - matchRegexRaw:
+          pattern: 'Database: postgresql://obico@obico-db-pooler:5432/obico \(password from secret obico-db-app\)'
+
+  - it: should tell the operator to create the admin via createsuperuser
+    asserts:
+      # Self-service signup is disabled by default and there is no first-user-is-staff
+      # logic, so NOTES must point at manage.py createsuperuser, not the web UI.
+      - matchRegexRaw:
+          pattern: 'python manage\.py createsuperuser'
+      - notMatchRegexRaw:
+          pattern: 'signing up in the web UI'

@@ -1,0 +1,188 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "obico.fullname" . }}-web
+  labels:
+    {{- include "obico.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  # SQLite on a ReadWriteOnce volume allows only a single writer. Scaling the
+  # web pod requires an external PostgreSQL and a ReadWriteMany media volume.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "obico.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "obico.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: web
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "obico.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: collectstatic
+          image: "{{ .Values.image.web.repository }}:{{ .Values.image.web.tag | default "release" }}"
+          imagePullPolicy: {{ .Values.image.web.pullPolicy }}
+          # Generates static assets into the shared static volume. Runs as root
+          # because the image's /app tree is owned by root, but still drops
+          # capabilities and blocks privilege escalation for defense in depth.
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - python
+            - manage.py
+            - collectstatic
+            - -v
+            - "2"
+            - --noinput
+          {{- include "obico.podEnv" . | nindent 10 }}
+          volumeMounts:
+            - name: static
+              mountPath: /app/static_build
+        - name: migrate
+          image: "{{ .Values.image.web.repository }}:{{ .Values.image.web.tag | default "release" }}"
+          imagePullPolicy: {{ .Values.image.web.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            - python
+            - manage.py
+            - migrate
+            - --noinput
+          {{- include "obico.podEnv" . | nindent 10 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: server
+          image: "{{ .Values.image.web.repository }}:{{ .Values.image.web.tag | default "release" }}"
+          imagePullPolicy: {{ .Values.image.web.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            {{- toYaml .Values.web.command | nindent 12 }}
+          {{- include "obico.podEnv" . | nindent 10 }}
+          ports:
+            - name: http
+              containerPort: 3334
+              protocol: TCP
+          # Liveness is a cheap socket check: the /hc/ endpoint queries the DB
+          # and Redis, so using it for liveness would restart the pod on any
+          # transient dependency blip. Readiness uses /hc/ to pull the pod out
+          # of the Service until its dependencies are back.
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /hc/
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          # static (emptyDir) holds collectstatic output; media (PVC) is mounted
+          # nested at static_build/media so user uploads land on the PVC while
+          # static assets stay in the emptyDir. The parent (static) is listed
+          # before the nested child (media) so the media PVC is never shadowed by
+          # the static emptyDir, regardless of how the runtime orders the mounts.
+          # collectstatic writes only static, so nothing it produces is shadowed
+          # by the media PVC. The tasks container does not serve static and so
+          # does not mount it.
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: static
+              mountPath: /app/static_build
+            - name: media
+              mountPath: /app/static_build/media
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}
+        # Celery worker. Intentionally has no liveness probe: it shares this pod
+        # with the server container, so a flaky `celery inspect ping` would
+        # restart the whole pod (including a healthy server). Worker health is
+        # observed via logs/metrics instead.
+        - name: tasks
+          image: "{{ .Values.image.web.repository }}:{{ .Values.image.web.tag | default "release" }}"
+          imagePullPolicy: {{ .Values.image.web.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            {{- toYaml .Values.tasks.command | nindent 12 }}
+          {{- include "obico.podEnv" . | nindent 10 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: media
+              mountPath: /app/static_build/media
+          resources:
+            {{- toYaml .Values.tasks.resources | nindent 12 }}
+      volumes:
+        - name: data
+          {{- if .Values.persistence.data.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.data.existingClaim }}
+          {{- else if .Values.persistence.data.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "obico.fullname" . }}-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: media
+          {{- if .Values.persistence.media.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.media.existingClaim }}
+          {{- else if .Values.persistence.media.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "obico.fullname" . }}-media
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: static
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

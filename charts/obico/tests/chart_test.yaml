@@ -1,0 +1,60 @@
+suite: test obico chart
+templates:
+  - deployment-web.yaml
+  - deployment-ml-api.yaml
+  - service.yaml
+  - serviceaccount.yaml
+  - configmap.yaml
+  - secret.yaml
+  - pvc-data.yaml
+  - pvc-media.yaml
+tests:
+  - it: should render all default resources
+    asserts:
+      - isKind:
+          of: Deployment
+        template: deployment-web.yaml
+      - isKind:
+          of: Deployment
+        template: deployment-ml-api.yaml
+      - isKind:
+          of: ServiceAccount
+        template: serviceaccount.yaml
+      - isKind:
+          of: ConfigMap
+        template: configmap.yaml
+      - isKind:
+          of: Secret
+        template: secret.yaml
+      - isKind:
+          of: PersistentVolumeClaim
+        template: pvc-data.yaml
+      - isKind:
+          of: PersistentVolumeClaim
+        template: pvc-media.yaml
+
+  - it: should default the web image to the release moving tag
+    template: deployment-web.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/thespaghettidetective/obico-web:release
+
+  - it: should let image.web.tag pin a specific version
+    template: deployment-web.yaml
+    set:
+      image.web.tag: "2026.7.1"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/thespaghettidetective/obico-web:2026.7.1
+
+  - it: should include standard labels on the web deployment
+    template: deployment-web.yaml
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: obico
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm

@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "obico.fullname" . }}-web
+  labels:
+    {{- include "obico.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+  {{- with .Values.service.web.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.web.type }}
+  ports:
+    - port: {{ .Values.service.web.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "obico.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+{{- if .Values.mlApi.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "obico.fullname" . }}-ml-api
+  labels:
+    {{- include "obico.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ml-api
+  {{- with .Values.service.mlApi.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.mlApi.type }}
+  ports:
+    - port: {{ .Values.service.mlApi.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "obico.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: ml-api
+{{- end }}

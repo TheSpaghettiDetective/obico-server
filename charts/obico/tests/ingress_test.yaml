@@ -1,0 +1,66 @@
+suite: test ingress
+templates:
+  - ingress.yaml
+tests:
+  - it: should not create Ingress by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create Ingress when enabled
+    set:
+      ingress.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Ingress
+
+  - it: should point the backend at the web service
+    set:
+      ingress.enabled: true
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: RELEASE-NAME-obico-web
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.name
+          value: http
+
+  - it: should configure default TLS
+    set:
+      ingress.enabled: true
+    asserts:
+      - equal:
+          path: spec.tls[0].secretName
+          value: obico-tls
+
+  - it: should set the ingress class name
+    set:
+      ingress.enabled: true
+      ingress.className: nginx
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+
+  - it: should have no annotations by default
+    set:
+      ingress.enabled: true
+    asserts:
+      - notExists:
+          path: metadata.annotations
+
+  - it: should apply custom annotations when specified
+    set:
+      ingress.enabled: true
+      ingress.annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    asserts:
+      - equal:
+          path: metadata.annotations["nginx.ingress.kubernetes.io/proxy-body-size"]
+          value: "100m"
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: "letsencrypt-prod"

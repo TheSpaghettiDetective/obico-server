@@ -1,0 +1,205 @@
+suite: test httproute
+templates:
+  - httproute.yaml
+tests:
+  - it: should not create HTTPRoute by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create HTTPRoute when enabled
+    set:
+      httpRoute.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: HTTPRoute
+      - equal:
+          path: apiVersion
+          value: gateway.networking.k8s.io/v1
+
+  - it: should have correct metadata
+    set:
+      httpRoute.enabled: true
+    asserts:
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-obico
+      - isNotEmpty:
+          path: metadata.labels
+
+  - it: should set parentRefs correctly
+    set:
+      httpRoute.enabled: true
+      httpRoute.parentRefs:
+        - name: my-gateway
+          namespace: custom-namespace
+    asserts:
+      - equal:
+          path: spec.parentRefs[0].name
+          value: my-gateway
+      - equal:
+          path: spec.parentRefs[0].namespace
+          value: custom-namespace
+
+  - it: should set hostnames correctly
+    set:
+      httpRoute.enabled: true
+      httpRoute.hostnames:
+        - obico.example.com
+        - obico.alt.com
+    asserts:
+      - contains:
+          path: spec.hostnames
+          content: obico.example.com
+      - contains:
+          path: spec.hostnames
+          content: obico.alt.com
+
+  - it: should point the backendRef at the web service
+    set:
+      httpRoute.enabled: true
+    asserts:
+      - equal:
+          path: spec.rules[0].backendRefs[0].name
+          value: RELEASE-NAME-obico-web
+      - equal:
+          path: spec.rules[0].backendRefs[0].port
+          value: 3334
+
+  - it: should use a custom service port
+    set:
+      httpRoute.enabled: true
+      service.web.port: 8080
+    asserts:
+      - equal:
+          path: spec.rules[0].backendRefs[0].port
+          value: 8080
+
+  - it: should set path match correctly
+    set:
+      httpRoute.enabled: true
+      httpRoute.rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+    asserts:
+      - equal:
+          path: spec.rules[0].matches[0].path.type
+          value: PathPrefix
+      - equal:
+          path: spec.rules[0].matches[0].path.value
+          value: /
+
+  - it: should support custom annotations
+    set:
+      httpRoute.enabled: true
+      httpRoute.annotations:
+        custom.annotation/key: "value"
+    asserts:
+      - equal:
+          path: metadata.annotations["custom.annotation/key"]
+          value: "value"
+
+  - it: should support filters
+    set:
+      httpRoute.enabled: true
+      httpRoute.rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          filters:
+            - type: RequestHeaderModifier
+              requestHeaderModifier:
+                add:
+                  - name: X-Custom-Header
+                    value: custom-value
+    asserts:
+      - equal:
+          path: spec.rules[0].filters[0].type
+          value: RequestHeaderModifier
+
+  - it: should support weight in backendRef
+    set:
+      httpRoute.enabled: true
+      httpRoute.rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          weight: 100
+    asserts:
+      - equal:
+          path: spec.rules[0].backendRefs[0].weight
+          value: 100
+
+  - it: should preserve a zero backendRef weight (drain)
+    set:
+      httpRoute.enabled: true
+      httpRoute.rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          weight: 0
+    asserts:
+      - equal:
+          path: spec.rules[0].backendRefs[0].weight
+          value: 0
+
+  - it: should omit matches for a catch-all rule
+    # Gateway API treats an absent matches field as "match all"; rendering
+    # matches: null would fail the HTTPRoute CRD schema (matches must be a list).
+    set:
+      httpRoute.enabled: true
+      httpRoute.rules:
+        - filters:
+            - type: RequestHeaderModifier
+              requestHeaderModifier:
+                add:
+                  - name: X-Test
+                    value: "1"
+    asserts:
+      - notExists:
+          path: spec.rules[0].matches
+      - exists:
+          path: spec.rules[0].backendRefs
+
+  - it: should support multiple rules
+    set:
+      httpRoute.enabled: true
+      httpRoute.rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /api
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /web
+    asserts:
+      - lengthEqual:
+          path: spec.rules
+          count: 2
+
+  - it: should support sectionName in parentRefs
+    set:
+      httpRoute.enabled: true
+      httpRoute.parentRefs:
+        - name: cilium-gateway-internal
+          namespace: kube-system
+          sectionName: https-obico
+    asserts:
+      - equal:
+          path: spec.parentRefs[0].sectionName
+          value: https-obico
+
+  - it: should not have filters when not specified
+    set:
+      httpRoute.enabled: true
+    asserts:
+      - isNull:
+          path: spec.rules[0].filters

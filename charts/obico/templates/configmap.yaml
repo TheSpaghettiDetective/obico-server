@@ -1,0 +1,26 @@
+{{- include "obico.checkReservedEnv" . -}}
+{{- include "obico.validateDatabase" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "obico.fullname" . }}
+  labels:
+    {{- include "obico.labels" . | nindent 4 }}
+data:
+  DEBUG: {{ ternary "True" "False" .Values.obico.debug | quote }}
+  WEBPACK_LOADER_ENABLED: "False"
+  SITE_USES_HTTPS: {{ ternary "True" "False" .Values.obico.siteUsesHttps | quote }}
+  CSRF_TRUSTED_ORIGINS: {{ include "obico.csrfTrustedOrigins" . | quote }}
+  REDIS_URL: {{ include "obico.redisUrl" . | quote }}
+  {{- if .Values.mlApi.enabled }}
+  ML_API_HOST: {{ printf "http://%s-ml-api:%v" (include "obico.fullname" .) .Values.service.mlApi.port | quote }}
+  {{- else if .Values.mlApi.externalHost }}
+  ML_API_HOST: {{ .Values.mlApi.externalHost | quote }}
+  {{- end }}
+  INTERNAL_MEDIA_HOST: {{ printf "http://%s-web:%v" (include "obico.fullname" .) .Values.service.web.port | quote }}
+  {{- if and (not .Values.database.existingSecret) (not .Values.database.host) }}
+  DATABASE_URL: {{ .Values.database.url | quote }}
+  {{- end }}
+  {{- range $key, $value := .Values.obico.extraEnv }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}

@@ -154,6 +154,21 @@
               </div>
             </template>
 
+            <!-- first-gen-ai-on-pricing-page -->
+            <template v-if="id === 'first-gen-ai-on-pricing-page'">
+              <p>{{ $t("Our original AI failure detection model.") }}</p>
+              <p>{{ $t("Upgrade to AI Premium for the Next-gen AI model with 63% fewer missed failures and 56% fewer false alerts.") }}</p>
+            </template>
+
+            <!-- next-gen-ai-on-pricing-page -->
+            <template v-if="id === 'next-gen-ai-on-pricing-page'">
+              <p>{{ $t("Our latest AI failure detection model.") }}</p>
+              <ul>
+                <li>{{ $t("63% fewer missed failures than the First-gen AI model.") }}</li>
+                <li>{{ $t("56% fewer false alerts than the First-gen AI model.") }}</li>
+              </ul>
+            </template>
+
             <!-- detective-hours-free-plan-on-pricing-page -->
             <template v-if="id === 'detective-hours-free-plan-on-pricing-page'">
               <h3>{{ $t("Yup! Even Free account gets 10 AI Detection Hours for FREE each month.") }}</h3>

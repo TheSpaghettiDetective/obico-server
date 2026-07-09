@@ -58,6 +58,7 @@ from notifications.handlers import handler
 LOGGER = logging.getLogger(__file__)
 
 PREDICTION_FETCH_TIMEOUT = 20
+INVALID_GCODE_FILE_ERROR = 'Invalid G-code file. Please upload a valid text G-code file.'
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -241,16 +242,16 @@ class PrinterViewSet(
         # Call ML API for detection
         pic_id = str(timezone.now().timestamp())
         pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        _, external_url = save_file_obj(pic_path, img, settings.PICS_CONTAINER, request.user.syndicate.name, long_term_storage=False)
+        internal_url, external_url = save_file_obj(pic_path, img, settings.PICS_CONTAINER, request.user.syndicate.name, long_term_storage=False)
 
         from lib.utils import ml_api_auth_headers
         from lib.prediction import update_prediction_with_detections
 
-        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': external_url}, headers=ml_api_auth_headers(), verify=False, timeout=30)
+        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False, timeout=30)
         req.raise_for_status()
         detections = req.json()['detections']
 
-        update_prediction_with_detections(prediction, detections, printer)
+        update_prediction_with_detections(prediction, detections, settings.FD_1ST_GEN_PARAMS, bending_factor=printer.detection_bending_factor)
         prediction.save()
 
         send_status_to_web(printer.id)
@@ -630,18 +631,37 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        gcode_file = GCodeFile.objects.create(**validated_data)
+        uploaded_file = request.FILES.get('file')
+        parsed_metadata = None
+        num_bytes = None
 
-        if 'file' in request.FILES:
+        if uploaded_file:
             file_size_limit = 500 * 1024 * 1024 if request.user.is_pro else 50 * 1024 * 1024
-            num_bytes=request.FILES['file'].size
+            num_bytes = uploaded_file.size
             if num_bytes > file_size_limit:
                 return Response({'error': 'File size too large'}, status=413)
 
-            self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET), request.user.syndicate.name)
+            try:
+                parsed_metadata = gcode_metadata.parse(
+                    uploaded_file,
+                    num_bytes,
+                    request.encoding or settings.DEFAULT_CHARSET,
+                )
+            except UnicodeDecodeError:
+                return Response({'error': INVALID_GCODE_FILE_ERROR}, status=status.HTTP_400_BAD_REQUEST)
 
-            request.FILES['file'].seek(0)
-            _, ext_url = save_file_obj(self.path_in_storage(gcode_file), request.FILES['file'], settings.GCODE_CONTAINER, request.user.syndicate.name)
+        gcode_file = GCodeFile.objects.create(**validated_data)
+
+        if uploaded_file:
+            self.set_metadata(gcode_file, *parsed_metadata, request.user.syndicate.name)
+
+            uploaded_file.seek(0)
+            _, ext_url = save_file_obj(
+                self.path_in_storage(gcode_file),
+                uploaded_file,
+                settings.GCODE_CONTAINER,
+                request.user.syndicate.name,
+            )
             gcode_file.url = ext_url
             gcode_file.num_bytes = num_bytes
             gcode_file.save()

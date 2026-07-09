@@ -112,7 +112,7 @@
         <template v-else-if="printer.isOffline()">
           <i class="fas fa-exclamation-triangle big-icon warning"></i>
           <p>
-            {{$t("{brandName} for {name} is Offline.",{brandName:$syndicateText.brandName,name:printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'})}}
+            {{$t("{brandName} Plugin is Offline.",{brandName:$syndicateText.brandName})}}
             <a
               target="_blank"
               :href="getDocUrl('/user-guides/troubleshoot-server-connection-issues/')"

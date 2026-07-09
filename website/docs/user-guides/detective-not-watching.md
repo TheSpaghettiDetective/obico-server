@@ -34,5 +34,3 @@ When you receive an alert, you have an option to turn off failure detection for 
 The AI Detection Hour balance for your account is displayed on the right hand side of the navigation bar. When it dips below 0, failure detection will be paused for your prints. There are [several ways to get more AI Detection Hours](/docs/user-guides/how-does-detective-hour-work#how-do-i-get-detective-hours).
 
 ![](/img/user-guides/helpdocs/negative-dh-balance.png)
-
-[](#2-you-have-disabled-the-"ai-failure-detection"-option)

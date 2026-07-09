@@ -13,6 +13,7 @@ from datetime import timedelta
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import backoff
+from requests.exceptions import HTTPError
 
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj
 
@@ -78,12 +79,19 @@ def last_pic_of_print(_print, path_prefix):
     return print_pics[-1]
 
 
-def copy_pic(input_path, dest_jpg_path, syndicate_name, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
+def copy_pic(input_path, dest_jpg_path, syndicate_name, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True, missing_ok=False):
     if not input_path:
         return None
 
     img_bytes = io.BytesIO()
-    retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
+    try:
+        retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
+    except HTTPError as e:
+        if missing_ok and e.response is not None and e.response.status_code == 404:
+            return None
+        raise
+    if missing_ok and img_bytes.tell() == 0:
+        return None
     img_bytes.seek(0)
     return save_pic(dest_jpg_path, img_bytes, syndicate_name, rotated=rotated, printer_settings=printer_settings, to_container=to_container, to_long_term_storage=to_long_term_storage)
 
@@ -108,11 +116,12 @@ def save_pic(dest_jpg_path, img_bytes, syndicate_name, rotated=False, printer_se
     return dest_jpg_url
 
 
-def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
+def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False, missing_ok=False):
     if not jpg_url:
-        if not printer.pic or not printer.pic.get('img_url'):
+        printer_pic = printer.pic
+        if not printer_pic or not printer_pic.get('img_url'):
             return None
-        jpg_url = printer.pic.get('img_url')
+        jpg_url = printer_pic.get('img_url')
 
     need_rotation = printer.settings['webcam_flipV'] or printer.settings['webcam_flipH'] \
         or (printer.settings['webcam_rotation'] and printer.settings['webcam_rotation'] != 0)
@@ -120,7 +129,9 @@ def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
     if not need_rotation and not force_snapshot:
         return jpg_url
 
-    jpg_path = re.search(f'{settings.PICS_CONTAINER}/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
+    jpg_path = re.search(rf'{settings.PICS_CONTAINER}/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
+    if missing_ok and not jpg_path:
+        return None
 
     file_prefix = str(timezone.now().timestamp()) if force_snapshot else 'latest'
     return copy_pic(
@@ -129,5 +140,6 @@ def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
                 syndicate_name=printer.user.syndicate.name,
                 rotated=not 'latest_rotated' in jpg_url,
                 printer_settings=printer.settings,
-                to_long_term_storage=False
+                to_long_term_storage=False,
+                missing_ok=missing_ok,
             )

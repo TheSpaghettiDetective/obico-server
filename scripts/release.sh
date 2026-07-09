@@ -13,7 +13,7 @@ export NVM_DIR="$HOME/.nvm"
 
 cd frontend
 nvm use
-npm install
+npm ci
 npm run build
 cd ..
 

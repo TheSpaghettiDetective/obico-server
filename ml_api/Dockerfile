@@ -1,4 +1,5 @@
-FROM thespaghettidetective/ml_api_base:1.4
+ARG IMAGE_TAG_SUFFIX=
+FROM thespaghettidetective/ml_api_base:1.4${IMAGE_TAG_SUFFIX}
 
 RUN apt update && apt install -y curl
 
@@ -9,8 +10,10 @@ ADD . /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-RUN mkdir -p /model_cache/ml_api/darknet /model_cache/ml_api/onnx \
+RUN mkdir -p /model_cache/ml_api/darknet /model_cache/ml_api/onnx /model_cache/ml_api/rknn \
  && echo 'Downloading the latest failure detection AI model in Darknet format...' \
  && curl -o /model_cache/ml_api/darknet/model-weights.darknet $(cat model/model-weights.darknet.url | tr -d '\r') \
  && echo 'Downloading the latest failure detection AI model in ONNX format...' \
- && curl -o /model_cache/ml_api/onnx/model-weights.onnx $(cat model/model-weights.onnx.url | tr -d '\r')
+ && curl -o /model_cache/ml_api/onnx/model-weights.onnx $(cat model/model-weights.onnx.url | tr -d '\r') \
+ && echo 'Downloading the latest failure detection AI model in RKNN format...' \
+ && curl -L -o /model_cache/ml_api/rknn/model-weights.rknn $(cat model/model-weights.rknn.url | tr -d '\r')

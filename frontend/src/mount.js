@@ -39,7 +39,7 @@ import {
   faCheck
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
-import { syndicate, language } from '@src/lib/page-context'
+import { syndicate } from '@src/lib/page-context'
 import { syndicateTextConstant } from '@src/config/syndicateText'
 import { getLocalPref } from '@src/lib/pref'
 import i18next from '@src/i18n/i18n.js'

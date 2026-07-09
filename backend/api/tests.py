@@ -1,3 +1,4 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from unittest.mock import *
 from django.utils import timezone
@@ -7,7 +8,7 @@ from django.urls import reverse
 from safedelete.models import *
 from django.contrib.sites.models import Site
 
-from app.models import Printer, Print, User
+from app.models import GCodeFile, Printer, Print, User
 from app.models.syndicate_models import Syndicate
 from api.octoprint_views import *
 from api.octoprint_messages import process_printer_status
@@ -35,6 +36,69 @@ def init_data():
     client.force_login(user)
 
     return (user, printer, client)
+
+
+@override_settings(SITE_ID=1)
+class GCodeFileUploadTestCase(TestCase):
+    def setUp(self):
+        syndicate = setup_syndicate()
+        self.user = User.objects.create(email='gcode-upload@test.com', syndicate=syndicate)
+        self.user.set_password('test')
+        self.user.save()
+        self.client = Client()
+        self.client.force_login(self.user)
+
+    @patch('api.viewsets.save_file_obj')
+    def test_invalid_gcode_upload_returns_400_without_creating_file(self, save_file_obj):
+        upload = SimpleUploadedFile(
+            'invalid.gcode',
+            (
+                b'\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                b'\x03\x00\xb7\x00\x01\x00\x00\x00not really gcode\n'
+            ),
+            content_type='application/octet-stream',
+        )
+
+        response = self.client.post('/api/v1/g_code_files/', {
+            'filename': 'invalid.gcode',
+            'file': upload,
+        })
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json(),
+            {'error': 'Invalid G-code file. Please upload a valid text G-code file.'},
+        )
+        self.assertFalse(
+            GCodeFile.objects.all_with_deleted().filter(user=self.user, filename='invalid.gcode').exists()
+        )
+        save_file_obj.assert_not_called()
+
+    @patch('api.viewsets.save_file_obj', return_value=('internal-url', 'external-url'))
+    @patch(
+        'api.viewsets.gcode_metadata.parse',
+        return_value=({'estimated_time': 120, 'filament_total': 12.5}, []),
+    )
+    def test_valid_gcode_upload_still_succeeds(self, parse, save_file_obj):
+        upload = SimpleUploadedFile(
+            'valid.gcode',
+            b'G1 X10 Y10 E0.01\n',
+            content_type='application/octet-stream',
+        )
+
+        response = self.client.post('/api/v1/g_code_files/', {
+            'filename': 'valid.gcode',
+            'file': upload,
+        })
+
+        self.assertEqual(response.status_code, 201)
+        gcode_file = GCodeFile.objects.get(user=self.user, filename='valid.gcode')
+        self.assertEqual(gcode_file.num_bytes, 17)
+        self.assertEqual(gcode_file.url, 'external-url')
+        self.assertEqual(gcode_file.estimated_time, 120)
+        self.assertEqual(gcode_file.filament_total, 12.5)
+        parse.assert_called_once()
+        save_file_obj.assert_called_once()
 
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"
 

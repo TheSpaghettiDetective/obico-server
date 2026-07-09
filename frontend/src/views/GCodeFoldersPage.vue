@@ -307,6 +307,7 @@ import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import i18n from '@src/i18n/i18n.js'
+import { getDropzoneUploadErrorMessage } from '@src/lib/dropzone-upload-error'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
@@ -812,9 +813,9 @@ export default {
       this.files = []
       this.fetchFilesAndFolders(true, printAfterUpload)
     },
-    gcodeUploadError(file, message) {
+    gcodeUploadError(file, message, xhr) {
       this.$swal.Reject.fire({
-        html: `<p class="text-center">${message}</p>`,
+        text: getDropzoneUploadErrorMessage(file, message, xhr),
       })
     },
     renameItem(item) {

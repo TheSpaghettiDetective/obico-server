@@ -2,6 +2,9 @@
 title: Webcam Configuration
 ---
 
+:::info
+Having streaming problems? See [Troubleshoot webcam streaming issues](/docs/user-guides/webcam-feed-is-not-showing/) first. This page is for configuration reference only.
+:::
 
 :::tip
 Obico webcam streaming relies on a program called "janus" to work. If janus is not installed on your system by default, you will need to manually install it:

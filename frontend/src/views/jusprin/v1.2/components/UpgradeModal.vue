@@ -95,11 +95,7 @@
               </button>
             </div>
             <div class="mt-4">
-              <i18next :translation="$t('Alternatively, you can {hostYourOwnLink} and get unlimited AI credits using your own OpenAI API key.')">
-                <template #hostYourOwnLink>
-                  <a href="https://github.com/TheSpaghettiDetective/obico-server/blob/release/README_jusprin_server.md">{{ $t("host your own JusPrin server") }}</a>
-                </template>
-              </i18next>
+              {{ $t('Alternatively, you can host your own JusPrin server and get unlimited AI credits using your own OpenAI API key.') }}
             </div>
           </div>
         </template>

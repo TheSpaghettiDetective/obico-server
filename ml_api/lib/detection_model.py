@@ -21,6 +21,13 @@ except Exception as e:
     print(f'Error during importing OnnxNet! - {e}')
     onnx_ready = False
 
+rknn_ready = True
+try:
+    from lib.rknn import RknnNet
+except Exception as e:
+    print(f'Error during importing RknnNet! - {e}')
+    rknn_ready = False
+
 
 def load_net(config_path, meta_path, weights_path=None):
 
@@ -42,6 +49,11 @@ def load_net(config_path, meta_path, weights_path=None):
                         raise Exception('Not loading darknet net due to previous import failure. Check earlier log for errors.')
                     net_main = YoloNet(weights, meta_path, config_path, use_gpu)
 
+                elif weights.endswith(".rknn"):
+                    if not rknn_ready:
+                        raise Exception('Not loading RKNN net due to previous import failure. Check earlier log for errors.')
+                    net_main = RknnNet(weights, meta_path, use_gpu)
+
                 else:
                     raise Exception(f'Can not recognize net from weights file surfix: {weights}')
 
@@ -60,6 +72,7 @@ def load_net(config_path, meta_path, weights_path=None):
             dict(weights_path='/model_cache/ml_api/darknet/model-weights.darknet', use_gpu=False),
             dict(weights_path='/model_cache/ml_api/onnx/model-weights.onnx', use_gpu=True),
             dict(weights_path='/model_cache/ml_api/onnx/model-weights.onnx', use_gpu=False),
+            dict(weights_path='/model_cache/ml_api/rknn/model-weights.rknn', use_gpu=False),
         ]
     if weights_path is not None:
         net_config_priority = [ dict(weights_path=weights_path, use_gpu=True), dict(weights_path=weights_path, use_gpu=False) ]
@@ -67,8 +80,6 @@ def load_net(config_path, meta_path, weights_path=None):
     net_main = try_loading_net(net_config_priority)
 
     if alt_names is None:
-        # In Python 3, the metafile default access craps out on Windows (but not Linux)
-        # Read the names file and create a list to feed to detect
         try:
             meta = Meta(meta_path)
             alt_names = meta.names
@@ -79,4 +90,3 @@ def load_net(config_path, meta_path, weights_path=None):
 
 def detect(net, image, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
     return net.detect(net.meta, image, alt_names, thresh, hier_thresh, nms, debug)
-

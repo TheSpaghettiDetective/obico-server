@@ -46,9 +46,7 @@ The skill sets we need the most are:
 
 ### Process of opening PRs
 
-1. Switch to the `master` branch before you're making any commit. The `release` branch is for end-users only. *DO NOT USE the `release` branch*.
-
-1. Run `cd frontend && yarn && yarn serve` to launch a Vue dev server for the front-end. Do not submit any bundled files created by `yarn build` in your PR.
+See the repository [CONTRIBUTING.md](https://github.com/TheSpaghettiDetective/obico-server/blob/master/CONTRIBUTING.md) for the current pull request process, including which branch to target, how to run the local development servers, and what to check before opening a PR.
 
 ## Help fellow makers in the community! {#help-fellow-makers-in-the-community}
 

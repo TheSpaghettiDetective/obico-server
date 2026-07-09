@@ -121,9 +121,10 @@ def check_x_api(get_response):
             except AccessToken.DoesNotExist:
                 pass
 
-            request.user = user
-            setattr(request.user, 'backend', 'django.contrib.auth.backends.ModelBackend')
-            auth_login(request, request.user)
+            if user:
+                request.user = user
+                setattr(request.user, 'backend', 'django.contrib.auth.backends.ModelBackend')
+                auth_login(request, request.user)
 
         response = get_response(request)
         return response

@@ -16,7 +16,7 @@ You need a positive balance of AI Detection Hours on your account to have the fa
 
 You do **NOT** need AI Detection Hours to watch your printer feed in the app. You can watch it for as long as you want. There is no limit to it!
 
-## How do I get AI Detection Hours? {#how-do-i-get-ai-detection-hours}
+## How do I get AI Detection Hours? {#how-do-i-get-detective-hours}
 
 There are several ways to get AI Detection Hours:
 
@@ -26,7 +26,7 @@ There are several ways to get AI Detection Hours:
 
 1. You can buy or subscribe to one of the [AI Detection Hour packs](https://app.obico.io/ent_pub/pricing/#need-more). You can get 500 hours for just $20.
 
-1. If you subscribe to [the Pro plan](/docs/user-guides/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save AI Detection Hour packs](https://app.obico.io/ent_pub/pricing/#need-more) to your Pro plan at a discounted rate.
+1. If you subscribe to [the AI Premium plan](/docs/user-guides/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save AI Detection Hour packs](https://app.obico.io/ent_pub/pricing/#need-more) to your AI Premium plan at a discounted rate.
 
 ## FAQs {#faqs}
 
@@ -46,7 +46,7 @@ You can still watch your printer feed in the app even if your DH balance goes to
 
 #### I heard I can buy more DHs. Is it true? {#i-heard-i-can-buy-more-dhs-is-it-true}
 
-Yes. Additional DHs can be bought at $20 for 500 hours, or $0.04/hour. If you have subscribed to the Pro plan, you can also add one of the [Subscribe&Save DH packs](https://app.obico.io/ent_pub/pricing/#need-more) to your Pro plan at a much lower rate.
+Yes. Additional DHs can be bought at $20 for 500 hours, or $0.04/hour. If you have subscribed to the AI Premium plan, you can also add one of the [Subscribe&Save DH packs](https://app.obico.io/ent_pub/pricing/#need-more) to your AI Premium plan at a much lower rate.
 
 Go to [your subscription page](https://app.obico.io/ent_pub/pricing/#need-more) to buy more DHs.
 
@@ -56,13 +56,13 @@ Go to [your subscription page](https://app.obico.io/ent_pub/pricing/#need-more) 
 
 Even if 10 DHs per month is not a lot, if you turn on detection only for your "risky prints", it can still significantly reduce your stress level, and sometimes save your printer from a jammed heater block or fan.
 
-#### Tell me more about the DHs that are included in the Pro plan. {#tell-me-more-about-the-dhs-that-are-included-in-the-pro-plan}
+#### Tell me more about the DHs that are included in the AI Premium plan. {#tell-me-more-about-the-dhs-that-are-included-in-the-pro-plan}
 
-If you subscribe to the Pro plan, you will get 50 DHs **every month**. If not all 50 DHs are used when the month ends, the unused DHs [roll over into next month](#tell-me-exactly-how-dhs-roll-over-works), as long as you keep your subscription active. The same roll-over rule applies to the DHs that comes from the Subscribe&Save DH Packs.
+If you subscribe to the AI Premium plan, you will get 50 DHs **every month**. If not all 50 DHs are used when the month ends, the unused DHs [roll over into next month](#tell-me-exactly-how-dhs-roll-over-works), as long as you keep your subscription active. The same roll-over rule applies to the DHs that comes from the Subscribe&Save DH Packs.
 
 #### What happens to the balance of my DHs when I cancel my subscription plan? {#what-happens-to-the-balance-of-my-dhs-when-i-cancel-my-subscription-plan}
 
-If you cancel your subscription plan, the remaining DHs that originally came from the Pro plan or the Subscribe&Save DH pack will expire at the time when the plan ends.
+If you cancel your subscription plan, the remaining DHs that originally came from the AI Premium plan or the Subscribe&Save DH pack will expire at the time when the plan ends.
 
 You will get to keep the DHs that you bought in a Pre-paid DH pack, or earned by providing Focused Feedback.
 
@@ -115,7 +115,7 @@ In this example, only 0.75 DHs are accounted for, even if the print lasts 2.25 h
 
 First of all, there are 2 different kinds of DHs.
 
-1. The DHs that are included in your subscription plan. For instance, the Free plan includes 10 DHs per month; Pro plan includes 50 DHs per month. There are also "Subscribe&Save DH Packs" that include various number of DHs each month. Let's call them *included DH*s.
+1. The DHs that are included in your subscription plan. For instance, the Free plan includes 10 DHs per month; AI Premium plan includes 50 DHs per month. There are also "Subscribe&Save DH Packs" that include various number of DHs each month. Let's call them *included DH*s.
 2. The DHs that you buy in a Pre-paid DH pack, or otherwise earn by teaching The Detective. Let's call them *earned DH*s.
 
 Here are the complete list of all roll-over rules on DHs:
@@ -130,9 +130,9 @@ Here are the complete list of all roll-over rules on DHs:
 |-----------|-------------------------------------------------------------------------|------------|--------------|----------|
 | 1/1/2020  | Earns 20 DHs by uploading 20 time-lapses                                | 20         | 0            | 20       |
 | 1/5/2020  | Prints 10 hours                                                         | 10         | 0            | 10       |
-| 1/10/2020 | Upgrades 2 printers to Pro plan                                         | 10         | 50           | 60       |
+| 1/10/2020 | Upgrades 2 printers to AI Premium plan                                  | 10         | 50           | 60       |
 | 1/15/2020 | Prints 24 hours, with detecting disabled for 4 hours                    | 10         | 30           | 40       |
 | 1/20/2020 | Earns 25 DHs by uploading 25 time-lapses                                | 35         | 30           | 65       |
 | 1/25/2020 | Prints 40 hours (2 printer total), with detection disabled for 2 hours  | 27         | 0            | 27       |
-| 2/10/2020 | Renews Pro plan                                                         | 27         | 50           | 77       |
-| 2/15/2020 | Cancels Pro plan                                                        | 27         | 0            | 27       |
+| 2/10/2020 | Renews AI Premium plan                                                  | 27         | 50           | 77       |
+| 2/15/2020 | Cancels AI Premium plan                                                 | 27         | 0            | 27       |

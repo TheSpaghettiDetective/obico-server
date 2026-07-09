@@ -1,6 +1,5 @@
 # Create your tasks here
 from __future__ import absolute_import, unicode_literals
-import re
 import os
 import io
 import json
@@ -26,7 +25,6 @@ from lib import cache
 from lib import syndicate
 from notifications.handlers import handler
 from notifications import notification_types
-from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -175,16 +173,6 @@ def will_record_timelapse(_print):
 
     if not last_pic: # This print does not have any raw pics
         return False
-
-    # Save the unrotated snapshot so that it is still viewable even after the print is done.
-    unrotated_jpg_url = copy_pic(
-                            last_pic,
-                            f'snapshots/{_print.printer.id}/latest_unrotated.jpg',
-                            _print.user.syndicate.name,
-                            rotated=False,
-                            to_long_term_storage=False
-                        )
-    cache.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
 
     min_timelapse_secs = _print.printer.min_timelapse_secs_on_cancel if _print.is_canceled() else _print.printer.min_timelapse_secs_on_finish
     if min_timelapse_secs < 0 or (_print.ended_at() - _print.started_at).total_seconds() < min_timelapse_secs:

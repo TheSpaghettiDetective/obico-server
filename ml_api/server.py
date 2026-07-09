@@ -38,7 +38,9 @@ net_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'mod
 
 
 def _should_retry(exc):
-    """Only retry on HTTP 5xx server errors."""
+    """Retry on transient network errors and HTTP 5xx server errors."""
+    if isinstance(exc, (requests.exceptions.Timeout, requests.exceptions.ConnectionError)):
+        return True
     if isinstance(exc, HTTPError) and exc.response is not None:
         return exc.response.status_code >= 500
     return False
@@ -46,12 +48,12 @@ def _should_retry(exc):
 
 @backoff.on_exception(
     backoff.expo,
-    HTTPError,
+    (HTTPError, requests.exceptions.Timeout, requests.exceptions.ConnectionError),
     max_tries=3,
     giveup=lambda exc: not _should_retry(exc)
 )
 def _get_with_retry(url, timeout, stream=True):
-    """Make HTTP GET request with retry logic for 5xx errors."""
+    """Make HTTP GET request with retry logic for transient errors."""
     resp = requests.get(url, stream=stream, timeout=timeout)
     resp.raise_for_status()
     return resp

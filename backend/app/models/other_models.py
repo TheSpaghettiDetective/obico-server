@@ -548,7 +548,13 @@ class PrinterEvent(models.Model):
                 kwargs.update(attrs)
 
             if kwargs.get('image_url') is None:
-                kwargs.update({'image_url': get_rotated_pic_url(kwargs.get('print').printer, force_snapshot=True)})
+                kwargs.update({
+                    'image_url': get_rotated_pic_url(
+                        kwargs.get('print').printer,
+                        force_snapshot=True,
+                        missing_ok=True,
+                    )
+                })
 
         printer_event = PrinterEvent.objects.create(**kwargs)
 

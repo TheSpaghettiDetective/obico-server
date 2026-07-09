@@ -1,0 +1,12 @@
+services:
+  ml_api:
+    build:
+      context: ml_api
+      args:
+        IMAGE_TAG_SUFFIX: -rk3588
+    security_opt:
+      - systempaths=unconfined
+      - apparmor=unconfined
+    devices:
+      - /dev/dri:/dev/dri
+      - /dev/mpp_service:/dev/mpp_service

@@ -1,0 +1,37 @@
+annotations:
+  artifacthub.io/category: ai-machine-learning
+  # Valid kinds for changes: added, changed, deprecated, removed, fixed, security
+  # See: https://artifacthub.io/docs/topics/annotations/helm/
+  artifacthub.io/changes: |-
+    - kind: added
+      description: Initial Helm chart for deploying the Obico server on Kubernetes
+  artifacthub.io/license: BSD-3-Clause
+  artifacthub.io/links: |
+    - name: Obico Server
+      url: https://github.com/TheSpaghettiDetective/obico-server/
+apiVersion: v2
+name: obico
+description: Self-hosted Obico server for AI-powered 3D printer monitoring (OctoPrint/Klipper)
+type: application
+version: "0.1.0"
+# CalVer derived from the obico-server release commit these images are built from.
+appVersion: "2026.1.20"
+icon: https://www.obico.io/img/logo.svg
+home: https://www.obico.io/
+keywords:
+  - obico
+  - 3d-printing
+  - octoprint
+  - klipper
+  - monitoring
+  - ai
+  - spaghetti-detective
+  - helm-chart
+  - kubernetes
+maintainers:
+  - name: lexfrei
+    email: f@lex.la
+    url: https://github.com/lexfrei
+sources:
+  - https://github.com/TheSpaghettiDetective/obico-server/
+kubeVersion: ">=1.21.0-0"

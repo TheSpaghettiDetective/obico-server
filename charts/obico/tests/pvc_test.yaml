@@ -1,0 +1,75 @@
+suite: test persistence
+templates:
+  - pvc-data.yaml
+  - pvc-media.yaml
+tests:
+  - it: should create the data PVC by default
+    template: pvc-data.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-obico-data
+      - equal:
+          path: spec.accessModes[0]
+          value: ReadWriteOnce
+      - equal:
+          path: spec.resources.requests.storage
+          value: 1Gi
+
+  - it: should create the media PVC by default
+    template: pvc-media.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-obico-media
+      - equal:
+          path: spec.resources.requests.storage
+          value: 10Gi
+
+  - it: should not create the data PVC when disabled
+    template: pvc-data.yaml
+    set:
+      persistence.data.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create the data PVC when using an existing claim
+    template: pvc-data.yaml
+    set:
+      persistence.data.existingClaim: my-claim
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should add a keep resource-policy annotation when retain is true
+    template: pvc-data.yaml
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/resource-policy"]
+          value: keep
+
+  - it: should not add the keep annotation when retain is false
+    template: pvc-data.yaml
+    set:
+      persistence.data.retain: false
+    asserts:
+      - notExists:
+          path: metadata.annotations["helm.sh/resource-policy"]
+
+  - it: should set a storage class when provided
+    template: pvc-media.yaml
+    set:
+      persistence.media.storageClassName: fast-ssd
+    asserts:
+      - equal:
+          path: spec.storageClassName
+          value: fast-ssd

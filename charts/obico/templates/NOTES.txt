@@ -1,0 +1,66 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Obico server has been deployed.
+
+Release Name: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+Components:
+  - web (Django + Daphne) and tasks (Celery) in one pod
+  {{- if .Values.mlApi.enabled }}
+  - ml-api (AI failure detection)
+  {{- end }}
+  {{- if .Values.redis.enabled }}
+  - redis (bundled)
+  {{- end }}
+
+Database: {{ if .Values.database.existingSecret }}external (full DSN from secret {{ .Values.database.existingSecret }}){{ else if .Values.database.host }}postgresql://{{ .Values.database.user }}@{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }} (password from secret {{ .Values.database.passwordSecret }}){{ else }}{{ .Values.database.url }}{{ end }}
+
+To check the status of your deployment:
+
+  kubectl --namespace {{ .Release.Namespace }} get pods -l "app.kubernetes.io/name={{ include "obico.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+
+{{- if .Values.ingress.enabled }}
+
+Web UI is accessible at:
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  - http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if .Values.httpRoute.enabled }}
+
+Web UI is accessible at:
+{{- range .Values.httpRoute.hostnames }}
+  - https://{{ . }}
+{{- end }}
+{{- else }}
+
+To access the Web UI, forward the port:
+
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "obico.fullname" . }}-web {{ .Values.service.web.port }}:{{ .Values.service.web.port }}
+
+Then open: http://localhost:{{ .Values.service.web.port }}
+{{- end }}
+
+First-run setup:
+  1. Create an admin account (self-service signup is disabled by default):
+
+       kubectl --namespace {{ .Release.Namespace }} exec -it \
+         deploy/{{ include "obico.fullname" . }}-web -c server -- \
+         python manage.py createsuperuser
+
+     To allow open registration instead, set
+     obico.extraEnv.ACCOUNT_ALLOW_SIGN_UP="True".
+  2. Configure the public URL under Settings if serving behind a proxy.
+{{- if not .Values.obico.siteUsesHttps }}
+  3. When serving over HTTPS, set obico.siteUsesHttps=true and upgrade.
+{{- end }}
+
+To view logs:
+
+  kubectl --namespace {{ .Release.Namespace }} logs -l "app.kubernetes.io/name={{ include "obico.name" . }},app.kubernetes.io/component=web" --tail=100 -f
+
+For more information:
+  - Chart: https://github.com/TheSpaghettiDetective/obico-server/tree/release/charts/obico
+  - Obico: https://www.obico.io/

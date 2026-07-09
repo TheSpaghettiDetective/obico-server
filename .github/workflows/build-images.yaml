@@ -1,0 +1,131 @@
+name: Build and publish images
+
+# Obico does not publish ready-to-run server images — docker-compose builds them
+# from source. This workflow builds them from the current source and publishes
+# tagged, signed images to GHCR so Kubernetes/Helm users can consume them. The
+# ml-api service ships in two variants: a slim CPU-only image (default) and a
+# CUDA image for GPU inference.
+
+on:
+  # The release branch is the deploy branch; rebuild whenever it moves.
+  push:
+    branches: [release]
+  workflow_dispatch: {}
+
+concurrency:
+  group: build-images-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      # Publish each image independently — one failing build must not block the
+      # others.
+      fail-fast: false
+      matrix:
+        include:
+          - name: web
+            context: backend
+            file: backend/Dockerfile
+          - name: ml-api-cpu
+            context: ml_api
+            file: ml_api/Containerfile.cpu
+          - name: ml-api-gpu
+            context: ml_api
+            file: ml_api/Dockerfile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history so the commit date and any tags are available for
+          # versioning.
+          fetch-depth: 0
+
+      - name: Compute image namespace (GHCR requires a lowercase owner)
+        id: ns
+        run: echo "ns=ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "${GITHUB_OUTPUT}"
+
+      - name: Compute version
+        id: ver
+        run: |
+          # The release branch carries no tag or in-repo VERSION, so derive a
+          # CalVer from the commit date (UTC) — deterministic and monotonic with
+          # commit order. It is day-granular: two commits on the same UTC day
+          # share it, and the second run moves the tag. The sha-<short> tag below
+          # is the immutable, guaranteed-unique per-commit pin. If the project
+          # ever starts tagging releases, an exact tag on the commit takes
+          # precedence.
+          tag="$(git describe --tags --exact-match 2>/dev/null || true)"
+          if [ -n "${tag}" ]; then
+            version="${tag#v}"
+          else
+            version="$(date -u -d "@$(git show --no-patch --format=%ct HEAD)" +'%Y.%-m.%-d')"
+          fi
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "short_sha=$(git rev-parse --short HEAD)" >> "${GITHUB_OUTPUT}"
+
+      - name: Move the prebuilt frontend into the web build context
+        if: matrix.name == 'web'
+        run: |
+          # The backend image expects the prebuilt Vue bundle (checked into the
+          # release branch) at /frontend, which docker-compose supplies as a bind
+          # mount. Bake it into the image instead.
+          mv frontend backend/frontend
+          echo 'RUN ln -s /app/frontend /frontend' >> backend/Dockerfile
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.ns.outputs.ns }}/obico-${{ matrix.name }}
+          tags: |
+            type=raw,value=${{ steps.ver.outputs.version }}
+            type=raw,value=sha-${{ steps.ver.outputs.short_sha }}
+            type=raw,value=release,enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=obico-${{ matrix.name }}
+            org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
+            org.opencontainers.image.version=${{ steps.ver.outputs.version }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          # ml-api-gpu is CUDA-based and amd64-only; keep the whole matrix on
+          # amd64 for now. The CPU image can grow an arm64 variant later.
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign the image (keyless)
+        if: github.event_name != 'pull_request'
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          IMAGE: ${{ steps.ns.outputs.ns }}/obico-${{ matrix.name }}
+        run: cosign sign --yes "${IMAGE}@${DIGEST}"

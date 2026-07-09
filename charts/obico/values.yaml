@@ -1,0 +1,345 @@
+# Default values for obico
+# Obico is a multi-service Django stack: a web app (Daphne/ASGI), a Celery
+# worker, an ML inference API and Redis. The web and tasks containers share a
+# single pod so they can share the SQLite database on a ReadWriteOnce volume.
+
+# -- Container images. Built from obico-server source by the in-repo workflow
+# (.github/workflows/build-images.yaml) and published to GHCR under the
+# repository owner's namespace (ghcr.io/thespaghettidetective/* upstream). Each
+# tag defaults to the "release" moving tag the workflow publishes on the release
+# branch; pin a specific tag (a CalVer like 2026.7.1 or sha-<short>) for
+# reproducibility.
+image:
+  # -- Web application image (Django + Celery)
+  web:
+    repository: ghcr.io/thespaghettidetective/obico-web
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag whose default is the "release" moving tag
+    tag: ""
+  # -- ML inference API images. Two variants are published from the same source:
+  # a slim CPU-only image (default) and a CUDA image for GPU inference.
+  # mlApi.gpu selects which one runs; configure each variant independently.
+  mlApi:
+    pullPolicy: IfNotPresent
+    # -- CPU-only inference image (slim). Used when mlApi.gpu is false.
+    cpu:
+      repository: ghcr.io/thespaghettidetective/obico-ml-api-cpu
+      # -- Overrides the CPU image tag whose default is the "release" moving tag
+      tag: ""
+    # -- CUDA inference image (large). Used when mlApi.gpu is true.
+    gpu:
+      repository: ghcr.io/thespaghettidetective/obico-ml-api-gpu
+      # -- Overrides the GPU image tag whose default is the "release" moving tag
+      tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Obico application configuration (rendered into the env ConfigMap/Secret)
+obico:
+  # -- Enable Django debug mode (never enable in production)
+  debug: false
+  # -- Set to true when the site is served over HTTPS (behind a TLS ingress/gateway)
+  siteUsesHttps: false
+  # -- CSRF trusted origins (Django 4+ rejects HTTPS POSTs from untrusted origins).
+  # Leave empty to auto-derive from the enabled ingress hosts / HTTPRoute
+  # hostnames using the scheme implied by siteUsesHttps. Set explicitly to
+  # override, e.g. ["https://obico.example.com"].
+  csrfTrustedOrigins: []
+  # -- Django SECRET_KEY.
+  # IMPORTANT: leave empty only for a quick `helm install` test. The empty-value
+  # fallback reuses the live Secret on upgrades but REGENERATES the key on any
+  # render-only path (helm template, --dry-run, helm diff, ArgoCD) — rotating it
+  # logs every user out and rolls the pod on every sync. For GitOps set a stable
+  # value here (e.g. `openssl rand -base64 48`) or use existingSecret below.
+  secretKey: ""
+  # -- Reference a pre-created Secret for sensitive env (must contain
+  # DJANGO_SECRET_KEY and any other secret keys). When set, the chart does not
+  # create its own Secret and extraSecretEnv is ignored. Recommended for GitOps.
+  existingSecret: ""
+  # -- Extra non-sensitive environment variables (key/value) for web and tasks.
+  # Chart-managed keys (DATABASE_URL, REDIS_URL, ...) are rejected here.
+  # Example: EMAIL_HOST: smtp.example.com
+  extraEnv: {}
+  # -- Extra sensitive environment variables (key/value) stored in the Secret.
+  # Example: EMAIL_HOST_PASSWORD: s3cr3t
+  extraSecretEnv: {}
+
+# -- Database configuration. Defaults to SQLite on the data volume.
+# WARNING: SQLite is for evaluation only. The server and the Celery worker run
+# as separate processes writing the same file, so under load they will hit
+# "database is locked" errors. Upstream ships PostgreSQL only. For any real use
+# set url to an external postgresql:// DSN, or reference a Secret via
+# existingSecret/existingSecretKey.
+database:
+  # -- Database connection string (Django DATABASE_URL). Used only when neither
+  # existingSecret nor host is set.
+  url: "sqlite:////data/db.sqlite3"
+  # -- Use a key from an existing Secret for the full DATABASE_URL instead of url
+  existingSecret: ""
+  # -- Key inside existingSecret holding the DATABASE_URL value
+  existingSecretKey: "DATABASE_URL"
+  # -- PostgreSQL host. When set, DATABASE_URL is composed from the fields below
+  # and the password is injected from passwordSecret at runtime (so it never
+  # lands in the ConfigMap or in git). Mutually exclusive with existingSecret.
+  # Point this at a connection pooler service (e.g. a CloudNativePG Pooler /
+  # PgBouncer) to multiplex many app connections onto few server connections.
+  # Run the pooler in TRANSACTION mode: Obico keeps connections open
+  # (CONN_MAX_AGE=600), so session mode pins idle connections and exhausts the
+  # pool (see the Database section of the README).
+  # The password must be URL-safe; the chart does not URL-encode it.
+  host: ""
+  # -- PostgreSQL port (compose mode)
+  port: 5432
+  # -- PostgreSQL database name (compose mode; required when host is set)
+  name: ""
+  # -- PostgreSQL user (compose mode; required when host is set)
+  user: ""
+  # -- Name of an existing Secret holding the PostgreSQL password (compose mode;
+  # required when host is set)
+  passwordSecret: ""
+  # -- Key inside passwordSecret holding the password
+  passwordSecretKey: "password"
+
+# -- Web pod configuration (server + tasks containers, plus init containers)
+web:
+  # -- Command for the Daphne ASGI server (serves API, frontend and websockets)
+  command:
+    - daphne
+    - -b
+    - 0.0.0.0
+    - -p
+    - "3334"
+    - config.routing:application
+  # -- Resource requests/limits for the server container
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+
+# -- Celery worker (runs in the same pod as the web server)
+tasks:
+  # -- Command for the Celery worker with the embedded beat scheduler. The beat
+  # schedule DB is written under /data (a writable, persistent volume) because
+  # the container runs as non-root and the image's /app is not writable; the
+  # default (celerybeat-schedule in the working directory) would crash beat.
+  command:
+    - celery
+    - -A
+    - config
+    - worker
+    - --beat
+    - --schedule
+    - /data/celerybeat-schedule
+    - -l
+    - info
+    - -c
+    - "2"
+    - -Q
+    - realtime,celery
+  # -- Resource requests/limits for the tasks container
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# -- ML inference API (AI failure detection). Can be disabled.
+mlApi:
+  # -- Deploy the ML inference API
+  enabled: true
+  # -- External ML inference API URL, used when enabled is false. Obico still
+  # calls the ML API for prints that have AI detection on, so if you disable the
+  # bundled ml-api, either point this at an external instance (e.g.
+  # http://ml-api:3333) or make sure AI detection is off on every printer —
+  # otherwise picture uploads that request detection will error.
+  externalHost: ""
+  # -- Run the CUDA (GPU) inference image instead of the slim CPU default. When
+  # true the ml-api container uses image.mlApi.gpu and requests the accelerator
+  # from gpuResources; requires an NVIDIA GPU and device plugin on the node. The
+  # CPU image works everywhere and is far smaller, so leave this false unless you
+  # actually have a GPU.
+  gpu: false
+  # -- Accelerator resources merged into the ml-api container limits when gpu is
+  # true. Adjust for non-NVIDIA or MIG / time-sliced GPUs (e.g. nvidia.com/mig-1g.5gb: 1).
+  gpuResources:
+    nvidia.com/gpu: 1
+  # -- Number of ml-api replicas
+  replicaCount: 1
+  # -- Command for the gunicorn inference server
+  command:
+    - gunicorn
+    - --bind=0.0.0.0:3333
+    - --workers=1
+    - --access-logfile=-
+    - wsgi
+  # -- Security context for the ml-api container.
+  # Left empty (image default = root) because the upstream CUDA-based ml-api
+  # image is not validated to run unprivileged (model cache and runtime expect
+  # root). Harden here once confirmed it runs as non-root in your environment.
+  securityContext: {}
+  # -- Resource requests/limits for the ml-api container
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "2"
+
+# -- Bundled Redis (Celery broker + Django Channels + cache)
+redis:
+  # -- Deploy a minimal in-cluster Redis. Disable to use an external Redis.
+  enabled: true
+  # -- Redis image (pinned; not tied to the chart appVersion)
+  image:
+    repository: redis
+    # renovate: datasource=docker depName=redis
+    tag: "8.8-alpine"
+    pullPolicy: IfNotPresent
+  # -- External Redis URL, used when redis.enabled is false
+  externalUrl: ""
+  # -- Security context for the redis container
+  securityContext:
+    runAsUser: 999
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+  # -- Resource requests/limits for the redis container
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+# -- Service configuration
+service:
+  # -- Web UI / API service (ClusterIP for Ingress/HTTPRoute)
+  web:
+    # -- Service type for the web UI
+    type: ClusterIP
+    # -- HTTP port
+    port: 3334
+    # -- Annotations for the web service
+    annotations: {}
+  # -- ML inference API service (internal)
+  mlApi:
+    # -- Service type for the ml-api
+    type: ClusterIP
+    # -- HTTP port
+    port: 3333
+    # -- Annotations for the ml-api service
+    annotations: {}
+
+# -- Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: obico.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: obico-tls
+      hosts:
+        - obico.example.com
+
+# -- HTTPRoute configuration (Gateway API)
+httpRoute:
+  enabled: false
+  annotations: {}
+  # -- Parent Gateway references
+  parentRefs:
+    - name: gateway
+      namespace: gateway-system
+      # sectionName: https-listener  # Optional: specific listener on the Gateway
+  # -- Hostnames for the route
+  hostnames:
+    - obico.example.com
+  # -- Routing rules
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+# -- Persistence configuration
+persistence:
+  # -- Data volume (SQLite database and persistent data)
+  data:
+    enabled: true
+    # -- Storage class name
+    storageClassName: ""
+    # -- Access mode
+    accessMode: ReadWriteOnce
+    # -- Size of the volume
+    size: 1Gi
+    # -- Use an existing PVC instead of creating one
+    existingClaim: ""
+    # -- Keep the PVC when the release is uninstalled
+    retain: true
+  # -- Media volume (user uploads, webcam frames, timelapses)
+  media:
+    enabled: true
+    # -- Storage class name
+    storageClassName: ""
+    # -- Access mode
+    accessMode: ReadWriteOnce
+    # -- Size of the volume
+    size: 10Gi
+    # -- Use an existing PVC instead of creating one
+    existingClaim: ""
+    # -- Keep the PVC when the release is uninstalled
+    retain: true
+
+# -- Security context for the pod.
+# fsGroup is load-bearing, not cosmetic: the server, tasks and migrate
+# containers run as non-root (65534, see securityContext below), so the data
+# and media volumes must be group-owned by that gid for them to write the
+# SQLite DB and media files. It also lets the non-root server read the static
+# assets generated by the root collectstatic init container. Keep them aligned.
+podSecurityContext:
+  fsGroup: 65534
+
+# -- Security context for the server, tasks and migrate containers
+securityContext:
+  runAsUser: 65534
+  runAsGroup: 65534
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# -- Pod annotations
+podAnnotations: {}
+
+# -- Pod labels
+podLabels: {}
+
+# -- Service account configuration
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use
+  name: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

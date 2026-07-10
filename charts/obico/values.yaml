@@ -141,14 +141,21 @@ tasks:
     - "2"
     - -Q
     - realtime,celery
-  # -- Resource requests/limits for the tasks container
+  # -- Resource requests/limits for the tasks container. The post-print
+  # compile_timelapse task shells out to ffmpeg/libx264; at a 512Mi limit the
+  # kernel OOM-kills the ffmpeg child on every compile. Because the Celery parent
+  # (PID 1) survives, the container never restarts and nothing surfaces in
+  # kubectl — prints just silently never get their timelapse. Observed steady
+  # state is around 700Mi with pod-lifetime peaks near 745Mi, so the limit is
+  # raised to 2Gi (headroom above the peak) and the CPU limit to a full core so
+  # the encode is not throttled for minutes.
   resources:
     requests:
-      memory: "256Mi"
+      memory: "512Mi"
       cpu: "100m"
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: "2Gi"
+      cpu: "1"
 
 # -- ML inference API (AI failure detection). Can be disabled.
 mlApi:
@@ -213,13 +220,16 @@ redis:
     capabilities:
       drop:
         - ALL
-  # -- Resource requests/limits for the redis container
+  # -- Resource requests/limits for the redis container. The bundled Redis sits
+  # flat around 250Mi in steady state — right at the old 256Mi limit — so the
+  # request is raised to 256Mi to schedule for the real footprint and the limit
+  # to 512Mi to leave headroom before the OOM killer.
   resources:
     requests:
-      memory: "64Mi"
+      memory: "256Mi"
       cpu: "50m"
     limits:
-      memory: "256Mi"
+      memory: "512Mi"
       cpu: "200m"
 
 # -- Service configuration

@@ -4,7 +4,8 @@ name: Build and publish images
 # from source. This workflow builds them from the current source and publishes
 # tagged, signed images to GHCR so Kubernetes/Helm users can consume them. The
 # ml-api service ships in two variants: a slim CPU-only image (default) and a
-# CUDA image for GPU inference.
+# CUDA image for GPU inference. It then publishes the in-repo Helm chart as a
+# signed OCI artifact with those exact image tags baked in.
 
 on:
   # The release branch is the deploy branch; rebuild whenever it moves.
@@ -22,23 +23,17 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  # Compute the shared namespace and version once so the image builds and the
+  # chart publish agree on a single value. If these were computed independently
+  # in two jobs, a commit crossing a UTC midnight boundary between them could
+  # produce two different CalVers and the chart would pin image tags that were
+  # never pushed.
+  version:
     runs-on: ubuntu-latest
-    strategy:
-      # Publish each image independently — one failing build must not block the
-      # others.
-      fail-fast: false
-      matrix:
-        include:
-          - name: web
-            context: backend
-            file: backend/Dockerfile
-          - name: ml-api-cpu
-            context: ml_api
-            file: ml_api/Containerfile.cpu
-          - name: ml-api-gpu
-            context: ml_api
-            file: ml_api/Dockerfile
+    outputs:
+      ns: ${{ steps.ns.outputs.ns }}
+      version: ${{ steps.ver.outputs.version }}
+      short_sha: ${{ steps.ver.outputs.short_sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,6 +65,30 @@ jobs:
           echo "version=${version}" >> "${GITHUB_OUTPUT}"
           echo "short_sha=$(git rev-parse --short HEAD)" >> "${GITHUB_OUTPUT}"
 
+  build:
+    needs: version
+    runs-on: ubuntu-latest
+    strategy:
+      # Publish each image independently — one failing build must not block the
+      # others.
+      fail-fast: false
+      matrix:
+        include:
+          - name: web
+            context: backend
+            file: backend/Dockerfile
+          - name: ml-api-cpu
+            context: ml_api
+            file: ml_api/Containerfile.cpu
+          - name: ml-api-gpu
+            context: ml_api
+            file: ml_api/Dockerfile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        # Versioning moved to the version job, so a shallow checkout of HEAD is
+        # enough to build the image.
+
       - name: Move the prebuilt frontend into the web build context
         if: matrix.name == 'web'
         run: |
@@ -93,16 +112,16 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ steps.ns.outputs.ns }}/obico-${{ matrix.name }}
+          images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
           tags: |
-            type=raw,value=${{ steps.ver.outputs.version }}
-            type=raw,value=sha-${{ steps.ver.outputs.short_sha }}
+            type=raw,value=${{ needs.version.outputs.version }}
+            type=raw,value=sha-${{ needs.version.outputs.short_sha }}
             type=raw,value=release,enable={{is_default_branch}}
             type=raw,value=latest,enable={{is_default_branch}}
           labels: |
             org.opencontainers.image.title=obico-${{ matrix.name }}
             org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
-            org.opencontainers.image.version=${{ steps.ver.outputs.version }}
+            org.opencontainers.image.version=${{ needs.version.outputs.version }}
 
       - name: Build and push
         id: build
@@ -127,5 +146,113 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
-          IMAGE: ${{ steps.ns.outputs.ns }}/obico-${{ matrix.name }}
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
         run: cosign sign --yes "${IMAGE}@${DIGEST}"
+
+  publish-chart:
+    # needs build so the packaged chart never pins image tags that are not
+    # pushed yet, and needs version for the shared namespace/CalVer outputs.
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        # Only the working tree is packaged; the version comes from the version
+        # job, so no history is needed.
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          # Pin a version new enough to map Chart.yaml sources[0] to the
+          # org.opencontainers.image.source OCI annotation on push (since 3.12).
+          # That annotation is what links the GHCR package to this repository and
+          # keeps a later re-push from failing on a permission check.
+          version: v3.18.4
+
+      - name: Log in to GHCR (Docker config)
+        # cosign (via go-containerregistry) reads credentials from the Docker
+        # config file, which Helm's own registry login does not populate. Without
+        # this the chart push would succeed but cosign would fail to push the
+        # signature to GHCR unauthenticated.
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to GHCR (Helm registry)
+        # helm push authenticates from Helm's own registry store (separate from
+        # the Docker config above on Helm 3.14+), so log in for it explicitly.
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username ${{ github.actor }} --password-stdin
+
+      - name: Bake the matching images into the chart
+        env:
+          NS: ${{ needs.version.outputs.ns }}
+          VERSION: ${{ needs.version.outputs.version }}
+          SHORT_SHA: ${{ needs.version.outputs.short_sha }}
+          # The canonical repo URL of whoever is publishing. Helm maps
+          # sources[0] to org.opencontainers.image.source, and GHCR links a
+          # package to a repository by matching that annotation — so it must name
+          # the repo the workflow actually runs in, not the hardcoded upstream in
+          # the in-repo Chart.yaml, or the fork's package links to the wrong repo
+          # (and the in-repo value carries a trailing slash GHCR would not match).
+          SOURCE_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          # Pin the chart to the exact images it was built alongside instead of
+          # the moving "release" tag. Point every image repository at the
+          # namespace the build job actually pushed to — correct whether the
+          # workflow runs on upstream or a fork, not only when the owner matches
+          # the in-repo defaults — and pin each image to its immutable per-commit
+          # sha-<short> tag, so a second release commit on the same UTC day cannot
+          # silently move the images a published chart references (the CalVer tag
+          # is day-granular and would). The chart itself is versioned by the
+          # build's CalVer, with appVersion set to the same CalVer; CalVer is
+          # valid semver, so it is a legal chart version. This mutates only the
+          # throwaway CI workspace; the in-repo values.yaml (empty tag -> the
+          # "release" fallback) and Chart.yaml version stay as-is for git-based
+          # installs. yq preserves the surrounding comments.
+          yq --inplace '
+            .image.web.repository = strenv(NS) + "/obico-web"
+            | .image.web.tag = "sha-" + strenv(SHORT_SHA)
+            | .image.mlApi.cpu.repository = strenv(NS) + "/obico-ml-api-cpu"
+            | .image.mlApi.cpu.tag = "sha-" + strenv(SHORT_SHA)
+            | .image.mlApi.gpu.repository = strenv(NS) + "/obico-ml-api-gpu"
+            | .image.mlApi.gpu.tag = "sha-" + strenv(SHORT_SHA)
+          ' charts/obico/values.yaml
+          yq --inplace '
+            .version = strenv(VERSION)
+            | .appVersion = strenv(VERSION)
+            | .sources[0] = strenv(SOURCE_URL)
+          ' charts/obico/Chart.yaml
+
+      - name: Package the chart
+        run: helm package charts/obico
+
+      - name: Push the chart to GHCR as an OCI artifact
+        id: push
+        env:
+          NS: ${{ needs.version.outputs.ns }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          # helm push writes "Pushed: <ref>" and "Digest: <sha256:...>" to
+          # stderr; capture both so the digest can be signed. The chart lands at
+          # oci://<ns>/charts/obico:<version>, mirroring the images' lowercase
+          # owner namespace.
+          helm push "obico-${VERSION}.tgz" "oci://${NS}/charts" 2>&1 | tee push.log
+          digest="$(grep --only-matching --extended-regexp 'sha256:[a-f0-9]+' push.log | head --lines 1)"
+          if [ -z "${digest}" ]; then
+            echo "::error::could not parse the pushed chart digest from helm push output"
+            exit 1
+          fi
+          echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign the chart (keyless)
+        if: github.event_name != 'pull_request'
+        env:
+          REF: ${{ needs.version.outputs.ns }}/charts/obico
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: cosign sign --yes "${REF}@${DIGEST}"

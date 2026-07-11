@@ -43,6 +43,26 @@ Kubernetes: `>=1.21.0-0`
 
 ## Installing the Chart
 
+The image-build workflow also packages this chart and pushes it to GHCR as an OCI artifact. That published chart pins the Obico images (web and both ml-api variants) to the immutable `sha-<short>` tag of the commit they were built from, so an install from the artifact is reproducible and needs no checkout. Pick a version (CalVer, e.g. `2026.1.20`) from the [package page](https://github.com/TheSpaghettiDetective/obico-server/pkgs/container/charts%2Fobico):
+
+```bash
+# From the published OCI artifact (images pinned to the build commit)
+helm install obico oci://ghcr.io/thespaghettidetective/charts/obico --version <version>
+
+# With custom values
+helm install obico oci://ghcr.io/thespaghettidetective/charts/obico --version <version> --values my-values.yaml
+```
+
+The artifact is signed with cosign (keyless), so you can verify its provenance before installing:
+
+```bash
+cosign verify ghcr.io/thespaghettidetective/charts/obico:<version> \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-identity-regexp '^https://github.com/TheSpaghettiDetective/obico-server/'
+```
+
+Installing from a checkout of this repository works too, but the image tags are left empty and resolve to the moving `release` tag rather than a pinned build — pin `image.*.tag` yourself if you need reproducibility:
+
 ```bash
 # From a checkout of this repository
 helm install obico ./charts/obico
@@ -146,9 +166,19 @@ obico:
   siteUsesHttps: true
 ```
 
+## Persistence
+
+The chart provisions two ReadWriteOnce volumes: `persistence.data` (1Gi) holds the SQLite database and the Celery beat schedule, and `persistence.media` (10Gi) holds user uploads, webcam frames and timelapses. The media volume grows with retained prints, so size it for your history; set `storageClassName` per volume to override the cluster default.
+
+To reuse a volume you provisioned yourself — a restored backup, or a ReadWriteMany media share for multi-replica setups — set `persistence.data.existingClaim` / `persistence.media.existingClaim` to an existing PVC name. The chart then skips creating that PVC and mounts yours instead. The PVCs it does create carry `helm.sh/resource-policy: keep` (toggle per volume with `persistence.*.retain`) so they survive `helm uninstall`.
+
 ## Scaling notes
 
 The web pod runs a single replica because the default SQLite database lives on a ReadWriteOnce volume. It uses the `Recreate` update strategy, so every upgrade or config change tears the pod down before starting the new one — expect a brief outage on each rollout. To run multiple replicas, use an external PostgreSQL and a ReadWriteMany media volume (NFS, Longhorn RWX, CephFS, EFS, ...).
+
+## Timelapse encoding and the tasks memory limit
+
+After each print the Celery worker in the `tasks` container shells out to ffmpeg (libx264) to compile the timelapse. ffmpeg is memory-hungry, and if it exceeds the container's memory limit the kernel OOM-kills the ffmpeg child while the Celery parent (PID 1) keeps running. The container never restarts, nothing surfaces in `kubectl`, and the print silently never gets its timelapse. The default `tasks.resources.limits.memory` of 2Gi sits above the observed encode peak for exactly this reason. Lower it only if you have measured your own workload's ffmpeg footprint, and watch for missing timelapses if you do.
 
 ## Bundled Redis
 

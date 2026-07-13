@@ -2,7 +2,7 @@ flask==2.3.3
 gunicorn==21.2.0
 ipdb
 newrelic==4.12.0.113
-requests==2.31.0
+requests==2.32.4
 sentry_sdk[flask]==1.40.3
 Flask-Compress==1.15
 backoff

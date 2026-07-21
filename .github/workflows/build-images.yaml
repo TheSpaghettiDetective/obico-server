@@ -318,9 +318,75 @@ jobs:
           IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
         run: cosign sign --yes "${IMAGE}@${DIGEST}"
 
+  # The Jetson inference image, in its own job so that this best-effort build
+  # can fail without blocking the chart publish or the compose pins — the
+  # mandatory publications only depend on the images they actually reference.
+  # It uses the same Dockerfile as the CUDA image: on linux/arm64 the FROM line
+  # resolves the ml_api_base:1.4 manifest list to its arm64 half, which is the
+  # L4T/JetPack base. Publishing it under an explicit obico-ml-api-jetson name
+  # (instead of hiding it in a manifest's arm64 slot) keeps the hardware target
+  # visible. Best-effort tier: exercised as a CI build only, not runtime-tested
+  # on hardware.
+  build-jetson:
+    needs: version
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ needs.version.outputs.ns }}/obico-ml-api-jetson
+          tags: |
+            type=raw,value=${{ needs.version.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version }}-${{ needs.version.outputs.short_sha }}
+            type=raw,value=sha-${{ needs.version.outputs.short_sha }}
+            type=raw,value=release,enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=obico-ml-api-jetson
+            org.opencontainers.image.description=Obico ml-api image for NVIDIA Jetson (L4T), built from obico-server source
+            org.opencontainers.image.version=${{ needs.version.outputs.version }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ml_api
+          file: ml_api/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=ml-api-jetson
+          cache-to: type=gha,mode=max,scope=ml-api-jetson
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign the image (keyless)
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-ml-api-jetson
+        run: cosign sign --yes "${IMAGE}@${DIGEST}"
+
   publish-chart:
     # needs the image jobs so the packaged chart never pins image tags that are
     # not pushed yet, and needs version for the shared namespace/CalVer outputs.
+    # Deliberately does NOT need build-jetson: the chart references only the
+    # web/cpu/gpu images, and the best-effort Jetson build must not gate it.
     needs: [version, merge-manifests, build-single]
     runs-on: ubuntu-latest
     steps:

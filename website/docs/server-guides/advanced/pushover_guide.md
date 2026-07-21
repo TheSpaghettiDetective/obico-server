@@ -36,7 +36,7 @@ PUSHOVER_APP_TOKEN=the-pushover-app-token-you-obtained-in-step-1
 Run this command to rebuild your app containers:
 
 ```bash
-docker-compose up --build -d
+docker-compose up -d
 ```
 
 ## 4. Configure your User key and notification preferences {#4-configure-your-user-key-and-notification-preferences}

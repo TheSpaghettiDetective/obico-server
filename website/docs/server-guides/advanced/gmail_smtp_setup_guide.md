@@ -49,7 +49,7 @@ If you can't find the `.env` file, check out [this guide](../../configure/#email
 
 ## 4. Restart the server. {#4-restart-the-server}
 
-`docker compose up --build -d`
+`docker compose up -d`
 
 ## 5. Send a test email {#5-send-a-test-email}
 

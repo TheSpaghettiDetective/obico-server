@@ -41,9 +41,33 @@ cd obico-server
 ./scripts/install_on_jetson.sh
 ```
 
-3. Go grab a coffee. Step 2 will take 15-30 minutes.
+3. Go grab a coffee. Step 2 will take a few minutes while the prebuilt images are downloaded.
 
 4. There is no step 4. This is how easy it is to get the Obico Server up and running (thanks to Docker and Docker-compose).
+
+## Upgrading {#upgrading}
+
+The default upgrade command from the [operating guide](../ops.md) pulls amd64 images that a Jetson cannot run — on a Jetson, upgrade with the Jetson compose file instead:
+
+```bash
+cd obico-server
+git pull
+sudo docker compose -f docker-compose.yml -f docker-compose.jetson.yml up -d
+```
+
+*On older JetPack releases, where the install script set up docker-compose v1, use `docker-compose` (with a dash) instead of `docker compose`.*
+
+## If the prebuilt image is not available {#if-the-prebuilt-image-is-not-available}
+
+The Jetson inference image is published on a best-effort basis. If the pull fails (for example, right after a new release before its Jetson build has finished, if a Jetson build failed, or if the GHCR package has not been made public), you can build on the device instead, exactly like older versions of the server did: open `docker-compose.jetson.yml` and replace the `image:` line with
+
+```yaml
+    image: obico-ml-api-jetson:local
+    build:
+      context: ml_api
+```
+
+(the `obico-ml-api-jetson:local` name matters — without it the on-device build would be tagged with the name of a published image), then re-run the same `docker compose -f docker-compose.yml -f docker-compose.jetson.yml up -d` command with `--build` appended.
 
 ## Continue to [server configuration the main documentation](../../configure) {#continue-to-server-configuration-the-main-documentation}
 

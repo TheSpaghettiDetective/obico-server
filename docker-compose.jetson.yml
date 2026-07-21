@@ -1,0 +1,34 @@
+# The version key is obsolete for Compose v2 (which warns and ignores it) and
+# kept only for compatibility with the docker-compose v1 path some older
+# Jetson installs still use.
+version: '2.4'
+
+# NVIDIA Jetson override:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.jetson.yml up -d
+#
+# Replaces the amd64 CUDA inference image with the prebuilt L4T/JetPack one
+# and exposes the GPU through the nvidia runtime.
+#
+# Availability note: the Jetson inference image and the linux/arm64 half of
+# the web image are first published by the first release build that includes
+# this change — a Jetson pull only works once that build has completed. Until
+# then (or if the prebuilt images ever misbehave), build on the device instead,
+# exactly like before this file existed: replace the `image:` line below with
+#
+#     image: obico-ml-api-jetson:local
+#     build:
+#       context: ml_api
+#
+# (the local image name matters: without it, the base file's image entry leaks
+# through the merge and the on-device build would be tagged as the published
+# GPU image)
+#
+# CI rewrites the image pin below after every successful release build, same
+# as in the base compose file.
+services:
+  ml_api:
+    # "release" is a placeholder until the first release build publishes the
+    # Jetson image; the pin job then replaces it with an exact <calver>-<sha>.
+    image: ghcr.io/thespaghettidetective/obico-ml-api-jetson:release
+    runtime: nvidia

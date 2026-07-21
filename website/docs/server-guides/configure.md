@@ -42,7 +42,7 @@ EMAIL_USE_TLS=True
 # Set it to False if your email provider doesn't use TLS, which is uncommon
 ```
 
-4. Restart the server `docker compose up --build -d`.
+4. Restart the server `docker compose up -d`.
 
 You can follow [this guide](advanced/gmail_smtp_setup_guide.md) if you want to use a Gmail account to send emails.
 

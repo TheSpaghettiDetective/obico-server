@@ -91,9 +91,9 @@ Watch the `0.XXXXXX avg` value, and wait until it stops decreasing. At this poin
 We don't yet know whether the model will perform better in the field. Let's start up the server running our new weights to see how it performs (you can also find more data on model development steps [here](https://github.com/TheSpaghettiDetective/orbico-server/blob/master/docs/model_development.md)):
 
 ```
-docker-compose build ml_api
+docker-compose -f docker-compose.yml -f docker-compose.build.yml build ml_api
 cp ./path_to_new_model_weights ml_api/model/model.weights
-docker-compose run --service-ports --volume=./ml_api:/app ml_api /bin/bash -ic "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+docker-compose -f docker-compose.yml -f docker-compose.build.yml run --service-ports --volume=./ml_api:/app ml_api /bin/bash -ic "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 ```
 
 In a separate shell, start a local server to provide your images: `cd path/to/test && python3 -m http.server`

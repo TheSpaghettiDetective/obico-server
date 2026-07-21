@@ -45,7 +45,7 @@ This will install obico-server to your Unraid server! To update obico-server, op
 ```Bash
 cd /mnt/user/appdata/obico-server # or where you install obico-server to
 git pull
-docker-compose up -d --force-recreate --build
+docker-compose up -d --force-recreate
 ```
 
 ## Configuring obico-server {#configuring-obico}
@@ -69,10 +69,10 @@ DEFAULT_FROM_EMAIL=youremail@gmail.com
 ...
 ```
 
-Rebuild the container (Note - if you are going to limit the CPU usage you can also change that now before rebuilding the container, see the below section) -
+Recreate the containers (Note - if you are going to limit the CPU usage you can also change that now before recreating the containers, see the below section) -
 
 ```bash
-docker-compose up -d --force-recreate --build
+docker-compose up -d --force-recreate
 ```
 
 ## Issues with the Installation {#issues-with-the-installation}
@@ -103,10 +103,10 @@ services:
     cpus: 4
 ```
 
-4. Save the changed file.  Force the rebuild of the container with the following code:
+4. Save the changed file.  Recreate the containers with the following code:
 
   ```Bash
-  docker-compose up -d --force-recreate  --build
+  docker-compose up -d --force-recreate
   ```
 
 5.  Navigate back to the Unraid GUI and Start All containers, you're all set!
@@ -133,10 +133,10 @@ services:
 
 ```
 
-4. Save the changed file.  Force the rebuild of the container with the following code:
+4. Save the changed file.  Recreate the containers with the following code:
 
   ```Bash
-  docker-compose up -d --force-recreate  --build
+  docker-compose up -d --force-recreate
   ```
 
 5.  Navigate back to the Unraid GUI and Start All containers, you're all set!

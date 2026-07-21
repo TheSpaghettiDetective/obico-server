@@ -30,24 +30,24 @@ When passed an image URL, the server:
 
 The `ml_api` container is made up of a base docker image that provides ML dependencies and an additional image that actually installs our model.
 
-To build the base image locally (replacing `_aarch64` with your architecture of choice as per `uname -a`):
+To build the base image locally, use the helper script (it builds the per-architecture base images from `Dockerfile.base_amd64` / `Dockerfile.base_arm64` / `Dockerfile.base_rk3588`):
 
 ```
-cd ml_api && docker build --tag thespaghettidetective/ml_api:base-1.1 -f Dockerfile.base_aarch64 .
+cd ml_api && ./scripts/build_base_images.sh -v 1.4 -p <your-registry-prefix>
 ```
 
 To build the main image locally:
 
 ```
-docker-compose build ml_api
+docker-compose -f docker-compose.yml -f docker-compose.build.yml build ml_api
 ```
 
-You can use the usual `docker-compose up` command to launch the whole ensemble including web and task containers, but the web container in particular takes several minutes to initialize.
+You can use the usual `docker-compose -f docker-compose.yml -f docker-compose.build.yml up` command to launch the whole ensemble including web and task containers, but the web container in particular takes several minutes to initialize. The `docker-compose.build.yml` override is what makes the stack use the image you just built locally rather than the prebuilt one pinned in the base compose file.
 
 For rapid development, it's faster to launch `ml_api` on its own, mounting the local directory and exposing the web port:
 
 ```
-docker-compose run --service-ports --volume=./ml_api:/app ml_api /bin/bash
+docker-compose -f docker-compose.yml -f docker-compose.build.yml run --service-ports --volume=./ml_api:/app ml_api /bin/bash
 
 # Run this command when the container starts, and re-run it whenever you make a code change
 gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi
@@ -117,7 +117,7 @@ PLATFORM=$(python3 -c "import platform; print(platform.machine())")
 cp libdarknet.so $TSD_PATH/ml_api/bin/model_gpu_$PLATFORM.so
 
 # Rebuild the container so it contains the new shared library.
-cd $TSD_PATH && docker-compose build ml_api
+cd $TSD_PATH && docker-compose -f docker-compose.yml -f docker-compose.build.yml build ml_api
 ```
 
 ## Troubleshooting `*.so` dependencies

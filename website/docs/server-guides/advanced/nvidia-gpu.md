@@ -38,17 +38,13 @@ services:
 
 ### For JetPack based SBCs {#for-jetpack-based-sbcs}
 
-```yml title="docker-compose.override.yml"
-version: '2.4'
+Use the Jetson compose file that ships with the server — it selects the prebuilt L4T inference image and enables the nvidia runtime:
 
-services:
-  ml_api:
-    runtime: nvidia
+```
+docker compose -f docker-compose.yml -f docker-compose.jetson.yml up -d
 ```
 
-:::tip
-Don't forget to restart the docker cluster by running `docker compose down && docker-compose up -d`.
-:::
+(An older version of this guide suggested a `docker-compose.override.yml` with only `runtime: nvidia`. That override no longer works: the default compose file now pulls an amd64 inference image that a Jetson cannot run. Remove the old override and use the command above instead.)
 
 ## Determine if GPU is being used {#determine-if-gpu-is-being-used}
 

@@ -8,9 +8,15 @@ title: Common tasks for operating self-hosted server
     cd obico-server
     git checkout release
     git pull
-    docker compose up --build -d
+    docker compose up -d
 ```
 *Note: if you are on linux you _may_ need to run the last line as `sudo` (ex. `sudo docker...`)*
+
+*Note: on an NVIDIA Jetson, run the last line as `docker compose -f docker-compose.yml -f docker-compose.jetson.yml up -d` — the default compose file pulls amd64 images that a Jetson cannot run.*
+
+*Note: the server now runs prebuilt images pulled from the registry, so no local rebuild happens during an upgrade. If you build from source (`docker-compose.build.yml`), add `--build` to the last line.*
+
+*Note: right after a new release is published there is a short window (until its build pipeline finishes) where `git pull` already delivers the new code but the image pin still references the previous build. If an upgrade misbehaves immediately after a release, wait for the build to finish, then run `git pull && docker compose up -d` again.*
 
 *Note: you need to use `docker-compose` instead of `docker compose` on older Docker versions*
 

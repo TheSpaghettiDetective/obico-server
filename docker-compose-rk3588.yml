@@ -1,5 +1,8 @@
 services:
   ml_api:
+    # Local image name so the RK3588 build never masquerades as the published
+    # GHCR tag pinned in the base compose file.
+    image: obico-ml-api-rk3588:local
     build:
       context: ml_api
       args:

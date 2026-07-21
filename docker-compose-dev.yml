@@ -1,12 +1,28 @@
 version: '2.4'
 
+# Development override: build the images from the working tree instead of
+# pulling the pinned prebuilt ones, under local image names so a dev build
+# never masquerades as a published GHCR tag.
 services:
   web:
+    image: obico-web:local
+    build:
+      context: backend
+      dockerfile: 'Dockerfile'
     command: python /app/manage.py runserver 0.0.0.0:3334
     environment:
       DEBUG: ${DEBUG:-True}
 
+  tasks:
+    image: obico-web:local
+    build:
+      context: backend
+      dockerfile: 'Dockerfile'
+
   ml_api:
+    image: obico-ml-api:local
+    build:
+      context: ml_api
     volumes:
       - ./ml_api:/app
     ports:

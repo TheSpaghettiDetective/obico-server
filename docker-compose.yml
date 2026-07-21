@@ -1,11 +1,25 @@
 x-web-defaults: &web-defaults
   restart: unless-stopped
-  build:
-    context: backend
-    dockerfile: 'Dockerfile'
+  # Prebuilt image, pinned to an exact release build. CI rewrites this pin to
+  # the <calver>-<short-sha> form after every successful release build; the
+  # initial value is the immutable sha tag of the latest build published
+  # before that scheme existed. To build from source instead, use:
+  # docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
+  image: ghcr.io/thespaghettidetective/obico-web:sha-49c0bc70
   volumes:
     - ./backend:/app
+    # The frontend is mounted twice on purpose. The prebuilt image carries
+    # /frontend as a symlink to /app/frontend, and a bind mount onto a symlink
+    # path gets resolved and then shadowed by the /app mount above — so the
+    # second entry mounts the checkout at the symlink's target. A locally built
+    # image (docker-compose.build.yml, the dev override) has no such symlink
+    # and uses the first entry, exactly as before. Both point at the same
+    # directory, so whichever one applies, Django reaches the checkout's
+    # frontend through /app/../frontend. Side effect of the second entry: the
+    # first start creates an empty backend/frontend/ directory on the host as
+    # its mountpoint — harmless, and invisible to git.
     - ./frontend:/frontend
+    - ./frontend:/app/frontend
   depends_on:
     - redis
   environment:
@@ -52,8 +66,13 @@ services:
   ml_api:
     hostname: ml_api
     restart: unless-stopped
-    build:
-      context: ml_api
+    # The CUDA-based inference image — the same one every install used to build
+    # locally. It runs fine without a GPU (inference falls back to the CPU
+    # backend); to actually use an NVIDIA GPU, add a docker-compose.override.yml
+    # that grants device access (see the server guides). Variants:
+    #   - NVIDIA Jetson:      docker compose -f docker-compose.yml -f docker-compose.jetson.yml up -d
+    #   - build from source:  docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
+    image: ghcr.io/thespaghettidetective/obico-ml-api-gpu:sha-49c0bc70
     environment:
       DEBUG: 'True'
       FLASK_APP: 'server.py'

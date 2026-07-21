@@ -1,0 +1,25 @@
+# Build-from-source override — the behavior every install had before the
+# compose file switched to prebuilt images. Use it when you carry local
+# modifications or run hardware the published images do not cover:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
+#
+# Images are tagged with local names so a from-source build never masquerades
+# as a published GHCR tag.
+services:
+  web:
+    image: obico-web:local
+    build:
+      context: backend
+      dockerfile: 'Dockerfile'
+
+  tasks:
+    image: obico-web:local
+    build:
+      context: backend
+      dockerfile: 'Dockerfile'
+
+  ml_api:
+    image: obico-ml-api:local
+    build:
+      context: ml_api

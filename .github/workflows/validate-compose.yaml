@@ -1,0 +1,69 @@
+name: Validate compose files
+
+# The compose files are user-facing configuration; this is their test suite.
+# It needs no secrets, so unlike build-images.yaml it can run on pull
+# requests — a broken combination or a drifted doc command fails the PR
+# instead of the first post-merge build.
+
+on:
+  pull_request:
+    paths:
+      - 'docker-compose*.yml'
+      - 'scripts/install_on_jetson.sh'
+      - '.github/workflows/validate-compose.yaml'
+      - 'website/docs/server-guides/platform-specific/jetson_guide.md'
+      - 'README.md'
+      - 'docs/model_development.md'
+      - 'docs/model_training.md'
+  push:
+    branches: [release, master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate every documented compose combination
+        run: |
+          set -euo pipefail
+          docker compose -f docker-compose.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.build.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.cpu.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.jetson.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose-rk3588.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose-dev.yml config --quiet
+
+      - name: Check the Jetson install script
+        run: |
+          bash -n scripts/install_on_jetson.sh
+          shellcheck --severity=error scripts/install_on_jetson.sh
+
+      - name: Check that the docs match the commands the files support
+        run: |
+          # The Jetson guide must use the same Compose invocation the install
+          # script sets up, and the README's RK3588 base-image command must
+          # reference the Dockerfile and tag the rk3588 override builds from.
+          grep -q 'docker compose -f docker-compose.yml -f docker-compose.jetson.yml up -d' \
+            website/docs/server-guides/platform-specific/jetson_guide.md
+          grep -q -- '--file Dockerfile.base_rk3588 --tag thespaghettidetective/ml_api_base:1.4-rk3588' \
+            README.md
+          # A `docker-compose ... build ml_api` in the dev docs uses the local
+          # image, so its paired up/run command must carry the same build
+          # override or it silently launches the prebuilt image instead.
+          for doc in docs/model_development.md docs/model_training.md; do
+            if grep -q 'docker-compose.*build ml_api' "$doc"; then
+              build_count="$(grep -c 'docker-compose -f docker-compose.yml -f docker-compose.build.yml' "$doc" || true)"
+              bare_count="$(grep -Ec 'docker-compose (up|run)' "$doc" || true)"
+              if [ "${bare_count}" -ne 0 ]; then
+                echo "::error::${doc} has a docker-compose up/run without the build override, next to a local build"
+                grep -nE 'docker-compose (up|run)' "$doc"
+                exit 1
+              fi
+              echo "${doc}: ${build_count} build-override command(s), no bare up/run"
+            fi
+          done

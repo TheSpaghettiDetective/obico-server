@@ -1,0 +1,23 @@
+# Slim CPU-only inference override:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d
+#
+# Replaces the default CUDA inference image with the ONNX CPU-only one — an
+# order of magnitude smaller, and the only prebuilt inference image that runs
+# on generic arm64 hosts (the CUDA image is amd64-only by nature). Use it on
+# machines without an NVIDIA GPU, or wherever pulling the CUDA stack is not
+# worth it. Inference behavior differs in one way: detection runs on the ONNX
+# runtime instead of darknet — same model weights, same results surface.
+#
+# Availability note: the linux/arm64 half of this image (and of the web image)
+# is first published by the first release build that includes this change; on
+# amd64 the pin below works immediately. CI rewrites the pin after every
+# successful release build, same as in the base compose file.
+services:
+  ml_api:
+    image: ghcr.io/thespaghettidetective/obico-ml-api-cpu:sha-49c0bc70
+    healthcheck:
+      # The CPU image ships curl, not wget (unlike the CUDA/L4T bases the
+      # default healthcheck was written for), so override the probe command;
+      # the intervals are inherited from the base file.
+      test: ["CMD-SHELL", "curl --fail --silent --output /dev/null http://ml_api:3333/hc/"]

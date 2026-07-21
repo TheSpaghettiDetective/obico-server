@@ -236,6 +236,8 @@ jobs:
           done
           # The artifact download succeeds even when a platform leg failed and
           # left its digest behind — refuse to publish a half-populated list.
+          # The expected count equals the number of platforms per image in the
+          # build-multiarch matrix; grow them together.
           if [ "${#images[@]}" -ne 2 ]; then
             echo "::error::expected 2 platform digests for ${IMAGE}, found ${#images[@]}"
             exit 1
@@ -326,7 +328,10 @@ jobs:
   # L4T/JetPack base. Publishing it under an explicit obico-ml-api-jetson name
   # (instead of hiding it in a manifest's arm64 slot) keeps the hardware target
   # visible. Best-effort tier: exercised as a CI build only, not runtime-tested
-  # on hardware.
+  # on hardware. One-time step after the first successful build: GHCR creates
+  # new packages private, so the obico-ml-api-jetson package must be flipped
+  # to public once before anonymous pulls work (the same step the other three
+  # packages already went through).
   build-jetson:
     needs: version
     runs-on: ubuntu-24.04-arm
@@ -482,12 +487,127 @@ jobs:
           echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
 
       - name: Install cosign
-        if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@v3
 
       - name: Sign the chart (keyless)
-        if: github.event_name != 'pull_request'
         env:
           REF: ${{ needs.version.outputs.ns }}/charts/obico
           DIGEST: ${{ steps.push.outputs.digest }}
         run: cosign sign --yes "${REF}@${DIGEST}"
+
+  # After every successful release build, pin the compose files to the images
+  # that build just pushed. The pin cannot live in the release commit itself —
+  # the image for a commit exists only after this workflow has run on it — so a
+  # follow-up bot commit carries it, and [skip ci] keeps the bump from
+  # triggering another build. When a release cut rewrites the branch, any
+  # previous bump commit disappears with it; the build that the cut triggers
+  # then re-applies a fresh pin, so the files converge after every build.
+  pin-compose:
+    # Push events only: a workflow_dispatch re-run of an older commit must not
+    # move the pins backwards. Runs when every image the compose files pin
+    # unconditionally (web + cpu via merge-manifests, gpu via build-single)
+    # succeeded; the best-effort Jetson build is allowed to fail, in which
+    # case the jetson override keeps its previous pin (see the step-level
+    # guard below).
+    if: ${{ !cancelled() && github.event_name == 'push' && needs.merge-manifests.result == 'success' && needs.build-single.result == 'success' }}
+    needs: [version, merge-manifests, build-single, build-jetson]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Pin the default compose images to this build
+        env:
+          NS: ${{ needs.version.outputs.ns }}
+          PIN: ${{ needs.version.outputs.version }}-${{ needs.version.outputs.short_sha }}
+        run: |
+          # sed rather than yq: a yq round-trip rewrites the compose file's
+          # merge keys (<<: becomes !!merge <<:), so every bot commit would
+          # carry formatting noise. The image lines are unique anchored
+          # patterns, and the web/tasks services inherit theirs from the
+          # x-web-defaults anchor, so one line covers both. The greps after
+          # each sed turn a silently non-matching pattern (renamed image,
+          # reformatted line) into a loud failure instead of a stale pin.
+          sed -i -E "s#image: ghcr\.io/[^/]+/obico-web:.*#image: ${NS}/obico-web:${PIN}#" docker-compose.yml
+          grep -q "obico-web:${PIN}" docker-compose.yml || { echo "::error::web pin pattern did not match in docker-compose.yml"; exit 1; }
+          sed -i -E "s#image: ghcr\.io/[^/]+/obico-ml-api-gpu:.*#image: ${NS}/obico-ml-api-gpu:${PIN}#" docker-compose.yml
+          grep -q "obico-ml-api-gpu:${PIN}" docker-compose.yml || { echo "::error::ml-api-gpu pin pattern did not match in docker-compose.yml"; exit 1; }
+          sed -i -E "s#image: ghcr\.io/[^/]+/obico-ml-api-cpu:.*#image: ${NS}/obico-ml-api-cpu:${PIN}#" docker-compose.cpu.yml
+          grep -q "obico-ml-api-cpu:${PIN}" docker-compose.cpu.yml || { echo "::error::ml-api-cpu pin pattern did not match in docker-compose.cpu.yml"; exit 1; }
+
+      - name: Pin the Jetson image to this build
+        # Skipped when the best-effort Jetson build failed — the override then
+        # keeps referencing the previous successfully built image.
+        if: ${{ needs.build-jetson.result == 'success' }}
+        env:
+          NS: ${{ needs.version.outputs.ns }}
+          PIN: ${{ needs.version.outputs.version }}-${{ needs.version.outputs.short_sha }}
+        run: |
+          sed -i -E "s#image: ghcr\.io/[^/]+/obico-ml-api-jetson:.*#image: ${NS}/obico-ml-api-jetson:${PIN}#" docker-compose.jetson.yml
+          grep -q "obico-ml-api-jetson:${PIN}" docker-compose.jetson.yml || { echo "::error::jetson pin pattern did not match in docker-compose.jetson.yml"; exit 1; }
+
+      - name: Validate the pinned compose files
+        run: |
+          docker compose -f docker-compose.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.cpu.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.jetson.yml config --quiet
+
+      - name: Commit and push the pin
+        env:
+          PIN: ${{ needs.version.outputs.version }}-${{ needs.version.outputs.short_sha }}
+        run: |
+          if git diff --quiet; then
+            echo "pins already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docker-compose.yml docker-compose.cpu.yml docker-compose.jetson.yml
+          git commit --message "chore: pin compose images to ${PIN} [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+  # Registry-side regression net: the pins in the compose files must reference
+  # images that actually exist and are anonymously pullable. (The pure config
+  # validation of the compose combinations lives in validate-compose.yaml,
+  # which also runs on pull requests.)
+  validate-compose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify the pinned images exist
+        run: |
+          set -euo pipefail
+          # A pin that references a tag nobody pushed is exactly the failure
+          # mode the sed-based pin job could produce if it ever drifts; make
+          # the next build after such a breakage fail loudly. The Jetson pin
+          # is best-effort (its first tag only appears once the Jetson build
+          # has succeeded on this branch), so it only warns.
+          for f in docker-compose.yml docker-compose.cpu.yml; do
+            grep -oE 'image: ghcr\.io/[^ ]+' "$f" | sed 's/^image: //'
+          done | sort -u | while read -r ref; do
+            docker manifest inspect "$ref" > /dev/null || { echo "::error::pinned image ${ref} does not exist"; exit 1; }
+          done
+          # The Jetson pin is best-effort, and its failure modes need telling
+          # apart: an anonymous registry probe distinguishes "never published"
+          # from "published but the GHCR package was left private" (new GHCR
+          # packages are created private and need a one-time visibility flip).
+          # Both stay warnings — the registry does not reliably expose the
+          # difference for all states, so neither may hard-fail the build.
+          jetson_ref="$(grep -oE 'image: ghcr\.io/[^ ]+' docker-compose.jetson.yml | sed 's/^image: //')"
+          repo="${jetson_ref%:*}"; repo="${repo#ghcr.io/}"; tag="${jetson_ref##*:}"
+          token="$(curl -s "https://ghcr.io/token?scope=repository:${repo}:pull" | jq -r .token)"
+          code="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer ${token}" -H "Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json, application/vnd.docker.distribution.manifest.v2+json" "https://ghcr.io/v2/${repo}/manifests/${tag}")"
+          case "${code}" in
+            200) echo "jetson pin ${jetson_ref} exists and is anonymously pullable" ;;
+            404) echo "::warning::jetson pin ${jetson_ref} not published yet (expected until the first successful Jetson build)" ;;
+            401|403) echo "::warning::jetson pin ${jetson_ref} is not anonymously pullable — if the Jetson build has succeeded, flip the GHCR package visibility to public (new packages are created private)" ;;
+            *) echo "::warning::unexpected HTTP ${code} while probing ${jetson_ref}" ;;
+          esac
+

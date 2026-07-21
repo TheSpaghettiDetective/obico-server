@@ -1,11 +1,12 @@
 name: Build and publish images
 
-# Obico does not publish ready-to-run server images — docker-compose builds them
-# from source. This workflow builds them from the current source and publishes
-# tagged, signed images to GHCR so Kubernetes/Helm users can consume them. The
-# ml-api service ships in two variants: a slim CPU-only image (default) and a
-# CUDA image for GPU inference. It then publishes the in-repo Helm chart as a
-# signed OCI artifact with those exact image tags baked in.
+# Builds the server images from the current source and publishes them, tagged
+# and cosign-signed, to GHCR — both the default docker-compose flow and the
+# Helm chart consume them from there. The ml-api service ships in several
+# hardware variants (CUDA, slim CPU/ONNX, Jetson/L4T). The workflow also
+# publishes the in-repo Helm chart as a signed OCI artifact with exact image
+# tags baked in, and pins the compose files to the images each build pushed
+# (see pin-compose below).
 
 on:
   # The release branch is the deploy branch; rebuild whenever it moves.
@@ -53,9 +54,10 @@ jobs:
           # CalVer from the commit date (UTC) — deterministic and monotonic with
           # commit order. It is day-granular: two commits on the same UTC day
           # share it, and the second run moves the tag. The sha-<short> tag below
-          # is the immutable, guaranteed-unique per-commit pin. If the project
-          # ever starts tagging releases, an exact tag on the commit takes
-          # precedence.
+          # is the immutable, guaranteed-unique per-commit pin, and the combined
+          # <calver>-<short> tag is the human-readable form of the same pin. If
+          # the project ever starts tagging releases, an exact tag on the commit
+          # takes precedence.
           tag="$(git describe --tags --exact-match 2>/dev/null || true)"
           if [ -n "${tag}" ]; then
             version="${tag#v}"
@@ -65,29 +67,55 @@ jobs:
           echo "version=${version}" >> "${GITHUB_OUTPUT}"
           echo "short_sha=$(git rev-parse --short HEAD)" >> "${GITHUB_OUTPUT}"
 
-  build:
+  # Multi-arch images (web and the slim CPU ml-api) are built once per platform
+  # on native runners — no QEMU — and pushed by digest only; the tags are
+  # attached when the per-platform digests are merged into one manifest list in
+  # the merge-manifests job below.
+  build-multiarch:
     needs: version
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
-      # Publish each image independently — one failing build must not block the
-      # others.
+      # fail-fast off so one platform leg failing does not cancel the others.
+      # Isolation between IMAGES is restored in merge-manifests: it runs even
+      # when this job reports failure, and each image's merge only needs that
+      # image's own digests — so a broken ml-api-cpu leg cannot block web's
+      # tags, and vice versa. What one failing platform leg does block is the
+      # manifest list of its own image, by design: a half-populated list would
+      # be worse than a missing tag.
       fail-fast: false
       matrix:
         include:
           - name: web
             context: backend
             file: backend/Dockerfile
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - name: web
+            context: backend
+            file: backend/Dockerfile
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
           - name: ml-api-cpu
             context: ml_api
             file: ml_api/Containerfile.cpu
-          - name: ml-api-gpu
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - name: ml-api-cpu
             context: ml_api
-            file: ml_api/Dockerfile
+            file: ml_api/Containerfile.cpu
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         # Versioning moved to the version job, so a shallow checkout of HEAD is
         # enough to build the image.
+
+      - name: Prepare platform identifier
+        id: platform
+        run: |
+          platform="${{ matrix.platform }}"
+          echo "pair=${platform//\//-}" >> "${GITHUB_OUTPUT}"
 
       - name: Move the prebuilt frontend into the web build context
         if: matrix.name == 'web'
@@ -113,8 +141,153 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          labels: |
+            org.opencontainers.image.title=obico-${{ matrix.name }}
+            org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
+            org.opencontainers.image.version=${{ needs.version.outputs.version }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          platforms: ${{ matrix.platform }}
+          # Digest-only push: the manifest list with the actual tags is created
+          # in merge-manifests once every platform digest exists.
+          outputs: type=image,name=${{ needs.version.outputs.ns }}/obico-${{ matrix.name }},push-by-digest=true,name-canonical=true,push=true
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.name }}-${{ steps.platform.outputs.pair }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}-${{ steps.platform.outputs.pair }}
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.name }}-${{ steps.platform.outputs.pair }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+          # Artifacts outlive a run attempt; without this, "Re-run all jobs"
+          # after a partial failure dies on the artifact name conflict.
+          overwrite: true
+
+  # Combine the per-platform digests into one multi-arch manifest list per
+  # image, attach the tags, and sign the list.
+  merge-manifests:
+    needs: [version, build-multiarch]
+    # Run even when build-multiarch reports failure: a failed platform leg of
+    # one image must not block the other image's tags. Incomplete digests for
+    # THIS image are caught by the exact-count check in the create step below
+    # (the artifact download itself succeeds even with zero matches), which is
+    # the correct per-image outcome.
+    if: ${{ !cancelled() && needs.version.result == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [web, ml-api-cpu]
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          pattern: digests-${{ matrix.name }}-*
+          path: /tmp/digests
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
           tags: |
             type=raw,value=${{ needs.version.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version }}-${{ needs.version.outputs.short_sha }}
+            type=raw,value=sha-${{ needs.version.outputs.short_sha }}
+            type=raw,value=release,enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Create the manifest list and push
+        working-directory: /tmp/digests
+        env:
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+        run: |
+          set -euo pipefail
+          mapfile -t tag_args < <(jq -r '.tags[] | "-t", .' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+          images=()
+          for digest_file in *; do
+            [ -f "${digest_file}" ] || continue
+            images+=("${IMAGE}@sha256:${digest_file}")
+          done
+          # The artifact download succeeds even when a platform leg failed and
+          # left its digest behind — refuse to publish a half-populated list.
+          if [ "${#images[@]}" -ne 2 ]; then
+            echo "::error::expected 2 platform digests for ${IMAGE}, found ${#images[@]}"
+            exit 1
+          fi
+          docker buildx imagetools create "${tag_args[@]}" "${images[@]}"
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign the manifest list (keyless)
+        env:
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          TAG: ${{ needs.version.outputs.version }}
+        run: |
+          digest="$(docker buildx imagetools inspect "${IMAGE}:${TAG}" --format '{{json .Manifest}}' | jq -r '.digest')"
+          cosign sign --yes "${IMAGE}@${digest}"
+
+  # Single-platform images: the CUDA ml-api build is amd64-only.
+  build-single:
+    needs: version
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ml-api-gpu
+            context: ml_api
+            file: ml_api/Dockerfile
+            platform: linux/amd64
+            runner: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          tags: |
+            type=raw,value=${{ needs.version.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version }}-${{ needs.version.outputs.short_sha }}
             type=raw,value=sha-${{ needs.version.outputs.short_sha }}
             type=raw,value=release,enable={{is_default_branch}}
             type=raw,value=latest,enable={{is_default_branch}}
@@ -129,30 +302,26 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
-          # ml-api-gpu is CUDA-based and amd64-only; keep the whole matrix on
-          # amd64 for now. The CPU image can grow an arm64 variant later.
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
+          platforms: ${{ matrix.platform }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
 
       - name: Install cosign
-        if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@v3
 
       - name: Sign the image (keyless)
-        if: github.event_name != 'pull_request'
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
           IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
         run: cosign sign --yes "${IMAGE}@${DIGEST}"
 
   publish-chart:
-    # needs build so the packaged chart never pins image tags that are not
-    # pushed yet, and needs version for the shared namespace/CalVer outputs.
-    needs: [version, build]
+    # needs the image jobs so the packaged chart never pins image tags that are
+    # not pushed yet, and needs version for the shared namespace/CalVer outputs.
+    needs: [version, merge-manifests, build-single]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

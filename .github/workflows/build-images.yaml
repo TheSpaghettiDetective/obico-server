@@ -1,11 +1,13 @@
 name: Build and publish images
 
-# Obico does not publish ready-to-run server images — docker-compose builds them
-# from source. This workflow builds them from the current source and publishes
-# tagged, signed images to GHCR so Kubernetes/Helm users can consume them. The
-# ml-api service ships in two variants: a slim CPU-only image (default) and a
-# CUDA image for GPU inference. It then publishes the in-repo Helm chart as a
-# signed OCI artifact with those exact image tags baked in.
+# Obico does not publish ready-to-run server images — docker-compose builds
+# them from source. This workflow builds them from the current source and
+# publishes them, tagged and cosign-signed, to GHCR so Kubernetes/Helm users
+# can consume them. The ml-api service has several hardware variants; the ones
+# built here are the slim CPU/ONNX image, the CUDA image and the Jetson/L4T
+# image. RK3588 is not built here. The workflow also publishes
+# the in-repo Helm chart as a signed OCI artifact with exact image tags baked
+# in.
 
 on:
   # The release branch is the deploy branch; rebuild whenever it moves.
@@ -53,9 +55,11 @@ jobs:
           # CalVer from the commit date (UTC) — deterministic and monotonic with
           # commit order. It is day-granular: two commits on the same UTC day
           # share it, and the second run moves the tag. The sha-<short> tag below
-          # is the immutable, guaranteed-unique per-commit pin. If the project
-          # ever starts tagging releases, an exact tag on the commit takes
-          # precedence.
+          # is the immutable, guaranteed-unique per-commit pin, and the combined
+          # <calver>-g<short> tag is the human-readable form of the same pin —
+          # the g is load-bearing, see the note on it in publish-chart. If
+          # the project ever starts tagging releases, an exact tag on the commit
+          # takes precedence.
           tag="$(git describe --tags --exact-match 2>/dev/null || true)"
           if [ -n "${tag}" ]; then
             version="${tag#v}"
@@ -65,29 +69,56 @@ jobs:
           echo "version=${version}" >> "${GITHUB_OUTPUT}"
           echo "short_sha=$(git rev-parse --short HEAD)" >> "${GITHUB_OUTPUT}"
 
-  build:
+  # Multi-arch images (web and the slim CPU ml-api) are built once per platform
+  # on native runners — no QEMU — and pushed by digest only; the tags are
+  # attached when the per-platform digests are merged into one manifest list in
+  # the merge-manifests job below.
+  build-multiarch:
     needs: version
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
     strategy:
-      # Publish each image independently — one failing build must not block the
-      # others.
+      # fail-fast off so one platform leg failing does not cancel the others.
+      # Isolation between IMAGES is restored in merge-manifests: it runs even
+      # when this job reports failure, and each image's merge only needs that
+      # image's own digests — so a broken ml-api-cpu leg cannot block web's
+      # tags, and vice versa. What one failing platform leg does block is the
+      # manifest list of its own image, by design: a half-populated list would
+      # be worse than a missing tag.
       fail-fast: false
       matrix:
         include:
           - name: web
             context: backend
             file: backend/Dockerfile
+            platform: linux/amd64
+            runner: ubuntu-24.04
+          - name: web
+            context: backend
+            file: backend/Dockerfile
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
           - name: ml-api-cpu
             context: ml_api
             file: ml_api/Containerfile.cpu
-          - name: ml-api-gpu
+            platform: linux/amd64
+            runner: ubuntu-24.04
+          - name: ml-api-cpu
             context: ml_api
-            file: ml_api/Dockerfile
+            file: ml_api/Containerfile.cpu
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         # Versioning moved to the version job, so a shallow checkout of HEAD is
         # enough to build the image.
+
+      - name: Prepare platform identifier
+        id: platform
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: echo "pair=${PLATFORM//\//-}" >> "${GITHUB_OUTPUT}"
 
       - name: Move the prebuilt frontend into the web build context
         if: matrix.name == 'web'
@@ -100,6 +131,168 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          # The container driver keeps its own registry config, so the daemon's
+          # mirror setting would not reach it. mirror.gcr.io is a pull-through
+          # cache and buildkit falls back to Hub on a miss, so this only removes
+          # occasions where a build depends on Hub answering. nvcr.io is a
+          # different registry and is not covered.
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # No tags here on purpose: this push is by digest and the tags are
+      # attached in merge-manifests. Only the labels are wanted.
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          # This job wants the labels, not the tags: the tags go on the
+          # manifest list in merge-manifests, from that job's own metadata.
+          # Disabling every tag makes the action log "No Docker tag has been
+          # generated" once per leg — that warning is the intended state here,
+          # not something to chase. Leaving the input out instead would
+          # generate default tags that nothing reads, which is worse: it reads
+          # as if they were applied.
+          tags: type=raw,value=unused,enable=false
+          labels: |
+            org.opencontainers.image.title=obico-${{ matrix.name }}
+            org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
+            org.opencontainers.image.version=${{ needs.version.outputs.version }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          platforms: ${{ matrix.platform }}
+          # Digest-only push: the manifest list with the actual tags is created
+          # in merge-manifests once every platform digest exists.
+          outputs: type=image,name=${{ needs.version.outputs.ns }}/obico-${{ matrix.name }},push-by-digest=true,name-canonical=true,push=true
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.name }}-${{ steps.platform.outputs.pair }}
+          # mode=min: four scopes share the repository's 10 GB cache, and
+          # exporting intermediate layers too would just make them evict each
+          # other.
+          cache-to: type=gha,mode=min,scope=${{ matrix.name }}-${{ steps.platform.outputs.pair }}
+
+      # The base image carries these dependencies already, pinned when it was
+      # cut; backend/Dockerfile installs requirements.txt on top of that. The
+      # build cannot tell you whether the result still loads — it only knows
+      # that pip exited zero. This does, and it costs one container start: no
+      # settings, no database, no Redis.
+      #
+      # The list is derived, not written down. Every top-level module that
+      # ships a compiled object gets imported, plus the four packages the
+      # container is actually started as. A hand-maintained list drifts the
+      # moment a dependency is added, and the interesting failures are exactly
+      # the ones nobody thought to list.
+      - name: Assert the compiled dependencies load
+        if: matrix.name == 'web'
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
+        run: |
+          docker run --rm --volume "${PWD}/.github/scripts:/scripts:ro" "${REF}" \
+            python /scripts/assert_imports.py psycopg2 PIL
+
+      # The CPU image is the one an arm64 host ends up running, and its failure
+      # mode is quieter still: lib/detection_model.py swallows an ImportError
+      # from the ONNX backend, load_net() then raises at import time and the
+      # gunicorn worker dies at boot. An import check would not see it, so
+      # start the thing and wait for it to answer.
+      - name: Assert the inference API loads a model
+        if: matrix.name == 'ml-api-cpu'
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
+      # --timeout for the same reason the CUDA leg carries it: server.py loads
+      # the model at import, so it happens inside worker boot, and gunicorn's
+      # arbiter kills a worker that has not reported in for 30 seconds. The
+      # ONNX model here is 200 MB, and this now also builds for arm64. Going
+      # over the deadline is not a clean failure — the master keeps the
+      # listening socket and respawns forever, so the container stays "running"
+      # and this script waits out its whole budget before blaming the image.
+        run: |
+          .github/scripts/assert_inference_healthy.sh "${REF}" \
+            gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi
+
+      - name: Export digest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/${DIGEST#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.name }}-${{ steps.platform.outputs.pair }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+          # Artifacts outlive a run attempt; without this, "Re-run all jobs"
+          # after a partial failure dies on the artifact name conflict.
+          overwrite: true
+
+  # Combine the per-platform digests into one multi-arch manifest list per
+  # image, attach the tags, and sign the list.
+  merge-manifests:
+    needs: [version, build-multiarch]
+    timeout-minutes: 30
+    # Run even when build-multiarch reports failure: a failed platform leg of
+    # one image must not block the other image's tags. Incomplete digests for
+    # THIS image are caught by the exact-count check in the create step below
+    # (the artifact download itself succeeds even with zero matches), which is
+    # the correct per-image outcome.
+    if: ${{ !cancelled() && needs.version.result == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The platforms this image's list must end up covering, exactly.
+          # Naming them rather than counting them means a matrix typo that
+          # swaps one architecture for another is caught too, and a future
+          # image with a different platform set cannot silently inherit
+          # someone else's expectation. Two requirements come from how the
+          # comparison is built: the value has to be sorted, because jq's
+          # unique sorts, and it must not carry a variant, because only os and
+          # architecture are read — linux/arm/v7 would have to be written
+          # linux/arm.
+          - name: web
+            platforms: linux/amd64,linux/arm64
+          - name: ml-api-cpu
+            platforms: linux/amd64,linux/arm64
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          # Prefix match: a future image whose name prefixes another's would
+          # collect its digests too. The count check below catches it, but the
+          # message would point at the wrong image.
+          pattern: digests-${{ matrix.name }}-*
+          path: /tmp/digests
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          # The container driver keeps its own registry config, so the daemon's
+          # mirror setting would not reach it. mirror.gcr.io is a pull-through
+          # cache and buildkit falls back to Hub on a miss, so this only removes
+          # occasions where a build depends on Hub answering. nvcr.io is a
+          # different registry and is not covered.
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -111,48 +304,400 @@ jobs:
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
+        env:
+          # Annotate the index itself: the per-platform labels set during the
+          # build are invisible on the tag users actually inspect. Custom
+          # values have to go through the annotations input — the labels input
+          # feeds a different output and never reaches the index.
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: index
         with:
           images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
           tags: |
             type=raw,value=${{ needs.version.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
             type=raw,value=sha-${{ needs.version.outputs.short_sha }}
             type=raw,value=release,enable={{is_default_branch}}
             type=raw,value=latest,enable={{is_default_branch}}
-          labels: |
+          annotations: |
             org.opencontainers.image.title=obico-${{ matrix.name }}
             org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
             org.opencontainers.image.version=${{ needs.version.outputs.version }}
 
-      - name: Build and push
+      # Before anything is tagged. If this download fails after the tags have
+      # moved, release and latest point at an artifact that never gets signed,
+      # and to anyone who checks, a missing signature is indistinguishable
+      # from a tampered one.
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Create the manifest list and push
+        env:
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          EXPECTED: ${{ matrix.platforms }}
+          SHORT_SHA: ${{ needs.version.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          mapfile -t tag_args < <(jq -r '.tags[] | "-t", .' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+          mapfile -t annotation_args < <(jq -r '.annotations[]? | "--annotation", .' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+          images=()
+          # Not working-directory: when every platform leg of this image
+          # failed there may be no directory at all, and the runner would die
+          # on the missing cwd before the count check below could say what
+          # actually went wrong. Whether download-artifact fails or succeeds on
+          # a zero-match pattern does not matter here — the count is what makes
+          # the outcome well defined either way.
+          shopt -s nullglob
+          for digest_file in /tmp/digests/*; do
+            [ -f "${digest_file}" ] || continue
+            images+=("${IMAGE}@sha256:$(basename "${digest_file}")")
+          done
+          # The artifact download succeeds even when a platform leg failed and
+          # left its digest behind — refuse to publish a half-populated list.
+          want="$(echo "${EXPECTED}" | tr ',' '\n' | grep --count . || true)"
+          if [ "${#images[@]}" -ne "${want}" ]; then
+            echo "::error::expected ${want} platform digests for ${IMAGE}, found ${#images[@]}: ${images[*]}"
+            exit 1
+          fi
+          # The count proves nothing about WHICH platforms arrived. Two legs
+          # that both build linux/amd64 — one typo in the matrix — produce two
+          # distinct digests, pass the count, and would ship a manifest list
+          # whose arm64 slot holds an amd64 image. --dry-run assembles the
+          # index and prints it without pushing, so this is checked while the
+          # tags still point at the previous release: a failure here retracts
+          # nothing because nothing was moved yet. Attestation manifests carry
+          # platform.os "unknown" and are filtered out.
+          platforms="$(docker buildx imagetools create --dry-run \
+            "${annotation_args[@]}" "${tag_args[@]}" "${images[@]}" \
+            | jq -r '[.manifests[] | select(.platform.os != "unknown") | .platform.os + "/" + .platform.architecture] | unique | join(",")')"
+          if [ "${platforms}" != "${EXPECTED}" ]; then
+            echo "::error::${IMAGE} would cover ${platforms}, expected ${EXPECTED}"
+            exit 1
+          fi
+          echo "${IMAGE} covers ${platforms}"
+          # Only the per-commit tag here. The moving ones go on after the
+          # signature exists, so release and latest never name something
+          # unsigned even if a later step fails.
+          docker buildx imagetools create "${annotation_args[@]}" \
+            -t "${IMAGE}:sha-${SHORT_SHA}" "${images[@]}"
+
+      - name: Sign the manifest list (keyless)
+        env:
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          # The per-commit tag: nothing else points here yet, so this lookup
+          # cannot resolve to another build.
+          TAG: sha-${{ needs.version.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          digest="$(docker buildx imagetools inspect "${IMAGE}:${TAG}" --format '{{json .Manifest}}' | jq -r '.digest')"
+          cosign sign --yes --recursive "${IMAGE}@${digest}"
+
+      # Now that a signature exists for this digest, the names people pull by
+      # can point at it.
+      - name: Attach the remaining tags
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}:sha-${{ needs.version.outputs.short_sha }}
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          SHORT_SHA: ${{ needs.version.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          mapfile -t annotation_args < <(jq -r '.annotations[]? | "--annotation", .' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+          signed="$(docker buildx imagetools inspect "${IMAGE}:sha-${SHORT_SHA}" --format '{{json .Manifest}}' | jq -r '.digest')"
+
+          # In two passes, because a comparison that runs after release and
+          # latest have moved does not protect them. The immutable names go
+          # first and are checked against the signed digest; only if imagetools
+          # reproduced it do the moving names follow. The signing step above
+          # already refuses to trust imagetools to preserve a digest — that
+          # distrust has to survive one step longer than it did.
+          check_tag() {
+            got="$(docker buildx imagetools inspect "$1" --format '{{json .Manifest}}' < /dev/null | jq -r '.digest')"
+            if [ "${got}" != "${signed}" ]; then
+              echo "::error::$1 resolves to ${got}, but ${signed} is what was signed"
+              exit 1
+            fi
+            echo "$1 -> ${signed}"
+          }
+
+          # One at a time, each checked before the next exists. Creating them in
+          # a single call and checking afterwards would leave every fixed name
+          # pointing at an unverified digest the moment one of them drifted —
+          # and <calver>-g<short> is the only published name that is both
+          # immutable and readable, so it is the one that least deserves that.
+          while read -r tag; do
+            docker buildx imagetools create "${annotation_args[@]}" -t "${tag}" "${REF}" < /dev/null
+            check_tag "${tag}"
+          done < <(jq -r '.tags[] | select(endswith(":release") or endswith(":latest") | not)' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+
+          while read -r tag; do
+            docker buildx imagetools create "${annotation_args[@]}" -t "${tag}" "${REF}" < /dev/null
+            check_tag "${tag}"
+          done < <(jq -r '.tags[] | select(endswith(":release") or endswith(":latest"))' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+
+      # Reading a tag back is the only way to learn that a registry stored a
+      # name a consumer cannot resolve.
+      - name: Verify the immutable tag resolves
+        env:
+          IMMUTABLE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}:${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
+        run: docker buildx imagetools inspect "${IMMUTABLE}" --format '{{json .Manifest}}' > /dev/null
+
+  # Single-platform images. CUDA is amd64 by nature. The Jetson build uses the
+  # same Dockerfile: on linux/arm64 its FROM resolves the ml_api_base manifest
+  # to the arm64 half, which is the L4T/JetPack base, so the one file produces
+  # both. Publishing the result as obico-ml-api-jetson keeps the hardware
+  # target visible instead of hiding it in a manifest list's arm64 slot.
+  #
+  # Jetson is best-effort: it is exercised as a CI build only, never runtime
+  # tested on hardware, and its base is old enough that a broken upstream
+  # archive is a realistic failure. Three different fields are involved and
+  # they disagree on purpose: the JOB conclusion is failure, so it shows red in
+  # the Checks list and the failure stays visible; needs.build-single.result is
+  # success, so the chart publish below is not held hostage to an image it does
+  # not reference; and the RUN conclusion is success, so a rotted upstream
+  # archive does not turn a release red. Measured on a two-job probe rather
+  # than inferred — much of the writing on continue-on-error describes the
+  # step-level flag, which behaves differently. Do not make build-single a
+  # required check: that would restore the blocking this exists to avoid.
+  # Note the deliberate asymmetry with ci.yaml, where the same chain does block
+  # a pull request: a red check there asks a person to look, while a red leg
+  # here would withhold images that have nothing wrong with them.
+  build-single:
+    needs: version
+    runs-on: ${{ matrix.runner }}
+    # Longer than the multi-arch job: these builds are deliberately uncached
+    # and the CUDA one gates the chart publish.
+    timeout-minutes: 90
+    continue-on-error: ${{ matrix.best_effort || false }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ml-api-gpu
+            platform: linux/amd64
+            runner: ubuntu-24.04
+            # Spelled out rather than left to the || false default: the two legs
+            # differ in exactly this, and it should be readable as a pair.
+            best_effort: false
+          - name: ml-api-jetson
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            best_effort: true
+            # GHCR creates a new package private. The first successful build
+            # here publishes one nobody can pull, and the error a user gets
+            # reads as authentication rather than as visibility — so the
+            # package needs a one-time flip to public before anything points
+            # a user at it.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          # The container driver keeps its own registry config, so the daemon's
+          # mirror setting would not reach it. mirror.gcr.io is a pull-through
+          # cache and buildkit falls back to Hub on a miss, so this only removes
+          # occasions where a build depends on Hub answering. nvcr.io is a
+          # different registry and is not covered.
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        env:
+          # buildx wraps even a single-platform push in an index once
+          # attestations are on, and that index is what a tag resolves to, so
+          # the annotations belong there. They are applied by the create step
+          # below rather than at build time, because that step is what mints
+          # the index the tags point at.
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: index
+        with:
+          images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          tags: |
+            type=raw,value=${{ needs.version.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
+            type=raw,value=sha-${{ needs.version.outputs.short_sha }}
+            type=raw,value=release,enable={{is_default_branch}}
+            # No latest on the Jetson image: a bare docker pull lands on that
+            # tag, and this is the one image CI compiles without ever starting
+            # it. release is still published, because the chart recipe asks for
+            # it by name and says there what it does and does not promise.
+            # Spelled as an expression rather than {{is_default_branch}}
+            # because that template cannot be combined with a second condition;
+            # the workflow only ever runs on the default branch or by hand.
+            type=raw,value=latest,enable=${{ github.ref_name == github.event.repository.default_branch && matrix.name != 'ml-api-jetson' }}
+          labels: |
+            org.opencontainers.image.title=obico-${{ matrix.name }}
+            org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
+            org.opencontainers.image.version=${{ needs.version.outputs.version }}
+          annotations: |
+            org.opencontainers.image.title=obico-${{ matrix.name }}
+            org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
+            org.opencontainers.image.version=${{ needs.version.outputs.version }}
+
+      # Digest-only push, same as the multi-arch path: nothing is tagged at
+      # build time. Pushing sha-<short> here instead would hand the one tag
+      # that is supposed to mean "verified build" — the tag the chart pins and
+      # the README recommends — to an image that may not load a model.
+      #
+      # That guarantee is only as strong as the check that follows, and it is
+      # not equal across this matrix: the CUDA image is started and asked for a
+      # health response, while the Jetson image is tagged on having compiled,
+      # because no runner has the Tegra drivers to start it on. Whatever ends
+      # up recommending that tag to users has to carry the same caveat.
+      - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.file }}
-          # ml-api-gpu is CUDA-based and amd64-only; keep the whole matrix on
-          # amd64 for now. The CPU image can grow an arm64 variant later.
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          context: ml_api
+          file: ml_api/Dockerfile
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,name=${{ needs.version.outputs.ns }}/obico-${{ matrix.name }},push-by-digest=true,name-canonical=true,push=true
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=${{ matrix.name }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+          # Deliberately uncached. These images are single-stage and multi-GB,
+          # so caching them would evict everything else from the repository's
+          # shared 10 GB cache to save one layer.
 
+      # Same reasoning as the CPU image: a finished build says nothing about
+      # whether the model loads. Only the CUDA image is exercised — it falls
+      # back to the CPU darknet library on a runner without a GPU, whereas the
+      # Jetson image wants Tegra drivers no runner has. It carries no CMD
+      # (compose supplies one), so the command is spelled out. --timeout
+      # because server.py loads the model at import, which happens inside
+      # worker boot, and gunicorn's arbiter kills a worker that has not
+      # reported in for 30 seconds; parsing a 250 MB darknet weight file on a
+      # GPU-less runner is not obviously under that, and exceeding it produces
+      # an endless respawn rather than an error.
+      - name: Assert the inference API loads a model
+        if: matrix.name == 'ml-api-gpu'
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
+        run: |
+          .github/scripts/assert_inference_healthy.sh "${REF}" \
+            gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi
+
+      # Both halves of the RKNN conditional are asserted before merge by the
+      # bases job in ci.yaml. This repeats the skipped half on the artifact
+      # that actually gets published, because a pull request checks the tree
+      # and a release checks the image: the two agree until someone changes the
+      # release build alone. If the probe ever collapses to always-true, this
+      # image quietly regains 102 MB of weights no backend on it can read.
+      # The name promises hardware, so check the base delivers it. This leg
+      # resolves ml_api_base:1.4 to its arm64 half, which is built from L4T —
+      # but that is an agreement with whoever pushes that manifest, not a
+      # property of this workflow. If the half were ever replaced with a plain
+      # arm64 base, everything here would stay green and publish an image
+      # called jetson that is not one. libdrm_tegra comes from the L4T
+      # packages and is not in stock arm64 Ubuntu.
+      - name: Assert the image is built on L4T
+        if: matrix.name == 'ml-api-jetson'
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
+        run: docker run --rm "${REF}" test -e /usr/lib/aarch64-linux-gnu/libdrm_tegra.so.0
+
+      # Both legs: neither base carries the Rockchip runtime, and the Jetson
+      # image is the one nothing ever starts, so it has the least verification
+      # to spare.
+      - name: Assert the RKNN weights were skipped
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
+        run: docker run --rm "${REF}" test ! -e /model_cache/ml_api/rknn/model-weights.rknn
+
+      # Before any tag exists: if this download fails once the tags have moved,
+      # release and latest name an artifact that never gets signed.
       - name: Install cosign
-        if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@v3
 
-      - name: Sign the image (keyless)
-        if: github.event_name != 'pull_request'
+      # Only the per-commit tag. The moving ones follow the signature.
+      - name: Attach the immutable tag
         env:
-          DIGEST: ${{ steps.build.outputs.digest }}
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
           IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
-        run: cosign sign --yes "${IMAGE}@${DIGEST}"
+          SHORT_SHA: ${{ needs.version.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          mapfile -t annotation_args < <(jq -r '.annotations[]? | "--annotation", .' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+          docker buildx imagetools create "${annotation_args[@]}" \
+            -t "${IMAGE}:sha-${SHORT_SHA}" "${REF}"
+
+      - name: Sign the image (keyless)
+        env:
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          TAG: sha-${{ needs.version.outputs.short_sha }}
+        # Resolve the tag rather than reusing the build's digest: imagetools
+        # preserves the source digest only on a narrow fast path, and a future
+        # flag change there would leave the moving tags pointing at something
+        # this signature does not cover. --recursive because with attestations
+        # on this is an index, and the platform manifest underneath it is what
+        # a runtime records.
+        run: |
+          set -euo pipefail
+          digest="$(docker buildx imagetools inspect "${IMAGE}:${TAG}" --format '{{json .Manifest}}' | jq -r '.digest')"
+          cosign sign --yes --recursive "${IMAGE}@${digest}"
+
+      # Only now: the names people pull by point at something already signed.
+      - name: Attach the remaining tags
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}:sha-${{ needs.version.outputs.short_sha }}
+          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          SHORT_SHA: ${{ needs.version.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          mapfile -t annotation_args < <(jq -r '.annotations[]? | "--annotation", .' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+          signed="$(docker buildx imagetools inspect "${IMAGE}:sha-${SHORT_SHA}" --format '{{json .Manifest}}' | jq -r '.digest')"
+
+          # In two passes, because a comparison that runs after release and
+          # latest have moved does not protect them. The immutable names go
+          # first and are checked against the signed digest; only if imagetools
+          # reproduced it do the moving names follow. The signing step above
+          # already refuses to trust imagetools to preserve a digest — that
+          # distrust has to survive one step longer than it did.
+          check_tag() {
+            got="$(docker buildx imagetools inspect "$1" --format '{{json .Manifest}}' < /dev/null | jq -r '.digest')"
+            if [ "${got}" != "${signed}" ]; then
+              echo "::error::$1 resolves to ${got}, but ${signed} is what was signed"
+              exit 1
+            fi
+            echo "$1 -> ${signed}"
+          }
+
+          # One at a time, each checked before the next exists. Creating them in
+          # a single call and checking afterwards would leave every fixed name
+          # pointing at an unverified digest the moment one of them drifted —
+          # and <calver>-g<short> is the name the chart README tells people to
+          # pin, so it is the one that least deserves that.
+          while read -r tag; do
+            docker buildx imagetools create "${annotation_args[@]}" -t "${tag}" "${REF}" < /dev/null
+            check_tag "${tag}"
+          done < <(jq -r '.tags[] | select(endswith(":release") or endswith(":latest") | not)' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+
+          while read -r tag; do
+            docker buildx imagetools create "${annotation_args[@]}" -t "${tag}" "${REF}" < /dev/null
+            check_tag "${tag}"
+          done < <(jq -r '.tags[] | select(endswith(":release") or endswith(":latest"))' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+
+      # Same class of failure the chart's immutable tag is checked against: a
+      # name the registry stores happily and a consumer cannot resolve.
+      - name: Verify the immutable tag resolves
+        env:
+          IMMUTABLE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}:${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
+        run: docker buildx imagetools inspect "${IMMUTABLE}" --format '{{json .Manifest}}' > /dev/null
 
   publish-chart:
-    # needs build so the packaged chart never pins image tags that are not
-    # pushed yet, and needs version for the shared namespace/CalVer outputs.
-    needs: [version, build]
+    timeout-minutes: 30
+    # needs the image jobs so the packaged chart never pins image tags that are
+    # not pushed yet, and needs version for the shared namespace/CalVer outputs.
+    # The best-effort Jetson leg cannot gate this: it is continue-on-error, so
+    # build-single stays green even when that image fails to build.
+    needs: [version, merge-manifests, build-single]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -183,7 +728,14 @@ jobs:
       - name: Log in to GHCR (Helm registry)
         # helm push authenticates from Helm's own registry store (separate from
         # the Docker config above on Helm 3.14+), so log in for it explicitly.
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username ${{ github.actor }} --password-stdin
+        env:
+          # Through the environment rather than the command line, which is
+          # visible in the runner's process list. Both values, not just the
+          # secret: a step that states the rule and then breaks it for the
+          # other argument teaches the wrong thing.
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
+        run: echo "${TOKEN}" | helm registry login ghcr.io --username "${ACTOR}" --password-stdin
 
       - name: Bake the matching images into the chart
         env:
@@ -225,34 +777,98 @@ jobs:
             | .sources[0] = strenv(SOURCE_URL)
           ' charts/obico/Chart.yaml
 
+      # Ahead of the push. helm push mints the CalVer tag itself, so unlike the
+      # image jobs that name cannot wait for the signature — but everything
+      # else can, and a cosign download failing after the push must not be what
+      # leaves a published chart unsigned.
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      # Ahead of the push for the same reason as cosign above: if this download
+      # fails afterwards the chart is published carrying only the day-granular
+      # CalVer, and the only immutable name it could be pinned by never
+      # appears.
+      - name: Set up ORAS
+        uses: oras-project/setup-oras@v1
+
       - name: Package the chart
         run: helm package charts/obico
 
+      - name: Say why nothing was published
+        if: ${{ github.ref_name != github.event.repository.default_branch }}
+        run: |
+          echo "::notice::chart packaged but not published: this is ${{ github.ref_name }}, not the default branch. The chart's only tag is a day-granular CalVer, so publishing from a branch would overwrite the released one."
+
+      # The image jobs gate their moving tags on the default branch; the chart
+      # has no immutable-only mode, because helm push mints the day-granular
+      # CalVer itself. A manual run from a feature branch on the same UTC day
+      # as a release would therefore overwrite the published chart. Everything
+      # up to the package is still exercised, which is the part worth running
+      # by hand.
       - name: Push the chart to GHCR as an OCI artifact
+        if: ${{ github.ref_name == github.event.repository.default_branch }}
         id: push
         env:
           NS: ${{ needs.version.outputs.ns }}
           VERSION: ${{ needs.version.outputs.version }}
         run: |
+          set -euo pipefail
           # helm push writes "Pushed: <ref>" and "Digest: <sha256:...>" to
           # stderr; capture both so the digest can be signed. The chart lands at
           # oci://<ns>/charts/obico:<version>, mirroring the images' lowercase
           # owner namespace.
           helm push "obico-${VERSION}.tgz" "oci://${NS}/charts" 2>&1 | tee push.log
-          digest="$(grep --only-matching --extended-regexp 'sha256:[a-f0-9]+' push.log | head --lines 1)"
+          # || true because under set -e the assignment would inherit grep's
+          # exit status and kill the step before the message below prints.
+          # head, not grep -m: -m bounds selected lines while -o still prints
+          # every match on the line, so two digests on one line would produce a
+          # two-token ref.
+          digest="$(grep --only-matching --extended-regexp 'sha256:[a-f0-9]+' push.log | head --lines 1 || true)"
           if [ -z "${digest}" ]; then
             echo "::error::could not parse the pushed chart digest from helm push output"
             exit 1
           fi
           echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
 
-      - name: Install cosign
-        if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@v3
-
       - name: Sign the chart (keyless)
-        if: github.event_name != 'pull_request'
+        if: ${{ github.ref_name == github.event.repository.default_branch }}
         env:
           REF: ${{ needs.version.outputs.ns }}/charts/obico
           DIGEST: ${{ steps.push.outputs.digest }}
         run: cosign sign --yes "${REF}@${DIGEST}"
+
+      # Every image this chart pins is immutable, but the chart pinning them was
+      # not: helm push mints exactly one tag, the day-granular CalVer, so a
+      # second release commit on the same UTC day moves it under everyone
+      # already pulling that version. Add a per-commit tag pointing at the same
+      # digest — oras tag adds a reference without touching the artifact, so
+      # both names resolve to one chart. Valid semver, and the prerelease form
+      # sorts below the plain CalVer, which is what keeps it from hijacking a
+      # version range someone pinned deliberately.
+      - name: Tag the chart with its commit
+        if: ${{ github.ref_name == github.event.repository.default_branch }}
+        env:
+          REF: ${{ needs.version.outputs.ns }}/charts/obico
+          DIGEST: ${{ steps.push.outputs.digest }}
+          # The g prefix is not decoration. A short SHA can come out all
+          # digits, and semver forbids a leading zero in a numeric prerelease
+          # identifier — 2026.7.1-09613699 is not a version, so Helm stops
+          # treating it as one, falls back to reading it as a constraint, and
+          # fails to parse that. Five commits in this repo's recent history
+          # have such a SHA. Prefixing a letter, the git describe convention,
+          # makes the identifier alphanumeric for every possible SHA.
+          IMMUTABLE: ${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
+        run: oras tag "${REF}@${DIGEST}" "${IMMUTABLE}"
+
+      # Resolve the tag that was just created, through Helm rather than through
+      # the registry API: the failure mode this guards against is Helm refusing
+      # a version string the registry accepted, so only Helm's own parser can
+      # prove the tag is usable.
+      - name: Verify the immutable version resolves
+        if: ${{ github.ref_name == github.event.repository.default_branch }}
+        env:
+          REF: ${{ needs.version.outputs.ns }}/charts/obico
+          IMMUTABLE: ${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
+        run: helm show chart "oci://${REF}" --version "${IMMUTABLE}" > /dev/null
+
+

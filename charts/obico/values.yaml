@@ -184,6 +184,7 @@ mlApi:
     - gunicorn
     - --bind=0.0.0.0:3333
     - --workers=1
+    - --timeout=120
     - --access-logfile=-
     - wsgi
   # -- Security context for the ml-api container.

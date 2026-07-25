@@ -1,3 +1,5 @@
 model/*.onnx
 model/*.darknet
-
+# Training output, fetched per docs/model_training.md; load_net only reads
+# /model_cache, so baking it into the image is dead weight.
+model/model.weights

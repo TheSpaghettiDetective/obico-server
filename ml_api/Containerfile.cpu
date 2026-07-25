@@ -22,24 +22,43 @@ RUN apt-get update \
 WORKDIR /app
 
 # CPU inference stack: onnxruntime (not onnxruntime-gpu) and the headless OpenCV
-# build (no GUI/X11 dependencies). Pinned to releases that ship cp38 wheels.
+# build (no GUI/X11 dependencies). Both pinned to releases with wheels for amd64 and
+# aarch64 at this Python — opencv ships one abi3 wheel per architecture,
+# onnxruntime a cp38 one. The opencv version matches what the three base
+# Dockerfiles now pin, but those bases are built by hand and are not rebuilt
+# here, so until someone runs ml_api/scripts/build_base_images.sh the published
+# bases still carry 4.9. What holds across every variant meanwhile is the
+# major, which is what CI asserts. 4.12 is also the first 4.x whose wheel
+# bounds numpy from above, which keeps a future bump of the FROM above from
+# handing a numpy-1 ABI extension a numpy 2 to load.
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir \
         onnxruntime==1.16.3 \
-        opencv-python-headless==4.9.0.80
+        opencv-python-headless==4.12.0.88
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --requirement requirements.txt
 
-COPY . /app
+# The URL file before the bulk copy, so editing source does not re-download
+# the model — the same ordering ml_api/Dockerfile uses.
+COPY model/*.url model/*.sha256 /app/model/
+COPY scripts/fetch_verified.sh /usr/local/bin/fetch_verified
 
 # Pre-fetch the ONNX model so the container needs no network at startup. The
 # darknet weights the GPU image also downloads are intentionally omitted.
 RUN mkdir -p /model_cache/ml_api/onnx \
-    && curl --fail --silent --show-error --location \
-        --output /model_cache/ml_api/onnx/model-weights.onnx \
-        "$(tr -d '\r' < model/model-weights.onnx.url)"
+    && fetch_verified "$(tr -d '\r' < model/model-weights.onnx.url)" \
+        /model_cache/ml_api/onnx/model-weights.onnx 50000000 \
+        "$(tr -d '\r' < model/model-weights.onnx.sha256)"
+
+COPY . /app
 
 EXPOSE 3333
 
-CMD ["gunicorn", "--bind", "0.0.0.0:3333", "--workers", "1", "wsgi"]
+# --timeout because server.py loads the model at import, inside worker boot.
+# The 30s default would have the arbiter kill the worker and respawn it
+# forever: the container stays up, the socket stays bound, and nothing says
+# why. Anything that overrides this command has to carry it too. It is not a
+# boot-only knob: the same value bounds request handling, so with one worker a
+# stalled inference holds it for the whole period.
+CMD ["gunicorn", "--bind", "0.0.0.0:3333", "--workers", "1", "--timeout", "120", "wsgi"]

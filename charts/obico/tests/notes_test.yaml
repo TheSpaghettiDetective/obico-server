@@ -32,3 +32,342 @@ tests:
           pattern: 'python manage\.py createsuperuser'
       - notMatchRegexRaw:
           pattern: 'signing up in the web UI'
+
+  - it: should stay quiet about the boot deadline when the default command keeps it
+    asserts:
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should warn when an mlApi.command override drops the boot deadline
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --workers=1
+        - wsgi
+    asserts:
+      # Without a deadline gunicorn kills the worker after 30s, which is less
+      # than the model load takes, and the container restarts forever. The
+      # override is the only way to reach that state, so this is where it is said.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should stay quiet when ml-api is not deployed at all
+    set:
+      mlApi.enabled: false
+      mlApi.command:
+        - gunicorn
+        - wsgi
+    asserts:
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not warn about a gunicorn flag for a command that is not gunicorn
+    set:
+      mlApi.command:
+        - python
+        - serve.py
+    asserts:
+      # The deployment template allows this and has its own case for it. A
+      # warning here would name a deadline the process does not have and a
+      # failure mode it cannot hit.
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not warn about a deadline written in the short form
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - -t
+        - "120"
+        - wsgi
+    asserts:
+      # gunicorn documents -t and --timeout as the same option. Warning here
+      # tells someone their working config is broken.
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not warn about a deadline set inside a wrapped command
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi
+    asserts:
+      # Same shape docker-compose.yml ships. Warning here tells someone whose
+      # command sets a deadline that they set none.
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should still warn about a wrapped command that sets no deadline
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi
+    asserts:
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should report a quoted deadline as unread rather than unset
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - exec gunicorn --bind=0.0.0.0:3333 --access-logformat="%(h)s|%(t)s" --timeout=600 wsgi
+    asserts:
+      # The quote makes the pipe an argument rather than a pipeline, so the
+      # shell really does hand gunicorn a 600s deadline that the split cuts away
+      # and never sees. The warning still belongs here — what it must not do is
+      # claim none was set, which would send this operator to add the flag
+      # already in their own command. Reporting what was read keeps it true.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should still warn when a quote sits beside a poller's deadline
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi & ./wait-for-it.sh -t 600 'localhost:3333'
+    asserts:
+      # gunicorn is started bare here and the 600 belongs to the poller past an
+      # unquoted `&`, so the warning is true. A rule that went quiet whenever a
+      # quote and a deadline both appeared somewhere in the command silenced it
+      # on the strength of quotes around a hostname.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should stay quiet about a wrapped invocation carrying no flags at all
+    set:
+      mlApi.command:
+        - sh
+        - -c
+        - gunicorn wsgi
+    asserts:
+      # A known silence, pinned so it stays a decision rather than becoming a
+      # surprise. Inside a wrapper the word gunicorn can be a mention, so a
+      # flag only an invocation carries is required — and this command has
+      # none, so it reads as a mention and gets no warning even though the
+      # worker really does boot on the 30s default. The budget still caps it,
+      # which is why the silence is affordable; the suite pins every other
+      # shape this heuristic decides, and this one was the gap.
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should warn about a versioned binary name carrying no flags
+    set:
+      mlApi.command:
+        - gunicorn3
+        - wsgi
+    asserts:
+      # Pins the program-position anchors specifically. Every other versioned
+      # binary case passes --bind, which lets the wrapper branch answer even
+      # if the position branch is narrowed back — so those tests cover the
+      # name without covering where it sits. With no gunicorn-shaped flag at
+      # all, only position can decide, and the warning is the only thing that
+      # notices.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should warn about a versioned gunicorn binary name
+    set:
+      mlApi.command:
+        - gunicorn3
+        - --bind=0.0.0.0:3333
+        - wsgi
+    asserts:
+      # Pins the fourth anchor. The name is recognised on this path too, so the
+      # tail split has something to split on: leave this one un-widened while
+      # the recognition test says yes and regexSplit returns a single element,
+      # which makes `index ... 1` abort the whole render rather than merely
+      # skip a warning. The deadline-side tests cannot catch that — they never
+      # reach this helper.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should warn about a wrapped command whose short flags carry attached values
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn -b0.0.0.0:3333 -w1 wsgi
+    asserts:
+      # The same invocation with the separators dropped, which argparse accepts
+      # and which is the terser habit. Missed here, the command that has no
+      # deadline at all is the one that stops being told so.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should warn about a wrapped command written with short flags
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn -b 0.0.0.0:3333 -w 1 wsgi
+    asserts:
+      # The same command in the spelling gunicorn documents beside the long
+      # one. Qualified on `--bind`/`--workers` alone, this reads as a bare
+      # mention rather than an invocation, and the command that most needs the
+      # warning is the one that stops getting it.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should warn when only the prelude carries a deadline
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - wait-for-it.sh -t 30 db:5432 -- gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi
+    asserts:
+      # The state this warning exists for: gunicorn started bare. Reading the
+      # whole line finds wait-for-it's -t and stays silent about it.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not warn when the deadline sits beside a gunicorn path
+    set:
+      mlApi.command:
+        - gunicorn
+        - --timeout=120
+        - --access-logfile=/var/log/gunicorn/access.log
+        - wsgi
+    asserts:
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should still warn when only the gunicorn path is there
+    set:
+      mlApi.command:
+        - gunicorn
+        - --access-logfile=/var/log/gunicorn/access.log
+        - wsgi
+    asserts:
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not warn when the word is mentioned again after the deadline
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout=120 wsgi & echo gunicorn is up
+    asserts:
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should warn when the only deadline belongs to a poller
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi & ./wait-for-it.sh -t 30 localhost:3333
+    asserts:
+      # gunicorn was started bare. The -t after the & is the poller's.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not warn when the deadline comes before a gunicorn-named path
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=120
+        - --chdir
+        - /opt/gunicorn
+        - wsgi
+    asserts:
+      # Reading from the last program-looking token loses everything before
+      # /opt/gunicorn, so a command that sets a deadline is told it sets none.
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not call a mention of gunicorn an invocation
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - echo starting gunicorn now && python serve.py
+    asserts:
+      # Nothing here starts gunicorn, so there is no arbiter deadline to be
+      # missing and nothing to warn about.
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not judge a command whose deadline may be in a config file
+    set:
+      mlApi.command:
+        - gunicorn
+        - -c
+        - gunicorn.conf.py
+        - wsgi
+    asserts:
+      # `timeout = 120` in gunicorn.conf.py is a deliberate way to set this.
+      # The chart cannot read that file, so calling the deadline missing sends
+      # someone to add a flag they moved on purpose.
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not be fooled by the -c that belongs to the wrapper
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi
+    asserts:
+      # `bash -c` is not gunicorn's config flag. Reading the whole command
+      # instead of gunicorn's own arguments exempts every wrapped command.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not judge a command configured through the long flag either
+    set:
+      mlApi.command:
+        - gunicorn
+        - --config
+        - /etc/gunicorn.py
+        - wsgi
+    asserts:
+      # gunicorn documents -c and --config as the same option, and a check
+      # that knows one of them judges a command it cannot read.
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not borrow a deadline from a second invocation
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi & gunicorn --bind 0.0.0.0:3334 --workers 1 --timeout 600 wsgi
+    asserts:
+      # The first command starts gunicorn with no deadline, and that is the
+      # answer. Scanning on until a deadline turns up credits the second
+      # command's flag to the first, and the warning disappears.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should warn when the deadline is written as zero
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --workers=1
+        - --timeout=0
+        - wsgi
+    asserts:
+      # gunicorn reads 0 as no arbiter deadline at all, so this command has
+      # none. Reading it as a deadline of zero also switches off the pairing
+      # check below, which is the one value that must not be able to do that.
+      - matchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'
+
+  - it: should not warn when the deadline value is quoted
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout="120" wsgi
+    asserts:
+      - notMatchRegexRaw:
+          pattern: 'no timeout could be read from mlApi\.command'

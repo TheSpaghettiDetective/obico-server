@@ -1,6 +1,6 @@
 # obico
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2026.1.20](https://img.shields.io/badge/AppVersion-2026.1.20-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2026.7.11](https://img.shields.io/badge/AppVersion-2026.7.11-informational?style=flat-square)
 
 Self-hosted Obico server for AI-powered 3D printer monitoring (OctoPrint/Klipper)
 
@@ -21,11 +21,13 @@ This chart deploys the full stack:
 
 Obico's docker-compose builds the server images from source. This chart consumes prebuilt, tagged equivalents produced by the repository's own workflow (`.github/workflows/build-images.yaml`), which builds from the release branch and publishes to GHCR:
 
-* `obico-web` — Django/Daphne app + Celery worker
-* `obico-ml-api-cpu` — slim CPU inference image (chart default)
-* `obico-ml-api-gpu` — CUDA inference image for GPU nodes
+* `obico-web` — Django/Daphne app + Celery worker (`linux/amd64` and `linux/arm64`)
+* `obico-ml-api-cpu` — slim CPU inference image, the chart default (`linux/amd64` and `linux/arm64`)
+* `obico-ml-api-gpu` — CUDA inference image for GPU nodes (`linux/amd64` only)
 
-By default the chart pulls the `release` moving tag — the latest images built from the release branch at deploy time. Because that tag moves and `pullPolicy` defaults to `IfNotPresent`, already-running pods keep their pulled image until they restart. For a reproducible deployment, pin `image.*.tag`: `sha-<short>` is immutable per commit, while a CalVer like `2026.7.1` is day-granular (it moves if two commits land the same UTC day). Alternatively set the image `pullPolicy` to `Always` to re-pull on every pod start.
+The workflow also publishes an L4T image for NVIDIA Jetson on a best-effort basis: it is exercised as a CI build only and has never been started on real hardware, and a given release may ship without it. The chart has no separate switch for it, but it needs none: point the GPU slot at that image and turn the GPU on.
+
+By default the chart pulls the `release` moving tag — the latest images built from the release branch at deploy time. Because that tag moves and `pullPolicy` defaults to `IfNotPresent`, already-running pods keep their pulled image until they restart. For a reproducible deployment, pin `image.*.tag` to an immutable tag: `<calver>-g<short>` (e.g. `2026.7.11-g49c0bc70`) is the readable one, `sha-<short>` the terse one, and both name the same build. For an **image** tag, prefer `sha-<short>` when something automated does the pinning: semver reads the combined form as a prerelease of the CalVer, so version-comparing tools rank it *below* the plain `2026.7.11` and skip it by default. A bare CalVer like `2026.7.11` is day-granular and moves if two commits land the same UTC day. The moving tags also move per image rather than in step: each image's manifest is published on its own, so if one image fails to build, `release` still advances for the others and a deployment left on the moving tags can end up mixing builds. Pinning avoids that as well. Alternatively set the image `pullPolicy` to `Always` to re-pull on every pod start.
 
 ## Maintainers
 
@@ -43,7 +45,7 @@ Kubernetes: `>=1.21.0-0`
 
 ## Installing the Chart
 
-The image-build workflow also packages this chart and pushes it to GHCR as an OCI artifact. That published chart pins the Obico images (web and both ml-api variants) to the immutable `sha-<short>` tag of the commit they were built from, so an install from the artifact is reproducible and needs no checkout. Pick a version (CalVer, e.g. `2026.1.20`) from the [package page](https://github.com/TheSpaghettiDetective/obico-server/pkgs/container/charts%2Fobico):
+The image-build workflow also packages this chart and pushes it to GHCR as an OCI artifact. That published chart pins the Obico images (web and both ml-api variants it can select between) to the immutable `sha-<short>` tag of the commit they were built from, so an install from the artifact is reproducible and needs no checkout. Pick a version from the [package page](https://github.com/TheSpaghettiDetective/obico-server/pkgs/container/charts%2Fobico). Each release publishes two: the CalVer (e.g. `2026.7.11`), which is day-granular and moves if two releases land on the same UTC day, and `<calver>-g<short>` (e.g. `2026.7.11-g49c0bc70`), which never moves. For the **chart** version there is no terse alternative, so pin the combined form for anything that redeploys on its own — but note that semver reads it as a prerelease, and Helm, Flux and Renovate all skip prereleases unless told otherwise, so an updater pointed at this chart will not offer you a move off a pinned version by itself. Note also that the immutable name is a registry tag rather than a second chart version: install by it and Helm still reports the plain CalVer in `helm list` and in the `helm.sh/chart` label, because that is what the packaged `Chart.yaml` says:
 
 ```bash
 # From the published OCI artifact (images pinned to the build commit)
@@ -186,10 +188,33 @@ The bundled Redis (`redis.enabled: true`) is a minimal, **unauthenticated** sing
 
 ## ML inference image (CPU / GPU)
 
-The `ml-api` service ships as two images built from the same source:
+The chart deploys one of two `ml-api` images built from the same source:
 
 * **CPU (default)** — `obico-ml-api-cpu`, a slim image that runs failure detection on the CPU via ONNX Runtime. No CUDA layers and no NVIDIA toolchain, an order of magnitude smaller than the GPU image. This is what the chart deploys by default and it runs on any node.
-* **GPU** — `obico-ml-api-gpu`, the CUDA image for NVIDIA GPU inference. Much larger, since the CUDA / cuDNN runtime ships inside it.
+* **GPU** — `obico-ml-api-gpu`, the CUDA image for NVIDIA GPU inference. Much larger, since the CUDA / cuDNN runtime ships inside it. Published for `linux/amd64` only, so on an arm64 cluster enabling it fails the pull. Generic arm64 nodes use the CPU image; on an NVIDIA Jetson, point the GPU slot at the L4T image instead:
+
+  ```yaml
+  mlApi:
+    gpu: true
+    # Only if the cluster advertises it. Where the Jetson container runtime
+    # exposes the device without a plugin, nothing provides this resource and
+    # the pod sits in Pending — set this to null there. Not {}: Helm merges
+    # maps key by key, so an empty one contributes nothing and the default
+    # below survives, while null deletes the key.
+    gpuResources:
+      nvidia.com/gpu: 1
+  image:
+    mlApi:
+      gpu:
+        repository: ghcr.io/thespaghettidetective/obico-ml-api-jetson
+        tag: release
+  ```
+
+  The `tag` matters: the published chart pins `image.mlApi.gpu.tag` to the commit it was built from, and the Jetson build is best-effort, so that exact build may not exist under this name. A pull that fails with an authentication error usually means the package has not been made public yet rather than that your credentials are wrong. `release` follows the latest one that succeeded — note that for this image alone, "succeeded" means it compiled and passed two container-start smoke checks, not that it serves: the other two inference images are launched in CI and asked for a health response, and no runner has Tegra drivers to give this one the same treatment. Pin it to a specific build once you have one that works on your board.
+
+  Expect to raise `mlApi.startupBudgetSeconds` here. It is the ceiling on how long the container may take to answer `/hc/` before the startup probe restarts it, it defaults to 140 seconds, and a Jetson initialising CUDA and loading the model at import is the slowest start in this project — past the budget the pod goes to CrashLoopBackOff rather than eventually coming up. Raise `--timeout` in `mlApi.command` together with it, since rendering fails unless the budget stays above that deadline.
+
+  On a mixed cluster note that `nodeSelector`, `affinity` and `tolerations` in this chart apply to every component, so there is no way to pin ml-api to amd64 nodes without pinning web and redis there too.
 
 Most self-hosted deployments run CPU inference and should keep the default. Enable the GPU image only if you have an NVIDIA GPU with the device plugin configured:
 
@@ -225,8 +250,8 @@ To skip AI failure detection entirely, set `mlApi.enabled: false`. Obico still c
 | httpRoute.hostnames | list | `["obico.example.com"]` | Hostnames for the route |
 | httpRoute.parentRefs | list | `[{"name":"gateway","namespace":"gateway-system"}]` | Parent Gateway references |
 | httpRoute.rules | list | `[{"matches":[{"path":{"type":"PathPrefix","value":"/"}}]}]` | Routing rules |
-| image | object | `{"mlApi":{"cpu":{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-cpu","tag":""},"gpu":{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-gpu","tag":""},"pullPolicy":"IfNotPresent"},"web":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/thespaghettidetective/obico-web","tag":""}}` | Container images. Built from obico-server source by the in-repo workflow (.github/workflows/build-images.yaml) and published to GHCR under the repository owner's namespace (ghcr.io/thespaghettidetective/* upstream). Each tag defaults to the "release" moving tag the workflow publishes on the release branch; pin a specific tag (a CalVer like 2026.7.1 or sha-<short>) for reproducibility. |
-| image.mlApi | object | `{"cpu":{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-cpu","tag":""},"gpu":{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-gpu","tag":""},"pullPolicy":"IfNotPresent"}` | ML inference API images. Two variants are published from the same source: a slim CPU-only image (default) and a CUDA image for GPU inference. mlApi.gpu selects which one runs; configure each variant independently. |
+| image | object | `{"mlApi":{"cpu":{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-cpu","tag":""},"gpu":{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-gpu","tag":""},"pullPolicy":"IfNotPresent"},"web":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/thespaghettidetective/obico-web","tag":""}}` | Container images. Built from obico-server source by the in-repo workflow (.github/workflows/build-images.yaml) and published to GHCR under the repository owner's namespace (ghcr.io/thespaghettidetective/* upstream). Each tag defaults to the "release" moving tag the workflow publishes on the release branch; pin an immutable tag for reproducibility: `<calver>-g<short>` (e.g. `2026.7.11-g49c0bc70`) or the terse `sha-<short>`. |
+| image.mlApi | object | `{"cpu":{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-cpu","tag":""},"gpu":{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-gpu","tag":""},"pullPolicy":"IfNotPresent"}` | ML inference API images. The chart runs one of two variants built from the same source: a slim CPU-only image (default) and a CUDA image for GPU inference. mlApi.gpu selects which one runs; configure each variant independently. |
 | image.mlApi.cpu | object | `{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-cpu","tag":""}` | CPU-only inference image (slim). Used when mlApi.gpu is false. |
 | image.mlApi.cpu.tag | string | `""` | Overrides the CPU image tag whose default is the "release" moving tag |
 | image.mlApi.gpu | object | `{"repository":"ghcr.io/thespaghettidetective/obico-ml-api-gpu","tag":""}` | CUDA inference image (large). Used when mlApi.gpu is true. |
@@ -235,8 +260,8 @@ To skip AI failure detection entirely, set `mlApi.enabled: false`. Obico still c
 | image.web.tag | string | `""` | Overrides the image tag whose default is the "release" moving tag |
 | imagePullSecrets | list | `[]` |  |
 | ingress | object | `{"annotations":{},"className":"","enabled":false,"hosts":[{"host":"obico.example.com","paths":[{"path":"/","pathType":"Prefix"}]}],"tls":[{"hosts":["obico.example.com"],"secretName":"obico-tls"}]}` | Ingress configuration |
-| mlApi | object | `{"command":["gunicorn","--bind=0.0.0.0:3333","--workers=1","--access-logfile=-","wsgi"],"enabled":true,"externalHost":"","gpu":false,"gpuResources":{"nvidia.com/gpu":1},"replicaCount":1,"resources":{"limits":{"cpu":"2","memory":"2Gi"},"requests":{"cpu":"500m","memory":"1Gi"}},"securityContext":{}}` | ML inference API (AI failure detection). Can be disabled. |
-| mlApi.command | list | `["gunicorn","--bind=0.0.0.0:3333","--workers=1","--access-logfile=-","wsgi"]` | Command for the gunicorn inference server |
+| mlApi | object | `{"command":["gunicorn","--bind=0.0.0.0:3333","--workers=1","--timeout=120","--access-logfile=-","wsgi"],"enabled":true,"externalHost":"","gpu":false,"gpuResources":{"nvidia.com/gpu":1},"replicaCount":1,"resources":{"limits":{"cpu":"2","memory":"2Gi"},"requests":{"cpu":"500m","memory":"1Gi"}},"securityContext":{},"startupBudgetSeconds":140}` | ML inference API (AI failure detection). Can be disabled. |
+| mlApi.command | list | `["gunicorn","--bind=0.0.0.0:3333","--workers=1","--timeout=120","--access-logfile=-","wsgi"]` | Command for the gunicorn inference server. The `--timeout` flag is load-bearing: the model is loaded at import, so it happens inside worker boot, and the default 30s arbiter deadline would kill the worker and respawn it forever on a slower node — the pod would never go ready and never crash-loop, so nothing would say why. Note it is not boot-only: the same value bounds request handling, and with a single worker a stalled inference holds that worker for the whole period before the arbiter recycles it. Readiness drops the pod out of the Service after 60s of that, which is the only part probes can help with; the boot case belongs to startupBudgetSeconds, which has to stay above whatever is set here. Not solved with gunicorn `--preload`, which would load the model in the arbiter and take it out from under this deadline: server.py calls load_net at import, and on the GPU images that initialises CUDA or opens a CUDAExecutionProvider session, and `--preload` still forks the worker afterwards. |
 | mlApi.enabled | bool | `true` | Deploy the ML inference API |
 | mlApi.externalHost | string | `""` | External ML inference API URL, used when enabled is false. Obico still calls the ML API for prints that have AI detection on, so if you disable the bundled ml-api, either point this at an external instance (e.g. http://ml-api:3333) or make sure AI detection is off on every printer — otherwise picture uploads that request detection will error. |
 | mlApi.gpu | bool | `false` | Run the CUDA (GPU) inference image instead of the slim CPU default. When true the ml-api container uses image.mlApi.gpu and requests the accelerator from gpuResources; requires an NVIDIA GPU and device plugin on the node. The CPU image works everywhere and is far smaller, so leave this false unless you actually have a GPU. |
@@ -244,6 +269,7 @@ To skip AI failure detection entirely, set `mlApi.enabled: false`. Obico still c
 | mlApi.replicaCount | int | `1` | Number of ml-api replicas |
 | mlApi.resources | object | `{"limits":{"cpu":"2","memory":"2Gi"},"requests":{"cpu":"500m","memory":"1Gi"}}` | Resource requests/limits for the ml-api container |
 | mlApi.securityContext | object | `{}` | Security context for the ml-api container. Left empty (image default = root) because the upstream CUDA-based ml-api image is not validated to run unprivileged (model cache and runtime expect root). Harden here once confirmed it runs as non-root in your environment. |
+| mlApi.startupBudgetSeconds | int | `140` | Seconds the container gets to answer /hc/ before Kubernetes restarts it. Has to stay above the `--timeout` in command, or the pod is killed while the first worker still has time left to finish loading; rendering fails when it is not. Raise both together on hardware where the model takes longer than this to load, and note that raising this alone only delays the restart of an image that cannot boot at all. This is the boot ceiling for every shape of command, including the ones no deadline can be read out of: a `gunicorn.conf.py` passed with `-c`, an explicit `--timeout=0`, or a command that is not gunicorn at all. Before this chart had a startup probe such a container stayed NotReady for as long as the load took, so long as it had opened the port — the tcpSocket liveness check still ended one that never bound at all. Now the budget ends it either way, and the render-time pairing check cannot warn about a deadline it cannot see. Raise this to whatever the slowest boot needs. Spent in whole probe periods of 10s, rounded up, so a value below 10 still buys one period and one below the deadline is refused rather than rounded into looking sufficient. |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | obico | object | `{"csrfTrustedOrigins":[],"debug":false,"existingSecret":"","extraEnv":{},"extraSecretEnv":{},"secretKey":"","siteUsesHttps":false}` | Obico application configuration (rendered into the env ConfigMap/Secret) |

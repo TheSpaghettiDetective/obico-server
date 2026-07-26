@@ -23,11 +23,13 @@ This chart deploys the full stack:
 
 Obico's docker-compose builds the server images from source. This chart consumes prebuilt, tagged equivalents produced by the repository's own workflow (`.github/workflows/build-images.yaml`), which builds from the release branch and publishes to GHCR:
 
-* `obico-web` — Django/Daphne app + Celery worker
-* `obico-ml-api-cpu` — slim CPU inference image (chart default)
-* `obico-ml-api-gpu` — CUDA inference image for GPU nodes
+* `obico-web` — Django/Daphne app + Celery worker (`linux/amd64` and `linux/arm64`)
+* `obico-ml-api-cpu` — slim CPU inference image, the chart default (`linux/amd64` and `linux/arm64`)
+* `obico-ml-api-gpu` — CUDA inference image for GPU nodes (`linux/amd64` only)
 
-By default the chart pulls the `release` moving tag — the latest images built from the release branch at deploy time. Because that tag moves and `pullPolicy` defaults to `IfNotPresent`, already-running pods keep their pulled image until they restart. For a reproducible deployment, pin `image.*.tag`: `sha-<short>` is immutable per commit, while a CalVer like `2026.7.1` is day-granular (it moves if two commits land the same UTC day). Alternatively set the image `pullPolicy` to `Always` to re-pull on every pod start.
+The workflow also publishes an L4T image for NVIDIA Jetson on a best-effort basis: it is exercised as a CI build only and has never been started on real hardware, and a given release may ship without it. The chart has no separate switch for it, but it needs none: point the GPU slot at that image and turn the GPU on.
+
+By default the chart pulls the `release` moving tag — the latest images built from the release branch at deploy time. Because that tag moves and `pullPolicy` defaults to `IfNotPresent`, already-running pods keep their pulled image until they restart. For a reproducible deployment, pin `image.*.tag` to an immutable tag: `<calver>-g<short>` (e.g. `2026.7.11-g49c0bc70`) is the readable one, `sha-<short>` the terse one, and both name the same build. For an **image** tag, prefer `sha-<short>` when something automated does the pinning: semver reads the combined form as a prerelease of the CalVer, so version-comparing tools rank it *below* the plain `2026.7.11` and skip it by default. A bare CalVer like `2026.7.11` is day-granular and moves if two commits land the same UTC day. The moving tags also move per image rather than in step: each image's manifest is published on its own, so if one image fails to build, `release` still advances for the others and a deployment left on the moving tags can end up mixing builds. Pinning avoids that as well. Alternatively set the image `pullPolicy` to `Always` to re-pull on every pod start.
 
 {{ template "chart.maintainersSection" . }}
 
@@ -37,7 +39,7 @@ By default the chart pulls the `release` moving tag — the latest images built 
 
 ## Installing the Chart
 
-The image-build workflow also packages this chart and pushes it to GHCR as an OCI artifact. That published chart pins the Obico images (web and both ml-api variants) to the immutable `sha-<short>` tag of the commit they were built from, so an install from the artifact is reproducible and needs no checkout. Pick a version (CalVer, e.g. `2026.1.20`) from the [package page](https://github.com/TheSpaghettiDetective/obico-server/pkgs/container/charts%2Fobico):
+The image-build workflow also packages this chart and pushes it to GHCR as an OCI artifact. That published chart pins the Obico images (web and both ml-api variants it can select between) to the immutable `sha-<short>` tag of the commit they were built from, so an install from the artifact is reproducible and needs no checkout. Pick a version from the [package page](https://github.com/TheSpaghettiDetective/obico-server/pkgs/container/charts%2Fobico). Each release publishes two: the CalVer (e.g. `2026.7.11`), which is day-granular and moves if two releases land on the same UTC day, and `<calver>-g<short>` (e.g. `2026.7.11-g49c0bc70`), which never moves. For the **chart** version there is no terse alternative, so pin the combined form for anything that redeploys on its own — but note that semver reads it as a prerelease, and Helm, Flux and Renovate all skip prereleases unless told otherwise, so an updater pointed at this chart will not offer you a move off a pinned version by itself. Note also that the immutable name is a registry tag rather than a second chart version: install by it and Helm still reports the plain CalVer in `helm list` and in the `helm.sh/chart` label, because that is what the packaged `Chart.yaml` says:
 
 ```bash
 # From the published OCI artifact (images pinned to the build commit)
@@ -180,10 +182,33 @@ The bundled Redis (`redis.enabled: true`) is a minimal, **unauthenticated** sing
 
 ## ML inference image (CPU / GPU)
 
-The `ml-api` service ships as two images built from the same source:
+The chart deploys one of two `ml-api` images built from the same source:
 
 * **CPU (default)** — `obico-ml-api-cpu`, a slim image that runs failure detection on the CPU via ONNX Runtime. No CUDA layers and no NVIDIA toolchain, an order of magnitude smaller than the GPU image. This is what the chart deploys by default and it runs on any node.
-* **GPU** — `obico-ml-api-gpu`, the CUDA image for NVIDIA GPU inference. Much larger, since the CUDA / cuDNN runtime ships inside it.
+* **GPU** — `obico-ml-api-gpu`, the CUDA image for NVIDIA GPU inference. Much larger, since the CUDA / cuDNN runtime ships inside it. Published for `linux/amd64` only, so on an arm64 cluster enabling it fails the pull. Generic arm64 nodes use the CPU image; on an NVIDIA Jetson, point the GPU slot at the L4T image instead:
+
+  ```yaml
+  mlApi:
+    gpu: true
+    # Only if the cluster advertises it. Where the Jetson container runtime
+    # exposes the device without a plugin, nothing provides this resource and
+    # the pod sits in Pending — set this to null there. Not {}: Helm merges
+    # maps key by key, so an empty one contributes nothing and the default
+    # below survives, while null deletes the key.
+    gpuResources:
+      nvidia.com/gpu: 1
+  image:
+    mlApi:
+      gpu:
+        repository: ghcr.io/thespaghettidetective/obico-ml-api-jetson
+        tag: release
+  ```
+
+  The `tag` matters: the published chart pins `image.mlApi.gpu.tag` to the commit it was built from, and the Jetson build is best-effort, so that exact build may not exist under this name. A pull that fails with an authentication error usually means the package has not been made public yet rather than that your credentials are wrong. `release` follows the latest one that succeeded — note that for this image alone, "succeeded" means it compiled and passed two container-start smoke checks, not that it serves: the other two inference images are launched in CI and asked for a health response, and no runner has Tegra drivers to give this one the same treatment. Pin it to a specific build once you have one that works on your board.
+
+  Expect to raise `mlApi.startupBudgetSeconds` here. It is the ceiling on how long the container may take to answer `/hc/` before the startup probe restarts it, it defaults to 140 seconds, and a Jetson initialising CUDA and loading the model at import is the slowest start in this project — past the budget the pod goes to CrashLoopBackOff rather than eventually coming up. Raise `--timeout` in `mlApi.command` together with it, since rendering fails unless the budget stays above that deadline.
+
+  On a mixed cluster note that `nodeSelector`, `affinity` and `tolerations` in this chart apply to every component, so there is no way to pin ml-api to amd64 nodes without pinning web and redis there too.
 
 Most self-hosted deployments run CPU inference and should keep the default. Enable the GPU image only if you have an NVIDIA GPU with the device plugin configured:
 

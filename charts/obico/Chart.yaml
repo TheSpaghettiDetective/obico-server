@@ -2,13 +2,27 @@ annotations:
   artifacthub.io/category: ai-machine-learning
   # Valid kinds for changes: added, changed, deprecated, removed, fixed, security
   # See: https://artifacthub.io/docs/topics/annotations/helm/
+  # A minor rather than a patch: mlApi.command gains --timeout=120, so the
+  # rendered Deployment changes for everyone on the defaults. The rest is the
+  # images the chart already pulls plus documentation of which fit which
+  # hardware.
   artifacthub.io/changes: |-
     - kind: changed
-      description: Raise the tasks container memory limit to 2Gi and CPU limit to a full core so the post-print ffmpeg timelapse encode is no longer OOM-killed
+      description: The web and CPU inference images are now published for linux/arm64 as well as linux/amd64, so the chart installs on arm64 clusters
     - kind: changed
-      description: Raise the bundled redis memory request to 256Mi and limit to 512Mi to match its observed steady-state footprint
+      description: Documented running the NVIDIA Jetson inference image by pointing the GPU image slot at it
+    - kind: changed
+      description: The CPU inference image moves OpenCV from 4.9 to 4.12, the preprocessing step that runs before every detection
+    - kind: changed
+      description: The ml-api command gains --timeout=120 so a slow model load cannot leave the pod respawning its worker forever without ever going ready
     - kind: added
-      description: Publish the chart as a signed OCI artifact to GHCR with image tags pinned to the matching CalVer build
+      description: Every ml-api pod gains a startup probe, so an image that cannot load its model within the deadline now crash-loops visibly instead of sitting not-ready with a green liveness check
+    - kind: added
+      description: mlApi.startupBudgetSeconds sets how long that probe waits, and the chart refuses to render when it is not above the deadline in mlApi.command
+    - kind: changed
+      description: The ml-api readiness probe drops its initial delay, since the startup probe now covers the boot window
+    - kind: added
+      description: That probe caps every ml-api boot at mlApi.startupBudgetSeconds, including commands whose deadline the chart cannot read. A container that used to stay not-ready for as long as the load took is now restarted; raise the budget if the model needs longer
   artifacthub.io/license: BSD-3-Clause
   artifacthub.io/links: |
     - name: Obico Server
@@ -17,9 +31,12 @@ apiVersion: v2
 name: obico
 description: Self-hosted Obico server for AI-powered 3D printer monitoring (OctoPrint/Klipper)
 type: application
-version: "0.2.0"
-# CalVer derived from the obico-server release commit these images are built from.
-appVersion: "2026.1.20"
+version: "0.3.0"
+# CalVer of the release commit these images are built from. The publish job
+# overwrites this with the CalVer of the commit it is building, so the value
+# here only reaches someone installing the chart straight from a checkout —
+# which is exactly why it should not be left naming a commit that never existed.
+appVersion: "2026.7.11"
 icon: https://www.obico.io/img/logo.svg
 home: https://www.obico.io/
 keywords:

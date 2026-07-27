@@ -1,6 +1,6 @@
 name: Build and publish images
 
-# Obico does not publish ready-to-run server images — docker-compose builds
+# Obico does not publish ready-to-run server images — Compose builds
 # them from source. This workflow builds them from the current source and
 # publishes them, tagged and cosign-signed, to GHCR so Kubernetes/Helm users
 # can consume them. The ml-api service has several hardware variants; the ones
@@ -17,12 +17,18 @@ on:
 
 concurrency:
   group: build-images-${{ github.ref }}
-  cancel-in-progress: true
+  # Not cancelled. This workflow moves tags in a registry one at a time, and a
+  # cancellation between two of them leaves the CalVer pointing at the new
+  # digest while release and latest still point at the old one, with nothing
+  # reporting the split. It runs a handful of times a week, so the runner time
+  # a superseded run costs is worth less than that.
+  cancel-in-progress: false
 
+# Per job below, not here. The build jobs run the most third-party code in the
+# repository — three Dockerfiles' RUN steps and pip against PyPI — and a
+# workflow-level grant would hand all of it the token that signs releases.
 permissions:
   contents: read
-  packages: write
-  id-token: write
 
 jobs:
   # Compute the shared namespace and version once so the image builds and the
@@ -32,6 +38,10 @@ jobs:
   # never pushed.
   version:
     runs-on: ubuntu-latest
+    # Reads the git history and computes strings. Nothing else.
+    permissions:
+      contents: read
+    timeout-minutes: 5
     outputs:
       ns: ${{ steps.ns.outputs.ns }}
       version: ${{ steps.ver.outputs.version }}
@@ -46,7 +56,14 @@ jobs:
 
       - name: Compute image namespace (GHCR requires a lowercase owner)
         id: ns
-        run: echo "ns=ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "${GITHUB_OUTPUT}"
+        env:
+          OWNER: ${{ github.repository_owner }}
+        # pipefail like every other block here: this is a pipeline inside a
+        # command substitution, so without it a failing tr yields an empty
+        # namespace and every image reference becomes ghcr.io//obico-web.
+        run: |
+          set -euo pipefail
+          echo "ns=ghcr.io/$(echo "${OWNER}" | tr '[:upper:]' '[:lower:]')" >> "${GITHUB_OUTPUT}"
 
       - name: Compute version
         id: ver
@@ -60,6 +77,7 @@ jobs:
           # the g is load-bearing, see the note on it in publish-chart. If
           # the project ever starts tagging releases, an exact tag on the commit
           # takes precedence.
+          set -euo pipefail
           tag="$(git describe --tags --exact-match 2>/dev/null || true)"
           if [ -n "${tag}" ]; then
             version="${tag#v}"
@@ -76,6 +94,11 @@ jobs:
   build-multiarch:
     needs: version
     runs-on: ${{ matrix.runner }}
+    # Pushes layers by digest, which mints no tag and needs no signature: the
+    # signing identity is deliberately confined to the jobs that name things.
+    permissions:
+      contents: read
+      packages: write
     timeout-minutes: 60
     strategy:
       # fail-fast off so one platform leg failing does not cancel the others.
@@ -122,12 +145,7 @@ jobs:
 
       - name: Move the prebuilt frontend into the web build context
         if: matrix.name == 'web'
-        run: |
-          # The backend image expects the prebuilt Vue bundle (checked into the
-          # release branch) at /frontend, which docker-compose supplies as a bind
-          # mount. Bake it into the image instead.
-          mv frontend backend/frontend
-          echo 'RUN ln -s /app/frontend /frontend' >> backend/Dockerfile
+        run: sh .github/scripts/stage_frontend.sh
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -150,19 +168,18 @@ jobs:
 
       # No tags here on purpose: this push is by digest and the tags are
       # attached in merge-manifests. Only the labels are wanted.
-      - name: Docker metadata
+      # Labels only. The tags for these images are minted in merge-manifests,
+      # which is the job that names the assembled index; a second list here
+      # would be a copy nothing publishes, sitting where an editor looks
+      # first. Annotations belong to that index too.
+      - name: Docker labels
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
-          # This job wants the labels, not the tags: the tags go on the
-          # manifest list in merge-manifests, from that job's own metadata.
-          # Disabling every tag makes the action log "No Docker tag has been
-          # generated" once per leg — that warning is the intended state here,
-          # not something to chase. Leaving the input out instead would
-          # generate default tags that nothing reads, which is worse: it reads
-          # as if they were applied.
-          tags: type=raw,value=unused,enable=false
+          # No tag is minted here: this build pushes by digest.
+          tags: |
+            type=raw,value=,enable=false
           labels: |
             org.opencontainers.image.title=obico-${{ matrix.name }}
             org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
@@ -201,6 +218,7 @@ jobs:
         env:
           REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
         run: |
+          set -euo pipefail
           docker run --rm --volume "${PWD}/.github/scripts:/scripts:ro" "${REF}" \
             python /scripts/assert_imports.py psycopg2 PIL
 
@@ -209,10 +227,6 @@ jobs:
       # from the ONNX backend, load_net() then raises at import time and the
       # gunicorn worker dies at boot. An import check would not see it, so
       # start the thing and wait for it to answer.
-      - name: Assert the inference API loads a model
-        if: matrix.name == 'ml-api-cpu'
-        env:
-          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
       # --timeout for the same reason the CUDA leg carries it: server.py loads
       # the model at import, so it happens inside worker boot, and gunicorn's
       # arbiter kills a worker that has not reported in for 30 seconds. The
@@ -220,7 +234,12 @@ jobs:
       # over the deadline is not a clean failure — the master keeps the
       # listening socket and respawns forever, so the container stays "running"
       # and this script waits out its whole budget before blaming the image.
+      - name: Assert the inference API loads a model
+        if: matrix.name == 'ml-api-cpu'
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
         run: |
+          set -euo pipefail
           .github/scripts/assert_inference_healthy.sh "${REF}" \
             gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi
 
@@ -228,6 +247,7 @@ jobs:
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
+          set -euo pipefail
           mkdir -p /tmp/digests
           touch "/tmp/digests/${DIGEST#sha256:}"
 
@@ -246,6 +266,12 @@ jobs:
   # image, attach the tags, and sign the list.
   merge-manifests:
     needs: [version, build-multiarch]
+    # Names the digests the build jobs pushed and signs them, so this is where
+    # id-token belongs.
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     timeout-minutes: 30
     # Run even when build-multiarch reports failure: a failed platform leg of
     # one image must not block the other image's tags. Incomplete digests for
@@ -313,7 +339,12 @@ jobs:
         with:
           images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
           tags: |
-            type=raw,value=${{ needs.version.outputs.version }}
+            # The bare CalVer is day-granular, so a second build on the same
+            # UTC day moves it. That makes it a moving tag and it is gated like
+            # the other two: a manual run from a branch would otherwise
+            # repoint a released name at a branch build. The two names below
+            # it carry the commit and are safe from anywhere.
+            type=raw,value=${{ needs.version.outputs.version }},enable={{is_default_branch}}
             type=raw,value=${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
             type=raw,value=sha-${{ needs.version.outputs.short_sha }}
             type=raw,value=release,enable={{is_default_branch}}
@@ -377,6 +408,15 @@ jobs:
           # Only the per-commit tag here. The moving ones go on after the
           # signature exists, so release and latest never name something
           # unsigned even if a later step fails.
+          #
+          # One window this cannot close, said here rather than left to be
+          # found: imagetools has no way to push an index except under a name,
+          # so between this line and the signature two steps down,
+          # sha-<short> exists unsigned. A failure in between leaves it that
+          # way and turns the run red, which is visible but is not a rollback.
+          # sign-single has no such window, because a push-by-digest gives it
+          # something to sign before any name exists; an index has to be
+          # assembled to exist at all.
           docker buildx imagetools create "${annotation_args[@]}" \
             -t "${IMAGE}:sha-${SHORT_SHA}" "${images[@]}"
 
@@ -404,11 +444,15 @@ jobs:
           signed="$(docker buildx imagetools inspect "${IMAGE}:sha-${SHORT_SHA}" --format '{{json .Manifest}}' | jq -r '.digest')"
 
           # In two passes, because a comparison that runs after release and
-          # latest have moved does not protect them. The immutable names go
-          # first and are checked against the signed digest; only if imagetools
-          # reproduced it do the moving names follow. The signing step above
-          # already refuses to trust imagetools to preserve a digest — that
-          # distrust has to survive one step longer than it did.
+          # latest have moved does not protect them. Everything else goes
+          # first, checked against the signed digest one at a time; only if
+          # imagetools reproduced it do release and latest follow. Note the
+          # first pass is not all immutable: the bare CalVer is day-granular,
+          # which is why it carries a default-branch gate above. What the
+          # split buys is that the two names a bare docker pull lands on are
+          # the last to move, and only after the rest verified. The signing
+          # step already refuses to trust imagetools to preserve a digest —
+          # that distrust has to survive one step longer than it did.
           check_tag() {
             got="$(docker buildx imagetools inspect "$1" --format '{{json .Manifest}}' < /dev/null | jq -r '.digest')"
             if [ "${got}" != "${signed}" ]; then
@@ -426,7 +470,11 @@ jobs:
           while read -r tag; do
             docker buildx imagetools create "${annotation_args[@]}" -t "${tag}" "${REF}" < /dev/null
             check_tag "${tag}"
-          done < <(jq -r '.tags[] | select(endswith(":release") or endswith(":latest") | not)' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+          # sha-<short> is excluded along with the moving names: it is the tag
+          # this whole sequence started from and the one just signed, so
+          # recreating it from itself would put the name the chart pins through
+          # a round-trip it has no reason to take.
+          done < <(jq -r --arg immutable ":sha-${SHORT_SHA}" '.tags[] | select(endswith(":release") or endswith(":latest") or endswith($immutable) | not)' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
 
           while read -r tag; do
             docker buildx imagetools create "${annotation_args[@]}" -t "${tag}" "${REF}" < /dev/null
@@ -463,6 +511,12 @@ jobs:
   build-single:
     needs: version
     runs-on: ${{ matrix.runner }}
+    # Pushes layers by digest and nothing else. Naming and signing happen in
+    # sign-single, so the identity that signs releases is never held by a job
+    # running other people's build steps.
+    permissions:
+      contents: read
+      packages: write
     # Longer than the multi-arch job: these builds are deliberately uncached
     # and the CUDA one gates the chart publish.
     timeout-minutes: 90
@@ -509,31 +563,34 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker metadata
+      # No tags. The tag list this job used to carry moved to sign-single
+      # along with the naming, and leaving a copy here would be a second list
+      # to keep in step with the one that publishes: an edit to the obvious
+      # copy, right next to the build, would change nothing and read as if it
+      # had.
+      #
+      # The annotations stayed — they have to be applied here rather than in
+      # sign-single, and that is not a matter of taste. Annotating rewrites
+      # the index, so it produces a new digest; sign-single signs the build's
+      # digest before anything is named, and an imagetools create carrying
+      # --annotation would therefore mint a tag pointing at something other
+      # than what was signed. Setting them at build time makes every later
+      # create a plain alias of an already-annotated index. Unlike the tag
+      # list, this is not a copy of anything: nothing over there emits them.
+      - name: Docker labels and annotations
         id: meta
         uses: docker/metadata-action@v5
         env:
-          # buildx wraps even a single-platform push in an index once
-          # attestations are on, and that index is what a tag resolves to, so
-          # the annotations belong there. They are applied by the create step
-          # below rather than at build time, because that step is what mints
-          # the index the tags point at.
+          # Annotate the index itself: the per-platform labels below are
+          # invisible on the tag users actually inspect. Custom values have to
+          # go through the annotations input — the labels input feeds a
+          # different output and never reaches the index.
           DOCKER_METADATA_ANNOTATIONS_LEVELS: index
         with:
           images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          # No tag is minted here: the build pushes by digest.
           tags: |
-            type=raw,value=${{ needs.version.outputs.version }}
-            type=raw,value=${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
-            type=raw,value=sha-${{ needs.version.outputs.short_sha }}
-            type=raw,value=release,enable={{is_default_branch}}
-            # No latest on the Jetson image: a bare docker pull lands on that
-            # tag, and this is the one image CI compiles without ever starting
-            # it. release is still published, because the chart recipe asks for
-            # it by name and says there what it does and does not promise.
-            # Spelled as an expression rather than {{is_default_branch}}
-            # because that template cannot be combined with a second condition;
-            # the workflow only ever runs on the default branch or by hand.
-            type=raw,value=latest,enable=${{ github.ref_name == github.event.repository.default_branch && matrix.name != 'ml-api-jetson' }}
+            type=raw,value=,enable=false
           labels: |
             org.opencontainers.image.title=obico-${{ matrix.name }}
             org.opencontainers.image.description=Obico ${{ matrix.name }} image built from obico-server source
@@ -562,6 +619,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           outputs: type=image,name=${{ needs.version.outputs.ns }}/obico-${{ matrix.name }},push-by-digest=true,name-canonical=true,push=true
           labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
           # Deliberately uncached. These images are single-stage and multi-GB,
           # so caching them would evict everything else from the repository's
           # shared 10 GB cache to save one layer.
@@ -581,6 +639,7 @@ jobs:
         env:
           REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
         run: |
+          set -euo pipefail
           .github/scripts/assert_inference_healthy.sh "${REF}" \
             gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi
 
@@ -611,37 +670,146 @@ jobs:
           REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
         run: docker run --rm "${REF}" test ! -e /model_cache/ml_api/rknn/model-weights.rknn
 
-      # Before any tag exists: if this download fails once the tags have moved,
-      # release and latest name an artifact that never gets signed.
+      # The digest travels to the signing job rather than the signing job's
+      # token travelling here. This job runs three Dockerfiles' worth of other
+      # people's build steps for up to ninety minutes, and the header of this
+      # file says a grant like id-token: write does not belong in a job that
+      # does that. build-multiarch and merge-manifests are split for the same
+      # reason; this path never was.
+      - name: Hand the digest to the signing job
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/single
+          echo "${DIGEST}" > "/tmp/single/${{ matrix.name }}"
+
+      - name: Upload the digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: single-${{ matrix.name }}
+          path: /tmp/single/*
+          if-no-files-found: error
+          retention-days: 1
+          # Artifacts outlive a run attempt, and re-running is how a
+          # ninety-minute CUDA build recovers from a transient failure.
+          # Without this that re-run dies on the artifact name instead.
+          overwrite: true
+
+  # Split out of build-single so the signing identity is never held by a job
+  # that executes third-party build steps. Only the digest crosses over, and
+  # nothing is named until it carries a signature.
+  sign-single:
+    needs: [version, build-single]
+    # Even when a best-effort leg failed: the other leg still has a digest to
+    # sign. A leg whose build did not produce one fails at the download step
+    # rather than skipping, and for the best-effort image that failure is
+    # swallowed by continue-on-error below.
+    if: ${{ !cancelled() && needs.version.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ml-api-gpu
+          - name: ml-api-jetson
+            best_effort: true
+    continue-on-error: ${{ matrix.best_effort || false }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download the digest
+        id: digest
+        uses: actions/download-artifact@v4
+        with:
+          name: single-${{ matrix.name }}
+          path: /tmp/single
+
+      - name: Read it
+        id: read
+        run: |
+          set -euo pipefail
+          digest="$(cat "/tmp/single/${{ matrix.name }}")"
+          case "${digest}" in
+            sha256:*) ;;
+            *) echo "::error::${digest} is not a digest"; exit 1 ;;
+          esac
+          echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tags only. The annotations are set on the index at build time, because
+      # applying them here would rewrite the index this job just signed; see
+      # the note in build-single.
+      - name: Docker tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
+          tags: |
+            type=raw,value=${{ needs.version.outputs.version }},enable={{is_default_branch}}
+            type=raw,value=${{ needs.version.outputs.version }}-g${{ needs.version.outputs.short_sha }}
+            type=raw,value=sha-${{ needs.version.outputs.short_sha }}
+            type=raw,value=release,enable={{is_default_branch}}
+            # No latest on the Jetson image: a bare docker pull lands on that
+            # tag, and this is the one image CI compiles without ever starting
+            # it. release is still published, because it has to be asked for
+            # by name, and a name someone types deliberately is one a caveat
+            # can be attached to.
+            type=raw,value=latest,enable=${{ github.ref_name == github.event.repository.default_branch && matrix.name != 'ml-api-jetson' }}
+
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
 
-      # Only the per-commit tag. The moving ones follow the signature.
-      - name: Attach the immutable tag
-        env:
-          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.build.outputs.digest }}
-          IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
-          SHORT_SHA: ${{ needs.version.outputs.short_sha }}
-        run: |
-          set -euo pipefail
-          mapfile -t annotation_args < <(jq -r '.annotations[]? | "--annotation", .' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
-          docker buildx imagetools create "${annotation_args[@]}" \
-            -t "${IMAGE}:sha-${SHORT_SHA}" "${REF}"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
+      # Before any name exists. The build pushed by digest, so there is
+      # something to sign and nothing anyone could pull yet — which matters
+      # here and not in the manifest-merge job, because this one runs under
+      # continue-on-error for the best-effort leg. Tagging first would let a
+      # cosign failure publish an unsigned name and still report the run
+      # green, and the chart's verify recipe cannot tell a missing signature
+      # from a tampered one. --recursive because with attestations on this is
+      # an index, and the platform manifest underneath it is what a runtime
+      # records.
       - name: Sign the image (keyless)
         env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.read.outputs.digest }}
+        run: cosign sign --yes --recursive "${REF}"
+
+      # Only the per-commit tag. The moving ones follow further down.
+      - name: Attach the immutable tag
+        env:
+          REF: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}@${{ steps.read.outputs.digest }}
           IMAGE: ${{ needs.version.outputs.ns }}/obico-${{ matrix.name }}
-          TAG: sha-${{ needs.version.outputs.short_sha }}
-        # Resolve the tag rather than reusing the build's digest: imagetools
-        # preserves the source digest only on a narrow fast path, and a future
-        # flag change there would leave the moving tags pointing at something
-        # this signature does not cover. --recursive because with attestations
-        # on this is an index, and the platform manifest underneath it is what
-        # a runtime records.
+          SHORT_SHA: ${{ needs.version.outputs.short_sha }}
+          SIGNED: ${{ steps.read.outputs.digest }}
         run: |
           set -euo pipefail
-          digest="$(docker buildx imagetools inspect "${IMAGE}:${TAG}" --format '{{json .Manifest}}' | jq -r '.digest')"
-          cosign sign --yes --recursive "${IMAGE}@${digest}"
+          docker buildx imagetools create -t "${IMAGE}:sha-${SHORT_SHA}" "${REF}"
+          # imagetools preserves the source digest only on a narrow fast path
+          # — a create with nothing to change, which is why no --annotation
+          # appears here — so the signature covering it is asserted rather
+          # than assumed. This is what the old order got from resolving the
+          # tag before signing; checking afterwards keeps it without the
+          # unsigned window.
+          got="$(docker buildx imagetools inspect "${IMAGE}:sha-${SHORT_SHA}" --format '{{json .Manifest}}' | jq -r '.digest')"
+          if [ "${got}" != "${SIGNED}" ]; then
+            echo "::error::${IMAGE}:sha-${SHORT_SHA} resolves to ${got}, but ${SIGNED} is what was signed"
+            exit 1
+          fi
 
       # Only now: the names people pull by point at something already signed.
       - name: Attach the remaining tags
@@ -651,15 +819,18 @@ jobs:
           SHORT_SHA: ${{ needs.version.outputs.short_sha }}
         run: |
           set -euo pipefail
-          mapfile -t annotation_args < <(jq -r '.annotations[]? | "--annotation", .' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
           signed="$(docker buildx imagetools inspect "${IMAGE}:sha-${SHORT_SHA}" --format '{{json .Manifest}}' | jq -r '.digest')"
 
           # In two passes, because a comparison that runs after release and
-          # latest have moved does not protect them. The immutable names go
-          # first and are checked against the signed digest; only if imagetools
-          # reproduced it do the moving names follow. The signing step above
-          # already refuses to trust imagetools to preserve a digest — that
-          # distrust has to survive one step longer than it did.
+          # latest have moved does not protect them. Everything else goes
+          # first, checked against the signed digest one at a time; only if
+          # imagetools reproduced it do release and latest follow. Note the
+          # first pass is not all immutable: the bare CalVer is day-granular,
+          # which is why it carries a default-branch gate above. What the
+          # split buys is that the two names a bare docker pull lands on are
+          # the last to move, and only after the rest verified. The signing
+          # step already refuses to trust imagetools to preserve a digest —
+          # that distrust has to survive one step longer than it did.
           check_tag() {
             got="$(docker buildx imagetools inspect "$1" --format '{{json .Manifest}}' < /dev/null | jq -r '.digest')"
             if [ "${got}" != "${signed}" ]; then
@@ -672,15 +843,23 @@ jobs:
           # One at a time, each checked before the next exists. Creating them in
           # a single call and checking afterwards would leave every fixed name
           # pointing at an unverified digest the moment one of them drifted —
-          # and <calver>-g<short> is the name the chart README tells people to
-          # pin, so it is the one that least deserves that.
+          # and <calver>-g<short> is the only published name that is both
+          # immutable and readable, so it is the one that least deserves that.
+          # Every create here is a bare alias, like the one above: with no
+          # --annotation buildx copies the source bytes instead of rebuilding
+          # the index. That holds for these two steps, not for every create in
+          # this file.
           while read -r tag; do
-            docker buildx imagetools create "${annotation_args[@]}" -t "${tag}" "${REF}" < /dev/null
+            docker buildx imagetools create -t "${tag}" "${REF}" < /dev/null
             check_tag "${tag}"
-          done < <(jq -r '.tags[] | select(endswith(":release") or endswith(":latest") | not)' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+          # sha-<short> is excluded along with the moving names: it is the tag
+          # this whole sequence started from and the one just signed, so
+          # recreating it from itself would put the name the chart pins through
+          # a round-trip it has no reason to take.
+          done < <(jq -r --arg immutable ":sha-${SHORT_SHA}" '.tags[] | select(endswith(":release") or endswith(":latest") or endswith($immutable) | not)' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
 
           while read -r tag; do
-            docker buildx imagetools create "${annotation_args[@]}" -t "${tag}" "${REF}" < /dev/null
+            docker buildx imagetools create -t "${tag}" "${REF}" < /dev/null
             check_tag "${tag}"
           done < <(jq -r '.tags[] | select(endswith(":release") or endswith(":latest"))' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
 
@@ -692,12 +871,16 @@ jobs:
         run: docker buildx imagetools inspect "${IMMUTABLE}" --format '{{json .Manifest}}' > /dev/null
 
   publish-chart:
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     timeout-minutes: 30
     # needs the image jobs so the packaged chart never pins image tags that are
     # not pushed yet, and needs version for the shared namespace/CalVer outputs.
     # The best-effort Jetson leg cannot gate this: it is continue-on-error, so
     # build-single stays green even when that image fails to build.
-    needs: [version, merge-manifests, build-single]
+    needs: [version, merge-manifests, sign-single]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -763,6 +946,7 @@ jobs:
           # throwaway CI workspace; the in-repo values.yaml (empty tag -> the
           # "release" fallback) and Chart.yaml version stay as-is for git-based
           # installs. yq preserves the surrounding comments.
+          set -euo pipefail
           yq --inplace '
             .image.web.repository = strenv(NS) + "/obico-web"
             | .image.web.tag = "sha-" + strenv(SHORT_SHA)
@@ -776,11 +960,55 @@ jobs:
             | .appVersion = strenv(VERSION)
             | .sources[0] = strenv(SOURCE_URL)
           ' charts/obico/Chart.yaml
+          # The README travels inside the artifact, so helm show readme would
+          # otherwise advertise the version committed in git next to install
+          # instructions for the one being published.
+          python3 .github/scripts/stamp_chart_readme.py \
+            charts/obico/README.md "${VERSION}" "${VERSION}"
+
+      # yq creates a path it cannot find rather than failing, so a renamed key
+      # above writes a dead entry, leaves the real one at its empty-tag default
+      # and publishes a chart pointing at the moving release tags — while the
+      # README promises immutable ones. Rendering is what notices.
+      - name: Check the rewritten chart still renders what it claims
+        env:
+          NS: ${{ needs.version.outputs.ns }}
+          SHORT_SHA: ${{ needs.version.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          helm lint charts/obico
+          # Twice, because the GPU image is the third slot the rewrite above
+          # touches and it renders only under mlApi.gpu. Checking the default
+          # render alone leaves that slot to fall back to the moving tag while
+          # every check stays green, and the README promises both ml-api
+          # variants are pinned.
+          helm template check charts/obico > rendered-cpu.yaml
+          helm template check charts/obico --set mlApi.gpu=true > rendered-gpu.yaml
+          while read -r rendered image; do
+            pinned="${NS}/${image}:sha-${SHORT_SHA}"
+            if ! grep --quiet --fixed-strings "${pinned}" "${rendered}"; then
+              echo "::error::the packaged chart does not reference ${pinned}. The image pinning above wrote a key nothing reads."
+              exit 1
+            fi
+          done <<'SLOTS'
+          rendered-cpu.yaml obico-web
+          rendered-cpu.yaml obico-ml-api-cpu
+          rendered-gpu.yaml obico-ml-api-gpu
+          SLOTS
+          if grep --quiet --extended-regexp 'image: .*obico-(web|ml-api-cpu|ml-api-gpu):(release|latest)' \
+               rendered-cpu.yaml rendered-gpu.yaml; then
+            echo "::error::the packaged chart still points at a moving tag"
+            exit 1
+          fi
 
       # Ahead of the push. helm push mints the CalVer tag itself, so unlike the
       # image jobs that name cannot wait for the signature — but everything
       # else can, and a cosign download failing after the push must not be what
-      # leaves a published chart unsigned.
+      # leaves a published chart unsigned. The same window as in
+      # merge-manifests, for the same reason: between helm push and cosign
+      # sign the CalVer exists unsigned. Installing cosign first moves the
+      # likely causes of a signing failure to before the push rather than
+      # after it.
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
 
@@ -796,8 +1024,10 @@ jobs:
 
       - name: Say why nothing was published
         if: ${{ github.ref_name != github.event.repository.default_branch }}
+        env:
+          BRANCH: ${{ github.ref_name }}
         run: |
-          echo "::notice::chart packaged but not published: this is ${{ github.ref_name }}, not the default branch. The chart's only tag is a day-granular CalVer, so publishing from a branch would overwrite the released one."
+          echo "::notice::chart packaged but not published: this is ${BRANCH}, not the default branch. The chart's only tag is a day-granular CalVer, so publishing from a branch would overwrite the released one."
 
       # The image jobs gate their moving tags on the default branch; the chart
       # has no immutable-only mode, because helm push mints the day-granular

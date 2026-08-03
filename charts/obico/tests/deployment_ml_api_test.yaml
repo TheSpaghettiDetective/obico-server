@@ -38,6 +38,91 @@ tests:
           path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
           value: 1
 
+  # The Jetson recipe the chart README documents: there is no separate switch
+  # for the L4T image, the GPU slot is repointed at it.
+  - it: should run the Jetson image through the gpu slot
+    set:
+      mlApi.gpu: true
+      image.mlApi.gpu.repository: ghcr.io/thespaghettidetective/obico-ml-api-jetson
+      # Spelled out rather than left to the default, so this case stays a
+      # literal transcription of the recipe in the README.
+      image.mlApi.gpu.tag: release
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: '^ghcr\.io/thespaghettidetective/obico-ml-api-jetson:release$'
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+          value: 1
+
+  - it: should not reach the Jetson image while gpu is off
+    set:
+      image.mlApi.gpu.repository: ghcr.io/thespaghettidetective/obico-ml-api-jetson
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: '^ghcr\.io/thespaghettidetective/obico-ml-api-cpu:release$'
+      - notExists:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+
+  # The published chart pins every image to the commit it was built from, so
+  # this is the shape a user actually starts from when they follow the recipe:
+  # an overridden repository against an inherited pin.
+  - it: should keep a pinned tag when the gpu repository is repointed
+    set:
+      mlApi.gpu: true
+      image.mlApi.gpu.repository: ghcr.io/thespaghettidetective/obico-ml-api-jetson
+      image.mlApi.gpu.tag: sha-abc1234
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: '^ghcr\.io/thespaghettidetective/obico-ml-api-jetson:sha-abc1234$'
+
+  # The branch the README singles out as the thing that goes wrong on a Jetson
+  # whose runtime exposes the device without a device plugin. {} would not do
+  # it — Helm coalesces maps key by key, so the chart default survives — and
+  # this is what pins that distinction.
+  - it: should request no accelerator resource when gpuResources is null
+    set:
+      mlApi.gpu: true
+      mlApi.gpuResources: null
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+
+  - it: should keep the default accelerator resource when gpuResources is unset
+    set:
+      mlApi.gpu: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+          value: 1
+
+  - it: should keep the default accelerator resource for an empty gpuResources
+    set:
+      mlApi.gpu: true
+      mlApi.gpuResources: {}
+    asserts:
+      # The distinction the Jetson recipe rests on, and the one a reader is
+      # most likely to type. Helm merges maps key by key, so an empty one
+      # contributes nothing and the default below it survives — which is why
+      # the recipe says to write null instead. Unset is not the same input as
+      # explicitly empty, and only the latter is what the README warns about.
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+          value: 1
+
+  - it: should drop the accelerator resource for a null gpuResources
+    set:
+      mlApi.gpu: true
+      mlApi.gpuResources: null
+    asserts:
+      # The other half of that sentence: null deletes the key rather than
+      # merging under it, which is what a Jetson runtime exposing the device
+      # without a plugin needs, or the pod sits in Pending forever.
+      - isNull:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+
   - it: should honor a custom gpu resource name
     set:
       mlApi.gpu: true
@@ -62,6 +147,15 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].command
           content: gunicorn
+
+  # The model is loaded at import, inside worker boot. Without a deadline the
+  # arbiter kills the worker at 30s and respawns it forever, so the pod never
+  # goes ready and never crash-loops and nothing says why.
+  - it: should give the worker a boot deadline
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: --timeout=120
 
   - it: should set the ml-api component label
     asserts:
@@ -105,3 +199,688 @@ tests:
       - matchRegex:
           path: metadata.name
           pattern: '^.{1,63}$'
+
+  - it: should give the startup probe more time than the arbiter deadline
+    asserts:
+      # The defaults as a pair: 140s of startup budget against a 120s arbiter
+      # deadline. Asserted together because either number alone says nothing.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.periodSeconds
+          value: 10
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet.path
+          value: /hc/
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: --timeout=120
+
+  - it: should follow a raised deadline when the budget is raised with it
+    set:
+      mlApi.startupBudgetSeconds: 620
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --workers=1
+        - --timeout=600
+        - --access-logfile=-
+        - wsgi
+    asserts:
+      # The knob the chart offers for slow hardware. Before it existed the
+      # threshold was a constant, so this override restarted the pod at 140s
+      # while gunicorn still allowed the worker 600.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 63
+
+  - it: should round the budget up rather than cut a probe
+    set:
+      mlApi.startupBudgetSeconds: 145
+    asserts:
+      # 15 probes to cover 145s, plus the one kubelet spends at t=0.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 16
+
+  - it: should refuse a deadline the startup budget cannot cover
+    set:
+      mlApi.command:
+        - gunicorn
+        - --timeout=600
+        - wsgi
+    asserts:
+      # Raising only the deadline is the mistake worth catching at render
+      # time: the pod would be restarted while the worker was still loading,
+      # and the running cluster would show a crash loop with no cause in it.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read the deadline when the flag and its value are separate words
+    set:
+      mlApi.command:
+        - gunicorn
+        - --timeout
+        - "600"
+        - wsgi
+    asserts:
+      # Both spellings reach production configs, and a check that sees only
+      # one of them passes on exactly the config it was written to catch.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read a deadline written in the short form
+    set:
+      mlApi.command:
+        - gunicorn
+        - -t
+        - "600"
+        - wsgi
+    asserts:
+      # Same option, shorter spelling. Missing it leaves the pairing
+      # unenforced for exactly the config that looks unusual.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read a deadline written as one short-form word
+    set:
+      mlApi.command:
+        - gunicorn
+        - -t600
+        - wsgi
+    asserts:
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read a deadline inside a wrapped command
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout=600 wsgi
+    asserts:
+      # The form this repository writes: docker-compose.yml and the Jetson
+      # symlink workaround both wrap gunicorn in bash -c, and the chart now
+      # documents Jetson. Read element by element there is no deadline here,
+      # and the pairing silently stops holding.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should accept a wrapped command whose deadline the budget covers
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout=120 wsgi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should read past a prelude that carries a deadline of its own
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - wait-for-it --timeout 30 db:5432 && gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout=600 wsgi
+    asserts:
+      # Wrapped commands come with a prelude, and preludes have flags. Read
+      # from the front this finds the 30 that belongs to wait-for-it, decides
+      # the budget covers it, and lets a 600s gunicorn deadline through.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should not credit gunicorn with a deadline that belongs to its prelude
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - wait-for-it.sh -t 600 db:5432 -- gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi
+    asserts:
+      # 600, not 30: a value the budget covers cannot tell a misread from a
+      # correct read, because both render the same threshold. Past the budget,
+      # crediting gunicorn with the prelude's flag fails the render instead.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should read a deadline past an option whose value names a gunicorn path
+    set:
+      mlApi.command:
+        - gunicorn
+        - --timeout=600
+        - --access-logfile=/var/log/gunicorn/access.log
+        - wsgi
+    asserts:
+      # A log path under a gunicorn/ directory is the conventional spelling,
+      # and the default command already carries the flag with a `-` where the
+      # path would go. Read as an invocation it puts the real one behind it
+      # and the pairing quietly stops holding.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should accept a covered deadline alongside a gunicorn path
+    set:
+      mlApi.command:
+        - gunicorn
+        - --timeout=120
+        - --access-logfile=/var/log/gunicorn/access.log
+        - wsgi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should read a deadline when the word is mentioned again afterwards
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout=600 wsgi & echo gunicorn is up
+    asserts:
+      # A start-then-say-so line. Anchoring on the last occurrence lands in
+      # the echo, the deadline ends up before the anchor, and the pairing
+      # disappears without a word.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should not take a poller's flag on the far side of an operator
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi & ./wait-for-it.sh -t 600 localhost:3333
+    asserts:
+      # 600 for the same reason as the prelude case: under the budget, both
+      # readings render alike and the case proves nothing.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should read past a directory argument that names gunicorn
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --chdir
+        - /opt/gunicorn
+        - --timeout=600
+        - wsgi
+    asserts:
+      # The path ends at a space, so it looks like a program name. Splitting
+      # there puts the deadline outside the invocation that set it.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read a deadline that comes before a gunicorn-named path
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=600
+        - --chdir
+        - /opt/gunicorn
+        - wsgi
+    asserts:
+      # Deliberately before the path, unlike the case further down. Anchoring
+      # on the last program-looking token lands on /opt/gunicorn, and the
+      # deadline that precedes it is never seen.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read a deadline whose value is quoted
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout="600" wsgi
+    asserts:
+      # argv written as JSON puts quotes between the flag and its value, so a
+      # command pasted from that form still names a deadline to pair against.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should not read zero as a deadline to pair against
+    set:
+      mlApi.startupBudgetSeconds: 140
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=0
+        - wsgi
+    asserts:
+      # Zero is what disables gunicorn's arbiter, so there is nothing to pair
+      # against and the default budget stands. Reading it as a number would
+      # make `gt $deadline 0` false and skip the pairing silently, which is
+      # the same as having no guard for the one command that needs it.
+      #
+      # The budget still caps the boot. Disabling gunicorn's arbiter does not
+      # buy an unbounded one: the probe restarts the container at the budget
+      # whatever the command asked for, which is a real change from the base,
+      # where no startup probe existed and such a pod stayed NotReady for as
+      # long as the load took. values.yaml states that ceiling.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should not mistake another short flag for the deadline
+    set:
+      mlApi.startupBudgetSeconds: 140
+      mlApi.command:
+        - gunicorn
+        - --threads
+        - "600"
+        - wsgi
+    asserts:
+      # 600 so a misread is visible: -t inside --threads would be read as a
+      # deadline past the budget and fail the render.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should not invent a deadline for a command that has none
+    set:
+      mlApi.command:
+        - python
+        - serve.py
+    asserts:
+      # The override does not have to be gunicorn. Failing here would take the
+      # escape hatch away from anyone running something else.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should not use the readiness probe as a boot budget
+    asserts:
+      # A container that has never passed readiness is NotReady whatever this
+      # number is, so raising it cannot buy boot time. It buys only a longer
+      # window in which a pod that stopped answering keeps taking traffic.
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.failureThreshold
+          value: 6
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.periodSeconds
+          value: 10
+      # Startup gates readiness, so an initial delay here only holds a pod
+      # that has already answered out of the Service.
+      - isNull:
+          path: spec.template.spec.containers[0].readinessProbe.initialDelaySeconds
+
+  - it: should render the threshold as an integer at any budget
+    set:
+      mlApi.startupBudgetSeconds: 10000000
+    asserts:
+      # ceil returns a float, and Go prints a large one as 1e+06, which the
+      # API server does not accept. Nothing sensible reaches this value; the
+      # point is that the field is an integer whatever it holds.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 1000001
+
+  - it: should still cover the deadline when the budget barely clears it
+    set:
+      mlApi.startupBudgetSeconds: 130
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=129
+        - wsgi
+    asserts:
+      # The narrowest pair the guard admits, which is where a fencepost error
+      # shows. kubelet probes at t=0 and then once per period, so N failures
+      # span (N-1) periods: 14 buys 130s and covers the 129s deadline, 13 would
+      # buy 120 and kill the container nine seconds before gunicorn gives up on
+      # the worker — the exact outcome the guard promises cannot happen.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 14
+
+  - it: should read the deadline from a wrapped command that carries no bind flag
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - exec gunicorn --timeout=600 wsgi
+    asserts:
+      # `exec` is how the server ends up as PID 1, and the deadline flag is as
+      # much proof of an invocation as --bind. Qualifying only on bind/workers
+      # skips the command that named a deadline at all, which is the one case
+      # values.yaml promises fails the render instead of killing the pod early.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read the deadline from a versioned gunicorn binary name
+    set:
+      mlApi.command:
+        - gunicorn3
+        - --bind=0.0.0.0:3333
+        - --timeout=600
+        - wsgi
+    asserts:
+      # Debian names the binary gunicorn3. Anchored on the bare name only, this
+      # is not read as an invocation at all, so the pairing check is skipped
+      # and a 140s budget renders against a 600s deadline — the check failing
+      # open in exactly the case it exists for.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should still not read a gunicorn path as the program
+    set:
+      mlApi.startupBudgetSeconds: 140
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --access-logfile=/var/log/gunicorn/access.log
+        - --timeout=600
+        - wsgi
+    asserts:
+      # The widened anchor must not start matching paths. /var/log/gunicorn/
+      # ends in a slash, which the trailing class still excludes, so the
+      # deadline is read from the real invocation rather than from whatever
+      # follows the log path.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should not treat a pipe inside a flag value as a command boundary
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --access-logformat=%(h)s|%(t)s
+        - --timeout=600
+        - wsgi
+    asserts:
+      # gunicorn's own documented log-format syntax, and no shell anywhere in
+      # the command — execve hands each argv entry over untouched, so the pipe
+      # is a character in a value. Cutting there threw away everything after
+      # it, --timeout included, and rendered the default budget against a 600s
+      # deadline.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should not treat a semicolon inside a flag value as a command boundary
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --access-logformat=a;b
+        - --timeout=600
+        - wsgi
+    asserts:
+      # The same hole through a different metacharacter, pinned separately so
+      # narrowing the split to one of them cannot pass for fixing the class.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should not read gunicorn's own config flag as a shell script flag
+    set:
+      mlApi.command:
+        - gunicorn
+        - -c
+        - /etc/g.conf.py
+        - --access-logformat=%(h)s|%(t)s
+        - --timeout=600
+        - wsgi
+    asserts:
+      # `-c` is gunicorn's config-file flag as well as the shell's script flag,
+      # and only one of them is followed by a script. Counting this one as a
+      # script turns metacharacter splitting on for a direct argv command, and
+      # the pipe in the log format then cuts the `--timeout` away — the same
+      # command refusing without the pipe and rendering with it. What separates
+      # the two is that a script is multi-word and a config path is not.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should not invent a deadline behind an init wrapper
+    set:
+      mlApi.command:
+        - /sbin/tini
+        - --
+        - sh
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi & ./poll.sh -t 600 localhost
+    asserts:
+      # gunicorn is started bare; the 600 belongs to the poller past an
+      # unquoted `&`. Deciding shell-or-not by the program at the front makes
+      # `tini --` — an ordinary container entrypoint — read as a direct argv,
+      # which keeps the whole line in one segment and hands the poller's number
+      # to gunicorn. That refuses the render over a deadline nothing set, on a
+      # command that rendered fine before this chart had a probe at all.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should not invent a deadline behind a multi-call binary
+    set:
+      mlApi.command:
+        - busybox
+        - sh
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi & ./poll.sh -t 600 localhost
+    asserts:
+      # The same shape with the shell reached through busybox rather than a
+      # prefix runner. Pinned separately because a program list could learn
+      # `tini` and still not know this one — the point is that no list is
+      # consulted at all.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should still read shell operators when a shell runs the command
+    set:
+      mlApi.command:
+        - /usr/bin/env
+        - FOO=1
+        - bash
+        - -c
+        - gunicorn --bind 0.0.0.0:3333 wsgi & ./wait-for-it.sh -t 600 localhost:3333
+    asserts:
+      # The other half of the same decision, and the discriminating one: here a
+      # shell really does run the line, so `&` really is a boundary and the
+      # poller's -t belongs to the poller. Read as one argv instead, the tail
+      # after gunicorn swallows -t 600 and the render is refused over a
+      # deadline gunicorn was never given.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should read a shell whose script flag is clustered with another
+    set:
+      mlApi.command:
+        - bash
+        - -lc
+        - gunicorn --timeout=600 wsgi & ./wait-for-it.sh -t 30 localhost:3333
+    asserts:
+      # A shell takes its short options joined, and `-lc` runs a script exactly
+      # as `-c` does. Looked for as the word `-c`, this wrapper falls to the
+      # argv path, the whole line becomes one segment, and the poller's -t 30
+      # wins as the last deadline — hiding the real 600 behind a number
+      # gunicorn was never given.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read a shell whose script flag sits mid-cluster
+    set:
+      mlApi.command:
+        - bash
+        - -cl
+        - gunicorn --timeout=600 wsgi & ./wait-for-it.sh -t 30 localhost:3333
+    asserts:
+      # The same cluster written the other way round. Pinned separately because
+      # anchoring the letter at the end of the cluster passes the case above
+      # while still missing this one.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read the deadline behind an env prefix carrying flags
+    set:
+      mlApi.command:
+        - env
+        - -i
+        - bash
+        - -c
+        - gunicorn --timeout=600 wsgi & ./wait-for-it.sh -t 30 localhost:3333
+    asserts:
+      # Whatever stands between the container and the shell — `env` with flags
+      # of its own here — the script is still a script. Nothing walks the front
+      # of the argv looking for a known program, so there is no list for this
+      # spelling to be missing from.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should refuse a budget that only matches the deadline
+    set:
+      mlApi.startupBudgetSeconds: 120
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=120
+        - wsgi
+    asserts:
+      # The transition point of the guard, and the whole of what `le` decides
+      # over `lt`. Equal is not above: kubelet would kill the container at the
+      # same instant the arbiter deadline expires, which is the outcome the
+      # comment beside the guard promises cannot happen. Both values.yaml and
+      # the error message state the contract as "above", so the boundary is
+      # the sentence being enforced, not an edge case beside it.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 120, which is not above the 120s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 120.
+
+  - it: should take the last of two deadline flags rather than the first
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=120
+        - --timeout=600
+        - wsgi
+    asserts:
+      # argparse lets a repeated option win from the right, so the worker
+      # really gets 600. Answering with the first leaves the budget covering
+      # 120 and the pod killed at 140 while gunicorn still allows 600 — the
+      # guard approving exactly what it exists to refuse.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should let a trailing zero switch the deadline off
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=600
+        - --timeout=0
+        - wsgi
+    asserts:
+      # The last word disables gunicorn's arbiter, so there is no deadline to
+      # pair against and this renders. Leaving the earlier 600 standing as the
+      # answer refuses a wholly valid command — a hard install failure, which
+      # is the louder way to be wrong.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should take a short-form deadline that comes last
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=600
+        - -t
+        - "120"
+        - wsgi
+    asserts:
+      # Effective deadline is 120, which the default budget covers, so this
+      # renders. Searching the long spelling first answers by spelling rather
+      # than by position and refuses it.
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 15
+
+  - it: should take a long-form deadline that comes last
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - -t
+        - "120"
+        - --timeout=600
+        - wsgi
+    asserts:
+      # The mirror of the case above, and the one that used to come out right
+      # by luck: the long form was searched first and happened to also be last.
+      # Pinned so the answer stays positional rather than coincidental.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should refuse a mention that carries the deadline flag
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - echo about to start gunicorn -t 600 && python serve.py
+    asserts:
+      # Deciding invocation from a flag cannot tell this from the real thing,
+      # so the 600 is read as a boot deadline and the render is refused. Pinned
+      # because it is the expensive half of that trade: a mention carrying
+      # -b or -w only prints a NOTES line, while this one blocks the install
+      # naming a deadline no process here has.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should not read a leading-zero deadline as octal
+    set:
+      mlApi.command:
+        - gunicorn
+        - --bind=0.0.0.0:3333
+        - --timeout=0200
+        - wsgi
+    asserts:
+      # `int` parses 0200 as octal 128, which clears the 140s budget while
+      # gunicorn really allows 200 — a misread that fails open. atoi reads it
+      # as 200 and the pair is refused.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 200s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 200.
+
+  - it: should read the deadline from a wrapped command with attached values
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn -b0.0.0.0:3333 -w1 -t600 wsgi
+    asserts:
+      # argparse takes a short option's value attached or separated, and the
+      # attached form is the terser habit. Requiring a separator on -b/-w while
+      # the deadline reader accepts -t600 attached leaves one half of the same
+      # check unable to read what the other half already does.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should read the deadline from a wrapped command using short flags
+    set:
+      mlApi.command:
+        - bash
+        - -c
+        - gunicorn -b 0.0.0.0:3333 -w 1 -t 600 wsgi
+    asserts:
+      # `-b` and `-w` are what fit on a one-line `bash -c`, and gunicorn
+      # documents them alongside the long spellings. Recognised only by the
+      # long ones, this command reads as a mention rather than an invocation,
+      # and the 600s deadline is never paired against the 140s budget.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds is 140, which is not above the 600s boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above 600.
+
+  - it: should refuse a startup budget that was deleted rather than set
+    set:
+      mlApi.startupBudgetSeconds: null
+      mlApi.command:
+        - python
+        - serve.py
+    asserts:
+      # null removes the key instead of restoring the default, so the schema
+      # minimum never sees it and `int` yields 0. A non-gunicorn command has no
+      # deadline to pair against, so nothing else would catch it: the probe
+      # would render a threshold Kubernetes replaces with its own default of 3,
+      # handing the slowest hardware the shortest budget without a word.
+      - failedTemplate:
+          errorMessage: mlApi.startupBudgetSeconds must be a positive number of seconds. Setting it to null deletes the key rather than restoring the chart default, so remove the override instead of emptying it. If an upgrade reached this without your setting the key at all, re-run it with --reset-then-reuse-values, which layers the chart's defaults under the values you already had.

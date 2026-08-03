@@ -217,6 +217,11 @@
           },
           "description": "Accelerator resources merged into the ml-api container limits when gpu is true"
         },
+        "startupBudgetSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Seconds the ml-api container gets to answer /hc/ before a restart"
+        },
         "replicaCount": {
           "type": "integer",
           "minimum": 0,

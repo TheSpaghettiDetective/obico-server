@@ -61,6 +61,24 @@ To view logs:
 
   kubectl --namespace {{ .Release.Namespace }} logs -l "app.kubernetes.io/name={{ include "obico.name" . }},app.kubernetes.io/component=web" --tail=100 -f
 
+{{- /* Only for gunicorn: the deployment deliberately accepts a command that is
+       something else entirely, and telling those people to add an arbiter flag
+       their process does not have blames the wrong thing for a failure they
+       are not having. */}}
+{{- if and .Values.mlApi.enabled (include "obico.mlApiRunsGunicorn" .) (not (include "obico.mlApiBootDeadline" .)) }}
+
+WARNING: no timeout could be read from mlApi.command. The detection model is
+  loaded at import, so it loads inside worker boot, and on slower hardware that
+  can outrun gunicorn's 30s default: the worker is killed mid-load and
+  respawned behind a socket that stays open, so the container never answers
+  /hc/. The startup probe then restarts it once mlApi.startupBudgetSeconds runs
+  out, and that budget is the boot ceiling whatever the command does. It
+  currently allows at least {{ .Values.mlApi.startupBudgetSeconds }}s, spent in
+  whole 10s probe periods rounded up — raise it if the model genuinely needs
+  longer, and keep any --timeout you set below it, so that gunicorn gives up on
+  the worker before the probe gives up on the container.
+{{- end }}
+
 For more information:
   - Chart: https://github.com/TheSpaghettiDetective/obico-server/tree/release/charts/obico
   - Obico: https://www.obico.io/

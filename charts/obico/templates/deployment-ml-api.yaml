@@ -1,5 +1,33 @@
 {{- if .Values.mlApi.enabled }}
 {{- $mlImage := ternary .Values.image.mlApi.gpu .Values.image.mlApi.cpu .Values.mlApi.gpu -}}
+{{- $period := 10 -}}
+{{- $budget := int .Values.mlApi.startupBudgetSeconds -}}
+{{/*
+Explicitly, because `null` in a values file deletes the key rather than setting
+it, and a deleted key never reaches the `minimum` in values.schema.json. `int`
+turns the resulting nil into 0, which would size the probe at a threshold
+Kubernetes silently replaces with its own default — a 30s budget, on exactly
+the slow hardware this value exists for, reported nowhere.
+*/}}
+{{- if lt $budget 1 -}}
+  {{- fail "mlApi.startupBudgetSeconds must be a positive number of seconds. Setting it to null deletes the key rather than restoring the chart default, so remove the override instead of emptying it. If an upgrade reached this without your setting the key at all, re-run it with --reset-then-reuse-values, which layers the chart's defaults under the values you already had." -}}
+{{- end -}}
+{{/*
+Two numbers that only work as a pair. gunicorn kills a worker that has not
+booted within its deadline and respawns it behind a socket that stays open, so
+the startup probe is the only thing that turns an unbootable image into a
+restart; a budget at or below the deadline kills the pod while the first
+worker still has time left.
+*/}}
+{{/*
+atoi, not int: int reads a leading zero as octal, so `--timeout=0200` would
+come back as 128 and clear a 140s budget while gunicorn really allows 200 —
+a misread that fails open. The helper already guarantees digits.
+*/}}
+{{- $deadline := atoi (include "obico.mlApiBootDeadline" .) -}}
+{{- if and (gt $deadline 0) (le $budget $deadline) -}}
+  {{- fail (printf "mlApi.startupBudgetSeconds is %d, which is not above the %ds boot deadline in mlApi.command. Kubernetes would restart the container while gunicorn still allows the worker to finish loading the model. Raise startupBudgetSeconds above %d." $budget $deadline $deadline) -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -49,7 +77,7 @@ spec:
             - name: http
               containerPort: 3333
               protocol: TCP
-          # Cheap socket check for liveness; readiness uses /hc/.
+          # Cheap socket check for liveness; startup and readiness use /hc/.
           livenessProbe:
             tcpSocket:
               port: http
@@ -57,11 +85,42 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 6
+          # The boot window belongs here, not on the readiness probe: a
+          # container that has never passed readiness is NotReady from the
+          # start whatever its failureThreshold says, so that number cannot
+          # grant the model time to load. A worker that misses the arbiter
+          # deadline in mlApi.command is killed and respawned forever behind a
+          # listening socket, so without this probe the pod sits NotReady with
+          # a green liveness check and no restarts, and nothing says why.
+          # Crossing the threshold turns that into CrashLoopBackOff, which is
+          # visible.
+          #
+          # Rounded up and then one more, because the failures are fenceposts
+          # rather than intervals. kubelet probes once as soon as the container
+          # is running and only then starts waiting out the period, so N
+          # consecutive failures span (N-1) periods, not N. Take the +1 away
+          # and a budget of 140 buys 130 seconds, which is the kind of gap the
+          # pairing check below is supposed to make impossible: the check
+          # admits any budget above the deadline, so a 130s budget against a
+          # 129s deadline would pass while the container is killed 9 seconds
+          # early.
+          startupProbe:
+            httpGet:
+              path: /hc/
+              port: http
+            periodSeconds: {{ $period }}
+            timeoutSeconds: 5
+            failureThreshold: {{ add (ceil (divf $budget $period) | int) 1 }}
+          # No initialDelaySeconds: the startup probe has already proved /hc/
+          # answers, so delaying the first check only keeps a working pod out
+          # of the Service. failureThreshold governs the one thing readiness
+          # decides, how long a pod that stopped answering keeps taking
+          # traffic, and a single worker holds a stalled inference for the
+          # whole --timeout period.
           readinessProbe:
             httpGet:
               path: /hc/
               port: http
-            initialDelaySeconds: 15
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6

@@ -7,8 +7,8 @@
 # (.github/workflows/build-images.yaml) and published to GHCR under the
 # repository owner's namespace (ghcr.io/thespaghettidetective/* upstream). Each
 # tag defaults to the "release" moving tag the workflow publishes on the release
-# branch; pin a specific tag (a CalVer like 2026.7.1 or sha-<short>) for
-# reproducibility.
+# branch; pin an immutable tag for reproducibility: `<calver>-g<short>` (e.g.
+# `2026.7.11-g49c0bc70`) or the terse `sha-<short>`.
 image:
   # -- Web application image (Django + Celery)
   web:
@@ -16,9 +16,10 @@ image:
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the "release" moving tag
     tag: ""
-  # -- ML inference API images. Two variants are published from the same source:
-  # a slim CPU-only image (default) and a CUDA image for GPU inference.
-  # mlApi.gpu selects which one runs; configure each variant independently.
+  # -- ML inference API images. The chart runs one of two variants built from
+  # the same source: a slim CPU-only image (default) and a CUDA image for GPU
+  # inference. mlApi.gpu selects which one runs; configure each variant
+  # independently.
   mlApi:
     pullPolicy: IfNotPresent
     # -- CPU-only inference image (slim). Used when mlApi.gpu is false.
@@ -179,13 +180,46 @@ mlApi:
     nvidia.com/gpu: 1
   # -- Number of ml-api replicas
   replicaCount: 1
-  # -- Command for the gunicorn inference server
+  # -- Command for the gunicorn inference server. The `--timeout` flag is
+  # load-bearing: the model is loaded at import, so it happens inside worker
+  # boot, and the default 30s arbiter deadline would kill the worker and
+  # respawn it forever on a slower node — the pod would never go ready and
+  # never crash-loop, so nothing would say why. Note it is not boot-only: the
+  # same value bounds request handling, and with a single worker a stalled
+  # inference holds that worker for the whole period before the arbiter
+  # recycles it. Readiness drops the pod out of the Service after 60s of that,
+  # which is the only part probes can help with; the boot case belongs to
+  # startupBudgetSeconds, which has to stay above whatever is set here. Not
+  # solved with gunicorn `--preload`, which would load the model in the arbiter
+  # and take it out from under this deadline: server.py calls load_net at
+  # import, and on the GPU images that initialises CUDA or opens a
+  # CUDAExecutionProvider session, and `--preload` still forks the worker
+  # afterwards.
   command:
     - gunicorn
     - --bind=0.0.0.0:3333
     - --workers=1
+    - --timeout=120
     - --access-logfile=-
     - wsgi
+  # -- Seconds the container gets to answer /hc/ before Kubernetes restarts
+  # it. Has to stay above the `--timeout` in command, or the pod is killed
+  # while the first worker still has time left to finish loading; rendering
+  # fails when it is not. Raise both together on hardware where the model
+  # takes longer than this to load, and note that raising this alone only
+  # delays the restart of an image that cannot boot at all.
+  # This is the boot ceiling for every shape of command, including the ones no
+  # deadline can be read out of: a `gunicorn.conf.py` passed with `-c`, an
+  # explicit `--timeout=0`, or a command that is not gunicorn at all. Before
+  # this chart had a startup probe such a container stayed NotReady for as long
+  # as the load took, so long as it had opened the port — the tcpSocket
+  # liveness check still ended one that never bound at all. Now the budget ends
+  # it either way, and the render-time pairing check cannot warn about a
+  # deadline it cannot see. Raise this to whatever the slowest boot needs.
+  # Spent in whole probe periods of 10s, rounded up, so a value below 10 still
+  # buys one period and one below the deadline is refused rather than rounded
+  # into looking sufficient.
+  startupBudgetSeconds: 140
   # -- Security context for the ml-api container.
   # Left empty (image default = root) because the upstream CUDA-based ml-api
   # image is not validated to run unprivileged (model cache and runtime expect

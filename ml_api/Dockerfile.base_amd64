@@ -32,7 +32,21 @@ COPY --from=darknet_builder /darknet /darknet
 WORKDIR /app
 RUN apt update && apt install --no-install-recommends -y ca-certificates python3-pip wget
 RUN pip install --upgrade pip
-RUN pip install opencv_python_headless onnxruntime-gpu
+# opencv pinned at the last 4.x that bounds numpy on both sides. The published
+# base holds OpenCV 4.9, whose wheel declares a numpy floor with no ceiling —
+# pip now hands its numpy-1 ABI extension a numpy 2 and the import dies. 4.12
+# fixes that without leaving the major every deployment is already running.
+# The wheel is abi3, which is why one version serves the other bases too.
+#
+# onnxruntime-gpu is pinned at what an unpinned install already resolves to,
+# which is the only claim being made here. It does not settle the open
+# question: from 1.19 these wheels target CUDA 12 while this base is CUDA
+# 11.4, so a session on CUDAExecutionProvider may well fail on real hardware.
+# Importing the module succeeds either way, so no CI job can see that, and
+# darknet is the GPU backend this image actually uses (lib/detection_model.py
+# tries it first). Answering it needs a GPU. Pinning at least makes the next
+# change to this dependency an explicit diff instead of a silent resolve.
+RUN pip install opencv_python_headless==4.12.0.88 onnxruntime-gpu==1.19.2
 
 ADD requirements.txt .
 RUN pip install -r requirements.txt

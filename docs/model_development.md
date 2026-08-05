@@ -12,7 +12,7 @@ The TSD model uses a convolutional neural network adapted from [YOLOv2](https://
 
 The model is run using https://github.com/AlexeyAB/darknet. **This is a fork of the [original Darknet framework](https://pjreddie.com/darknet/) with substantial changes made to how the model is loaded and evaluated**, and running on the "old" darknet will cause weird failures as a result.
 
-Darknet itself is a C-based framework that compiles to a [shared library](https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html) which we then access in Python via the [ctypes](https://docs.python.org/3/library/ctypes.html) library (see `ml_api/lib/detection_model.py`). These shared libraries live in `ml_api/bin/*.so` and are specific to the architecture of whatever's hosting the `ml_api` docker container.
+Darknet itself is a C-based framework that compiles to a [shared library](https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html) which we then access in Python via the [ctypes](https://docs.python.org/3/library/ctypes.html) library (see `ml_api/lib/detection_model.py`). Those shared libraries are built into the base image and live at `/darknet/libdarknet_gpu.so` and `/darknet/libdarknet_cpu.so` inside the container, so they are specific to the architecture the base was built for.
 
 The model is set up and hosted via `server.py`, which provides a `/p/?img=...` URL endpoint on port `3333` of the `ml_api` container.
 
@@ -30,11 +30,19 @@ When passed an image URL, the server:
 
 The `ml_api` container is made up of a base docker image that provides ML dependencies and an additional image that actually installs our model.
 
-To build the base image locally (replacing `_aarch64` with your architecture of choice as per `uname -a`):
+To build a base image locally, pick the Dockerfile for your target and tag it with the exact name `ml_api/Dockerfile` resolves its `FROM` to. The namespace and version are hardcoded there, so a differently named base is simply ignored. Both commands below deliberately produce the same tag — run only the one matching your host architecture, since that tag is what the next `docker-compose build ml_api` picks up:
 
+```bash
+# CUDA (amd64)
+docker build --tag thespaghettidetective/ml_api_base:1.4 -f ml_api/Dockerfile.base_amd64 ml_api
+
+# NVIDIA Jetson / L4T (arm64)
+docker build --tag thespaghettidetective/ml_api_base:1.4 -f ml_api/Dockerfile.base_arm64 ml_api
 ```
-cd ml_api && docker build --tag thespaghettidetective/ml_api:base-1.1 -f Dockerfile.base_aarch64 .
-```
+
+RK3588 is the exception: its tag carries a `-rk3588` suffix, which `docker-compose-rk3588.yml` passes as `IMAGE_TAG_SUFFIX` to select it. See [building_docker_images.md](building_docker_images.md) for that variant. The build asks whether `rknn-toolkit-lite2` imports in the base rather than trusting the tag, so the RKNN weights follow what the image can actually read whatever you called it.
+
+`./scripts/build_base_images.sh -v 1.4 -p <your-prefix>` (from `ml_api`) builds every target and assembles the multi-arch manifest, but it is a maintainer tool: it pushes each image as it goes, so it needs a registry you can write to, and its output only feeds a build whose `FROM` you have also edited. For local work use the single `docker build` above.
 
 To build the main image locally:
 
@@ -47,13 +55,13 @@ You can use the usual `docker-compose up` command to launch the whole ensemble i
 For rapid development, it's faster to launch `ml_api` on its own, mounting the local directory and exposing the web port:
 
 ```
-docker-compose run --service-ports --volume=./ml_api:/app ml_api /bin/bash
+docker compose run --service-ports --volume=./ml_api:/app ml_api /bin/bash
 
 # Run this command when the container starts, and re-run it whenever you make a code change
-gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi
+gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi
 ```
 
-When you see `Loaded - names_list: model/names, classes = 1` in the logs, the model server should be ready.
+When you see `Loaded - names_list: /app/model/names, classes = 1` in the logs, the model server should be ready.
 
 You can verify the server is up by going to http://localhost:3333/hc/ in your browser (or replacing `localhost` with the host name if developing remotely). It should return a white page with the word `ok`.
 
@@ -92,11 +100,11 @@ You should see a result that looks like:
 
 ## Rebuilding darknet shared objects
 
-You may wish to rebuild the `ml_api/bin/*.so` files when updates to other dependencies of darknet - such as CUDART - cause `ml_api` to crash when attempting to load or run the model. This is especially true when hosting on the Jetson Nano, which regularly updates their [developer kit image](https://developer.nvidia.com/embedded/downloads) to use newer versions of these dependencies which may not be backwards-compatible (see e.g. [this issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/552)).
+You may wish to rebuild the darknet shared objects when updates to other dependencies of darknet - such as CUDART - cause `ml_api` to crash when attempting to load or run the model. This is especially true when hosting on the Jetson Nano, which regularly updates their [developer kit image](https://developer.nvidia.com/embedded/downloads) to use newer versions of these dependencies which may not be backwards-compatible (see e.g. [this issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/552)).
 
 Original instructions on how to build these libraries are available [here](https://github.com/AlexeyAB/darknet#how-to-use-yolo-as-dll-and-so-libraries).
 
-Run these commands on your host device to build the darknet `*.so` file and install it within the Spaghetti Detective repo:
+The base image compiles darknet itself and copies the result to `/darknet`, so a locally built library has to be layered over that base. Run these commands on your host device to build the `*.so` and put it into an image:
 
 ```shell
 # Ensure nvcc is added to path
@@ -112,11 +120,18 @@ vim Makefile
 # Build the repository using all of the CPU cores on the host - this may take a few minutes
 make -j$(nproc)
 
-# Copy the built library to the correctly named location within ml_api/bin/
-PLATFORM=$(python3 -c "import platform; print(platform.machine())")
-cp libdarknet.so $TSD_PATH/ml_api/bin/model_gpu_$PLATFORM.so
+# Layer the library you just built over the published base, keeping the tag
+# ml_api/Dockerfile expects, then rebuild the app image on top of it.
+# Build from a directory holding just the library, so the darknet checkout's
+# object files are not shipped to the daemon. Re-tagging :1.4 in place is
+# deliberate: it shadows the pulled base for later builds.
+mkdir -p /tmp/darknet-overlay && cp libdarknet.so /tmp/darknet-overlay/
+cat > /tmp/darknet-overlay/Dockerfile <<'DOCKERFILE'
+FROM thespaghettidetective/ml_api_base:1.4
+COPY libdarknet.so /darknet/libdarknet_gpu.so
+DOCKERFILE
+docker build --tag thespaghettidetective/ml_api_base:1.4 /tmp/darknet-overlay
 
-# Rebuild the container so it contains the new shared library.
 cd $TSD_PATH && docker-compose build ml_api
 ```
 
@@ -127,7 +142,7 @@ If you get errors relating to other missing `*.so` files, you can confirm they'r
 Here's an example for an aarch64 device:
 
 ```shell
-$ docker exec -it --tty thespaghettidetective_ml_api_1 /bin/bash -c "ldd bin/model_gpu_aarch64.so"
+$ docker-compose exec ml_api /bin/bash -c "ldd /darknet/libdarknet_gpu.so"
 ```
 
 You should see dependencies listed like so:
@@ -162,11 +177,11 @@ A (hacky) workaround to this is to force create these symlinks before running th
 services:
   ml_api:
     ...
-    command: bash -c "ln -sf /usr/lib/aarch64-linux-gnu/tegra/libcuda.so /usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1 && ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.440.18 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.1 && gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+    command: bash -c "ln -sf /usr/lib/aarch64-linux-gnu/tegra/libcuda.so /usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1 && ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.440.18 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.1 && gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi"
 ```
 
 ## Troubleshooting segmentation faults
 
 Segfaults can happen when there is a mismatch in the compiled darknet shared library and the python code attempting to run it. You may not get a lot of detail if you're running a python script and the segfault happens in C code - in this case, prepending your shell command with `PYTHONFAULTHANDLER=1` can increase the amount of information you get back (details [here](https://docs.python.org/3/library/faulthandler.html)).
 
-If the segfault appears to be about trying to invoke a method that the `*.so` file doesn't have, you can run `nm -D bin/model_aarch64.so` to see inside the binary and confirm whether or not this is actually the case.
+If the segfault appears to be about trying to invoke a method that the `*.so` file doesn't have, you can run `nm -D /darknet/libdarknet_gpu.so` to see inside the binary and confirm whether or not this is actually the case.

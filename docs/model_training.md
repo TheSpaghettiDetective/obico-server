@@ -40,7 +40,10 @@ The repository contains model configuration details which we'll need for trainin
 
 ```shell
 git clone https://github.com/TheSpaghettiDetective/obico-server.git
-cd obico-server && wget -O ml_api/model/model.weights $(cat ml_api/model/model.weights.url | tr -d '\r')
+cd obico-server && sh ml_api/scripts/fetch_verified.sh \
+  "$(tr -d '\r' < ml_api/model/model-weights.darknet.url)" \
+  ml_api/model/model.weights 50000000 \
+  "$(tr -d '\r' < ml_api/model/model-weights.darknet.sha256)"
 ```
 
 ### Collect and Prepare Data
@@ -88,12 +91,14 @@ Watch the `0.XXXXXX avg` value, and wait until it stops decreasing. At this poin
 
 ### Evaluate Performance
 
-We don't yet know whether the model will perform better in the field. Let's start up the server running our new weights to see how it performs (you can also find more data on model development steps [here](https://github.com/TheSpaghettiDetective/orbico-server/blob/master/docs/model_development.md)):
+We don't yet know whether the model will perform better in the field, so let's start the server on the new weights and see. It loads them from `/model_cache/ml_api/<format>/` rather than from `ml_api/model/`, so the trained file has to be mounted over the one the image downloaded, and the extension matters because `load_net` dispatches on it (you can also find more data on model development steps [here](https://github.com/TheSpaghettiDetective/obico-server/blob/master/docs/model_development.md)):
 
 ```
 docker-compose build ml_api
-cp ./path_to_new_model_weights ml_api/model/model.weights
-docker-compose run --service-ports --volume=./ml_api:/app ml_api /bin/bash -ic "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+docker compose run --service-ports \
+  --volume=./ml_api:/app \
+  --volume=./path_to_new_model_weights:/model_cache/ml_api/darknet/model-weights.darknet \
+  ml_api /bin/bash -ic "gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi"
 ```
 
 In a separate shell, start a local server to provide your images: `cd path/to/test && python3 -m http.server`
@@ -112,4 +117,4 @@ The model server will return a JSON blob with bounding box information for any s
 
 Given that this guide is for fine-tuning the model to your specific printing setup, it's unlikely that it will perform better than the base model in the general case.
 
-However, if you have suggestions or improvements to the overall quality of the model, please open a [new issue](https://github.com/TheSpaghettiDetective/orbico-server/issues/new/choose) where it can be discussed.
+However, if you have suggestions or improvements to the overall quality of the model, please open a [new issue](https://github.com/TheSpaghettiDetective/obico-server/issues/new/choose) where it can be discussed.

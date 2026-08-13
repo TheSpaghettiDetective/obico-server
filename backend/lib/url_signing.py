@@ -23,16 +23,24 @@ def calculate_hmac_digest(path: str):
     return base64.urlsafe_b64encode(str(digest).encode()).decode()
 
 
-def new_signed_url(url_str: str) -> str:
+def new_signed_url(url_str: str, rewrite_host: Optional[str] = None) -> str:
     """
     Signs a URL based on a given
 
     Signature is appended in the form of URL parameters in the query string. Note that
     the entire query string will be replaced (everything after '?' in the URL).
+
+    If rewrite_host is given, absolute URLs are rewritten to point at that host, with
+    the scheme taken from the SITE_USES_HTTPS setting. Relative URLs are left as-is.
+    The digest is calculated from the path only, so rewriting the host does not
+    invalidate the signature.
     """
     parsed_url = urlparse(url_str)
     digest = calculate_hmac_digest(parsed_url.path)
     signed_url = parsed_url._replace(query=f"digest={digest}")
+    if rewrite_host and parsed_url.netloc:
+        scheme = 'https' if settings.SITE_USES_HTTPS else 'http'
+        signed_url = signed_url._replace(scheme=scheme, netloc=rewrite_host)
     return urlunparse(signed_url)
 
 

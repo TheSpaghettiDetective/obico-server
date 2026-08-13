@@ -31,8 +31,17 @@ def print_progress_bar(iteration, total, prefix='Progress:', suffix='Complete', 
 class Command(BaseCommand):
     help = '(re-)signs all media URLs. Must be run once after updating, and any time the Django SECRET_KEY is rotated'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--rewrite-host',
+            default=None,
+            help='Also rewrite absolute media URLs to point at this host, e.g. "obico.example.com". '
+                 'Use after the server domain has changed. The scheme is taken from the SITE_USES_HTTPS setting. '
+                 'Relative URLs are left untouched.'
+        )
+
     @staticmethod
-    def _resign_urls_on_model(obj: models.Model, url_fields: List[str]):
+    def _resign_urls_on_model(obj: models.Model, url_fields: List[str], rewrite_host=None):
         changed = False
         total_rows = len(obj.objects.all())
         print(f"Resigning {obj.__name__} URLs ({total_rows} rows)...")
@@ -40,7 +49,7 @@ class Command(BaseCommand):
             for url_field in url_fields:
                 url = getattr(row, url_field)
                 if url:
-                    setattr(row, url_field, new_signed_url(url))
+                    setattr(row, url_field, new_signed_url(url, rewrite_host=rewrite_host))
                     changed = True
             if changed:
                 row.save()
@@ -48,23 +57,27 @@ class Command(BaseCommand):
                 print_progress_bar(idx + 1, total_rows)
         print_progress_bar(1, 1)
 
-    def resign_urls(self):
+    def resign_urls(self, rewrite_host=None):
         self._resign_urls_on_model(
             obj=GCodeFile,  # type: ignore
-            url_fields=['url', 'thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url']
+            url_fields=['url', 'thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url'],
+            rewrite_host=rewrite_host
         )
         self._resign_urls_on_model(
             obj=Print,  # type: ignore
-            url_fields=['video_url', 'tagged_video_url', 'poster_url', 'prediction_json_url']
+            url_fields=['video_url', 'tagged_video_url', 'poster_url', 'prediction_json_url'],
+            rewrite_host=rewrite_host
         )
         self._resign_urls_on_model(
             obj=PrinterEvent,  # type: ignore
-            url_fields=['image_url']
+            url_fields=['image_url'],
+            rewrite_host=rewrite_host
         )
         self._resign_urls_on_model(
             obj=PrintShotFeedback,  # type: ignore
-            url_fields=['image_url']
+            url_fields=['image_url'],
+            rewrite_host=rewrite_host
         )
 
     def handle(self, *args, **options):
-        self.resign_urls()
+        self.resign_urls(rewrite_host=options['rewrite_host'])

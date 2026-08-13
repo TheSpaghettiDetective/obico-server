@@ -1,9 +1,10 @@
-from django.test import TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from unittest.mock import patch
 
 
 from app.models import User, HeaterTracker, Printer, Print
 from .heater_trackers import process_heater_temps
+from .url_signing import HmacSignedUrl, new_signed_url
 
 
 class HeaterTrackerTestCase(TransactionTestCase):
@@ -225,3 +226,40 @@ class HeaterTrackerTestCase(TransactionTestCase):
 
         self.assertEqual(print.PrintHeaterTarget_set.first().name, 'h0')
         self.assertEqual(print.PrintHeaterTarget_set.first().target, 60.0)
+
+
+class NewSignedUrlTestCase(TestCase):
+
+    def test_host_is_preserved_without_rewrite_host(self):
+        signed = new_signed_url('http://old-host:3334/media/tsd-timelapses/private/1.mp4?digest=stale')
+
+        self.assertTrue(signed.startswith('http://old-host:3334/media/tsd-timelapses/private/1.mp4?digest='))
+        self.assertTrue(HmacSignedUrl(signed).is_authorized())
+
+    @override_settings(SITE_USES_HTTPS=False)
+    def test_rewrite_host_replaces_scheme_and_host(self):
+        signed = new_signed_url(
+            'https://old-host:3334/media/tsd-timelapses/private/1.mp4?digest=stale',
+            rewrite_host='new-host')
+
+        self.assertTrue(signed.startswith('http://new-host/media/tsd-timelapses/private/1.mp4?digest='))
+
+    @override_settings(SITE_USES_HTTPS=True)
+    def test_rewrite_host_uses_https_when_site_uses_https(self):
+        signed = new_signed_url(
+            'http://old-host:3334/media/tsd-timelapses/private/1.mp4',
+            rewrite_host='new-host')
+
+        self.assertTrue(signed.startswith('https://new-host/media/tsd-timelapses/private/1.mp4?digest='))
+
+    def test_rewrite_host_leaves_relative_url_untouched(self):
+        signed = new_signed_url('/media/g_code_files/1.gcode?digest=stale', rewrite_host='new-host')
+
+        self.assertTrue(signed.startswith('/media/g_code_files/1.gcode?digest='))
+
+    def test_digest_is_valid_after_rewrite(self):
+        signed = new_signed_url(
+            'http://old-host:3334/media/tsd-timelapses/private/1.mp4',
+            rewrite_host='new-host')
+
+        self.assertTrue(HmacSignedUrl(signed).is_authorized())

@@ -1,9 +1,13 @@
-from django.test import TransactionTestCase
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sites.models import Site
+from django.test import RequestFactory, TestCase, TransactionTestCase
 from unittest.mock import patch
 
 
 from app.models import User, HeaterTracker, Printer, Print
+from app.models.syndicate_models import Syndicate
 from .heater_trackers import process_heater_temps
+from .syndicate import syndicate_from_request
 
 
 class HeaterTrackerTestCase(TransactionTestCase):
@@ -225,3 +229,33 @@ class HeaterTrackerTestCase(TransactionTestCase):
 
         self.assertEqual(print.PrintHeaterTarget_set.first().name, 'h0')
         self.assertEqual(print.PrintHeaterTarget_set.first().target, 60.0)
+
+
+class SyndicateFromRequestTestCase(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.default_syndicate = Syndicate.objects.order_by('id').first()
+
+    def anonymous_request(self, host):
+        request = self.factory.get('/', HTTP_HOST=host)
+        request.user = AnonymousUser()
+        return request
+
+    def test_linked_site_resolves_its_own_syndicate(self):
+        other_syndicate = Syndicate.objects.create(name='other')
+        site = Site.objects.create(domain='linked.test', name='linked.test')
+        site.syndicates.set([other_syndicate])
+
+        self.assertEqual(
+            syndicate_from_request(self.anonymous_request('linked.test')),
+            other_syndicate)
+
+    def test_unlinked_site_falls_back_to_default_syndicate(self):
+        site = Site.objects.create(domain='unlinked.test', name='unlinked.test')
+        site.syndicates.clear()
+
+        self.assertIsNotNone(self.default_syndicate)
+        self.assertEqual(
+            syndicate_from_request(self.anonymous_request('unlinked.test')),
+            self.default_syndicate)

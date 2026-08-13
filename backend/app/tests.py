@@ -1,5 +1,5 @@
 from django.contrib.sites.models import Site
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
 from requests import Response
@@ -156,3 +156,15 @@ class PrinterEventTestCase(TestCase):
             }
 
             self.assertEqual(get_rotated_pic_url(self.printer), img_url)
+
+
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+class UnlinkedSitePageRenderTestCase(TestCase):
+
+    def test_login_page_renders_when_site_has_no_syndicate(self):
+        site = Site.objects.create(domain='unlinked.test', name='unlinked.test')
+        site.syndicates.clear()
+
+        response = self.client.get('/accounts/login/', HTTP_HOST='unlinked.test')
+
+        self.assertEqual(response.status_code, 200)

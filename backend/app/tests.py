@@ -1,6 +1,7 @@
 from django.contrib.sites.models import Site
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.core.management.base import CommandError
+from django.test import TestCase
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
 from requests import Response
@@ -9,7 +10,7 @@ from requests.exceptions import HTTPError
 from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User
 from app.models.syndicate_models import Syndicate
 from lib import mobile_notifications
-from lib.url_signing import HmacSignedUrl
+from lib.url_signing import HmacSignedUrl, new_signed_url
 from lib.utils import get_rotated_pic_url
 
 
@@ -182,7 +183,7 @@ class ResignMediaUrlsCommandTestCase(TestCase):
             url='/media/g_code_files/1.gcode?digest=stale',
         )
 
-    def test_without_rewrite_host_urls_keep_their_host(self):
+    def test_urls_keep_their_host_and_get_valid_digest(self):
         call_command('resign_media_urls')
 
         self.print.refresh_from_db()
@@ -190,18 +191,64 @@ class ResignMediaUrlsCommandTestCase(TestCase):
             'http://old-host:3334/media/tsd-timelapses/private/1.mp4?digest='))
         self.assertTrue(HmacSignedUrl(self.print.video_url).is_authorized())
 
-    @override_settings(SITE_USES_HTTPS=False)
-    def test_rewrite_host_rewrites_absolute_urls_with_valid_digest(self):
-        call_command('resign_media_urls', rewrite_host='new-host')
-
-        self.print.refresh_from_db()
-        self.assertTrue(self.print.video_url.startswith(
-            'http://new-host/media/tsd-timelapses/private/1.mp4?digest='))
-        self.assertTrue(HmacSignedUrl(self.print.video_url).is_authorized())
-
-    def test_rewrite_host_leaves_relative_urls_untouched(self):
-        call_command('resign_media_urls', rewrite_host='new-host')
-
         self.gcode_file.refresh_from_db()
         self.assertTrue(self.gcode_file.url.startswith('/media/g_code_files/1.gcode?digest='))
         self.assertTrue(HmacSignedUrl(self.gcode_file.url).is_authorized())
+
+
+class RewriteMediaUrlHostCommandTestCase(TestCase):
+
+    def setUp(self):
+        syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'test'})
+        self.user = User.objects.create(email='rewrite@test.com', syndicate=syndicate)
+        self.printer = Printer.objects.create(user=self.user)
+        self.print = Print.objects.create(
+            user=self.user,
+            printer=self.printer,
+            filename='test.gcode',
+            ext_id=1,
+            started_at=timezone.now(),
+            finished_at=timezone.now(),
+            video_url=new_signed_url('http://old-host:3334/media/tsd-timelapses/private/1.mp4'),
+            poster_url='https://storage.example.com/bucket/1.jpg?sig=provider',
+        )
+        self.gcode_file = GCodeFile.objects.create(
+            user=self.user,
+            filename='test.gcode',
+            safe_filename='test.gcode',
+            url=new_signed_url('/media/g_code_files/1.gcode'),
+        )
+
+    def test_matching_urls_are_rewritten_and_stay_valid(self):
+        old_video_url = self.print.video_url
+
+        call_command('rewrite_media_url_host', old_origin='http://old-host:3334', new_origin='https://new-host')
+
+        self.print.refresh_from_db()
+        self.assertEqual(self.print.video_url, old_video_url.replace('http://old-host:3334', 'https://new-host'))
+        self.assertTrue(HmacSignedUrl(self.print.video_url).is_authorized())
+
+    def test_other_origin_and_relative_urls_are_untouched(self):
+        call_command('rewrite_media_url_host', old_origin='http://old-host:3334', new_origin='https://new-host')
+
+        self.print.refresh_from_db()
+        self.gcode_file.refresh_from_db()
+        self.assertEqual(self.print.poster_url, 'https://storage.example.com/bucket/1.jpg?sig=provider')
+        self.assertTrue(self.gcode_file.url.startswith('/media/g_code_files/1.gcode?digest='))
+
+    def test_invalid_origin_is_rejected_before_touching_anything(self):
+        old_video_url = self.print.video_url
+
+        with self.assertRaises(CommandError):
+            call_command('rewrite_media_url_host', old_origin='old-host:3334', new_origin='https://new-host')
+
+        self.print.refresh_from_db()
+        self.assertEqual(self.print.video_url, old_video_url)
+
+    def test_dry_run_changes_nothing(self):
+        old_video_url = self.print.video_url
+
+        call_command('rewrite_media_url_host', old_origin='http://old-host:3334', new_origin='https://new-host', dry_run=True)
+
+        self.print.refresh_from_db()
+        self.assertEqual(self.print.video_url, old_video_url)

@@ -1,10 +1,10 @@
-from django.test import TestCase, TransactionTestCase, override_settings
+from django.test import TestCase, TransactionTestCase
 from unittest.mock import patch
 
 
 from app.models import User, HeaterTracker, Printer, Print
 from .heater_trackers import process_heater_temps
-from .url_signing import HmacSignedUrl, new_signed_url
+from .url_signing import HmacSignedUrl, new_signed_url, rewrite_url_origin
 
 
 class HeaterTrackerTestCase(TransactionTestCase):
@@ -230,36 +230,41 @@ class HeaterTrackerTestCase(TransactionTestCase):
 
 class NewSignedUrlTestCase(TestCase):
 
-    def test_host_is_preserved_without_rewrite_host(self):
+    def test_signed_url_keeps_scheme_host_and_path(self):
         signed = new_signed_url('http://old-host:3334/media/tsd-timelapses/private/1.mp4?digest=stale')
 
         self.assertTrue(signed.startswith('http://old-host:3334/media/tsd-timelapses/private/1.mp4?digest='))
         self.assertTrue(HmacSignedUrl(signed).is_authorized())
 
-    @override_settings(SITE_USES_HTTPS=False)
-    def test_rewrite_host_replaces_scheme_and_host(self):
-        signed = new_signed_url(
-            'https://old-host:3334/media/tsd-timelapses/private/1.mp4?digest=stale',
-            rewrite_host='new-host')
 
-        self.assertTrue(signed.startswith('http://new-host/media/tsd-timelapses/private/1.mp4?digest='))
+class RewriteUrlOriginTestCase(TestCase):
 
-    @override_settings(SITE_USES_HTTPS=True)
-    def test_rewrite_host_uses_https_when_site_uses_https(self):
-        signed = new_signed_url(
-            'http://old-host:3334/media/tsd-timelapses/private/1.mp4',
-            rewrite_host='new-host')
+    def test_matching_origin_is_rewritten_and_rest_of_url_is_preserved(self):
+        signed = new_signed_url('http://old-host:3334/media/tsd-timelapses/private/1.mp4')
 
-        self.assertTrue(signed.startswith('https://new-host/media/tsd-timelapses/private/1.mp4?digest='))
+        rewritten = rewrite_url_origin(signed, 'http://old-host:3334', 'https://new-host')
 
-    def test_rewrite_host_leaves_relative_url_untouched(self):
-        signed = new_signed_url('/media/g_code_files/1.gcode?digest=stale', rewrite_host='new-host')
+        self.assertEqual(rewritten, signed.replace('http://old-host:3334', 'https://new-host'))
+        self.assertTrue(HmacSignedUrl(rewritten).is_authorized())
 
-        self.assertTrue(signed.startswith('/media/g_code_files/1.gcode?digest='))
+    def test_other_origin_is_untouched(self):
+        url = 'https://storage.example.com/bucket/1.mp4?sig=provider'
 
-    def test_digest_is_valid_after_rewrite(self):
-        signed = new_signed_url(
-            'http://old-host:3334/media/tsd-timelapses/private/1.mp4',
-            rewrite_host='new-host')
+        self.assertEqual(rewrite_url_origin(url, 'http://old-host:3334', 'https://new-host'), url)
 
-        self.assertTrue(HmacSignedUrl(signed).is_authorized())
+    def test_relative_url_is_untouched(self):
+        url = '/media/g_code_files/1.gcode?digest=abc'
+
+        self.assertEqual(rewrite_url_origin(url, 'http://old-host:3334', 'https://new-host'), url)
+
+    def test_origin_matching_ignores_case_and_trailing_slash(self):
+        rewritten = rewrite_url_origin(
+            'http://OLD-Host:3334/media/1.mp4?digest=abc', 'http://old-host:3334/', 'https://New-Host/')
+
+        self.assertEqual(rewritten, 'https://new-host/media/1.mp4?digest=abc')
+
+    def test_invalid_origin_is_rejected(self):
+        with self.assertRaises(ValueError):
+            rewrite_url_origin('http://old-host:3334/media/1.mp4', 'old-host:3334', 'https://new-host')
+        with self.assertRaises(ValueError):
+            rewrite_url_origin('http://old-host:3334/media/1.mp4', 'http://old-host:3334', 'https://new-host/media')

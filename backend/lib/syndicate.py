@@ -13,8 +13,9 @@ def syndicate_from_request(request):
     if syndicate_header:
       return Syndicate.objects.get(name=syndicate_header)
 
-    # 3. site syndicate is the default.
-    return get_current_site(request).syndicates.first()
+    # 3. site syndicate is the default. Fall back to the default syndicate if the site is not linked to any.
+    return get_current_site(request).syndicates.first() or \
+        Syndicate.objects.order_by('id').first()
 
 
 def settings_for_syndicate(syndicate_name):

@@ -141,6 +141,7 @@ module.exports = {
             'server-guides/advanced/reverse-proxy',
             'server-guides/advanced/nginx-proxy-manager',
             'server-guides/advanced/nvidia-gpu',
+            'server-guides/advanced/webcam-turn-server',
             'server-guides/advanced/gmail_smtp_setup_guide',
             'server-guides/advanced/email_guide',
             'server-guides/advanced/telegram_guide',

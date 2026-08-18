@@ -3,6 +3,7 @@ from django.test import TestCase, override_settings
 from unittest.mock import *
 from django.utils import timezone
 from datetime import timedelta
+import time
 from django.test import Client
 from django.urls import reverse
 from safedelete.models import *
@@ -491,3 +492,39 @@ class OAuthPrinterFlowTestCase(TestCase):
         self.assertIsNotNone(data.get('auth_token'))
         # Verify printer was created in database for this user
         self.assertTrue(Printer.objects.filter(id=data['id'], user=self.user).exists())
+
+
+@override_settings(SITE_ID=1)
+class OctoPrinterViewTestCase(TestCase):
+
+    def setUp(self):
+        syndicate = setup_syndicate()
+        user = User.objects.create(email='agent@test.com', syndicate=syndicate)
+        self.printer = Printer.objects.create(user=user, name='Agent Test Printer', auth_token='agenttoken123')
+        self.client = Client(HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}')
+
+    @override_settings(TURN_SERVER=None)
+    def test_no_turn_when_not_configured(self):
+        response = self.client.get('/api/v1/octo/printer/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.json()['printer']['turn'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None, TURN_AGENT_CREDENTIAL_TTL=3600)
+    def test_turn_config_for_agent(self):
+        response = self.client.get('/api/v1/octo/printer/')
+
+        self.assertEqual(response.status_code, 200)
+        turn = response.json()['printer']['turn']
+        self.assertEqual(turn['server'], 'turn.example.com')
+        self.assertEqual(turn['port'], 3478)
+        self.assertEqual(turn['transports'], ['udp', 'tcp'])
+        self.assertTrue(turn['username'].endswith(f':printer-{self.printer.id}'))
+        self.assertTrue(turn['credential'])
+        self.assertAlmostEqual(turn['expires_at'], int(time.time()) + 3600, delta=5)
+
+    def test_rejects_invalid_token(self):
+        response = Client(HTTP_AUTHORIZATION='Token nope').get('/api/v1/octo/printer/')
+
+        self.assertEqual(response.status_code, 401)

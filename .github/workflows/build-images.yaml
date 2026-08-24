@@ -6,6 +6,13 @@ name: Build and publish images
 # ml-api service ships in two variants: a slim CPU-only image (default) and a
 # CUDA image for GPU inference. It then publishes the in-repo Helm chart as a
 # signed OCI artifact with those exact image tags baked in.
+#
+# ml-api-cpu also builds for linux/arm64 (in addition to amd64) - it has no
+# GPU/CUDA dependency, and both pinned inference deps (onnxruntime,
+# opencv-python-headless) ship aarch64 wheels, so there's no reason to limit
+# it to amd64 the way ml-api-gpu (CUDA-only) and web (matches ml-api-gpu's
+# platform for no particular reason beyond not having been asked for arm64
+# before) still are.
 
 on:
   # The release branch is the deploy branch; rebuild whenever it moves.
@@ -77,12 +84,20 @@ jobs:
           - name: web
             context: backend
             file: backend/Dockerfile
+            platforms: linux/amd64
           - name: ml-api-cpu
             context: ml_api
             file: ml_api/Containerfile.cpu
+            # No amd64-only dependency here (verified: onnxruntime and
+            # opencv-python-headless both ship aarch64 wheels for the
+            # versions this Containerfile pins) - only ml-api-gpu actually
+            # needs to stay amd64-only, for CUDA.
+            platforms: linux/amd64,linux/arm64
           - name: ml-api-gpu
             context: ml_api
             file: ml_api/Dockerfile
+            # CUDA-based - no arm64 build possible.
+            platforms: linux/amd64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -97,6 +112,12 @@ jobs:
           # mount. Bake it into the image instead.
           mv frontend backend/frontend
           echo 'RUN ln -s /app/frontend /frontend' >> backend/Dockerfile
+
+      # Needed for the arm64 leg of ml-api-cpu's multi-platform build - the
+      # runner itself is amd64, so arm64 goes through QEMU emulation.
+      # Harmless no-op for the amd64-only matrix entries.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -129,9 +150,7 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
-          # ml-api-gpu is CUDA-based and amd64-only; keep the whole matrix on
-          # amd64 for now. The CPU image can grow an arm64 variant later.
-          platforms: linux/amd64
+          platforms: ${{ matrix.platforms }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -3,8 +3,12 @@ annotations:
   # Valid kinds for changes: added, changed, deprecated, removed, fixed, security
   # See: https://artifacthub.io/docs/topics/annotations/helm/
   artifacthub.io/changes: |-
+    - kind: changed
+      description: Raise the tasks container memory limit to 2Gi and CPU limit to a full core so the post-print ffmpeg timelapse encode is no longer OOM-killed
+    - kind: changed
+      description: Raise the bundled redis memory request to 256Mi and limit to 512Mi to match its observed steady-state footprint
     - kind: added
-      description: Initial Helm chart for deploying the Obico server on Kubernetes
+      description: Publish the chart as a signed OCI artifact to GHCR with image tags pinned to the matching CalVer build
   artifacthub.io/license: BSD-3-Clause
   artifacthub.io/links: |
     - name: Obico Server
@@ -13,7 +17,7 @@ apiVersion: v2
 name: obico
 description: Self-hosted Obico server for AI-powered 3D printer monitoring (OctoPrint/Klipper)
 type: application
-version: "0.1.0"
+version: "0.2.0"
 # CalVer derived from the obico-server release commit these images are built from.
 appVersion: "2026.1.20"
 icon: https://www.obico.io/img/logo.svg

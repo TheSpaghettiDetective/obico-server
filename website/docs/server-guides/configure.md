@@ -123,6 +123,18 @@ cd obico-server && docker compose run web ./manage.py site --fix
 ```
 :::
 
+### 5. If you change the Django site later {#5-if-you-change-the-django-site-later}
+
+Links to timelapses, snapshots and other media are stored with the server address that was in use when they were created. If you later change the address (for example, moving from a LAN IP address to a domain name), those existing links will keep pointing at the old address and stop working. New prints are not affected.
+
+To fix the existing links, run the following command, replacing the two addresses with the old and the new address of your server, including `http://` or `https://` and the port if there is one:
+
+```
+cd obico-server && docker compose run web ./manage.py rewrite_media_url_host --old-origin http://old_server_ip_address:server_port --new-origin https://server_domain_name
+```
+
+Add `--dry-run` to see how many links would be changed without changing anything.
+
 ## (Re-)generate `DJANGO_SECRET_KEY` {#re-generate-django_secret_key}
 
 This step is optional. But you are highly recommended to generate `DJANGO_SECRET_KEY` and rotate (re-generate) it periodically, especially if you have your Obico Server exposed to the Internet via reverse proxy.

@@ -1,0 +1,596 @@
+# Checks that run before a change lands, as opposed to build-images.yaml,
+# which publishes after it has. Nothing here pushes anything: images are built
+# and exercised on the runner, so this works on a pull request from a fork,
+# where no registry credentials exist.
+name: ci
+
+on:
+  pull_request:
+    # Workflow-level, so a pull request touching only charts/ still starts the
+    # image and base legs. That is deliberate. Per-job filtering needs a
+    # third-party action, and the cost of not having it is small. Measured
+    # across three consecutive green runs rather than estimated: 674, 683 and
+    # 695 runner-seconds in total, so a shade over eleven runner-minutes, and
+    # 3.5 to 4 minutes of wall clock because the jobs run in parallel. The CUDA
+    # base paces it at 214 to 245 seconds; everything else is under two
+    # minutes, and the four image legs are under a minute each. Estimating this
+    # from bytes transferred gives a much larger number and is wrong: runner
+    # bandwidth is not the constraint, and layers are reused within a job.
+    # The timeout-minutes below are ceilings for a cold mirror or a stalled
+    # download, not the expected cost. Do not read them as one.
+    paths:
+      - '.github/**'
+      - 'backend/**'
+      - 'charts/**'
+      - 'ml_api/**'
+      # docker-compose-rk3588.yml is the only shipped consumer of
+      # IMAGE_TAG_SUFFIX, which is exactly what the bases job checks the probe
+      # against; frontend/ is moved into the web build context by the images
+      # job, so a break there is invisible without it.
+      - 'docker-compose*.yml'
+      - 'docs/**'
+      - 'frontend/**'
+      # The published guides are checked too, since they are where a reader
+      # copies a command from. That costs a full run on a docs-only change,
+      # which is the price of the check covering the files it names.
+      - 'website/**'
+  # On a merge as well as on the pull request: two changes that pass
+  # separately can conflict once combined — one rotates a URL in model/*.url
+  # while the other moves the checksum beside it — and without this nothing
+  # would report the result.
+  push:
+    branches: [master, release]
+    # The same list as above. Without it a merge touching only frontend/ would
+    # start three base builds and four image builds, and the cost reasoning in
+    # the comment above would quietly not apply to half the triggers.
+    paths:
+      - '.github/**'
+      - 'backend/**'
+      - 'charts/**'
+      - 'ml_api/**'
+      - 'docker-compose*.yml'
+      - 'docs/**'
+      - 'frontend/**'
+      - 'website/**'
+  # The hand-built bases pull third-party artifacts from URLs this project does
+  # not control, so they rot with nobody touching the repository. A weekly run
+  # turns that into a notification rather than a surprise during a release.
+  # Note that schedule only fires the copy of a workflow on the default branch,
+  # so this starts working once this file reaches it — until then the pull
+  # request legs are the only thing watching.
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch: {}
+
+concurrency:
+  # The event is part of the key: the weekly bases run exists to catch rot in
+  # third-party artifacts, and without it a push landing near the cron cancels
+  # that run or is cancelled by it.
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  scripts:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # The import assertion decides which module names to import from a
+      # directory listing, and the interesting cases (a wheel's sidecar
+      # directory, which is not a module) cannot be reproduced by running it
+      # against a healthy image.
+      - name: Self-test the image assertions
+        run: |
+          set -euo pipefail
+          # Discovered rather than listed, for the same reason the file
+          # patterns below are: a new script whose self-test nobody remembered
+          # to wire up is a self-test that never runs. Two things are checked,
+          # because a count alone catches only one of them. Anything without a
+          # self-test and outside the named exceptions fails the job, which is
+          # what catches a script being added; the floor catches a self-test
+          # being taken away from a script that had one.
+          ran=0
+          undertested=''
+          for script in .github/scripts/*.py .github/scripts/*.sh ml_api/scripts/*.sh; do
+            if grep --quiet -- --self-test "${script}"; then
+              case "${script}" in
+                *.py) python3 "${script}" --self-test ;;
+                # Under dash as well as the runner's sh, because the two are
+                # the same thing here and a construct that only bash
+                # implements would otherwise pass locally and fail here — or
+                # the reverse, which is worse.
+                *) sh "${script}" --self-test && dash "${script}" --self-test ;;
+              esac
+              ran=$((ran + 1))
+              continue
+            fi
+            case "${script}" in
+              # Driven end to end by the two negative-path steps below, which
+              # is a better test than anything it could run against itself.
+              .github/scripts/assert_inference_healthy.sh) ;;
+              # The hand-run helper for the Docker Hub base images, which
+              # predates these checks and is not part of this pipeline.
+              ml_api/scripts/build_base_images.sh) ;;
+              *) undertested="${undertested} ${script}" ;;
+            esac
+          done
+          if [ -n "${undertested}" ]; then
+            echo "::error::no --self-test in:${undertested}"
+            exit 1
+          fi
+          # Deliberately equal to today's count, not below it. The list above
+          # already reports a script that arrives without a self-test; what is
+          # left for a number to catch is a self-test being taken away from a
+          # script that had one, and any slack here is slack in that.
+          if [ "${ran}" -lt 9 ]; then
+            echo "::error::expected at least 9 scripts to self-test, ran ${ran}"
+            exit 1
+          fi
+          # Each weights download is gated on what the base can use, and the
+          # gate is only worth the name it looks for.
+          python3 .github/scripts/assert_probes_match_loaders.py ml_api/Dockerfile ml_api/lib
+
+      - name: Pull Docker Hub through a mirror
+        run: .github/scripts/use_registry_mirror.sh
+
+      - name: Fetch the image the negative tests run against
+        run: .github/scripts/retry.sh 3 docker pull --quiet alpine:3.19
+
+      - name: Exercise the health check's failing path
+        run: |
+          set -euo pipefail
+          if ATTEMPTS=2 .github/scripts/assert_inference_healthy.sh alpine:3.19 sleep 60 > negative.log 2>&1; then
+            echo "::error::the health check passed against a container that answers nothing"
+            exit 1
+          fi
+          if ! grep --quiet 'did not report a loaded model' negative.log; then
+            echo "::error::the health check failed without saying why"
+            cat negative.log
+            exit 1
+          fi
+
+          # The other failing branch, and the one the script was written for:
+          # a worker that dies at import takes the container with it, so it
+          # never reaches the timeout above. Without a case here that branch
+          # could regress into waiting out the full deadline unnoticed.
+          if ATTEMPTS=2 .github/scripts/assert_inference_healthy.sh alpine:3.19 true > exited.log 2>&1; then
+            echo "::error::the health check passed against a container that exited"
+            exit 1
+          fi
+          if ! grep --quiet 'exited before answering' exited.log; then
+            echo "::error::a container that died at boot was reported as a timeout"
+            cat exited.log
+            exit 1
+          fi
+
+      # actionlint shellchecks run: blocks inside the workflows, and nothing
+      # else touches the standalone scripts — which are the most intricate
+      # shell here: POSIX sh, a trap, errexit suppressed inside conditions, a
+      # background socket server.
+      - name: Lint the shell scripts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          # Globbed over .github/scripts, where every shell file is one of
+          # these guards. An unmatched glob reaches shellcheck as a literal
+          # path and fails, so an emptied directory does not pass quietly.
+          # ml_api/scripts predates this, so only the script added there is
+          # named; the rest carries warnings of its own.
+          shellcheck .github/scripts/*.sh ml_api/scripts/fetch_verified.sh
+
+      # These workflows are 800 lines of YAML whose failure mode is a syntax
+      # error discovered on the release branch.
+      - name: Lint the workflows
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --output actionlint.tar.gz \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  actionlint.tar.gz" | sha256sum --check --strict
+          tar --extract --gzip --file actionlint.tar.gz --directory /usr/local/bin actionlint
+          actionlint
+
+  chart:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.18.4
+
+      - name: Lint the chart
+        run: helm lint charts/obico
+
+      - name: Run the chart unit tests
+        run: |
+          set -euo pipefail
+          # From a checkout at a specific commit, not a tag, because a tag can
+          # be moved under it. Weaker than the two sha256 checks above, and
+          # deliberately so: this fixes which install hook runs and which
+          # version string it asks for, but that hook then downloads a release
+          # binary and verifies it against a checksum published in the same
+          # release, so whoever can replace one can replace the other.
+          git clone --quiet https://github.com/helm-unittest/helm-unittest.git plugin-src
+          git -C plugin-src checkout --quiet 33c48cac798e465deda9a66c8e6c07c0973cf53d
+          helm plugin install ./plugin-src
+          helm unittest charts/obico
+
+      # The README is generated from README.md.gotmpl and values.yaml. Editing
+      # either without regenerating leaves the published documentation
+      # describing a chart that no longer exists, which nothing else catches.
+      - name: Check the generated README is current
+        run: |
+          set -euo pipefail
+          # Checksummed, not merely pinned: a release asset can be replaced
+          # under an existing tag, and this one lands straight in a directory
+          # on PATH.
+          curl --fail --location --silent --output helm-docs.tar.gz \
+            https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz
+          echo "a8cf72ada34fad93285ba2a452b38bdc5bd52cc9a571236244ec31022928d6cc  helm-docs.tar.gz" | sha256sum --check --strict
+          tar --extract --gzip --file helm-docs.tar.gz --directory /usr/local/bin helm-docs
+          helm-docs --chart-search-root charts
+          # --porcelain rather than diff: helm-docs writing a README for a
+          # chart that had none leaves an untracked file, which a diff does not
+          # see.
+          # Output against input, not output against output: the staleness
+          # check below compares the generated README to the committed one and
+          # cannot see a key that vanished from both.
+          python3 .github/scripts/assert_values_documented.py \
+            charts/obico/values.yaml charts/obico/README.md \
+            charts/obico/values.schema.json
+          if [ -n "$(git status --porcelain -- charts)" ]; then
+            git status --porcelain -- charts
+            echo "::error::generated chart documentation is stale — run helm-docs and commit the result"
+            exit 1
+          fi
+
+  # The two images most people run, on both architectures the release
+  # publishes, built and exercised by the same scripts the release uses. The
+  # GPU variant is not here: it is multi-gigabyte and its only meaningful check
+  # is the one the release already performs on it.
+  images:
+    name: images (${{ matrix.name }}, ${{ matrix.platform }})
+    if: github.event_name != 'schedule'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [web, ml-api-cpu]
+        platform: [amd64, arm64]
+        # Each entry merges into every combination that already matches it, so
+        # these four lines describe the two axes rather than four builds.
+        include:
+          - platform: amd64
+            runner: ubuntu-24.04
+          - platform: arm64
+            runner: ubuntu-24.04-arm
+          - name: web
+            context: backend
+            file: backend/Dockerfile
+          - name: ml-api-cpu
+            context: ml_api
+            file: ml_api/Containerfile.cpu
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pull Docker Hub through a mirror
+        run: .github/scripts/use_registry_mirror.sh
+
+      # Same step as the release build, and the same reason: the web image
+      # expects the Vue bundle at /frontend, which compose supplies as a bind
+      # mount. What this proves is that the image builds and its compiled
+      # dependencies load, not that the UI is served: nothing here opens a
+      # page.
+      - name: Move the frontend into the web build context
+        if: matrix.name == 'web'
+        run: sh .github/scripts/stage_frontend.sh
+
+      # Retried for the same reason the base builds are: the bases these
+      # start FROM come from Docker Hub, and a registry timeout says nothing
+      # about the change under review. This job runs on every pull request
+      # touching charts/, so a blip here is a blip on somebody else's work.
+      - name: Build the image
+        env:
+          CONTEXT: ${{ matrix.context }}
+          FILE: ${{ matrix.file }}
+          TAG: obico-${{ matrix.name }}:pr
+        run: .github/scripts/retry.sh 4 docker build --file "${FILE}" --tag "${TAG}" "${CONTEXT}"
+
+      - name: Assert the compiled dependencies load
+        if: matrix.name == 'web'
+        env:
+          TAG: obico-${{ matrix.name }}:pr
+        run: |
+          set -euo pipefail
+          docker run --rm --volume "${PWD}/.github/scripts:/scripts:ro" "${TAG}" \
+            python /scripts/assert_imports.py psycopg2 PIL
+
+      # --timeout for the same reason the CUDA leg carries it: server.py loads
+      # the model at import, so it happens inside worker boot, and gunicorn's
+      # arbiter kills a worker that has not reported in for 30 seconds. The
+      # ONNX model here is 200 MB, and this now also builds for arm64. Going
+      # over the deadline is not a clean failure — the master keeps the
+      # listening socket and respawns forever, so the container stays "running"
+      # and this script waits out its whole budget before blaming the image.
+      - name: Assert the inference API loads a model
+        if: matrix.name == 'ml-api-cpu'
+        env:
+          TAG: obico-${{ matrix.name }}:pr
+        run: |
+          set -euo pipefail
+          .github/scripts/assert_inference_healthy.sh "${TAG}" \
+            gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi
+
+      # The one Python test in the repository, and it covers the backoff
+      # decorator in server.py whose pin this change touches. Run inside the
+      # image so it exercises the dependency set that shipped, not a set
+      # resolved fresh on the runner.
+      - name: Run the ml-api unit tests
+        if: matrix.name == 'ml-api-cpu'
+        env:
+          TAG: obico-${{ matrix.name }}:pr
+        run: |
+          set -euo pipefail
+          docker run --rm "${TAG}" sh -c \
+            'pip install --quiet --disable-pip-version-check pytest \
+             && python -m pytest --quiet test_server_retry.py'
+
+      - name: Assert OpenCV is the same major as the other variants
+        if: matrix.name == 'ml-api-cpu'
+        env:
+          TAG: obico-${{ matrix.name }}:pr
+        run: |
+          set -euo pipefail
+          docker run --rm "${TAG}" python3 -c '
+          import cv2
+          print(cv2.__version__)
+          assert cv2.__version__.startswith("4."), cv2.__version__'
+
+  # Neither of these bases is rebuilt by any other job — the release consumes
+  # the copies already on Docker Hub — so the versions they pin go stale
+  # unseen. That is not hypothetical: the arm64 one fetches its runtime from a
+  # link that answers 301 with an empty body, and nothing noticed for as long
+  # as it has been that way.
+  #
+  # This blocks a pull request while the equivalent leg in build-images.yaml is
+  # best-effort, which is deliberate rather than an oversight: there, a red leg
+  # would withhold images that are perfectly fine, so the failure must not
+  # propagate; here it asks a person to look, and that person can re-run or
+  # fix. The retry below absorbs the transient case that makes up most of it.
+  bases:
+    name: bases (${{ matrix.name }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Tagged with the exact name ml_api/Dockerfile resolves its FROM to:
+          # that namespace and version are hardcoded there, and the suffix is
+          # the only part the build arg supplies.
+          - name: rk3588
+            file: ml_api/Dockerfile.base_rk3588
+            tag: 1.4-rk3588
+            suffix: -rk3588
+            rknn: present
+            runner: ubuntu-24.04-arm
+          # The arm64 half of ml_api_base:1.4, which the published Jetson image
+          # is built on.
+          - name: jetson
+            file: ml_api/Dockerfile.base_arm64
+            tag: "1.4"
+            suffix: ""
+            rknn: absent
+            runner: ubuntu-24.04-arm
+          # The amd64 half, behind the published CUDA image. Nobody rebuilds
+          # it between releases, so a break in it surfaces only when someone
+          # cuts a new base by hand — which is why it is compiled here.
+          # Built and consumed under a per-architecture suffix, which is what
+          # build_base_images.sh publishes alongside the plain 1.4 manifest.
+          # A suffix names a base, not a capability, and this leg is what keeps
+          # anything from confusing the two.
+          - name: cuda
+            file: ml_api/Dockerfile.base_amd64
+            tag: 1.4-linux-amd64
+            suffix: -linux-amd64
+            rknn: absent
+            runner: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pull Docker Hub through a mirror
+        run: .github/scripts/use_registry_mirror.sh
+
+      # Plain docker build, no buildx: the second build resolves the first
+      # one's tag through its FROM, and the container driver keeps its own
+      # image store, so a base merely loaded into docker is invisible to it.
+      # Nothing here is pushed or cross-built, so the default builder is both
+      # sufficient and the only one that sees the base.
+      # Retried, because this is the one job whose inputs are entirely other
+      # people's servers — nvcr.io, Docker Hub, PyPI and a GitHub release
+      # asset. A timeout reaching any of them says nothing about the change
+      # under review, and turning every open pull request red for it would
+      # teach people to ignore this job, which is the opposite of why it
+      # exists. A handful of attempts distinguishes a blip from a real rot;
+      # anything that fails all of them is worth a human.
+      - name: Build the base
+        env:
+          FILE: ${{ matrix.file }}
+          TAG: ${{ matrix.tag }}
+        run: |
+          set -euo pipefail
+          .github/scripts/retry.sh 4 \
+            docker build --file "${FILE}" --tag "thespaghettidetective/ml_api_base:${TAG}" ml_api
+
+      - name: Build the inference image on it
+        env:
+          SUFFIX: ${{ matrix.suffix }}
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: |
+          set -euo pipefail
+          docker build --file ml_api/Dockerfile --build-arg "IMAGE_TAG_SUFFIX=${SUFFIX}" \
+            --tag "${TAG}" ml_api
+
+      # Both halves of the probe in ml_api/Dockerfile, which decides from
+      # whether rknn-toolkit-lite2 imports whether to fetch the RKNN weights.
+      # RKNN is the only inference backend on the rk3588 base — no darknet, no
+      # onnxruntime — so missing weights there mean an image that dies at
+      # import. On every other base the weights are 102 MB nothing can read.
+      # Asserting only one side would let the condition collapse to a constant
+      # unnoticed.
+      - name: Assert the RKNN weights were fetched
+        if: matrix.rknn == 'present'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: docker run --rm "${TAG}" stat --format '%n is %s bytes' /model_cache/ml_api/rknn/model-weights.rknn
+
+      # Two different things, and the weaker one alone would read as the
+      # stronger. The import proves the toolkit is installed and the linker
+      # resolves the runtime by soname; it says nothing about the versions,
+      # which only disagree on real hardware inside init_runtime(). The runtime
+      # carries its version as a literal in the binary, so the pair those two
+      # pins describe can be compared without a device.
+      - name: Assert the RKNN backend imports
+        if: matrix.rknn == 'present'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: |
+          set -euo pipefail
+          docker run --rm "${TAG}" python3 -c \
+            'from lib.detection_model import rknn_ready; assert rknn_ready, "the RKNN backend failed to import"'
+
+      - name: Assert the runtime and the toolkit are the pair they are pinned as
+        if: matrix.rknn == 'present'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: |
+          set -euo pipefail
+          docker run --rm --volume "${PWD}/.github/scripts:/scripts:ro" "${TAG}" \
+            python3 /scripts/assert_rknn_pair.py
+
+      # Nothing else here imports the pinned OpenCV, and a pin nothing loads
+      # is a pin nobody notices breaking. The CUDA leg gets the same start the
+      # release performs on that image — it falls back to the CPU darknet
+      # library on a runner without a GPU — which loads cv2, the darknet object
+      # and the downloaded weights in one go. The Jetson leg cannot be started
+      # without Tegra drivers, so it imports what it can.
+      - name: Assert the image starts and loads a model
+        if: matrix.name == 'cuda'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: |
+          set -euo pipefail
+          .github/scripts/assert_inference_healthy.sh "${TAG}" \
+            gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi
+
+      # darknet is the backend this image actually uses, so its readiness is
+      # the contract. onnx_ready is printed rather than asserted, and it means
+      # less than it looks: importing onnxruntime succeeds whatever CUDA the
+      # wheel was built for, so a True here says nothing about whether a
+      # session on CUDAExecutionProvider would start. Only a GPU can answer
+      # that. What is checked is that the version installed is the pinned one.
+      - name: Report which inference backends loaded
+        if: matrix.name == 'cuda'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: |
+          set -euo pipefail
+          docker run --rm "${TAG}" python3 -c '
+          from lib.detection_model import darknet_ready, onnx_ready
+          print("darknet_ready", darknet_ready, "onnx_ready", onnx_ready)
+          assert darknet_ready, "the darknet backend failed to load"'
+          docker run --rm "${TAG}" python3 -c '
+          import importlib.metadata as m
+          got = m.version("onnxruntime-gpu")
+          assert got == "1.19.2", f"onnxruntime-gpu is {got}, not the pinned 1.19.2"
+          print("onnxruntime-gpu", got)'
+
+      # Every image this project ships must agree on the OpenCV major: the
+      # preprocessing that feeds inference runs through it, and a variant that
+      # quietly differs would change detections without changing any code.
+      - name: Assert OpenCV loads and is the expected major
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: |
+          set -euo pipefail
+          docker run --rm "${TAG}" python3 -c '
+          import cv2
+          print(cv2.__version__)
+          assert cv2.__version__.startswith("4."), cv2.__version__'
+
+      # The L4T base is what makes the published Jetson image a Jetson image;
+      # asserted here as well as on the release artifact so a change to either
+      # side is caught where it happens.
+      - name: Assert the base is L4T
+        if: matrix.name == 'jetson'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: docker run --rm "${TAG}" test -e /usr/lib/aarch64-linux-gnu/libdrm_tegra.so.0
+
+      # The mirror of the RKNN pair, for the two formats this base cannot
+      # read either. Asserted on both sides: the rk3588 leg proves they are
+      # skipped, the cuda and jetson legs prove they are still fetched, so a
+      # probe that collapsed to always-false would be caught too.
+      - name: Assert the unreadable weights were skipped
+        if: matrix.rknn == 'present'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: |
+          set -euo pipefail
+          docker run --rm "${TAG}" sh -c '
+            test ! -e /model_cache/ml_api/darknet/model-weights.darknet \
+            && test ! -e /model_cache/ml_api/onnx/model-weights.onnx'
+
+      - name: Assert the readable weights were fetched
+        if: matrix.rknn == 'absent'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: |
+          set -euo pipefail
+          docker run --rm "${TAG}" sh -c '
+            stat --format "%n is %s bytes" /model_cache/ml_api/darknet/model-weights.darknet \
+            && stat --format "%n is %s bytes" /model_cache/ml_api/onnx/model-weights.onnx'
+
+      - name: Assert the RKNN weights were skipped
+        if: matrix.rknn == 'absent'
+        env:
+          TAG: obico-ml-api-${{ matrix.name }}:verify
+        run: docker run --rm "${TAG}" test ! -e /model_cache/ml_api/rknn/model-weights.rknn
+
+      # The third case the probe has to get right: a base that carries the
+      # runtime somewhere else on the library search path. That is what
+      # rknnlite resolves against, so such a base works. What this asserts is
+      # that the weights still arrive when it does: the probe imports the
+      # package rather than looking for the library, so moving the library
+      # must not change the answer.
+      - name: Assert moving the runtime does not change the answer
+        if: matrix.rknn == 'present'
+        env:
+          BASE: thespaghettidetective/ml_api_base:${{ matrix.tag }}
+          SUFFIX: ${{ matrix.suffix }}
+        run: |
+          set -euo pipefail
+          docker build --tag "${BASE}-moved" - <<EOF
+          FROM ${BASE}
+          RUN mkdir -p /usr/lib/aarch64-linux-gnu \
+              && mv /usr/lib/librknnrt.so /usr/lib/aarch64-linux-gnu/ \
+              && ldconfig
+          EOF
+          docker build --file ml_api/Dockerfile \
+            --build-arg "IMAGE_TAG_SUFFIX=${SUFFIX}-moved" \
+            --tag obico-ml-api-moved:verify ml_api
+          docker run --rm obico-ml-api-moved:verify \
+            stat --format '%n is %s bytes' /model_cache/ml_api/rknn/model-weights.rknn

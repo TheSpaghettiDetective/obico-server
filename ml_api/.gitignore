@@ -1,2 +1,5 @@
 model/*.onnx
 model/*.darknet
+# The darknet training weights, which docs/model_training.md tells the
+# reader to download into this directory. ~250 MB.
+model/model.weights

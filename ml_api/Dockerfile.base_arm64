@@ -31,7 +31,15 @@ FROM nvcr.io/nvidia/l4t-tensorrt:r8.0.1-runtime as ml_api_base_jetson
 COPY --from=darknet_builder_jetson /darknet /darknet
 
 WORKDIR /
-RUN curl -o onnxruntime_gpu-1.11.0-cp38-none-any.whl https://nvidia.box.com/shared/static/2sv2fv1wseihaw8ym0d4srz41dzljwxh.whl
+# This Box link answers 301 with an empty body, so a download without
+# --location writes nothing and pip then fails on a wheel that never arrived.
+# Unlike the model URLs, this address names no content, so a checksum is the
+# only thing that ties it to a specific artifact — see fetch_verified.
+COPY scripts/fetch_verified.sh /usr/local/bin/fetch_verified
+RUN fetch_verified \
+      https://nvidia.box.com/shared/static/2sv2fv1wseihaw8ym0d4srz41dzljwxh.whl \
+      onnxruntime_gpu-1.11.0-cp38-none-any.whl 20000000 \
+      127a6f95ba315b8a7a71ac52d1f4f68cd225a4887e77f11ea24091cd0211b185
 RUN pip3 install onnxruntime_gpu-1.11.0-cp38-none-any.whl
 
 # Some hacks to make darknet see cuda libraries. May fail easily
@@ -43,7 +51,15 @@ ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/li
 WORKDIR /app
 RUN apt update && apt install --no-install-recommends -y ca-certificates python3-pip wget
 RUN pip install --upgrade pip
-RUN pip install opencv_python_headless
+# Pinned at the last 4.x that bounds numpy on both sides. The published bases
+# hold OpenCV 4.9, whose wheel declares a numpy floor with no ceiling — pip now
+# hands its numpy-1 ABI extension a numpy 2 and the import dies with
+# _ARRAY_API not found. 4.12 fixes that inside the same major, so a rebuild
+# stays on the OpenCV every deployment is already running; jumping to 5.x
+# would also fix it, but 5 drops the legacy C API and the Darknet DNN parser
+# and nothing here has been run on it. The wheel is abi3, which is why one
+# version serves every base despite their different Python versions.
+RUN pip install opencv_python_headless==4.12.0.88
 
 ADD requirements.txt ./
 RUN pip install -r requirements.txt

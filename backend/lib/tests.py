@@ -1,9 +1,10 @@
-from django.test import TransactionTestCase
+from django.test import TestCase, TransactionTestCase
 from unittest.mock import patch
 
 
 from app.models import User, HeaterTracker, Printer, Print
 from .heater_trackers import process_heater_temps
+from .url_signing import HmacSignedUrl, new_signed_url, rewrite_url_origin
 
 
 class HeaterTrackerTestCase(TransactionTestCase):
@@ -225,3 +226,45 @@ class HeaterTrackerTestCase(TransactionTestCase):
 
         self.assertEqual(print.PrintHeaterTarget_set.first().name, 'h0')
         self.assertEqual(print.PrintHeaterTarget_set.first().target, 60.0)
+
+
+class NewSignedUrlTestCase(TestCase):
+
+    def test_signed_url_keeps_scheme_host_and_path(self):
+        signed = new_signed_url('http://old-host:3334/media/tsd-timelapses/private/1.mp4?digest=stale')
+
+        self.assertTrue(signed.startswith('http://old-host:3334/media/tsd-timelapses/private/1.mp4?digest='))
+        self.assertTrue(HmacSignedUrl(signed).is_authorized())
+
+
+class RewriteUrlOriginTestCase(TestCase):
+
+    def test_matching_origin_is_rewritten_and_rest_of_url_is_preserved(self):
+        signed = new_signed_url('http://old-host:3334/media/tsd-timelapses/private/1.mp4')
+
+        rewritten = rewrite_url_origin(signed, 'http://old-host:3334', 'https://new-host')
+
+        self.assertEqual(rewritten, signed.replace('http://old-host:3334', 'https://new-host'))
+        self.assertTrue(HmacSignedUrl(rewritten).is_authorized())
+
+    def test_other_origin_is_untouched(self):
+        url = 'https://storage.example.com/bucket/1.mp4?sig=provider'
+
+        self.assertEqual(rewrite_url_origin(url, 'http://old-host:3334', 'https://new-host'), url)
+
+    def test_relative_url_is_untouched(self):
+        url = '/media/g_code_files/1.gcode?digest=abc'
+
+        self.assertEqual(rewrite_url_origin(url, 'http://old-host:3334', 'https://new-host'), url)
+
+    def test_origin_matching_ignores_case_and_trailing_slash(self):
+        rewritten = rewrite_url_origin(
+            'http://OLD-Host:3334/media/1.mp4?digest=abc', 'http://old-host:3334/', 'https://New-Host/')
+
+        self.assertEqual(rewritten, 'https://new-host/media/1.mp4?digest=abc')
+
+    def test_invalid_origin_is_rejected(self):
+        with self.assertRaises(ValueError):
+            rewrite_url_origin('http://old-host:3334/media/1.mp4', 'old-host:3334', 'https://new-host')
+        with self.assertRaises(ValueError):
+            rewrite_url_origin('http://old-host:3334/media/1.mp4', 'http://old-host:3334', 'https://new-host/media')

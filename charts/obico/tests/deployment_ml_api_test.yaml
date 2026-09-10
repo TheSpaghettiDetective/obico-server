@@ -63,6 +63,15 @@ tests:
           path: spec.template.spec.containers[0].command
           content: gunicorn
 
+  # The model is loaded at import, inside worker boot. Without a deadline the
+  # arbiter kills the worker at 30s and respawns it forever, so the pod never
+  # goes ready and never crash-loops and nothing says why.
+  - it: should give the worker a boot deadline
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: --timeout=120
+
   - it: should set the ml-api component label
     asserts:
       - equal:

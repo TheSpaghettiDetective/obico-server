@@ -32,6 +32,7 @@
     "patch-package": "^6.5.0",
     "postinstall-postinstall": "^2.1.0",
     "semver": "^7.3.5",
+    "sweetalert2": "9.17.2",
     "three": "^0.167.0",
     "vue": "^2.6.11",
     "vue-click-outside": "^1.1.0",
@@ -69,7 +70,7 @@
     "webpack-bundle-tracker": "^2.0.1"
   },
   "resolutions": {
-    "sweetalert2": "9.17.3"
+    "sweetalert2": "9.17.2"
   },
   "browserslist": [
     "> 1%",

@@ -180,7 +180,7 @@ class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
             else:
                 existing = GCodeFolder.objects.filter(user=user, parent_folder=parent_folder, safe_name=safe_name).first()
 
-            if existing and self.instance and existing.id != self.instance.id:
+            if existing and (self.instance is None or existing.id != self.instance.id):
                 raise serializers.ValidationError({'name': f'Already existed.'})
 
         return attrs

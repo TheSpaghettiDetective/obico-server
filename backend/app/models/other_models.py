@@ -357,7 +357,7 @@ class PrinterPrediction(models.Model):
 @receiver(post_save, sender=Printer)
 def create_printer_prediction(sender, instance, created, **kwargs):
     if created:
-        PrinterPrediction.objects.create(printer=instance)
+        PrinterPrediction.objects.get_or_create(printer=instance)
 
 
 class Print(SafeDeleteModel):

@@ -9,6 +9,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from django.contrib.messages import constants as messages
+from django.core.exceptions import ImproperlyConfigured
 
 
 def get_bool(key, default):
@@ -504,6 +505,33 @@ CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('CSRF_TRUSTED_ORIGINS') or '[]'
 
 # JusPrin specific settings
 
+
+# TURN server for WebRTC webcam streaming. When set, the same configuration is handed to the web
+# frontend and to the printer agents so that only the server needs to be configured.
+# Leave TURN_SERVER unset to keep the built-in defaults.
+# Exactly one credential mode must be configured:
+#   - TURN_SECRET: shared secret for time-limited credentials (coturn "use-auth-secret"). Recommended.
+#   - TURN_USERNAME + TURN_CREDENTIAL: static long-term credentials (coturn "lt-cred-mech").
+TURN_SERVER = os.environ.get('TURN_SERVER') or None
+TURN_PORT = int(os.environ.get('TURN_PORT') or '3478')
+TURN_TRANSPORTS = [t.strip().lower() for t in (os.environ.get('TURN_TRANSPORTS') or 'udp,tcp').split(',') if t.strip()]
+TURN_SECRET = os.environ.get('TURN_SECRET') or None
+TURN_USERNAME = os.environ.get('TURN_USERNAME') or None
+TURN_CREDENTIAL = os.environ.get('TURN_CREDENTIAL') or None
+TURN_WEB_CREDENTIAL_TTL = int(os.environ.get('TURN_WEB_CREDENTIAL_TTL') or str(24 * 3600))       # In secret mode only
+TURN_AGENT_CREDENTIAL_TTL = int(os.environ.get('TURN_AGENT_CREDENTIAL_TTL') or str(365 * 24 * 3600))  # In secret mode only. Agents get a new credential on restart.
+
+if TURN_SERVER:
+    if TURN_SECRET and (TURN_USERNAME or TURN_CREDENTIAL):
+        raise ImproperlyConfigured('Set either TURN_SECRET or TURN_USERNAME/TURN_CREDENTIAL, not both.')
+    if not TURN_SECRET and not (TURN_USERNAME and TURN_CREDENTIAL):
+        raise ImproperlyConfigured('TURN_SERVER requires either TURN_SECRET or both TURN_USERNAME and TURN_CREDENTIAL.')
+    if not TURN_TRANSPORTS or any(t not in ('udp', 'tcp') for t in TURN_TRANSPORTS):
+        raise ImproperlyConfigured('TURN_TRANSPORTS must be a comma-separated list of "udp" and/or "tcp".')
+    if not 0 < TURN_PORT < 65536:
+        raise ImproperlyConfigured('TURN_PORT must be between 1 and 65535.')
+    if TURN_WEB_CREDENTIAL_TTL <= 0 or TURN_AGENT_CREDENTIAL_TTL <= 0:
+        raise ImproperlyConfigured('TURN_WEB_CREDENTIAL_TTL and TURN_AGENT_CREDENTIAL_TTL must be positive.')
 
 # This line prevents warning messages after 3.2
 # https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys

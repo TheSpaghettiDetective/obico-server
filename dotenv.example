@@ -75,3 +75,23 @@
 # LLM_BASE_URL=
 # VLM_API_KEY=
 # VLM_BASE_URL=
+
+# TURN_SERVER=
+# Hostname or IP of your TURN server. Setting this enables TURN; unset, the other TURN_* settings do nothing.
+# Needed for webcam streaming from mobile networks. The web page and the printer agents get the config from the server.
+# See https://www.obico.io/docs/server-guides/advanced/webcam-turn-server/ for setup and required hardening.
+
+# TURN_PORT=3478
+
+# TURN_TRANSPORTS=udp,tcp
+
+# TURN_SECRET=
+# Recommended. Shared secret for time-limited credentials (coturn: use-auth-secret / static-auth-secret).
+
+# TURN_USERNAME=
+# TURN_CREDENTIAL=
+# Alternative to TURN_SECRET: static credentials (coturn: lt-cred-mech / user=). Set both.
+
+# TURN_WEB_CREDENTIAL_TTL=86400
+# TURN_AGENT_CREDENTIAL_TTL=31536000
+# Credential lifetimes in seconds for browsers and agents (TURN_SECRET mode only). Agents get a new one on restart.

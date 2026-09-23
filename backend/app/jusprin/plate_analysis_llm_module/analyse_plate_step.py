@@ -1,8 +1,9 @@
+import base64
+import binascii
 from textwrap import dedent
 import instructor
 import os
 from pydantic import BaseModel, Field
-from textwrap import dedent
 from django.utils.translation import gettext_lazy as _
 from ..language_utils import get_response_language_rule
 
@@ -97,7 +98,21 @@ def is_analyse_plate_prerequisites_not_met(chat):
     if not model_objects or len(model_objects) == 0:
         return _("Oops, you need to add at least one model.")
 
-    if not images or len(images) == 0:
+    if not images or not all(is_valid_image_data_url(image) for image in images):
         return _("No images found for analysis. Please contact support.")
 
     return None
+
+
+def is_valid_image_data_url(image):
+    if not isinstance(image, str) or not image.startswith('data:image/'):
+        return False
+
+    _, separator, encoded_image = image.partition(';base64,')
+    if not separator or not encoded_image:
+        return False
+
+    try:
+        return bool(base64.b64decode(encoded_image, validate=True))
+    except (binascii.Error, ValueError):
+        return False

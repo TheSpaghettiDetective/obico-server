@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
 import json
+import uuid
 from django.utils.translation import gettext_lazy as _
 from allauth.account.views import LoginView, SignupView, PasswordResetView
 
@@ -180,6 +181,11 @@ def unsubscribe_email(request):
     unsub_token = request.GET.get('unsub_token')
     email_list = request.GET.get('list')
     if not unsub_token or not email_list:
+        raise Http404("Request object not found")
+
+    try:
+        unsub_token = uuid.UUID(unsub_token)
+    except ValueError:
         raise Http404("Request object not found")
 
     user = get_object_or_404(User.objects, unsub_token=unsub_token)

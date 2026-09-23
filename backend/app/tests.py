@@ -1,17 +1,44 @@
 from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
 from requests import Response
 from requests.exceptions import HTTPError
 
-from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User
+from app.models import GCodeFile, MobileDevice, NotificationSetting, Print, Printer, PrinterEvent, User
 from app.models.syndicate_models import Syndicate
 from lib import mobile_notifications
 from lib.url_signing import HmacSignedUrl, new_signed_url
 from lib.utils import get_rotated_pic_url
+
+
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+class UnsubscribeEmailTestCase(TestCase):
+    def test_malformed_token_returns_not_found(self):
+        response = self.client.get('/unsubscribe_email/', {
+            'unsub_token': 'not-a-uuid',
+            'list': 'alert',
+        })
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_valid_token_unsubscribes(self):
+        syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'test'})
+        site, _ = Site.objects.update_or_create(id=1, defaults={'domain': 'testserver', 'name': 'testserver'})
+        syndicate.sites.add(site)
+        user = User.objects.create(email='unsubscribe@test.com', syndicate=syndicate)
+        setting = NotificationSetting.objects.get(user=user, name='email')
+
+        response = self.client.get('/unsubscribe_email/', {
+            'unsub_token': str(user.unsub_token),
+            'list': 'alert',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        setting.refresh_from_db()
+        self.assertFalse(setting.notify_on_failure_alert)
 
 
 class PrinterEventTestCase(TestCase):

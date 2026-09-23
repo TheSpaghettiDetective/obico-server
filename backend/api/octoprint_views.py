@@ -401,7 +401,7 @@ class GCodeFileView(
             )
 
     def partial_update(self, request, pk=None):
-        instance = self.get_queryset().filter(pk=pk).first()
+        instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)

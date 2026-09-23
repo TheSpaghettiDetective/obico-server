@@ -122,6 +122,61 @@ class AgentGCodeFileTestCase(SimpleTestCase):
         self.assertIn('safe_filename', response.data)
         get_queryset.assert_not_called()
 
+
+@override_settings(SITE_ID=1)
+class AgentGCodeFilePatchTestCase(TestCase):
+    def setUp(self):
+        syndicate = setup_syndicate()
+        self.user = User.objects.create(email='gcode-agent@test.com', syndicate=syndicate)
+        self.printer = Printer.objects.create(user=self.user, auth_token='gcode-agent-test-token')
+
+    def patch_file(self, pk, data):
+        return self.client.patch(
+            f'/api/v1/octo/g_code_files/{pk}/',
+            data=data,
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}',
+        )
+
+    def test_missing_file_returns_404_without_creating_one(self):
+        response = self.patch_file(9999999, {
+            'safe_filename': 'missing.gcode',
+            'agent_signature': 'ts:1',
+        })
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(GCodeFile.objects.all_with_deleted().exists())
+
+    def test_existing_file_updates_without_changing_owner(self):
+        gcode_file = GCodeFile.objects.create(
+            user=self.user,
+            filename='existing.gcode',
+            safe_filename='existing.gcode',
+        )
+
+        response = self.patch_file(gcode_file.pk, {'agent_signature': 'ts:2'})
+
+        self.assertEqual(response.status_code, 200)
+        gcode_file.refresh_from_db()
+        self.assertEqual(gcode_file.user_id, self.user.id)
+        self.assertEqual(gcode_file.agent_signature, 'ts:2')
+
+    def test_other_users_file_returns_404_without_modifying_it(self):
+        other_user = User.objects.create(
+            email='other-gcode-agent@test.com', syndicate=self.user.syndicate,
+        )
+        gcode_file = GCodeFile.objects.create(
+            user=other_user,
+            filename='other.gcode',
+            safe_filename='other.gcode',
+        )
+
+        response = self.patch_file(gcode_file.pk, {'agent_signature': 'ts:3'})
+
+        self.assertEqual(response.status_code, 404)
+        gcode_file.refresh_from_db()
+        self.assertIsNone(gcode_file.agent_signature)
+
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"
 
 def status_msg(print_ts, filename, event):

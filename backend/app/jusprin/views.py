@@ -24,7 +24,7 @@ from api.authentication import CsrfExemptSessionAuthentication
 from .serializers import JusPrinChatSerializer, JusPrinAICreditSerializer, JusPrinMeSerializer
 from .models import JusPrinChat, JusPrinAICredit
 from .llm_chain import run_chain_on_chat
-from .plate_analysis_llm_module.analyse_plate_step import analyse_plate_step
+from .plate_analysis_llm_module.analyse_plate_step import analyse_plate_step, is_analyse_plate_prerequisites_not_met
 from .ai_credits import consume_credit_for_pipeline, get_credits_info
 from django.conf import settings
 
@@ -61,9 +61,18 @@ class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
 
-    @require_ai_credits
     @observe(capture_input=False, capture_output=True)
     def create(self, request):
+        prerequisite_message = is_analyse_plate_prerequisites_not_met(request.data)
+        if prerequisite_message:
+            return Response({
+                'message': {'role': 'assistant', 'content': prerequisite_message}
+            }, status=status.HTTP_200_OK)
+
+        credit_result = consume_credit_for_pipeline(request.user.id)
+        if not credit_result['success']:
+            return Response({'error': credit_result['message']}, status=status.HTTP_402_PAYMENT_REQUIRED)
+
         api_key = os.environ.get('VLM_API_KEY')
         base_url = os.environ.get('VLM_BASE_URL')
         openai_client = OpenAI(api_key=api_key, base_url=base_url)

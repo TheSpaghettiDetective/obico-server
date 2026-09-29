@@ -31,6 +31,7 @@ from lib.printer_discovery import (
 from lib.one_time_passcode import request_one_time_passcode
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
+from lib.turn import turn_config
 from lib import cache
 from lib.utils import save_pic, get_rotated_pic_url
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
@@ -162,6 +163,7 @@ class OctoPrinterView(APIView):
                 'id': printer.id,
                 'name': printer.name,
                 'retract_on_pause': printer.retract_on_pause,
+                'turn': turn_config(label=f'printer-{printer.id}', ttl_seconds=settings.TURN_AGENT_CREDENTIAL_TTL),
             }
         })
 

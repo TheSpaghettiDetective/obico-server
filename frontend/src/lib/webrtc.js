@@ -8,13 +8,26 @@ let printerWebRTCUrl = (printerId) => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = (token) => `/ws/share_token/janus/${token}/`
 
 function iceServers(authToken) {
-  const turnServer = syndicate()?.turn_server
   const servers = [
     {
       urls: ['stun:stun.l.google.com:19302'],
     }
   ]
 
+  // TURN server configured on the server, with credentials issued by the server
+  const turn = syndicate()?.turn
+  if (turn?.server && turn.username && turn.credential) {
+    const transports = turn.transports?.length ? turn.transports : ['udp', 'tcp']
+    servers.push({
+      urls: transports.map((transport) => `turn:${turn.server}:${turn.port}?transport=${transport}`),
+      username: turn.username,
+      credential: turn.credential,
+    })
+    return servers
+  }
+
+  // Legacy: TURN server that authenticates with the printer's auth token
+  const turnServer = syndicate()?.turn_server
   if (turnServer) {
     servers.push(
       {

@@ -1,10 +1,11 @@
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from unittest.mock import patch
 
 
 from app.models import User, HeaterTracker, Printer, Print
 from .heater_trackers import process_heater_temps
 from .url_signing import HmacSignedUrl, new_signed_url, rewrite_url_origin
+from .turn import turn_config
 
 
 class HeaterTrackerTestCase(TransactionTestCase):
@@ -268,3 +269,38 @@ class RewriteUrlOriginTestCase(TestCase):
             rewrite_url_origin('http://old-host:3334/media/1.mp4', 'old-host:3334', 'https://new-host')
         with self.assertRaises(ValueError):
             rewrite_url_origin('http://old-host:3334/media/1.mp4', 'http://old-host:3334', 'https://new-host/media')
+
+
+class TurnConfigTestCase(TestCase):
+
+    @override_settings(TURN_SERVER=None)
+    def test_none_when_not_configured(self):
+        self.assertIsNone(turn_config('web', 60))
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET=None, TURN_USERNAME='alice', TURN_CREDENTIAL='s3cret')
+    def test_static_credentials(self):
+        config = turn_config('web', 60)
+
+        self.assertEqual(config['server'], 'turn.example.com')
+        self.assertEqual(config['port'], 3478)
+        self.assertEqual(config['transports'], ['udp', 'tcp'])
+        self.assertEqual(config['username'], 'alice')
+        self.assertEqual(config['credential'], 's3cret')
+        self.assertIsNone(config['expires_at'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    @patch('lib.turn.time.time', return_value=1_700_000_000)
+    def test_secret_credentials(self, _):
+        config = turn_config('printer:42', 3600)
+
+        self.assertEqual(config['expires_at'], 1_700_003_600)
+        self.assertEqual(config['username'], '1700003600:printer:42')
+        # base64(HMAC-SHA1('shared', '1700003600:printer:42')), as a TURN server in REST API mode verifies it
+        self.assertEqual(config['credential'], 'XW1H4eU4sQt6tTavEjhfZAlsCZM=')
+        self.assertEqual(config['transports'], ['udp'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_secret_credentials_differ_per_label(self):
+        self.assertNotEqual(turn_config('a', 60)['credential'], turn_config('b', 60)['credential'])

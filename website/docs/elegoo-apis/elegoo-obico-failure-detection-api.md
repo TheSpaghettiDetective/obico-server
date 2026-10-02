@@ -37,6 +37,7 @@ This POST request should be sent as `multipart/form-data` format.
 - `access_token`: The access token for the device. Required for authentication.
 - `print_id`: A id that can uniquely identify the print within the printer it belongs. Max 256 characters.
 - `img`: Snapshot from the webcam for failure detection. In JPEG format.
+- `fd_gen`: Which generation of the failure detection AI model scores the snapshot. `1` (default): the original model. `2`: the next-generation model. Optional. See [Model generations](#model-generations) below.
 
 ### Response {#response}
 
@@ -110,6 +111,7 @@ API request was NOT processed successfully for other reasons, such as missing re
 Examples of error messages:
 - `"Missing or invalid image"`
 - `"print_id is required"`
+- `"fd_gen must be 1 or 2"`
 
 #### Status code: `401` {#status-code-401}
 
@@ -146,6 +148,37 @@ API request was NOT processed successfully because of rate throttling.
 }
 ```
 
+## Model generations {#model-generations}
+
+The `fd_gen` parameter selects which AI model scores the snapshot. Both generations return the same response shape, but the two models produce different score distributions, so the temporal stats must be interpreted with different hyper-parameters.
+
+### `fd_gen=1` (default): original model {#fd-gen-1}
+
+Use the hyper-parameters in the tips above.
+
+### `fd_gen=2`: next-generation model {#fd-gen-2}
+
+The next-generation model is more accurate, and its scores are smaller in absolute terms. `detections` contains at most the 8 highest-confidence detections in the frame.
+
+In Obico's own server, the decision for the next-generation model can be simplistically described as below:
+
+- EWM window span = 13.
+- Short-term rolling window span = 380.
+- The first 30 predictions of a print are never treated as a failure.
+- If `ewm_mean - rolling_mean_long < 0.10`: no failure.
+- Else if `ewm_mean - rolling_mean_long > 0.15`: failure.
+- Else if `ewm_mean - rolling_mean_long > (rolling_mean_short - rolling_mean_long) * 2.8`: failure.
+
+As with the original model, treat these values as starting points for your own hyper-parameter tuning.
+
+:::caution
+Use the same `fd_gen` value for all requests from a device. Do not switch a device between generations.
+:::
+
+:::tip
+Please coordinate with the Obico team before switching a fleet to `fd_gen=2`, so that the next-generation model is provisioned on the endpoint you use.
+:::
+
 ## Usage Example {#usage-example}
 
 ```bash
@@ -153,6 +186,17 @@ curl -X POST https://elegoo-app.obico.io/ent/partners/api/elegoo/predict/ \
   -F "serial_no=ELEGOO_DEVICE_001" \
   -F "access_token=your_access_token_here" \
   -F "print_id=print_456" \
+  -F "img=@/path/to/snapshot.jpg"
+```
+
+With the next-generation model:
+
+```bash
+curl -X POST https://elegoo-app.obico.io/ent/partners/api/elegoo/predict/ \
+  -F "serial_no=ELEGOO_DEVICE_001" \
+  -F "access_token=your_access_token_here" \
+  -F "print_id=print_456" \
+  -F "fd_gen=2" \
   -F "img=@/path/to/snapshot.jpg"
 ```
 

@@ -44,9 +44,12 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
     - If you are on Mac: `cd obico-server && docker-compose up -d`
     - If you are on Windows: `cd obico-server; docker-compose up -d`
 
-To use the NPU acceleration for RK3588 boards:
+To use the NPU acceleration for RK3588 boards, first build the base image it starts from — that one is not published on Docker Hub, and the build expects exactly this name. The `--build` on the last line matters if you already ran step 2: both commands produce the same image name, so without it Compose keeps the image you have and the NPU goes unused:
 ```bash
-cd obico-server && sudo docker compose -f docker-compose.yml -f docker-compose-rk3588.yml up -d
+cd obico-server
+sudo docker build --platform linux/arm64 -f ml_api/Dockerfile.base_rk3588 \
+  -t thespaghettidetective/ml_api_base:1.4-rk3588 ml_api
+sudo docker compose -f docker-compose.yml -f docker-compose-rk3588.yml up -d --build
 ```
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.

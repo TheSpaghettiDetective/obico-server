@@ -59,10 +59,29 @@ services:
       FLASK_APP: 'server.py'
       # ML_API_TOKEN:
     tty: true
-    command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+    # --timeout because the model is loaded at import, inside worker boot: the
+    # 30s default has the arbiter kill the worker and respawn it forever, and
+    # restart: unless-stopped does not act on that, so the container sits there
+    # looking alive. This is the path that runs on the slow boards where a load
+    # actually crosses the deadline. Note it is not boot-only: the same value
+    # bounds request handling, so with one worker a stalled inference now holds
+    # it for 120s rather than 30 before the arbiter recycles it.
+    # Not solved with gunicorn --preload, which would load the model in the
+    # arbiter and take it out from under this deadline: server.py calls
+    # load_net at import, and on the GPU images that call initialises CUDA
+    # inside darknet's load_network_custom, or opens a CUDAExecutionProvider
+    # session (lib/onnx.py). --preload still forks the worker afterwards, and
+    # CUDA does not survive a fork of a process that already initialised it.
+    command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 --timeout 120 wsgi"
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://ml_api:3333/hc/"]
-      start_period: 30s
+      # Above the deadline on the command line, and for the reason that
+      # deadline exists: the model loads inside worker boot, so a shorter
+      # grace period marks the container unhealthy on a slow board and marks
+      # it healthy again a minute later. Nothing acts on that here, which
+      # makes it worse rather than better — it is a red status with no
+      # consequence and no explanation.
+      start_period: 140s
       interval: 30s
       timeout: 10s
       retries: 3

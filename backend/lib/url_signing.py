@@ -36,6 +36,34 @@ def new_signed_url(url_str: str) -> str:
     return urlunparse(signed_url)
 
 
+def normalize_origin(origin_str: str) -> str:
+    """
+    Normalizes an origin (scheme://host[:port]) for comparison: lower-cased, no trailing slash.
+    Raises ValueError if the string is not a valid origin.
+    """
+    parsed = urlparse(origin_str.strip().rstrip('/'))
+    if not parsed.scheme or not parsed.netloc or parsed.path or parsed.query or parsed.fragment:
+        raise ValueError(f'"{origin_str}" is not a valid origin. Expected the form scheme://host[:port], e.g. https://obico.example.com')
+    return f'{parsed.scheme}://{parsed.netloc}'.lower()
+
+
+def rewrite_url_origin(url_str: str, old_origin: str, new_origin: str) -> str:
+    """
+    Rewrites the scheme and host of a URL if, and only if, they match old_origin.
+
+    Everything else (path, query string, fragment) is preserved as-is, so a URL signed with
+    new_signed_url() stays valid because the digest is calculated from the path only.
+    Relative URLs and URLs on any other origin are returned unchanged.
+    """
+    parsed_url = urlparse(url_str)
+    if not parsed_url.netloc:
+        return url_str
+    if f'{parsed_url.scheme}://{parsed_url.netloc}'.lower() != normalize_origin(old_origin):
+        return url_str
+    new_parsed = urlparse(normalize_origin(new_origin))
+    return urlunparse(parsed_url._replace(scheme=new_parsed.scheme, netloc=new_parsed.netloc))
+
+
 @dataclass
 class HmacSignedUrl:
     """This dataclass provides functions to check the validity of an HMAC signed url"""

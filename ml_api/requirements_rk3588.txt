@@ -1,2 +1,5 @@
-# RKNN Toolkit Lite2 - only installed on aarch64 and RK3588 hardware
-rknn-toolkit-lite2
+# RKNN Toolkit Lite2 - only installed on aarch64 and RK3588 hardware.
+# Pinned to match the librknnrt.so baked into Dockerfile.base_rk3588: the
+# toolkit and the runtime are one pair, and letting either float means the
+# next rebuild can pick up a mismatched half.
+rknn-toolkit-lite2==2.3.2

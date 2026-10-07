@@ -13,6 +13,8 @@ from app.models import GCodeFile, Printer, Print, User
 from app.models.syndicate_models import Syndicate
 from api.octoprint_views import *
 from api.octoprint_messages import process_printer_status
+from api.serializers import PrinterSerializer
+from lib import channels
 
 
 def setup_syndicate():
@@ -37,6 +39,27 @@ def init_data():
     client.force_login(user)
 
     return (user, printer, client)
+
+
+@override_settings(SITE_ID=1)
+class PrinterSerializerTestCase(TestCase):
+    def setUp(self):
+        (_, self.printer, _) = init_data()
+
+    @patch('lib.channels.num_ws_connections', return_value=1)
+    def test_agent_connected_when_agent_websocket_is_present(self, num_ws_connections):
+        data = PrinterSerializer(self.printer).data
+
+        self.assertTrue(data['agent_connected'])
+        num_ws_connections.assert_called_once_with(
+            channels.octo_group_name(self.printer.id)
+        )
+
+    @patch('lib.channels.num_ws_connections', return_value=0)
+    def test_agent_disconnected_when_agent_websocket_is_absent(self, num_ws_connections):
+        data = PrinterSerializer(self.printer).data
+
+        self.assertFalse(data['agent_connected'])
 
 
 @override_settings(SITE_ID=1)

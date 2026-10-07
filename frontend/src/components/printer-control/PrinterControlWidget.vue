@@ -37,14 +37,6 @@
             <font-awesome-icon :icon="['fas', 'gear']" />
             <div class="title">{{ $t("Tune Printer") }}</div>
           </button>
-          <button
-            v-if="powerDevices.length"
-            class="menu-button"
-            @click="activeMenu = 'power-control'"
-          >
-            <font-awesome-icon :icon="['fas', 'power-off']" />
-            <div class="title">{{ $t("Power") }}</div>
-          </button>
         </div>
 
         <!-- Move Head -->
@@ -308,31 +300,6 @@
             {{$t("These settings can only be set. They can't be read back from the firmware due to a limitation of the communication protocol.")}}
           </muted-alert>
         </div>
-
-        <!-- Power Control -->
-        <div v-show="activeMenu === 'power-control'" class="control-panel power-control">
-          <div v-for="(item, index) in powerDevices" :key="index" class="power-item">
-            <div class="title">
-              <div class="name">{{ item.device }}</div>
-              <div
-                class="status text-danger"
-                :class="{ 'text-success': item.status.toUpperCase() === 'ON' }"
-              >
-                • {{ item.status.toUpperCase() }}
-              </div>
-            </div>
-            <b-button variant="outline-primary" @click="togglePower(item)">{{ $t(" Toggle Power ") }}</b-button>
-          </div>
-
-          <div v-if="powerDevices.length > 1" class="bulk-actions">
-            <b-button variant="success" @click="batchPowerControl('on')">{{ $t(" Power On All ") }}</b-button>
-            <b-button variant="danger" @click="batchPowerControl('off')">{{ $t(" Power Off All ") }}</b-button>
-          </div>
-
-          <muted-alert class="info-block">
-            {{$t("Rapid toggling power may result in error. Please allow a cooldown period.")}}
-          </muted-alert>
-        </div>
       </div>
     </template>
   </widget-template>
@@ -412,8 +379,6 @@ export default {
       customFeedRateFactor: null,
       customFlowRateFactor: null,
       customFanSpeed: null,
-
-      powerDevices: [],
     }
   },
 
@@ -541,8 +506,6 @@ export default {
   },
 
   created() {
-    this.getPowerDevices()
-
     // Get jogDistance from localStorage or set default value
     if (isLocalStorageSupported()) {
       this.xyzJogDistance.value =
@@ -751,63 +714,6 @@ export default {
               title: `${this.$i18next.t('Command successfully sent!')}`,
             })
           }
-        }
-      })
-    },
-
-    // Power Control
-    getPowerDevices() {
-      if (!this.printer.isAgentMoonraker()) return
-      const moonrakerPayload = {
-        func: 'machine/device_power/devices',
-        target: 'moonraker_api',
-        args: [],
-      }
-      this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
-        if (err) {
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: err,
-          })
-        } else {
-          this.powerDevices = ret?.devices || []
-        }
-      })
-    },
-    togglePower(device) {
-      // same as above but adapted to this file passThru function and syntax
-      const actionString = device.status.toUpperCase() === 'ON' ? 'off' : 'on'
-      const deviceStr = `device=${device.device}&action=${actionString}`
-      const moonrakerPayload = {
-        func: `machine/device_power/device?${deviceStr}`,
-        target: 'moonraker_api',
-        kwargs: { verb: 'post' },
-      }
-      this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
-        this.getPowerDevices()
-        if (err) {
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: err,
-          })
-        }
-      })
-    },
-    batchPowerControl(action) {
-      if (!this.powerDevices.length) return
-      const str = `${this.powerDevices.map((obj) => obj.device).join('&')}`
-      const moonrakerPayload = {
-        func: `machine/device_power/${action}?${str}`,
-        target: 'moonraker_api',
-        kwargs: { verb: 'post' },
-      }
-      this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
-        this.getPowerDevices()
-        if (err) {
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: err,
-          })
         }
       })
     },
@@ -1056,21 +962,4 @@ export default {
   .info-block
     width: 100%
 
-.power-control
-  .power-item
-    margin: 1rem 0
-    display: flex
-    flex-direction: column
-    gap: .5rem
-  .title
-    display: flex
-    justify-content: space-between
-    font-size: 1rem
-    font-weight: bold
-  .bulk-actions
-    display: flex
-    gap: 1rem
-    margin: 2rem 0
-    button
-      flex: 1
 </style>

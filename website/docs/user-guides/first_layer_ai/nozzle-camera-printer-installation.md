@@ -37,7 +37,7 @@ This guide will show you how to install an endoscope camera on your Prusa Mini 3
 
 Required Components:
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/001.jpeg)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/001.jpeg)
 
 
 1. 5.5mm USB-C Endoscope Camera from [Amazon](https://www.amazon.com/dp/B09NVYXTG5?psc=1&ref=ppx_yo2ov_dt_b_product_details) or similar
@@ -55,7 +55,7 @@ Since writing this guide, the 3DO nozzle camera now has a compatible mount for [
 
 ## Prepare the mount {#prepare-the-mount}
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/002.jpeg)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/002.jpeg)
 
 1. **Print the endoscope mount found on Printables.com.**
 
@@ -63,16 +63,16 @@ a. The mount will not be anywhere near the hotend, so it can be printed in any m
 
 2. **Assemble the mount**
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/003.jpeg)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/003.jpeg)
 
 a. This simple mount attaches to the rear 5015 fan on the Prusa Mini/Mini+ with a M4x20 Socket head cap screw and an M4 nut.
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/004.jpeg)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/004.jpeg)
 
    b. A M3x6 (or similar) screw can be used as a set screw to to keep the camera from twisting when the printer is moving. If you printed the mount vertically, keep in mind that this hole is not super strong, so you may consider pre-drilling the hole with an m3 drill bit if the fit is too tight.
 
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/005.jpeg)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/005.jpeg)
 
 3. **Install the mount**
 
@@ -82,7 +82,7 @@ a. Install the mount on the fan using the M4x20 screw and M4 nut as shown. Do no
 
 1. **Connect the camera to OctoPrint.**
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/006.jpeg)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/006.jpeg)
 
 a. Connect the USB-C to USB adapter (included with the camera) and plug the camera into your Raspberry Pi running OctoPrint.
 b. Connect to OctoPrint to ensure the camera is working properly. Restart OctoPrint if no image is shown.
@@ -96,13 +96,13 @@ a. Since the camera is cylindrical, it is difficult to determine the direction w
 
 1. **Insert the endoscope into the mount**
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/007.png)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/007.png)
 
 a. Place the endoscope so that the camera nozzle is correctly oriented in OctoPrint’s webcam stream.
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/008.png)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/008.png)
 
-![](/img/blogs/prusa-mini-nozzle-camera-setup/009.jpeg)
+![](https://www.obico.io/img/blogs/prusa-mini-nozzle-camera-setup/009.jpeg)
 
  b. The camera used in this guide has a focal length of 30-100mm, but testing has shown that positioning the camera between 30-50mm from the nozzle, angled slightly down, works best.
 
@@ -173,7 +173,7 @@ This guide will walk you through installing the 3DO 4K nozzle camera on your Vor
 
 ## Required Hardware: {#required-hardware}
 
-![](/img/blogs/nozzle-camera-stealthburner/001.png)
+![](https://www.obico.io/img/blogs/nozzle-camera-stealthburner/001.png)
 
 1. Voron 2.4 with StealthBurner
 2. 3DO 4K nozzle camera kit (distributed by [3DO](https://3do.eu/nozzle-camera/763-1162-3do-nozzle-camera.html) for EU and [KB3D](https://kb-3d.com/store/electronics/779-7659-pre-order-3do-nozzle-camera-kit-multiple-styles.html#/914-resolution-4k) or [Fabreeko](https://www.fabreeko.com/products/nozzle-camera-by-3d0?variant=43751816593663) for U.S.)
@@ -200,14 +200,14 @@ For example, print the following parts for standard stealth burner hotends:
 
 ## Install the camera {#install-the-camera}
 
-![](/img/blogs/nozzle-camera-stealthburner/002.png)
+![](https://www.obico.io/img/blogs/nozzle-camera-stealthburner/002.png)
 
 Photo Courtesy of [3DO Github](https://github.com/3DO-EU/nozzle-camera)
 
 
 Install the camera as shown above. The ribbon cable is somewhat delicate but it can be folded to help route it. Be careful not to fold it back and forth multiple times to avoid damaging it.
 
-![](/img/blogs/nozzle-camera-stealthburner/003.png)
+![](https://www.obico.io/img/blogs/nozzle-camera-stealthburner/003.png)
 
 Photo Courtesy of [3DO Github](https://github.com/3DO-EU/nozzle-camera)
 
@@ -230,7 +230,7 @@ If you plan to install new components (lights and fans) on the main body, head o
 1. Open your preferred web interface such as Mainsail or Fluidd.
 2. Go to *Machine*. Open the folder that contains your webcam settings such as `crowsnest.conf`
 
-![](/img/blogs/nozzle-camera-stealthburner/set-resolution.png)
+![](https://www.obico.io/img/blogs/nozzle-camera-stealthburner/set-resolution.png)
 
 3. Edit the resolution for the nozzle camera to be 4096x3840 or the maximum resolution that your webcam can handle
 
@@ -262,7 +262,7 @@ Yes, FPC is flexible and can be bent, if you want to fold it (180deg) we recomme
 
 Example of folding FPC
 
-![](/img/blogs/nozzle-camera-stealthburner/006.jpeg)
+![](https://www.obico.io/img/blogs/nozzle-camera-stealthburner/006.jpeg)
 
 - **What are the camera specifications?**
 

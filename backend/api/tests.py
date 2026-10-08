@@ -1,10 +1,11 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from unittest.mock import *
 from django.utils import timezone
 from datetime import timedelta
 from django.test import Client
 from django.urls import reverse
+from rest_framework.test import APIRequestFactory, force_authenticate
 from safedelete.models import *
 from django.contrib.sites.models import Site
 
@@ -12,6 +13,8 @@ from app.models import GCodeFile, Printer, Print, User
 from app.models.syndicate_models import Syndicate
 from api.octoprint_views import *
 from api.octoprint_messages import process_printer_status
+from api.serializers import PrinterSerializer
+from lib import channels
 
 
 def setup_syndicate():
@@ -36,6 +39,27 @@ def init_data():
     client.force_login(user)
 
     return (user, printer, client)
+
+
+@override_settings(SITE_ID=1)
+class PrinterSerializerTestCase(TestCase):
+    def setUp(self):
+        (_, self.printer, _) = init_data()
+
+    @patch('lib.channels.num_ws_connections', return_value=1)
+    def test_agent_connected_when_agent_websocket_is_present(self, num_ws_connections):
+        data = PrinterSerializer(self.printer).data
+
+        self.assertTrue(data['agent_connected'])
+        num_ws_connections.assert_called_once_with(
+            channels.octo_group_name(self.printer.id)
+        )
+
+    @patch('lib.channels.num_ws_connections', return_value=0)
+    def test_agent_disconnected_when_agent_websocket_is_absent(self, num_ws_connections):
+        data = PrinterSerializer(self.printer).data
+
+        self.assertFalse(data['agent_connected'])
 
 
 @override_settings(SITE_ID=1)
@@ -99,6 +123,27 @@ class GCodeFileUploadTestCase(TestCase):
         self.assertEqual(gcode_file.filament_total, 12.5)
         parse.assert_called_once()
         save_file_obj.assert_called_once()
+
+
+class AgentGCodeFileTestCase(SimpleTestCase):
+    @patch.object(GCodeFileView, 'get_queryset')
+    def test_missing_safe_filename_returns_400(self, get_queryset):
+        request = APIRequestFactory().post('/api/v1/octo/g_code_files/', {
+            'num_bytes': '0',
+            'agent_signature': 'ts:0',
+            'url': '',
+        })
+        force_authenticate(
+            request,
+            user=Mock(is_authenticated=True),
+            token=Mock(id=1),
+        )
+
+        response = GCodeFileView.as_view({'post': 'post'})(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('safe_filename', response.data)
+        get_queryset.assert_not_called()
 
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"
 

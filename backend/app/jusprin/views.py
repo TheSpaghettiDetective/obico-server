@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from langfuse.decorators import langfuse_context, observe
+from langfuse import observe, get_client, propagate_attributes
 from langfuse.openai import openai
 from openai import OpenAI
 from pydantic import BaseModel
@@ -67,13 +67,14 @@ class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):
         api_key = os.environ.get('VLM_API_KEY')
         base_url = os.environ.get('VLM_BASE_URL')
         openai_client = OpenAI(api_key=api_key, base_url=base_url)
-        langfuse_context.update_current_trace(
-            input=request.data.get('messages'),
+        langfuse = get_client()
+        with propagate_attributes(
             user_id=str(request.user.id),
-            session_id=request.data.get('chat_id')
-        )
-        chat = request.data
-        response = analyse_plate_step(chat, openai_client)
+            session_id=request.data.get('chat_id'),
+        ):
+            langfuse.set_current_trace_io(input=request.data.get('messages'))
+            chat = request.data
+            response = analyse_plate_step(chat, openai_client)
 
         return Response(response, status=status.HTTP_201_CREATED)
 
@@ -100,14 +101,15 @@ class JusPrinChatViewSet(viewsets.ModelViewSet):
         api_key = os.environ.get('LLM_API_KEY')
         base_url = os.environ.get('LLM_BASE_URL')
         openai_client = OpenAI(api_key=api_key, base_url=base_url)
-        langfuse_context.update_current_trace(
-            input=request.data.get('messages'),
+        langfuse = get_client()
+        with propagate_attributes(
             user_id=str(request.user.id),
-            session_id=request.data.get('chat_id')
-        )
+            session_id=request.data.get('chat_id'),
+        ):
+            langfuse.set_current_trace_io(input=request.data.get('messages'))
 
-        chat = request.data
-        response = run_chain_on_chat(chat, openai_client)
+            chat = request.data
+            response = run_chain_on_chat(chat, openai_client)
 
         return Response(response, status=200)
 

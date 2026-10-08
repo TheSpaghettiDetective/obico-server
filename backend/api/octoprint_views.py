@@ -381,6 +381,9 @@ class GCodeFileView(
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
+        if 'safe_filename' not in validated_data:
+            raise ValidationError({'safe_filename': 'This field is required.'})
+
         # Overwrite the foreign keys as they are not supposed to be set by the agent.
         validated_data['resident_printer_id'] = printer.id
         validated_data['user_id'] = request.user.id

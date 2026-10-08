@@ -53,6 +53,22 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
         return (config.get('phone_country_code') or '') + (config.get('phone_number') or '')
 
     def send_sms(self, body: str, to_number: str):
+        try:
+            country_code = phonenumbers.parse(to_number, None).country_code
+        except phonenumbers.NumberParseException:
+            LOGGER.warning("SMS skipped because the destination number is invalid")
+            return
+
+        if (
+            settings.TWILIO_COUNTRY_CODES
+            and country_code not in settings.TWILIO_COUNTRY_CODES
+        ):
+            LOGGER.warning(
+                "SMS skipped for unsupported destination country code +%s",
+                country_code,
+            )
+            return
+
         twilio_client = Client(os.environ.get('TWILIO_ACCOUNT_SID'), os.environ.get('TWILIO_AUTH_TOKEN'))
         from_number = os.environ.get('TWILIO_FROM_NUMBER')
 

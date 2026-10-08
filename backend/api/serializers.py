@@ -14,6 +14,7 @@ from app.models import (
     NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspection, FirstLayerInspectionImage,
 )
 
+from lib import channels
 from notifications.handlers import handler
 
 
@@ -132,13 +133,21 @@ class PrinterSerializer(BasePrinterSerializer):
     pic = serializers.DictField(read_only=True)
     status = serializers.DictField(read_only=True)
     settings = serializers.DictField(read_only=True)
+    agent_connected = serializers.SerializerMethodField()
     normalized_p = serializers.SerializerMethodField()
     current_print = BasePrintSerializer(read_only=True)
 
     class Meta:
         model = Printer
-        fields = BasePrinterSerializer.Meta.fields + ('pic', 'status', 'settings', 'current_print','normalized_p',)
-        read_only_fields = BasePrinterSerializer.Meta.read_only_fields + ('pic', 'status', 'settings', 'current_print', 'normalized_p',)
+        fields = BasePrinterSerializer.Meta.fields + (
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+        )
+        read_only_fields = BasePrinterSerializer.Meta.read_only_fields + (
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+        )
+
+    def get_agent_connected(self, obj: Printer) -> bool:
+        return channels.num_ws_connections(channels.octo_group_name(obj.id)) > 0
 
     def get_normalized_p(self, obj: Printer) -> float:
         return obj.printerprediction.normalized_p if hasattr(obj, 'printerprediction') else 0
@@ -180,7 +189,7 @@ class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
             else:
                 existing = GCodeFolder.objects.filter(user=user, parent_folder=parent_folder, safe_name=safe_name).first()
 
-            if existing and self.instance and existing.id != self.instance.id:
+            if existing and (self.instance is None or existing.id != self.instance.id):
                 raise serializers.ValidationError({'name': f'Already existed.'})
 
         return attrs

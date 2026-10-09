@@ -33,6 +33,7 @@ from django.db.models import Sum, Max, Count, fields, Case, Value, When
 
 from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
+from .pagination import GCodeFilePagination
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspectionImage)
@@ -551,7 +552,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
-    pagination_class = StandardResultsSetPagination
+    pagination_class = GCodeFilePagination
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:

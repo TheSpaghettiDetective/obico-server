@@ -4,12 +4,14 @@ from unittest.mock import *
 from django.utils import timezone
 from datetime import timedelta
 from django.test import Client
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from rest_framework.test import APIRequestFactory, force_authenticate
 from safedelete.models import *
 from django.contrib.sites.models import Site
 
-from app.models import GCodeFile, Printer, Print, User
+from app.models import GCodeFile, GCodeFolder, Printer, Print, User
 from app.models.syndicate_models import Syndicate
 from api.octoprint_views import *
 from api.octoprint_messages import process_printer_status
@@ -144,6 +146,172 @@ class AgentGCodeFileTestCase(SimpleTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('safe_filename', response.data)
         get_queryset.assert_not_called()
+
+
+@override_settings(SITE_ID=1)
+class GCodeFileListingTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        syndicate = setup_syndicate()
+        cls.user = User.objects.create(email='gcode-list@test.com', syndicate=syndicate)
+        cls.printer = Printer.objects.create(user=cls.user, auth_token='gcode-list-test-token')
+        cls.files = GCodeFile.objects.bulk_create([
+            GCodeFile(
+                user=cls.user,
+                filename=f'file-{i}.gcode',
+                safe_filename=f'file-{i}.gcode',
+                metadata_json='{"estimated_time": 120, "padding": "' + 'x' * 4096 + '"}',
+                agent_signature=f'ts:{i}',
+                num_bytes=123,
+            )
+            for i in range(105)
+        ])
+        cls.print = Print.objects.create(
+            user=cls.user, printer=cls.printer, g_code_file=cls.files[-1],
+            filename=cls.files[-1].filename, started_at=timezone.now(), ext_id=1,
+        )
+
+    def agent_get(self, url):
+        return self.client.get(url, HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}')
+
+    def file_select_queries(self, queries):
+        return [
+            query['sql'] for query in queries
+            if query['sql'].startswith('SELECT')
+            and 'FROM "app_gcodefile"' in query['sql']
+            and 'COUNT(' not in query['sql']
+        ]
+
+    def test_agent_listing_limits_the_database_query(self):
+        with CaptureQueriesContext(connection) as queries:
+            response = self.agent_get('/api/v1/octo/g_code_files/?page_size=9999')
+
+        self.assertEqual(response.status_code, 200)
+        selects = self.file_select_queries(queries)
+        self.assertTrue(selects)
+        self.assertIn('LIMIT 100', selects[0])
+        self.assertEqual(len(response.json()['results']), 100)
+        self.assertIsNotNone(response.json()['next'])
+
+    def test_agent_default_listing_does_not_load_metadata_or_history(self):
+        with CaptureQueriesContext(connection) as queries:
+            response = self.agent_get('/api/v1/octo/g_code_files/?limit=1&page=1')
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body['count'], 105)
+        self.assertEqual(len(body['results']), 6)
+        self.assertEqual(body['results'][0]['id'], self.files[0].id)
+        self.assertNotIn('metadata_json', body['results'][0])
+        self.assertNotIn('print_set', body['results'][0])
+        selects = self.file_select_queries(queries)
+        self.assertEqual(len(selects), 1)
+        self.assertIn('LIMIT 6', selects[0])
+        self.assertNotIn('metadata_json', selects[0])
+        self.assertFalse(any('FROM "app_print"' in query['sql'] for query in queries))
+
+    def test_agent_next_links_cover_the_library_without_duplicates(self):
+        url = '/api/v1/octo/g_code_files/?page_size=24'
+        ids = []
+        for _ in range(5):
+            self.assertIsNotNone(url)
+            response = self.agent_get(url)
+            self.assertEqual(response.status_code, 200)
+            body = response.json()
+            self.assertLessEqual(len(body['results']), 24)
+            ids.extend(file['id'] for file in body['results'])
+            url = body['next']
+
+        self.assertIsNone(url)
+        self.assertEqual(ids, [file.id for file in self.files])
+
+    def test_mobile_listing_limits_the_database_query(self):
+        self.client.force_login(self.user)
+        with CaptureQueriesContext(connection) as queries:
+            response = self.client.get('/api/v1/g_code_files/?page_size=9999')
+
+        self.assertEqual(response.status_code, 200)
+        selects = self.file_select_queries(queries)
+        self.assertTrue(selects)
+        self.assertIn('LIMIT 100', selects[0])
+        self.assertEqual(len(response.json()['results']), 100)
+        self.assertIsNotNone(response.json()['next'])
+
+    def test_mobile_pages_and_details_keep_metadata_and_print_history(self):
+        self.client.force_login(self.user)
+        for page_size in (24, 25):
+            with self.subTest(page_size=page_size):
+                response = self.client.get(f'/api/v1/g_code_files/?page_size={page_size}')
+                self.assertEqual(response.status_code, 200)
+                body = response.json()
+                self.assertEqual(set(body), {'count', 'next', 'previous', 'results'})
+                self.assertEqual(body['count'], 105)
+                self.assertEqual(len(body['results']), page_size)
+                file = body['results'][0]
+                self.assertEqual(file['metadata_json'], self.files[-1].metadata_json)
+                self.assertEqual(file['print_set'][0]['id'], self.print.id)
+                second_page = self.client.get(body['next']).json()['results']
+                self.assertFalse({f['id'] for f in body['results']} & {f['id'] for f in second_page})
+
+        detail = self.client.get(f'/api/v1/g_code_files/{self.files[-1].id}/').json()
+        self.assertEqual(detail['metadata_json'], self.files[-1].metadata_json)
+        self.assertEqual(detail['print_set'][0]['id'], self.print.id)
+
+    def test_default_and_invalid_page_sizes_remain_bounded(self):
+        self.client.force_login(self.user)
+        for endpoint in ('/api/v1/g_code_files/', '/api/v1/octo/g_code_files/'):
+            for query in ('', '?page_size=0', '?page_size=-1', '?page_size=invalid'):
+                with self.subTest(endpoint=endpoint, query=query):
+                    response = self.agent_get(endpoint + query) if '/octo/' in endpoint else self.client.get(endpoint + query)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(len(response.json()['results']), 6)
+
+    def test_folder_listing_keeps_its_existing_page_size(self):
+        GCodeFolder.objects.bulk_create([
+            GCodeFolder(user=self.user, name=f'folder-{i}', safe_name=f'folder-{i}')
+            for i in range(120)
+        ])
+        self.client.force_login(self.user)
+        response = self.client.get('/api/v1/g_code_folders/?parent_folder=null&page_size=9999')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 120)
+        self.assertIsNone(response.json()['next'])
+
+    def test_listings_exclude_other_accounts_and_deleted_files(self):
+        other_user = User.objects.create(email='other-gcode-list@test.com', syndicate=self.user.syndicate)
+        GCodeFile.objects.create(user=other_user, filename='other.gcode', safe_filename='other.gcode')
+        self.files[0].delete()
+        self.assertEqual(self.client.get('/api/v1/octo/g_code_files/').status_code, 401)
+        agent = self.agent_get('/api/v1/octo/g_code_files/').json()
+        self.assertEqual(agent['count'], 104)
+        self.assertEqual(agent['results'][0]['id'], self.files[1].id)
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get('/api/v1/g_code_files/').json()['count'], 104)
+
+    def test_agent_upsert_and_patch_keep_the_existing_response(self):
+        auth = {'HTTP_AUTHORIZATION': f'Token {self.printer.auth_token}'}
+        data = {
+            'filename': 'agent.gcode', 'safe_filename': 'agent.gcode',
+            'agent_signature': 'ts:agent', 'metadata_json': '{"estimated_time": 60}',
+            'num_bytes': 123, 'url': '',
+        }
+        response = self.client.post('/api/v1/octo/g_code_files/', data, **auth)
+        self.assertEqual(response.status_code, 201)
+        body = response.json()
+        self.assertEqual(body['metadata_json'], data['metadata_json'])
+        self.assertEqual(body['resident_printer'], self.printer.id)
+        self.assertIn('print_set', body)
+        upsert = self.client.post('/api/v1/octo/g_code_files/', data, **auth)
+        self.assertEqual(upsert.status_code, 200)
+        self.assertEqual(upsert.json()['id'], body['id'])
+        patch = self.client.patch(
+            f'/api/v1/octo/g_code_files/{body["id"]}/',
+            {'metadata_json': '{"estimated_time": 90}'},
+            content_type='application/json', **auth,
+        )
+        self.assertEqual(patch.status_code, 200)
+        self.assertEqual(patch.json()['metadata_json'], '{"estimated_time": 90}')
+        self.assertIn('print_set', patch.json())
 
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"
 

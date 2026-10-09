@@ -227,6 +227,18 @@ class GCodeFileSerializer(BaseGCodeFileSerializer):
     print_set = BasePrintSerializer(many=True, read_only=True)
 
 
+class AgentGCodeFileListSerializer(serializers.ModelSerializer):
+    """Printer listings do not need metadata or nested account print history."""
+
+    class Meta:
+        model = GCodeFile
+        fields = (
+            'id', 'filename', 'safe_filename', 'num_bytes', 'url',
+            'agent_signature', 'resident_printer', 'parent_folder',
+            'created_at', 'updated_at',
+        )
+
+
 class MobileDeviceSerializer(serializers.ModelSerializer):
 
     class Meta:

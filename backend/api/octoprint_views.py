@@ -30,6 +30,7 @@ from lib.printer_discovery import (
     update_presence_for_device,)
 from lib.one_time_passcode import request_one_time_passcode
 from .authentication import PrinterAuthentication
+from .pagination import GCodeFilePagination
 from lib.file_storage import save_file_obj
 from lib import cache
 from lib.utils import save_pic, get_rotated_pic_url
@@ -37,7 +38,10 @@ from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, Prin
 from notifications.handlers import handler
 from lib.channels import send_status_to_web
 from config.celery import celery_app
-from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
+from .serializers import (
+    VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer,
+    GCodeFileSerializer, AgentGCodeFileListSerializer,
+)
 from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -365,12 +369,24 @@ class GCodeFileView(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet
 ):
+    """GET returns paginated summaries; POST/PATCH retain the full file response."""
+
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = GCodeFileSerializer
+    pagination_class = GCodeFilePagination
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return AgentGCodeFileListSerializer
+        return super().get_serializer_class()
 
     def get_queryset(self):
-        return GCodeFile.objects.filter(user=self.request.user)
+        qs = GCodeFile.objects.filter(user=self.request.user)
+        if self.action == 'list':
+            # Exclude large text columns in SQL, before Django materializes rows.
+            qs = qs.only(*AgentGCodeFileListSerializer.Meta.fields).order_by('id')
+        return qs
 
     # Post to this endpoint is considered an upsert, identified by resident_printer + agent_signature + safe_filename
     # Agent is required to upsert a GCodeFile before or during a print so that the Print can be linked to a GCodeFile

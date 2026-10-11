@@ -888,5 +888,6 @@
   "Apprise URL": "Apprise URL",
   "e.g. ntfy://user:pass@ntfy.sh/obico": "例如：ntfy://user:pass@ntfy.sh/obico",
   "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "透過 Apprise 傳送通知。輸入您服務的 Apprise URL，URL 格式請參閱 {localizedDom}。",
-  "Apprise wiki": "Apprise 維基"
+  "Apprise wiki": "Apprise 維基",
+  "Grouped by {{grouping}} to show the full selected period.": "按{{grouping}}分組，以顯示完整的所選期間。"
 }

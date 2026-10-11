@@ -888,5 +888,6 @@
   "You a going to logout from your account": "You a going to logout from your account",
   "Logout": "Logout",
   "Can not update your preferences": "Can not update your preferences",
-  "Account": "Account"
+  "Account": "Account",
+  "Grouped by {{grouping}} to show the full selected period.": "Grouped by {{grouping}} to show the full selected period."
 }

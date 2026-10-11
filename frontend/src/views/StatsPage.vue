@@ -101,6 +101,9 @@
         <b-row>
           <b-col>
             <muted-alert class="muted-alert">{{ $t("Statistics include deleted prints") }}</muted-alert>
+            <muted-alert v-if="groupingAdjusted" class="muted-alert">
+              {{ groupingNotice }}
+            </muted-alert>
           </b-col>
         </b-row>
         <b-row>
@@ -224,6 +227,7 @@ import { BarChart, xAxisLabelsFormat } from '@src/lib/charts/bar-chart'
 import { queryBuilder, getDateTo, getRecommendedGrouping } from '@src/lib/time-period-filtering'
 import HelpWidget from '@src/components/HelpWidget.vue'
 import { humanizedDuration, humanizedFilamentUsage } from '@src/lib/formatters'
+import { fetchPrintStats } from '@src/lib/printStats'
 import i18n from "@src/i18n/i18n.js"
 const GroupingLocalStorageKey = 'statsGrouping'
 
@@ -281,6 +285,8 @@ export default {
     return {
       user: null,
       stats: null,
+      requestedGrouping: null,
+      effectiveGrouping: null,
 
       groupingOptions: [
         { key: 'auto', title: 'Auto' },
@@ -299,6 +305,17 @@ export default {
   },
 
   computed: {
+    groupingAdjusted() {
+      return this.requestedGrouping !== this.effectiveGrouping
+    },
+    effectiveGroupingTitle() {
+      return this.groupingOptions.find((grouping) => grouping.key === this.effectiveGrouping)?.title || ''
+    },
+    groupingNotice() {
+      return this.$t('Grouped by {{grouping}} to show the full selected period.', {
+        grouping: this.$t(this.effectiveGroupingTitle),
+      })
+    },
     defaultStatsParams() {
       return {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -399,10 +416,11 @@ export default {
       console.log('params', params)
       return params
     },
-    fetchStats() {
-      axios
-        .get(urls.stats(), {
-          params: {
+    async fetchStats() {
+      try {
+        const { response, requestedGrouping, effectiveGrouping } = await fetchPrintStats(
+          (params) => axios.get(urls.stats(), { params }),
+          {
             with_deleted: true,
             ...this.defaultStatsParams,
             ...getFilterParams(
@@ -411,15 +429,15 @@ export default {
               this.customFilterParamsBuilder
             ),
             ...this.getFilterParamsFromQuery(),
-          },
-        })
-        .then((response) => {
-          this.stats = response.data
-          this.$nextTick(this.drawCharts)
-        })
-        .catch((error) => {
-          this.errorDialog(error, `${this.$i18next.t('Failed to fetch statistics')}`)
-        })
+          }
+        )
+        this.stats = response.data
+        this.requestedGrouping = requestedGrouping
+        this.effectiveGrouping = effectiveGrouping
+        this.$nextTick(this.drawCharts)
+      } catch (error) {
+        this.errorDialog(error, `${this.$i18next.t('Failed to fetch statistics')}`)
+      }
     },
     updateChartGrouping(grouping) {
       this.activeGrouping = grouping.key
@@ -508,7 +526,7 @@ export default {
       const xLabelsFormat = xAxisLabelsFormat(
         chartWidth,
         barsCount,
-        this.getFilterParamsFromQuery()?.group_by || this.getActiveGrouping(),
+        this.effectiveGrouping,
         getDateTo(this.filterValues.timePeriod, this.getCurrentDateTo())
       )
 

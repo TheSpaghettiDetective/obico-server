@@ -14,6 +14,7 @@ from requests.exceptions import HTTPError
 
 from auth import token_required
 from lib.detection_model import load_net, detect
+from deadline import DeadlineExpired, expired, get_with_deadline, parse_deadline
 
 THRESH = 0.08  # The threshold for a box to be considered a positive detection
 SESSION_TTL_SECONDS = 60*2
@@ -62,6 +63,13 @@ def _get_with_retry(url, timeout, stream=True):
 @app.route('/p/', methods=['GET'])
 @token_required
 def get_p():
+    try:
+        deadline = parse_deadline(request.headers.get('X-Deadline'))
+    except ValueError as err:
+        return jsonify(detections=[], message=str(err)), 400
+    if expired(deadline):
+        return jsonify(detections=[]), 503
+
     if 'img' in request.args:
         try:
             # Use longer timeout for Google Cloud Storage as it's slower
@@ -70,11 +78,18 @@ def get_p():
             else:
                 timeout = (0.1, 5)  # 0.1s connection, 5s read
 
-            resp = _get_with_retry(request.args['img'], timeout, stream=True)
+            if deadline is None:
+                resp = _get_with_retry(request.args['img'], timeout, stream=True)
+            else:
+                resp = get_with_deadline(request.args['img'], deadline, timeout)
             img_array = np.array(bytearray(resp.content), dtype=np.uint8)
+            if expired(deadline):
+                return jsonify(detections=[]), 503
             img = cv2.imdecode(img_array, -1)
             detections = detect(net_main, img, thresh=THRESH)
             return jsonify({'detections': detections})
+        except DeadlineExpired:
+            return jsonify(detections=[]), 503
         except Exception as err:
             sentry_sdk.capture_exception()
             app.logger.error(f"Failed to get image {request.args} - {err}")

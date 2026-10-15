@@ -478,6 +478,38 @@ class OAuthPrinterFlowTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    def test_print_mutations_cannot_target_another_users_printer(self, celery_app):
+        other_user = User.objects.create(email='other-oauth@test.com', syndicate=self.user.syndicate)
+        other_printer = Printer.objects.create(user=other_user, name='Other printer')
+        other_print = Print.objects.create(
+            user=other_user,
+            printer=other_printer,
+            filename='other.gcode',
+            started_at=timezone.now(),
+            ext_id=1,
+        )
+        other_printer.current_print = other_print
+        other_printer.save()
+
+        start_response = self.client.post(
+            f'/api/v1/printers/{other_printer.id}/start_print/',
+            {'filename': 'unauthorized.gcode'},
+            content_type='application/json',
+        )
+        finish_response = self.client.post(
+            f'/api/v1/printers/{other_printer.id}/finish_print/',
+            {'status': 'cancelled'},
+            content_type='application/json',
+        )
+
+        self.assertEqual(start_response.status_code, 404)
+        self.assertEqual(finish_response.status_code, 404)
+        other_print.refresh_from_db()
+        other_printer.refresh_from_db()
+        self.assertIsNone(other_print.finished_at)
+        self.assertIsNone(other_print.cancelled_at)
+        self.assertEqual(other_printer.current_print, other_print)
+
     def test_create_printer(self, celery_app):
         """Test creating a new printer via API."""
         response = self.client.post(

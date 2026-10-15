@@ -32,6 +32,7 @@ from django.db.models.functions import TruncDay
 from django.db.models import Sum, Max, Count, fields, Case, Value, When
 
 from .utils import report_validationerror
+from .gcode_utils import filter_by_parent_folder
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
@@ -519,12 +520,7 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
         elif sorting == 'name_desc':
             qs = qs.order_by('-name')
 
-        if 'parent_folder' in request.GET:
-            parent_folder = request.GET.get('parent_folder')
-            if parent_folder == 'null' or parent_folder == '':
-                qs = qs.filter(parent_folder__isnull=True)
-            else:
-                qs = qs.filter(parent_folder_id=int(parent_folder))
+        qs = filter_by_parent_folder(qs, request.GET)
 
         page = self.paginate_queryset(qs)
         if page is not None:
@@ -588,12 +584,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
         if q:
             qs = qs.filter(safe_filename__icontains=q)
 
-        if 'parent_folder' in request.GET:
-            parent_folder = request.GET.get('parent_folder')
-            if parent_folder == 'null' or parent_folder == '':
-                qs = qs.filter(parent_folder__isnull=True)
-            else:
-                qs = qs.filter(parent_folder_id=int(parent_folder))
+        qs = filter_by_parent_folder(qs, request.GET)
 
         if 'safe_filename' in request.GET and 'agent_signature' in request.GET:
             qs = qs.filter(agent_signature=request.GET.get('agent_signature'),

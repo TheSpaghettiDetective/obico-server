@@ -2,7 +2,6 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.relations import PrimaryKeyRelatedField
 from django.conf import settings
-import re
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
 import phonenumbers
@@ -15,6 +14,7 @@ from app.models import (
 )
 
 from notifications.handlers import handler
+from .gcode_utils import GCodeParentFolderValidationMixin, safe_gcode_name
 
 
 def int_with_default(v, default):
@@ -155,20 +155,15 @@ class BaseGCodeFolderSerializer(serializers.ModelSerializer):
         read_only_fields = ('user', 'safe_name')
 
 
-class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
+class GCodeFolderDeSerializer(GCodeParentFolderValidationMixin, BaseGCodeFolderSerializer):
     parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects, allow_null=True, required=False)
-
-    def validate_parent_folder(self, parent_folder):
-        if parent_folder is not None and self.context['request'].user != parent_folder.user:
-            raise serializers.ValidationError('Parent folder does not exist')
-        return parent_folder
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
 
         user = self.context['request'].user
         if 'name' in attrs:   # safe_name should always be updated when name is
-            safe_name = re.sub(r'[^\w\.]', '_', attrs['name'])
+            safe_name = safe_gcode_name(attrs['name'])
             attrs['safe_name'] = safe_name
         elif self.instance:
             safe_name = self.instance.safe_name
@@ -189,7 +184,7 @@ class GCodeFolderSerializer(BaseGCodeFolderSerializer):
     parent_folder = BaseGCodeFolderSerializer()
 
 
-class GCodeFileDeSerializer(serializers.ModelSerializer):
+class GCodeFileDeSerializer(GCodeParentFolderValidationMixin, serializers.ModelSerializer):
     parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects, allow_null=True, required=False)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -198,16 +193,11 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('user', 'resident_printer', 'safe_filename')
 
-    def validate_parent_folder(self, parent_folder):
-        if parent_folder is not None and self.context['request'].user != parent_folder.user:
-            raise serializers.ValidationError('Parent folder does not exist')
-        return parent_folder
-
     def validate(self, attrs):
         attrs = super().validate(attrs)
 
         if 'filename' in attrs: # safe_filename should always be updated when filename is
-            safe_filename = re.sub(r'[^\w\.]', '_', attrs['filename'])
+            safe_filename = safe_gcode_name(attrs['filename'])
             attrs['safe_filename'] = safe_filename
 
         return attrs

@@ -134,7 +134,7 @@ module.exports = {
         },
         {
           label: 'Blog',
-          to: '/blog',
+          href: 'https://www.obico.io/blog/',
         },
         {
           label: 'Pricing',
@@ -248,7 +248,7 @@ module.exports = {
           items: [
             {
               label: 'Blog',
-              to: '/blog',
+              href: 'https://www.obico.io/blog/',
             },
             {
               label: 'Team',

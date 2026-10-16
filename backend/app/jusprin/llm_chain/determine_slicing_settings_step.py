@@ -56,6 +56,12 @@ def determine_slicing_settings_step(chat, openai_client):
     filament_preset = slicing_params.get('filament_presets', [])[0]  # We assume that only the selected filament preset is in the request. This may change in the future.
     process_presets = slicing_params.get('print_process_presets', [])
     process_names = [process["name"] for process in process_presets]
+    selected_process_name = slicing_params.get('use_print_process_preset')
+    if selected_process_name not in process_names:
+        selected_process_name = next(
+            (process['name'] for process in process_presets if process.get('is_selected')),
+            None,
+        )
     language_rule = get_response_language_rule(chat)
 
     system_prompt = dedent(f"""
@@ -74,6 +80,15 @@ def determine_slicing_settings_step(chat, openai_client):
 
         The valid print process presets are:
         - {process_names}
+
+        The currently selected print process preset is: {selected_process_name}
+
+        This step selects a preset. A later step applies individual setting overrides
+        such as wall loops, layer height, support, and infill. A preset does not need
+        to contain the requested final value. When the user explicitly asks to keep
+        the selected process preset and change a specific setting, select that preset
+        so the later step can apply the override. Ask for clarification only when
+        information needed to decide the requested action is actually missing.
 
         **Important**:
         - You MUST select a preset name EXACTLY as it appears in the valid options list above.

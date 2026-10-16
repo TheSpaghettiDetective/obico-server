@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from langfuse import observe, get_client, propagate_attributes
 from langfuse.openai import openai
-from openai import OpenAI
 from pydantic import BaseModel
 from typing import Optional, Dict
 import instructor
@@ -26,6 +25,7 @@ from .models import JusPrinChat, JusPrinAICredit
 from .llm_chain import run_chain_on_chat
 from .plate_analysis_llm_module.analyse_plate_step import analyse_plate_step
 from .ai_credits import consume_credit_for_pipeline, get_credits_info
+from .responses_transport import create_jusprin_client
 from django.conf import settings
 
 
@@ -66,7 +66,7 @@ class JusPrinPlateAnalysisViewSet(viewsets.ModelViewSet):
     def create(self, request):
         api_key = os.environ.get('VLM_API_KEY')
         base_url = os.environ.get('VLM_BASE_URL')
-        openai_client = OpenAI(api_key=api_key, base_url=base_url)
+        openai_client = create_jusprin_client(api_key, base_url, os.environ.get('VLM_MODEL_NAME'))
         langfuse = get_client()
         with propagate_attributes(
             user_id=str(request.user.id),
@@ -100,7 +100,7 @@ class JusPrinChatViewSet(viewsets.ModelViewSet):
     def messages(self, request):
         api_key = os.environ.get('LLM_API_KEY')
         base_url = os.environ.get('LLM_BASE_URL')
-        openai_client = OpenAI(api_key=api_key, base_url=base_url)
+        openai_client = create_jusprin_client(api_key, base_url, os.environ.get('LLM_MODEL_NAME'))
         langfuse = get_client()
         with propagate_attributes(
             user_id=str(request.user.id),

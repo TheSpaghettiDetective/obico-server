@@ -587,5 +587,6 @@
   "Choose a Print Process": "选择打印流程",
   "When your three-month plan expires, you will have the chance to upgrade to one of Obico's": "当您的三个月计划到期时，您将有机会升级到Obico的其中一个计划",
   "Plan discount. When you redeem your plan, you'll be asked to enter your credit card so we can give you the exclusive 20% discount when your plan renews.": "计划折扣。当您兑换计划时，系统会要求您输入信用卡，以便在计划续订时为您提供独家20%折扣。",
-  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "如果您想通过{localizedDom}观看网络摄像头，并获得更多AI Detection Hours，让Obi为您监控打印，可以升级到{planName}计划。"
+  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "如果您想通过{localizedDom}观看网络摄像头，并获得更多AI Detection Hours，让Obi为您监控打印，可以升级到{planName}计划。",
+  "Referral code: {code}. Your discount will appear at checkout. Prices below exclude discounts.": "推荐码：{{code}}。您的折扣将在结账时显示。以下价格未包含折扣。"
 }

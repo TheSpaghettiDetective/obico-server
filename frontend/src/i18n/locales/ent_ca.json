@@ -587,5 +587,6 @@
   "Choose a Print Process": "Trieu un procés d'impressió",
   "When your three-month plan expires, you will have the chance to upgrade to one of Obico's": "Quan el vostre pla de tres mesos venci, tindreu l'oportunitat d'actualitzar-vos a un dels plans d'Obico",
   "Plan discount. When you redeem your plan, you'll be asked to enter your credit card so we can give you the exclusive 20% discount when your plan renews.": "Descompte del pla. Quan canvieu el vostre pla, se us demanarà que introduïu la vostra targeta de crèdit perquè puguem donar-vos el descompte exclusiu del 20% quan el vostre pla es renovi.",
-  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "Si voleu veure la vostra càmera web amb {localizedDom} i obtenir més AI Detection Hours perquè Obi pugui vigilar les vostres impressions per vosaltres, podeu actualitzar al pla {planName}."
+  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "Si voleu veure la vostra càmera web amb {localizedDom} i obtenir més AI Detection Hours perquè Obi pugui vigilar les vostres impressions per vosaltres, podeu actualitzar al pla {planName}.",
+  "Referral code: {code}. Your discount will appear at checkout. Prices below exclude discounts.": "Codi de referència: {{code}}. El descompte es mostrarà en pagar. Els preus següents no inclouen descomptes."
 }

@@ -587,5 +587,6 @@
   "Choose a Print Process": "Выберите процесс печати",
   "When your three-month plan expires, you will have the chance to upgrade to one of Obico's": "Когда ваш трёхмесячный план истечёт, у вас будет возможность перейти на один из планов Obico",
   "Plan discount. When you redeem your plan, you'll be asked to enter your credit card so we can give you the exclusive 20% discount when your plan renews.": "Скидка на план. При активации плана вас попросят ввести кредитную карту, чтобы мы могли предоставить вам эксклюзивную скидку 20% при продлении плана.",
-  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "Если вы хотите наблюдать за веб-камерой с помощью {localizedDom} и получить больше AI Detection Hours, чтобы Obi мог следить за вашими распечатками, вы можете перейти на план {planName}."
+  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "Если вы хотите наблюдать за веб-камерой с помощью {localizedDom} и получить больше AI Detection Hours, чтобы Obi мог следить за вашими распечатками, вы можете перейти на план {planName}.",
+  "Referral code: {code}. Your discount will appear at checkout. Prices below exclude discounts.": "Реферальный код: {{code}}. Скидка отобразится при оплате. Цены ниже указаны без скидок."
 }

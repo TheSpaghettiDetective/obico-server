@@ -468,6 +468,10 @@ PUBLIC_VERSION_CONTAINER = os.environ.get('PUBLIC_VERSION_CONTAINER', 'public-ve
 BUCKET_PREFIX = os.environ.get('BUCKET_PREFIX')
 ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
+# requests timeout for calls to the ML API. None means no timeout, which is the long-standing
+# behavior: self-hosted ML APIs (one gunicorn worker, often on CPU) can take many seconds per image.
+# Deployments that need a bound can override it with a (connect, read) tuple in seconds.
+ML_API_TIMEOUT = None
 
 PIC_POST_LIMIT_PER_MINUTE = int(os.environ.get('PIC_POST_LIMIT_PER_MINUTE') or '0') # 0 means no limits
 MIN_DETECTION_INTERVAL = 10 # 10s as the default interval between detections. Recommended not to change as the hyper parameters are tuned based on interval = 10s.

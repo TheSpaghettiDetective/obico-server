@@ -46,7 +46,7 @@ def detect(printer, pic, pic_id, raw_pic_url, ml_api_endpoint, params):
 
     prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
 
-    req = requests.get(settings.ML_API_HOST + ml_api_endpoint, params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
+    req = requests.get(settings.ML_API_HOST + ml_api_endpoint, params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False, timeout=settings.ML_API_TIMEOUT)
     req.raise_for_status()
     detections = req.json()['detections']
 

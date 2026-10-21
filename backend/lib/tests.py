@@ -268,3 +268,11 @@ class RewriteUrlOriginTestCase(TestCase):
             rewrite_url_origin('http://old-host:3334/media/1.mp4', 'old-host:3334', 'https://new-host')
         with self.assertRaises(ValueError):
             rewrite_url_origin('http://old-host:3334/media/1.mp4', 'http://old-host:3334', 'https://new-host/media')
+
+
+class MlApiTimeoutDefaultTestCase(TestCase):
+
+    def test_open_source_default_is_no_timeout(self):
+        # Self-hosted ML APIs can be slow (one CPU worker); deployments opt in to a bound via settings.
+        from config import settings as base_settings
+        self.assertIsNone(base_settings.ML_API_TIMEOUT)

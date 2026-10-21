@@ -246,7 +246,7 @@ class PrinterViewSet(
         from lib.utils import ml_api_auth_headers
         from lib.prediction import update_prediction_with_detections
 
-        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False, timeout=30)
+        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False, timeout=settings.ML_API_TIMEOUT)
         req.raise_for_status()
         detections = req.json()['detections']
 

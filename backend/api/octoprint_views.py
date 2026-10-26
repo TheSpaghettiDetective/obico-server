@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone as dt_timezone
 from django.utils import timezone
 from django.db.models import Q
 import time
@@ -183,11 +183,11 @@ def alert_should_be_suppressed(current_print):
     if not current_print:
         return True
 
-    last_alerted = current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
+    last_alerted = current_print.alerted_at or datetime.fromtimestamp(0, dt_timezone.utc)
     if (timezone.now() - last_alerted).total_seconds() < ALERT_COOLDOWN_SECONDS:
         return True
 
-    last_acknowledged = current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+    last_acknowledged = current_print.alert_acknowledged_at or datetime.fromtimestamp(0, dt_timezone.utc)
     return last_alerted > last_acknowledged
 
 
@@ -204,7 +204,7 @@ def pause_if_needed(printer, img_url):
 
     printer_paused = False
     if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
-        last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+        last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, dt_timezone.utc)
         if (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS: # If user has acknowledged a previous alert, and it's in cooldown period, don't pause otherwise it can be annoying
             return
 

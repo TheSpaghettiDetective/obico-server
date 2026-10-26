@@ -1,11 +1,16 @@
 from unittest.mock import patch
 
 from django.test import TestCase
+from django.test.utils import override_settings
 from rest_framework.serializers import ValidationError
 
 from notifications.plugins.twilio import TwillioNotificationPlugin
 
 
+# TWILIO_COUNTRY_CODES restricts which destination countries Twilio is used for;
+# the empty default in settings places no restriction, so the Finland asserts need
+# a serviced list that excludes it.
+@override_settings(TWILIO_COUNTRY_CODES=[1])
 class TwilioCountryCodeTestCase(TestCase):
 
     def setUp(self):

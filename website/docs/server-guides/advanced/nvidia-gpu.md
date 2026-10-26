@@ -93,6 +93,7 @@ ML algorithms can be executed with different hardware and software options:
 
 * x86_64 with CPU hardware without GPU, with `Darknet` or `ONNX` runtime.
 * x86_64 with GPU (CUDA), with `Darknet` or `ONNX` runtime.
+* x86_64 with Intel GPU (OpenVINO), with the [Intel GPU guide](intel-gpu.md).
 * ARM with GPU (CUDA), i.e. `Nvidia Jetson` devices with `Darknet` or `ONNX` runtime.
 * ARM without a GPU. The Helm chart's CPU image runs `ONNX` there; on Docker Compose the arm64 base carries darknet, which is tried first.
 * Rockchip RK3588 boards, with the `RKNN` runtime on the NPU.
@@ -104,12 +105,15 @@ More details about ONNX can be found [here](https://onnxruntime.ai/).
 Darknet is now stable implementation of TSD, while ONNX support is in beta stage now and may have some issues.
 
 Docker Compose builds the `web` and `ml_api` images on your machine, but the
-slow part is already done: each starts from a prebuilt base on Docker Hub —
-`thespaghettidetective/web:base-<version>` and
-`thespaghettidetective/ml_api_base`, the latter shipping darknet and the
-inference runtimes already compiled, which is what would otherwise take hours.
-The versions are the ones pinned in `backend/Dockerfile` and
-`ml_api/Dockerfile`; `thespaghettidetective/web` also has a bare `base` tag, which is not the same image as `base-1.18`. The one base not published there is
+slow part is already done: `ml_api` starts from a prebuilt base on Docker Hub,
+`thespaghettidetective/ml_api_base`, which ships darknet and the inference
+runtimes already compiled — the part that would otherwise take hours. The
+`web` image no longer starts from a base: it installs its Python 3.12 /
+Django 5.2 dependencies directly in `backend/Dockerfile`. (Releases before
+this change pulled them from `thespaghettidetective/web:base-<version>`,
+including the bare `base` tag, which was never the same image as `base-1.18`;
+the web base images are no longer consumed.) The ml_api base version is the
+one pinned in `ml_api/Dockerfile`. The one base not published there is
 the RK3588 variant, which has to be built once by hand — see the RK3588 note in
 the repository README. Kubernetes users consume finished application images
 from GHCR instead and build nothing.

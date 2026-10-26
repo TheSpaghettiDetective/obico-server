@@ -367,11 +367,35 @@ jobs:
       - name: Pull Docker Hub through a mirror
         run: .github/scripts/use_registry_mirror.sh
 
+      # The checked-in frontend/builds is a release artifact: master's copy
+      # predates the page-context switch in the templates, so instead of
+      # committing a multi-megabyte rebuilt bundle here, build the frontend
+      # from this branch's own sources and stage that into the image.
+      - name: Set up Node for the frontend build
+        if: matrix.name == 'web'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Build the frontend bundle
+        if: matrix.name == 'web'
+        run: |
+          cd frontend
+          # The committed package-lock.json predates npm 10: a strict npm ci
+          # asks for optional binaries the old lockfile never recorded. Install
+          # from it without saving, then apply the checked-in patch-package
+          # fixups that postinstall would normally run.
+          npm install --no-save
+          npx patch-package
+          # webpack 4 hashes with md4, which OpenSSL 3 dropped; the legacy
+          # provider keeps it available.
+          NODE_OPTIONS=--openssl-legacy-provider npx vue-cli-service build
+
       # Same step as the release build, and the same reason: the web image
       # expects the Vue bundle at /frontend, which compose supplies as a bind
-      # mount. What this proves is that the image builds and its compiled
-      # dependencies load, not that the UI is served: nothing here opens a
-      # page.
+      # mount. Unlike the release build, the bundle staged here was just built
+      # from this branch's sources, and a later step boots the image and opens
+      # a real page in it.
       - name: Move the frontend into the web build context
         if: matrix.name == 'web'
         run: sh .github/scripts/stage_frontend.sh
@@ -421,7 +445,7 @@ jobs:
             --env SOCIAL_LOGIN=true \
             --env REDIS_URL=redis://smoke-redis:6379 \
             --env DATABASE_URL=sqlite:////tmp/obico-smoke.sqlite3 \
-            "${TAG}" sh -c 'python manage.py migrate --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
+            "${TAG}" sh -c 'python manage.py collectstatic --noinput && python manage.py migrate --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
           ready=0
           for _ in $(seq 1 45); do
             if curl --silent --fail --output /dev/null http://127.0.0.1:3334/hc/; then
@@ -452,6 +476,37 @@ jobs:
           grep --quiet csrfmiddlewaretoken login.html
           if docker logs smoke-web 2>&1 | grep --quiet 'Missing staticfiles manifest entry'; then
             echo "::error::the server logged a staticfiles manifest error while serving the login page"
+            exit 1
+          fi
+
+          # The checked-in bundle under frontend/builds is served verbatim,
+          # and a stale one is invisible to the checks above: the login page
+          # never imports the page-context module, while every authenticated
+          # page does. A bundle built before the templates moved to
+          # #page-context-json throws at webpack boot (querySelector(...).text
+          # on null) and renders every authenticated page blank. Pin the
+          # served bundle against the ids layout.html actually emits.
+          # Mounts vary by config: production serves signed /static/frontend/
+          # paths and the smoke runs are site-config-light, so probe the
+          # mounts, then fall back to reading the bundle out of the container.
+          probe_bundle() {
+            for path in "$@"; do
+              code="$(curl --silent --output root.js --write-out '%{http_code}' \
+                --header 'Host: localhost:3334' "http://127.0.0.1:3334${path}")"
+              if [ "${code}" = 200 ] && [ -s root.js ]; then
+                return 0
+              fi
+            done
+            docker cp smoke-web:/app/static_build/frontend/js/root.js root.js \
+              || docker cp smoke-web:/app/frontend/builds/frontend/js/root.js root.js
+            [ -s root.js ]
+          }
+          if ! probe_bundle /static/frontend/js/root.js /app/static/frontend/js/root.js; then
+            echo "::error::the built image serves no frontend/js/root.js on any mount; the checked-in bundle is missing from staticfiles"
+            exit 1
+          fi
+          if ! grep --quiet 'page-context-json' root.js; then
+            echo "::error::the served bundle does not read '#page-context-json'; it is a stale build that will render authenticated pages blank"
             exit 1
           fi
 

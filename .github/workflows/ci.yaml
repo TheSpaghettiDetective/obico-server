@@ -254,6 +254,85 @@ jobs:
             exit 1
           fi
 
+  # The backend's own test suite — 117 Django tests across app/, api/, lib/,
+  # notifications/ and site_specific_allauth_google_provider — which no CI job
+  # has ever run. scripts/test.sh is a pytest harness from the Angular era
+  # and matches no file in backend/ today, so the only green the backend ever
+  # had came from a developer's laptop. It is green now: every failure it had
+  # before this landed was pre-existing on Django 4.2 under Python 3.10 and
+  # byte-identical between the two stacks (47 red, same test ids), so red
+  # here now means the change under review broke it, which is the whole point.
+  backend-tests:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      # channels talks to redis for the websocket layer, and some of the api
+      # tests send through it. A service container is what the deploy runs
+      # too; sqlite stays as the database because the settings default is
+      # sqlite and the suite is built to run against it.
+      redis:
+        image: redis:7.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # site_specific_allauth_google_provider is installed only when social
+      # login is on — production sets it, and without it the provider's tests
+      # resolve no app and error instead of testing anything.
+      SOCIAL_LOGIN: 'true'
+      REDIS_URL: redis://localhost:6379
+      DJANGO_SECRET_KEY: backend-tests-not-a-real-secret-0123456789
+      DATABASE_URL: sqlite:///obico_test.sqlite3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      # settings.py imports moonraker at startup the same way the web image
+      # bakes it in. The sha is read out of backend/Dockerfile rather than
+      # repeated here — it is the only 40-hex token in that file — so the pin
+      # cannot drift from the image without this job following it.
+      - name: Fetch moonraker at the sha the image pins
+        run: |
+          set -euo pipefail
+          sha="$(grep -oE '[0-9a-f]{40}' backend/Dockerfile | head -n 1)"
+          test -n "${sha}"
+          git clone --quiet https://github.com/Arksine/moonraker.git "${RUNNER_TEMP}/moonraker"
+          git -C "${RUNNER_TEMP}/moonraker" checkout --quiet "${sha}"
+          echo "PYTHONPATH=${RUNNER_TEMP}/moonraker" >> "${GITHUB_ENV}"
+
+      - name: Install the backend and its test dependencies
+        run: python -m pip install --quiet --disable-pip-version-check -r backend/requirements-dev.txt
+
+      # The suite builds its test database from committed migrations, so a
+      # model change without its migration passes the tests and deploys a
+      # schema that does not match the code. This catches it in seconds.
+      - name: Check committed migrations cover the models
+        working-directory: backend
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run the backend test suite
+        working-directory: backend
+        run: |
+          # Manifest staticfiles storage (STORAGES["staticfiles"]) looks entries up
+          # in the manifest built by collectstatic; without it, rendering an auth
+          # error page during the google-provider tests raises
+          # "Missing staticfiles manifest entry". Production boots run collectstatic
+          # too, so the tests do the same.
+          python manage.py collectstatic --noinput
+          python manage.py test --verbosity 2
+
   # The two images most people run, on both architectures the release
   # publishes, built and exercised by the same scripts the release uses. The
   # GPU variant is not here: it is multi-gigabyte and its only meaningful check
@@ -316,6 +395,65 @@ jobs:
           set -euo pipefail
           docker run --rm --volume "${PWD}/.github/scripts:/scripts:ro" "${TAG}" \
             python /scripts/assert_imports.py psycopg2 PIL
+
+      # Every assertion above passes against an image that 500s in production.
+      # A template {% static %} tag with no collected file only blows up once
+      # a page is actually rendered — collectstatic succeeds with the file
+      # simply absent, and the manifest error surfaces at request time. This
+      # is the shortest path that proves the built image can serve a real
+      # page: boot it against a throwaway redis and fetch the login page.
+      # That is exactly how the failing deployment died ('Missing staticfiles
+      # manifest entry for vendor/css/…'), and a staging slip is invisible to
+      # every other check here.
+      - name: Serve the login page from the built image
+        if: matrix.name == 'web' && matrix.platform == 'amd64'
+        env:
+          TAG: obico-${{ matrix.name }}:pr
+        run: |
+          set -euo pipefail
+          .github/scripts/retry.sh 3 docker pull --quiet redis:7.2-alpine
+          docker network create smoke
+          docker run --detach --network smoke --name smoke-redis redis:7.2-alpine
+          docker run --detach --network smoke --name smoke-web \
+            --publish 3334:3334 \
+            --env DJANGO_DEBUG=false \
+            --env DJANGO_SECRET_KEY=ci-smoke-not-a-real-secret-0123456789 \
+            --env SOCIAL_LOGIN=true \
+            --env REDIS_URL=redis://smoke-redis:6379 \
+            --env DATABASE_URL=sqlite:////tmp/obico-smoke.sqlite3 \
+            "${TAG}" sh -c 'python manage.py migrate --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
+          ready=0
+          for _ in $(seq 1 45); do
+            if curl --silent --fail --output /dev/null http://127.0.0.1:3334/hc/; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "${ready}" != 1 ]; then
+            echo "::error::the web image never served /hc/ — migrate or daphne did not come up"
+            docker logs --tail 80 smoke-web || true
+            exit 1
+          fi
+          # Host is pinned because site resolution keys off it (the shipped
+          # data migration names localhost:3334); without the header curl
+          # sends 127.0.0.1, which no Site row matches.
+          code="$(curl --silent --output login.html --write-out '%{http_code}' \
+            --header 'Host: localhost:3334' http://127.0.0.1:3334/accounts/login/)"
+          if [ "${code}" != 200 ]; then
+            echo "::error::/account/login/ served ${code}; a 500 here is a manifest or template failure at render time"
+            tail --lines 40 login.html || true
+            docker logs --tail 80 smoke-web || true
+            exit 1
+          fi
+          # A login form with no CSRF token means the page rendered but the
+          # auth middleware chain did not — a 200 that would still fail every
+          # real sign-in.
+          grep --quiet csrfmiddlewaretoken login.html
+          if docker logs smoke-web 2>&1 | grep --quiet 'Missing staticfiles manifest entry'; then
+            echo "::error::the server logged a staticfiles manifest error while serving the login page"
+            exit 1
+          fi
 
       # --timeout for the same reason the CUDA leg carries it: server.py loads
       # the model at import, so it happens inside worker boot, and gunicorn's

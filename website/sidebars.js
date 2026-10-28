@@ -142,6 +142,7 @@ module.exports = {
             'server-guides/advanced/nginx-proxy-manager',
             'server-guides/advanced/nvidia-gpu',
             'server-guides/advanced/intel-gpu',
+            'server-guides/advanced/amd-gpu',
             'server-guides/advanced/gmail_smtp_setup_guide',
             'server-guides/advanced/email_guide',
             'server-guides/advanced/telegram_guide',

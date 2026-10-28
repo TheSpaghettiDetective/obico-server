@@ -113,7 +113,7 @@ export default {
             ${this.$i18next.t("It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the {brandName} app server.",{brandName:this.$syndicateText.brandName})}
           </div>
           <div class="p-1">
-            <a target="_blank" href="${getDocUrl('/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users')}">
+            <a target="_blank" href="${this.getDocUrl('/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users')}">
             ${this.$i18next.t("Learn more about OctoPrint/Klipper tunnel's security and page load speed.")}
             <i class="fas fa-external-link-alt"></i>
           </a>

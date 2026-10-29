@@ -345,7 +345,7 @@ jobs:
           set -euo pipefail
           docker run --rm "${TAG}" sh -c \
             'pip install --quiet --disable-pip-version-check pytest \
-             && python -m pytest --quiet test_server_retry.py'
+             && python -m pytest --quiet test_server_retry.py test_onnx_provider.py'
 
       - name: Assert OpenCV is the same major as the other variants
         if: matrix.name == 'ml-api-cpu'

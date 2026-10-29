@@ -1,0 +1,58 @@
+# Intel GPU image for the ONNX Runtime OpenVINO execution provider.
+#
+# This is intentionally a separate image from the CUDA image: the ONNX Runtime
+# Python distributions replace the same `onnxruntime` package and cannot be
+# installed side by side. Darknet is not included here; the OpenVINO ONNX
+# backend is the supported inference path for Intel GPUs and falls back to its
+# CPU execution provider when GPU initialization is unavailable.
+#
+# The image is amd64-only. Intel's graphics packages are installed from the
+# Intel GPU repository because the base distribution's stock packages are too
+# old for current Intel integrated and Arc GPUs.
+FROM python:3.12-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    && apt-get install --no-install-recommends --assume-yes \
+        ca-certificates curl gnupg patchelf wget \
+        libgomp1 libglib2.0-0 ocl-icd-libopencl1 \
+    && curl -fsSL https://repositories.intel.com/gpu/intel-graphics.key \
+        | gpg --dearmor --output /usr/share/keyrings/intel-graphics.gpg \
+    && echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/gpu/ubuntu jammy client' \
+        > /etc/apt/sources.list.d/intel-gpu.list \
+    && apt-get update \
+    && apt-get install --no-install-recommends --assume-yes \
+        intel-opencl-icd intel-level-zero-gpu \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# The OpenVINO EP wheel contains the matching OpenVINO runtime and GPU plugin.
+# The host still needs a supported Intel kernel driver and /dev/dri must be
+# passed into the container at runtime; those are not portable image layers.
+COPY requirements.txt /app/
+# The OpenVINO EP wheel marks its Python extension executable-stack.
+# Docker's default runtime rejects that request, so clear the ELF flag in the
+# image after installation. This does not change executable code or grant the
+# container any additional device access.
+RUN python3 -m pip install --no-cache-dir --upgrade pip \
+    && python3 -m pip install --no-cache-dir \
+        onnxruntime-openvino==1.24.1 \
+        opencv-python-headless==4.12.0.88 \
+    && find /usr/local/lib/python3.12/site-packages/onnxruntime \
+        -type f -name '*.so*' -exec patchelf --clear-execstack {} + \
+    && python3 -m pip install --no-cache-dir --requirement requirements.txt
+
+COPY model/*.url model/*.sha256 /app/model/
+COPY scripts/fetch_verified.sh /usr/local/bin/fetch_verified
+RUN mkdir -p /model_cache/ml_api/onnx \
+    && fetch_verified "$(tr -d '\r' < model/model-weights.onnx.url)" \
+        /model_cache/ml_api/onnx/model-weights.onnx 50000000 \
+        "$(tr -d '\r' < model/model-weights.onnx.sha256)"
+
+COPY . /app
+
+EXPOSE 3333
+
+CMD ["gunicorn", "--bind", "0.0.0.0:3333", "--workers", "1", "--timeout", "120", "wsgi"]

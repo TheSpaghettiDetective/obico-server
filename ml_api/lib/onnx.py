@@ -11,9 +11,43 @@ class OnnxNet:
     meta: Meta
 
     def __init__(self, onnx_path: str, meta_path: str, use_gpu: bool):
-        providers = ['CUDAExecutionProvider'] if use_gpu else ['CPUExecutionProvider']
-        self.session = onnxruntime.InferenceSession(onnx_path, providers=providers)
+        gpu_provider = None
+        if use_gpu:
+            # CUDA is the historical default for the GPU image. The Intel
+            # image selects OpenVINO through the same small interface, which
+            # keeps the model loader and its CPU fallback hardware-agnostic.
+            gpu_provider = os.environ.get('ML_API_GPU_PROVIDER', 'CUDAExecutionProvider')
+            providers = [gpu_provider, 'CPUExecutionProvider']
+            provider_options = [{}]
+            if gpu_provider == 'OpenVINOExecutionProvider':
+                provider_options[0] = {
+                    'device_type': os.environ.get('ML_API_OPENVINO_DEVICE', 'GPU'),
+                }
+            provider_options.append({})
+        else:
+            providers = ['CPUExecutionProvider']
+            provider_options = None
+
+        if provider_options is None:
+            self.session = onnxruntime.InferenceSession(onnx_path, providers=providers)
+        else:
+            self.session = onnxruntime.InferenceSession(
+                onnx_path,
+                providers=providers,
+                provider_options=provider_options,
+            )
+
+        active_providers = self.session.get_providers()
+        print(f'ONNX Runtime execution providers: {active_providers}')
+        if use_gpu and gpu_provider not in active_providers:
+            raise RuntimeError(
+                f'{gpu_provider} was requested but is not active; '
+                f'active providers: {active_providers}'
+            )
         self.meta = Meta(meta_path)
+
+    def force_cpu(self):
+        self.session.set_providers(['CPUExecutionProvider'])
 
     def detect(self, meta, image, alt_names, thresh=.5, hier_thresh=.5, nms=.45, debug=False) -> List[Tuple[str, float, Tuple[float, float, float, float]]]:
         input_h = self.session.get_inputs()[0].shape[2]
@@ -127,6 +161,3 @@ def post_processing(output, width, height, conf_thresh, nms_thresh, names):
 
 
     return dets_batch
-
-
-

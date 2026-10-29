@@ -651,8 +651,8 @@ export default {
         this.localFilesLoading = false
         if (result) {
           const { folders, files } = result
-          this.folders = folders
-          this.files = files
+          this.folders = this.sortLocalItems(folders)
+          this.files = this.sortLocalItems(files)
         }
       })
     },
@@ -948,6 +948,43 @@ export default {
     },
 
     // Sorting
+    // Printer-local (moonraker/octoprint) listings arrive unsorted from the
+    // printer, unlike the cloud listing which sorts server-side via API
+    // params. Apply the selected sorting client-side so the dropdown works
+    // for printer-side file lists too.
+    sortLocalItems(items) {
+      const sorting = this.sortingValue.sorting
+      const direction =
+        this.sortingValue.direction && this.sortingValue.direction.key === 'asc' ? 1 : -1
+      const keys = [sorting.key, sorting.folderKey].filter(Boolean)
+      const compareValues = (av, bv) => {
+        if (typeof av === 'string' && typeof bv === 'string') {
+          // sort names case-insensitively; plain string comparison would group
+          // all upper-case names before all lower-case ones
+          return av.localeCompare(bv, undefined, { sensitivity: 'base' })
+        }
+        if (av === bv) {
+          return 0
+        }
+        return av > bv ? 1 : -1
+      }
+      return [...items].sort((a, b) => {
+        for (const key of keys) {
+          const av = a[key]
+          const bv = b[key]
+          if (av === undefined || bv === undefined) {
+            continue
+          }
+          const cmp = compareValues(av, bv)
+          if (cmp !== 0) {
+            return cmp * direction
+          }
+        }
+        const an = a.filename || a.name || ''
+        const bn = b.filename || b.name || ''
+        return compareValues(an, bn)
+      })
+    },
     onSortingUpdated(sortingValue) {
       this.sortingValue = sortingValue
       this.fetchFilesAndFolders(true)

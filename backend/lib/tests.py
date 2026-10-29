@@ -2,7 +2,7 @@ from django.test import TestCase, TransactionTestCase
 from unittest.mock import patch
 
 
-from app.models import User, HeaterTracker, Printer, Print
+from app.models import User, HeaterTracker, Printer, Print, Syndicate
 from .heater_trackers import process_heater_temps
 from .url_signing import HmacSignedUrl, new_signed_url, rewrite_url_origin
 
@@ -10,6 +10,9 @@ from .url_signing import HmacSignedUrl, new_signed_url, rewrite_url_origin
 class HeaterTrackerTestCase(TransactionTestCase):
 
     def setUp(self):
+        # TransactionTestCase flushes every table after each test, which drops the
+        # default Syndicate row migrations seed User needs (FK to id=1).
+        Syndicate.objects.get_or_create(id=1, defaults={"name": "test"})
         self.user = User.objects.create(email="a@test")
         self.printer = Printer.objects.create(user=self.user)
 
@@ -55,7 +58,7 @@ class HeaterTrackerTestCase(TransactionTestCase):
 
         self.assertEqual(self.printer.heatertracker_set.count(), 0)
 
-    @patch("lib.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_mobile_push_heater_event")
     def test_cooled_down_threshold(self, mock_send):
         calls = []
 
@@ -84,7 +87,7 @@ class HeaterTrackerTestCase(TransactionTestCase):
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][1]['event'], 'CooledDown')
 
-    @patch("lib.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_mobile_push_heater_event")
     def test_target_reached_delta(self, mock_send):
         calls = []
 
@@ -103,16 +106,17 @@ class HeaterTrackerTestCase(TransactionTestCase):
 
         self.assertIs(self.printer.heatertracker_set.first().reached, False)
 
+        # Within TARGET_REACHED_DELTA (0.25 C) of the target.
         process_heater_temps(
             self.printer,
-            {'h0': {'actual': 58.0, 'target': 60.0, 'offset': 0}}
+            {'h0': {'actual': 59.8, 'target': 60.0, 'offset': 0}}
         )
 
         self.assertIs(self.printer.heatertracker_set.first().reached, True)
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][1]['event'], 'ReachedTarget')
 
-    @patch("lib.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_mobile_push_heater_event")
     def test_no_events_after_reached(self, mock_send):
         calls = []
 
@@ -151,7 +155,7 @@ class HeaterTrackerTestCase(TransactionTestCase):
         self.assertEqual(len(calls), 0)
         self.assertIs(self.printer.heatertracker_set.first().reached, True)
 
-    @patch("lib.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_mobile_push_heater_event")
     def test_first_seen_reached_event(self, mock_send):
         calls = []
 
@@ -169,7 +173,7 @@ class HeaterTrackerTestCase(TransactionTestCase):
         self.assertIs(self.printer.heatertracker_set.first().reached, True)
         self.assertEqual(len(calls), 1)
 
-    @patch("lib.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_mobile_push_heater_event")
     def test_target_changes_and_reached_event(self, mock_send):
         calls = []
 
@@ -216,16 +220,16 @@ class HeaterTrackerTestCase(TransactionTestCase):
             {'h0': {'actual': 60.0, 'target': 60.0, 'offset': 0}}
         )
 
-        self.assertEqual(print.PrintHeaterTarget_set.first().name, 'h0')
-        self.assertEqual(print.PrintHeaterTarget_set.first().target, 60.0)
+        self.assertEqual(print.printheatertarget_set.first().name, 'h0')
+        self.assertEqual(print.printheatertarget_set.first().target, 60.0)
 
         process_heater_temps(
             self.printer,
             {'h0': {'actual': 80.0, 'target': 80.0, 'offset': 0}}
         )
 
-        self.assertEqual(print.PrintHeaterTarget_set.first().name, 'h0')
-        self.assertEqual(print.PrintHeaterTarget_set.first().target, 60.0)
+        self.assertEqual(print.printheatertarget_set.first().name, 'h0')
+        self.assertEqual(print.printheatertarget_set.first().target, 60.0)
 
 
 class NewSignedUrlTestCase(TestCase):

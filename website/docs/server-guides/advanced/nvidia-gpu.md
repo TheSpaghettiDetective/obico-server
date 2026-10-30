@@ -108,12 +108,11 @@ Docker Compose builds the `web` and `ml_api` images on your machine, but the
 slow part is already done: `ml_api` starts from a prebuilt base on Docker Hub,
 `thespaghettidetective/ml_api_base`, which ships darknet and the inference
 runtimes already compiled — the part that would otherwise take hours. The
-`web` image no longer starts from a base: it installs its Python 3.12 /
-Django 5.2 dependencies directly in `backend/Dockerfile`. (Releases before
-this change pulled them from `thespaghettidetective/web:base-<version>`,
-including the bare `base` tag, which was never the same image as `base-1.18`;
-the web base images are no longer consumed.) The ml_api base version is the
-one pinned in `ml_api/Dockerfile`. The one base not published there is
-the RK3588 variant, which has to be built once by hand — see the RK3588 note in
-the repository README. Kubernetes users consume finished application images
-from GHCR instead and build nothing.
+ml_api base version is the one pinned in `ml_api/Dockerfile`. The one base not
+published there is the RK3588 variant, which has to be built once by hand — see
+the RK3588 note in the repository README. The `web` image needs no prebuilt
+base: `backend/Dockerfile` starts from `python:3.12-alpine` and installs the
+server's dependencies itself. (Older versions built `web` on top of
+`thespaghettidetective/web:base-<version>`; those images are still on Docker
+Hub, but the current build does not use them.) Kubernetes users consume
+finished application images from GHCR instead and build nothing.

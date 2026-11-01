@@ -4,11 +4,13 @@ from django.core.management.base import CommandError
 from django.test import TestCase
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
+from packaging.version import InvalidVersion
 from requests import Response
 from requests.exceptions import HTTPError
 
 from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User
 from app.models.syndicate_models import Syndicate
+from app.views.tunnelv2_views import is_plugin_version_supported
 from lib import mobile_notifications
 from lib.url_signing import HmacSignedUrl, new_signed_url
 from lib.utils import get_rotated_pic_url
@@ -252,3 +254,23 @@ class RewriteMediaUrlHostCommandTestCase(TestCase):
 
         self.print.refresh_from_db()
         self.assertEqual(self.print.video_url, old_video_url)
+
+
+class PluginVersionSupportedTestCase(TestCase):
+    """The tunnel only enforces a minimum version for Obico's own plugins."""
+
+    def test_agents_without_a_minimum_version_are_supported(self):
+        # Third-party agents report their own names and version formats.
+        self.assertTrue(is_plugin_version_supported('Read-only Prusa cloud relay', '0.2.26-native-primary-status'))
+        self.assertTrue(is_plugin_version_supported('PrusaLink read-only connector', '1.2.7'))
+
+    def test_known_plugins_enforce_the_minimum_version(self):
+        self.assertTrue(is_plugin_version_supported('octoprint_obico', '2.7.0'))
+        self.assertFalse(is_plugin_version_supported('octoprint_obico', '1.8.3'))
+        self.assertTrue(is_plugin_version_supported('moonraker_obico', '2.2.3'))
+        self.assertFalse(is_plugin_version_supported('moonraker_obico', '1.2.0'))
+
+    def test_known_plugin_with_an_unparseable_version_is_not_hidden(self):
+        # Obico's own plugins always report a valid version, so this would be a real anomaly.
+        with self.assertRaises(InvalidVersion):
+            is_plugin_version_supported('octoprint_obico', 'not-a-version')

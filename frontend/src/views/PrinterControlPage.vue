@@ -326,7 +326,7 @@ export default {
 
           if (this.printer?.settings?.data_channel_id && !this.printerComm.webrtcConnections.has(null)) { // null means it's data channel only
             const dataChannelOnlyWebrtc = DataChannelOnlyWebRTCConnection([parseInt(this.printer.settings.data_channel_id)]);
-            dataChannelOnlyWebrtc.openForPrinter(this.printer.id, this.printer.auth_token);
+            dataChannelOnlyWebrtc.openForPrinter(this.printer.id, this.printer.auth_token, this.printer.turn);
             this.printerComm.setWebRTCConnection(null, dataChannelOnlyWebrtc);
           }
 
@@ -341,7 +341,7 @@ export default {
               const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
               this.printerComm.setWebRTCConnection(webcam.name, webrtc);
               // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
-              webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+              webrtc.openForPrinter(this.printer.id, this.printer.auth_token, this.printer.turn)
             }
           }
         },

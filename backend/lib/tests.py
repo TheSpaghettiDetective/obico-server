@@ -1,11 +1,12 @@
 from django.test import TestCase, TransactionTestCase, override_settings
 from unittest.mock import patch
+from types import SimpleNamespace
 
 
 from app.models import User, HeaterTracker, Printer, Print, Syndicate
 from .heater_trackers import process_heater_temps
 from .url_signing import HmacSignedUrl, new_signed_url, rewrite_url_origin
-from .turn import turn_config
+from .turn import get_turn_config
 
 
 class HeaterTrackerTestCase(TransactionTestCase):
@@ -281,16 +282,20 @@ class MlApiTimeoutDefaultTestCase(TestCase):
         # Self-hosted ML APIs can be slow (one CPU worker); deployments opt in to a bound via settings.
         from config import settings as base_settings
         self.assertIsNone(base_settings.ML_API_TIMEOUT)
+
+
 class TurnConfigTestCase(TestCase):
+
+    PRINTER = SimpleNamespace(id=42)
 
     @override_settings(TURN_SERVER=None)
     def test_none_when_not_configured(self):
-        self.assertIsNone(turn_config('web', 60))
+        self.assertIsNone(get_turn_config(self.PRINTER))
 
     @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
                        TURN_SECRET=None, TURN_USERNAME='alice', TURN_CREDENTIAL='s3cret')
     def test_static_credentials(self):
-        config = turn_config('web', 60)
+        config = get_turn_config(self.PRINTER)
 
         self.assertEqual(config['server'], 'turn.example.com')
         self.assertEqual(config['port'], 3478)
@@ -300,17 +305,28 @@ class TurnConfigTestCase(TestCase):
         self.assertIsNone(config['expires_at'])
 
     @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp'],
-                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None,
+                       TURN_WEB_CREDENTIAL_TTL=3600)
     @patch('lib.turn.time.time', return_value=1_700_000_000)
-    def test_secret_credentials(self, _):
-        config = turn_config('printer:42', 3600)
+    def test_secret_credentials_are_minted_per_printer(self, _):
+        config = get_turn_config(self.PRINTER)
 
         self.assertEqual(config['expires_at'], 1_700_003_600)
-        self.assertEqual(config['username'], '1700003600:printer:42')
-        # base64(HMAC-SHA1('shared', '1700003600:printer:42')), as a TURN server in REST API mode verifies it
-        self.assertEqual(config['credential'], 'XW1H4eU4sQt6tTavEjhfZAlsCZM=')
+        self.assertEqual(config['username'], '1700003600:printer-42')
+        # base64(HMAC-SHA1('shared', '1700003600:printer-42')), as a TURN server in REST API mode verifies it
+        self.assertEqual(config['credential'], 'SR7086uYv22MX1OflEfgSRWmRfc=')
         self.assertEqual(config['transports'], ['udp'])
 
+    @override_settings(TURN_SERVER='turn.example.com', TURN_SECRET='shared', TURN_USERNAME=None,
+                       TURN_CREDENTIAL=None, TURN_WEB_CREDENTIAL_TTL=86400)
+    @patch('lib.turn.time.time', return_value=1_700_000_000)
+    def test_caller_can_request_its_own_ttl(self, _):
+        # The agent API passes TURN_AGENT_CREDENTIAL_TTL; web and mobile clients use the web TTL
+        config = get_turn_config(self.PRINTER, ttl_seconds=31536000)
+
+        self.assertEqual(config['username'], f'{1_700_000_000 + 31536000}:printer-42')
+
     @override_settings(TURN_SERVER='turn.example.com', TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
-    def test_secret_credentials_differ_per_label(self):
-        self.assertNotEqual(turn_config('a', 60)['credential'], turn_config('b', 60)['credential'])
+    def test_credentials_differ_per_printer(self):
+        self.assertNotEqual(get_turn_config(SimpleNamespace(id=1))['credential'],
+                            get_turn_config(SimpleNamespace(id=2))['credential'])

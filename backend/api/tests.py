@@ -809,3 +809,57 @@ class OctoPrinterViewTestCase(TestCase):
         response = Client(HTTP_AUTHORIZATION='Token nope').get('/api/v1/octo/printer/')
 
         self.assertEqual(response.status_code, 401)
+
+
+@override_settings(SITE_ID=1)
+class PrinterTurnFieldTestCase(TestCase):
+    """`turn` reaches web and mobile clients inside printer data, with the contract the agents get."""
+
+    def setUp(self):
+        syndicate = setup_syndicate()
+        user = User.objects.create(email='turnfield@test.com', syndicate=syndicate)
+        self.printer = Printer.objects.create(user=user, name='Turn Field Printer', auth_token='turnfieldtoken')
+        self.client = Client()
+        self.client.force_login(user)
+
+    def printer_from(self, response):
+        self.assertEqual(response.status_code, 200)
+        printers = response.json()
+        if isinstance(printers, dict):
+            printers = printers['results']
+        return next(p for p in printers if p['id'] == self.printer.id)
+
+    def check_contract(self, turn):
+        self.assertEqual(turn['server'], 'turn.example.com')
+        self.assertEqual(turn['port'], 3478)
+        self.assertEqual(turn['transports'], ['udp', 'tcp'])
+        self.assertTrue(turn['username'].endswith(f':printer-{self.printer.id}'))
+        self.assertTrue(turn['credential'])
+
+    @override_settings(TURN_SERVER=None)
+    def test_none_when_not_configured(self):
+        self.assertIsNone(self.printer_from(self.client.get('/api/v1/printers/'))['turn'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_printers_api_carries_turn(self):
+        self.check_contract(self.printer_from(self.client.get('/api/v1/printers/'))['turn'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_public_serializer_carries_turn(self):
+        from api.serializers import PublicPrinterSerializer
+
+        self.check_contract(PublicPrinterSerializer(self.printer).data['turn'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_agents_and_web_get_the_same_printer_credential(self):
+        # Same printer -> same label for its agent and for its owner's browser; only the lifetimes differ
+        agent = Client(HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}').get('/api/v1/octo/printer/')
+        agent_turn = agent.json()['printer']['turn']
+        web_turn = self.printer_from(self.client.get('/api/v1/printers/'))['turn']
+
+        self.assertEqual(agent_turn['username'].split(':', 1)[1], web_turn['username'].split(':', 1)[1])
+        self.assertEqual(agent_turn['server'], web_turn['server'])
+        self.assertEqual(agent_turn['transports'], web_turn['transports'])

@@ -15,6 +15,7 @@ from app.models import (
 )
 
 from lib import channels
+from lib.turn import get_turn_config
 from notifications.handlers import handler
 
 
@@ -136,14 +137,15 @@ class PrinterSerializer(BasePrinterSerializer):
     agent_connected = serializers.SerializerMethodField()
     normalized_p = serializers.SerializerMethodField()
     current_print = BasePrintSerializer(read_only=True)
+    turn = serializers.SerializerMethodField()
 
     class Meta:
         model = Printer
         fields = BasePrinterSerializer.Meta.fields + (
-            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p', 'turn',
         )
         read_only_fields = BasePrinterSerializer.Meta.read_only_fields + (
-            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p', 'turn',
         )
 
     def get_agent_connected(self, obj: Printer) -> bool:
@@ -151,6 +153,9 @@ class PrinterSerializer(BasePrinterSerializer):
 
     def get_normalized_p(self, obj: Printer) -> float:
         return obj.printerprediction.normalized_p if hasattr(obj, 'printerprediction') else 0
+
+    def get_turn(self, obj: Printer):
+        return get_turn_config(obj)
 
 
 class BaseGCodeFolderSerializer(serializers.ModelSerializer):
@@ -349,10 +354,14 @@ class PrinterEventSerializer(serializers.ModelSerializer):
 
 class PublicPrinterSerializer(serializers.ModelSerializer):
     pic = serializers.DictField(read_only=True)
+    turn = serializers.SerializerMethodField()
 
     class Meta:
         model = Printer
-        fields = ('name', 'pic', 'settings')
+        fields = ('name', 'pic', 'settings', 'turn')
+
+    def get_turn(self, obj: Printer):
+        return get_turn_config(obj)
 
 
 class VerifyCodeInputSerializer(serializers.Serializer):

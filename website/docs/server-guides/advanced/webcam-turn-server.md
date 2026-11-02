@@ -9,7 +9,7 @@ Only if your server is reachable from the internet and you want webcam streaming
 
 Webcam streaming uses WebRTC, which tries to connect the browser directly to the printer. That doesn't work from many networks, mobile networks in particular. WebRTC then needs a TURN server to relay the video. Without one the video pane spins forever while everything else works.
 
-The Obico Cloud runs its own TURN server. For a self-hosted server you run your own and point Obico Server at it. The server passes the TURN config to the web page and to the printer agents, so the printers need no configuration.
+The Obico Cloud runs its own TURN server. For a self-hosted server you run your own and point Obico Server at it. The server mints per-printer credentials and delivers them to every client that streams video — the web UI, the mobile app, and shared pages — as part of the printer data, and to the printer agents through the printer-info API. The printers themselves need no configuration.
 
 :::info
 Agents read the TURN config at startup. Restart Obico for Klipper / Obico for OctoPrint after changing it. Older agents ignore it.

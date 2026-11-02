@@ -36,3 +36,18 @@ def turn_config(label, ttl_seconds):
         'credential': credential,
         'expires_at': expires_at,
     }
+
+
+def get_turn_config(printer, ttl_seconds=None):
+    """
+    TURN info for a printer, in the same contract shape the agents receive as
+    `printer.turn` from /api/v1/octo/printer/.
+
+    Credentials are issued per printer, mirroring the per-printer auth tokens: a printer's agent,
+    its owner's browser and mobile app, and shared-page viewers all get credentials minted for
+    that printer. None when no TURN server is configured.
+
+    Defaults to the web TTL; callers such as the agent API can ask for their own.
+    """
+    ttl = settings.TURN_WEB_CREDENTIAL_TTL if ttl_seconds is None else ttl_seconds
+    return turn_config(label=f'printer-{printer.id}', ttl_seconds=ttl)

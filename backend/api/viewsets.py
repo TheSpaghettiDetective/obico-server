@@ -60,6 +60,20 @@ PREDICTION_FETCH_TIMEOUT = 20
 INVALID_GCODE_FILE_ERROR = 'Invalid G-code file. Please upload a valid text G-code file.'
 
 
+def filter_by_parent_folder(qs, request):
+    if 'parent_folder' not in request.GET:
+        return qs
+
+    parent_folder = request.GET.get('parent_folder')
+    if parent_folder == 'null' or parent_folder == '':
+        return qs.filter(parent_folder__isnull=True)
+
+    try:
+        return qs.filter(parent_folder_id=int(parent_folder))
+    except ValueError:
+        raise ValidationError({'parent_folder': 'Must be a folder id, or "null" for the root folder.'})
+
+
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 6
     page_size_query_param = 'page_size'
@@ -447,12 +461,7 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
         elif sorting == 'name_desc':
             qs = qs.order_by('-name')
 
-        if 'parent_folder' in request.GET:
-            parent_folder = request.GET.get('parent_folder')
-            if parent_folder == 'null' or parent_folder == '':
-                qs = qs.filter(parent_folder__isnull=True)
-            else:
-                qs = qs.filter(parent_folder_id=int(parent_folder))
+        qs = filter_by_parent_folder(qs, request)
 
         page = self.paginate_queryset(qs)
         if page is not None:
@@ -516,12 +525,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
         if q:
             qs = qs.filter(safe_filename__icontains=q)
 
-        if 'parent_folder' in request.GET:
-            parent_folder = request.GET.get('parent_folder')
-            if parent_folder == 'null' or parent_folder == '':
-                qs = qs.filter(parent_folder__isnull=True)
-            else:
-                qs = qs.filter(parent_folder_id=int(parent_folder))
+        qs = filter_by_parent_folder(qs, request)
 
         if 'safe_filename' in request.GET and 'agent_signature' in request.GET:
             qs = qs.filter(agent_signature=request.GET.get('agent_signature'),

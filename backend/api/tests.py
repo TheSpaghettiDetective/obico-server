@@ -704,3 +704,73 @@ class OAuthPrinterFlowTestCase(TestCase):
         self.assertIsNotNone(data.get('auth_token'))
         # Verify printer was created in database for this user
         self.assertTrue(Printer.objects.filter(id=data['id'], user=self.user).exists())
+
+
+def make_jpeg(size=(64, 48)):
+    import io, random
+    from PIL import Image as PILImage
+    rng = random.Random(1)
+    img = PILImage.new('RGB', size)
+    img.putdata([(rng.randint(0, 255), rng.randint(0, 255), rng.randint(0, 255)) for _ in range(size[0] * size[1])])
+    buf = io.BytesIO()
+    img.save(buf, 'JPEG', quality=60)
+    return buf.getvalue()
+
+
+class CapImageSizeTestCase(SimpleTestCase):
+    def upload(self, data):
+        return SimpleUploadedFile('pic', data, content_type='image/jpeg')
+
+    def test_complete_jpeg_is_accepted_unchanged(self):
+        data = make_jpeg()
+
+        pic = cap_image_size(self.upload(data))
+
+        self.assertEqual(pic.file.read(), data)
+
+    def test_complete_jpeg_with_trailing_zero_padding_is_accepted(self):
+        cap_image_size(self.upload(make_jpeg() + b'\x00\x00\x00'))
+
+    def test_truncated_jpeg_is_rejected(self):
+        data = make_jpeg()
+
+        for cut in (0.9, 0.5, 0.1):
+            with self.subTest(kept=cut):
+                with self.assertRaises(ValidationError):
+                    cap_image_size(self.upload(data[:int(len(data) * cut)]))
+
+    def test_truncated_large_jpeg_is_rejected_instead_of_being_repaired(self):
+        data = make_jpeg(size=(1400, 100))
+
+        with self.assertRaises(ValidationError):
+            cap_image_size(self.upload(data[:len(data) // 2]))
+
+
+@override_settings(SITE_ID=1)
+class ParentFolderFilterTestCase(TestCase):
+    def setUp(self):
+        syndicate = setup_syndicate()
+        self.user = User.objects.create(email='parent-folder@test.com', syndicate=syndicate)
+        self.client = Client()
+        self.client.force_login(self.user)
+        self.folder = GCodeFolder.objects.create(user=self.user, name='folder')
+        GCodeFile.objects.create(
+            user=self.user, filename='in.gcode', safe_filename='in.gcode', parent_folder=self.folder)
+
+    def test_non_numeric_parent_folder_returns_400(self):
+        for url in ('/api/v1/g_code_folders/', '/api/v1/g_code_files/'):
+            with self.subTest(url=url):
+                response = self.client.get(url, {'parent_folder': 'ToPrint'})
+
+                self.assertEqual(response.status_code, 400)
+                self.assertIn('parent_folder', response.json())
+
+    def test_numeric_and_root_parent_folder_still_work(self):
+        response = self.client.get('/api/v1/g_code_files/', {'parent_folder': self.folder.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 1)
+
+        for root in ('null', ''):
+            response = self.client.get('/api/v1/g_code_files/', {'parent_folder': root})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.json()['results']), 0)

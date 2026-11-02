@@ -221,10 +221,25 @@ def pause_if_needed(printer, img_url):
     send_failure_alert(printer, img_url, is_warning=False, print_paused=printer_paused)
 
 
+def jpeg_is_complete(file):
+    JPEG_END_OF_IMAGE = b'\xff\xd9'
+    file.seek(0, os.SEEK_END)
+    file.seek(max(0, file.tell() - 64))
+    tail = file.read()
+    file.seek(0)
+    return tail.rstrip(b'\x00').endswith(JPEG_END_OF_IMAGE)
+
+
 def cap_image_size(pic):
     try:
         im = Image.open(pic.file)
-    except UnidentifiedImageError:
+    except OSError:  # UnidentifiedImageError, or "Truncated File Read" when the cut is inside the header
+        raise ValidationError('Corrupted image.')
+
+    # Image.open only reads the header, and LOAD_TRUNCATED_IMAGES (set above) makes Pillow pad a
+    # cut-off JPEG with gray instead of raising. The ML API cannot decode a cut-off JPEG, so a
+    # JPEG that does not end with its end-of-image marker must be rejected here.
+    if im.format == 'JPEG' and not jpeg_is_complete(pic.file):
         raise ValidationError('Corrupted image.')
 
     im = Image.open(pic.file)

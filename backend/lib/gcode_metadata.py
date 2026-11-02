@@ -70,8 +70,11 @@ def parse(f: BinaryIO, size: int, encoding: str):
 
     # Turn thumbnail files to bytes, and delete them to free up disk space
     thumbnails = []
-    for thumbnail in metadata.pop('thumbnails', []):
-        thumbnail_path = os.path.join(tempfile.gettempdir(), thumbnail['relative_path'])
+    # Thumbnails of the same size in one file (e.g. PNG and QOI at 160x160) share a file name,
+    # so the parser writes one file for them and lists it once per thumbnail block.
+    thumbnail_paths = dict.fromkeys(thumbnail['relative_path'] for thumbnail in metadata.pop('thumbnails', []))
+    for relative_path in thumbnail_paths:
+        thumbnail_path = os.path.join(tempfile.gettempdir(), relative_path)
         with open(thumbnail_path, 'rb') as thumbnail_file:
             thumbnails.append(BytesIO(thumbnail_file.read()))
         Path(thumbnail_path).unlink()

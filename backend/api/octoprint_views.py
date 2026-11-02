@@ -32,7 +32,6 @@ from lib.one_time_passcode import request_one_time_passcode
 from .authentication import PrinterAuthentication
 from .pagination import GCodeFilePagination
 from lib.file_storage import save_file_obj
-from lib.turn import get_turn_config
 from lib import cache
 from lib.utils import save_pic, get_rotated_pic_url
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
@@ -167,7 +166,8 @@ class OctoPrinterView(APIView):
                 'id': printer.id,
                 'name': printer.name,
                 'retract_on_pause': printer.retract_on_pause,
-                'turn': get_turn_config(printer, settings.TURN_AGENT_CREDENTIAL_TTL),
+                'turn': importlib.import_module(settings.TURN_MODULE).get_turn_config(
+                    printer, settings.TURN_AGENT_CREDENTIAL_TTL),
             }
         })
 

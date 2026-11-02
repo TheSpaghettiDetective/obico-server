@@ -502,6 +502,11 @@ PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 # Failure detection module - can be overridden in enterprise settings
 FD_MODULE = 'lib.failure_detection'
 
+# TURN module - can be overridden in enterprise settings, same as FD_MODULE above. The module must
+# expose get_turn_config(printer, ttl_seconds=None) returning the printer.turn contract dict. The
+# default implementation builds it from the TURN_* settings below.
+TURN_MODULE = 'lib.turn'
+
 WELL_KNOWN_PATH = None
 
 NOTIFICATION_PLUGIN_DIRS = [

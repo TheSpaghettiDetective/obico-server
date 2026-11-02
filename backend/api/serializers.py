@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.relations import PrimaryKeyRelatedField
 from django.conf import settings
+import importlib
 import re
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
@@ -15,7 +16,6 @@ from app.models import (
 )
 
 from lib import channels
-from lib.turn import get_turn_config
 from notifications.handlers import handler
 
 
@@ -155,7 +155,7 @@ class PrinterSerializer(BasePrinterSerializer):
         return obj.printerprediction.normalized_p if hasattr(obj, 'printerprediction') else 0
 
     def get_turn(self, obj: Printer):
-        return get_turn_config(obj)
+        return importlib.import_module(settings.TURN_MODULE).get_turn_config(obj)
 
 
 class BaseGCodeFolderSerializer(serializers.ModelSerializer):
@@ -361,7 +361,7 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
         fields = ('name', 'pic', 'settings', 'turn')
 
     def get_turn(self, obj: Printer):
-        return get_turn_config(obj)
+        return importlib.import_module(settings.TURN_MODULE).get_turn_config(obj)
 
 
 class VerifyCodeInputSerializer(serializers.Serializer):

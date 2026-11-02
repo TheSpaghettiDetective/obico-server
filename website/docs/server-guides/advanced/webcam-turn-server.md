@@ -107,6 +107,8 @@ TURN_CREDENTIAL=<same as in turnserver.conf>
 
 `TURN_TRANSPORTS` is what your TURN server listens on. `TURN_WEB_CREDENTIAL_TTL` (default 86400) and `TURN_AGENT_CREDENTIAL_TTL` (default 31536000) are the credential lifetimes in seconds. With `TURN_SERVER` set, the server won't start unless exactly one credential mode is configured.
 
+The open-source server issues the credentials itself. tsd-enterprise replaces that implementation through `TURN_MODULE` (the same mechanism as `FD_MODULE`) and mints per-printer credentials from its own TURN provider; the contract every client receives stays identical.
+
 ## 3. Verify {#verify}
 
 1. Restart the agent. Its log shows which TURN server it is using.

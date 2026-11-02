@@ -863,3 +863,37 @@ class PrinterTurnFieldTestCase(TestCase):
         self.assertEqual(agent_turn['username'].split(':', 1)[1], web_turn['username'].split(':', 1)[1])
         self.assertEqual(agent_turn['server'], web_turn['server'])
         self.assertEqual(agent_turn['transports'], web_turn['transports'])
+
+
+# Stub of an enterprise TURN module, resolved through settings.TURN_MODULE below (like FD_MODULE)
+def get_turn_config(printer, ttl_seconds=None):
+    return {
+        'server': 'turn.obicocloud.example',
+        'port': 3478,
+        'transports': ['tcp'],
+        'username': f'cloud-{printer.id}',
+        'credential': 'cloud-credential',
+        'expires_at': None,
+    }
+
+
+@override_settings(SITE_ID=1, TURN_SERVER=None, TURN_MODULE='api.tests')
+class TurnModuleTestCase(TestCase):
+    """TURN implementation is resolved from settings.TURN_MODULE, the same mechanism as FD_MODULE."""
+
+    def setUp(self):
+        syndicate = setup_syndicate()
+        user = User.objects.create(email='turnmodule@test.com', syndicate=syndicate)
+        self.printer = Printer.objects.create(user=user, name='Module Printer', auth_token='moduletoken')
+
+    def test_agent_api_uses_the_configured_module(self):
+        # TURN_SERVER is unset, so the built-in lib.turn would return None: a value proves the override
+        response = Client(HTTP_AUTHORIZATION='Token moduletoken').get('/api/v1/octo/printer/')
+
+        self.assertEqual(response.json()['printer']['turn']['server'], 'turn.obicocloud.example')
+
+    def test_serializers_use_the_configured_module(self):
+        from api.serializers import PrinterSerializer, PublicPrinterSerializer
+
+        self.assertEqual(PublicPrinterSerializer(self.printer).data['turn']['server'], 'turn.obicocloud.example')
+        self.assertEqual(PrinterSerializer(self.printer).data['turn']['username'], f'cloud-{self.printer.id}')

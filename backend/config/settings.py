@@ -540,8 +540,8 @@ if TURN_SERVER:
         raise ImproperlyConfigured('Set either TURN_SECRET or TURN_USERNAME/TURN_CREDENTIAL, not both.')
     if not TURN_SECRET and not (TURN_USERNAME and TURN_CREDENTIAL):
         raise ImproperlyConfigured('TURN_SERVER requires either TURN_SECRET or both TURN_USERNAME and TURN_CREDENTIAL.')
-    if not TURN_TRANSPORTS or any(t not in ('udp', 'tcp') for t in TURN_TRANSPORTS):
-        raise ImproperlyConfigured('TURN_TRANSPORTS must be a comma-separated list of "udp" and/or "tcp".')
+    if not TURN_TRANSPORTS or any(t not in ('udp', 'tcp', 'tls') for t in TURN_TRANSPORTS):
+        raise ImproperlyConfigured('TURN_TRANSPORTS must be a comma-separated list of "udp", "tcp" and/or "tls".')
     if not 0 < TURN_PORT < 65536:
         raise ImproperlyConfigured('TURN_PORT must be between 1 and 65535.')
     if TURN_WEB_CREDENTIAL_TTL <= 0 or TURN_AGENT_CREDENTIAL_TTL <= 0:

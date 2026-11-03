@@ -26,7 +26,7 @@ from allauth.socialaccount.helpers import (
 
 from .web_views import SocialAccountAwareLoginView
 from lib.syndicate import syndicate_from_request
-from app.models import User
+from app.accounts import filter_users_by_email_and_syndicate
 from django.utils.translation import gettext_lazy as _
 
 class MobileLoginView(SocialAccountAwareLoginView):
@@ -47,7 +47,7 @@ class MobileSignupView(SignupView):
     def form_valid(self, form):
             email = form.cleaned_data['email']
             syndicate = syndicate_from_request(self.request)
-            if User.objects.filter(emailaddress__email__iexact=email, syndicate=syndicate).exists():
+            if filter_users_by_email_and_syndicate(email, syndicate):
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
             return super().form_valid(form)

@@ -8,7 +8,12 @@ from packaging.version import InvalidVersion
 from requests import Response
 from requests.exceptions import HTTPError
 
-from app.accounts import SyndicateSpecificAccountAdapter
+from allauth.account.models import EmailAddress
+from django.contrib.auth.models import AnonymousUser
+from django.test import override_settings
+
+from app.accounts import SyndicateSpecificAccountAdapter, filter_users_by_email_and_syndicate
+from app.forms import SyndicateSpecificResetPasswordForm
 from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User
 from app.models.syndicate_models import Syndicate
 from app.views.tunnelv2_views import is_plugin_version_supported
@@ -323,3 +328,53 @@ class AccountAdapterClientIpTestCase(SimpleTestCase):
 
     def test_without_a_proxy(self):
         self.assertEqual(self.client_ip(REMOTE_ADDR='198.51.100.4'), '198.51.100.4')
+
+
+class EmailLookupBySyndicateTestCase(TestCase):
+    """Every lookup of an account by address is allauth's own (EmailAddress
+    rows, then User.email), kept to one syndicate."""
+
+    def setUp(self):
+        self.base, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'base'})
+        self.other, _ = Syndicate.objects.get_or_create(id=2, defaults={'name': 'yumi'})
+        site, _ = Site.objects.get_or_create(domain='testserver', defaults={'name': 'testserver'})
+        self.base.sites.add(site)
+        site_id = override_settings(SITE_ID=site.id)
+        site_id.enable()
+        self.addCleanup(site_id.disable)
+
+    def user(self, email, syndicate, password=None):
+        user = User.objects.create(email=email, username=f'{email}_{syndicate.id}', syndicate=syndicate)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+        user.save()
+        return user
+
+    def test_finds_both_records_in_one_syndicate_only(self):
+        no_rows = self.user('a@example.com', self.base)  # User.email only
+        second = self.user('b@example.com', self.base)
+        EmailAddress.objects.create(user=second, email='b2@example.com')
+        elsewhere = self.user('a@example.com', self.other)
+        self.assertEqual(filter_users_by_email_and_syndicate('A@example.com', self.base), [no_rows])
+        self.assertEqual(filter_users_by_email_and_syndicate('b2@example.com', self.base), [second])
+        self.assertEqual(filter_users_by_email_and_syndicate('a@example.com', self.other), [elsewhere])
+
+    def reset_form(self, email, **meta):
+        request = RequestFactory().post('/', **meta)
+        request.user = AnonymousUser()
+        return SyndicateSpecificResetPasswordForm(data={'email': email}, request=request)
+
+    def test_password_reset_follows_the_syndicate_header(self):
+        user = self.user('y@example.com', self.other, password='correct horse')
+        self.assertFalse(self.reset_form('y@example.com').is_valid())
+        form = self.reset_form('y@example.com', HTTP_X_OBICO_SYNDICATE='yumi')
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.users, [user])
+
+    def test_password_reset_finds_an_account_without_address_rows(self):
+        user = self.user('a@example.com', self.base, password='correct horse')
+        form = self.reset_form('a@example.com')
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.users, [user])

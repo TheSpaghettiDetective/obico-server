@@ -1,4 +1,5 @@
 from allauth.account.models import EmailAddress
+from allauth.account.utils import filter_users_by_email
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.account.adapter import DefaultAccountAdapter
 from django.contrib.auth.backends import ModelBackend
@@ -13,6 +14,13 @@ from lib.syndicate import syndicate_from_request, settings_for_syndicate
 
 from django.utils.encoding import force_str
 from django.conf import settings
+
+
+def filter_users_by_email_and_syndicate(email, syndicate, **kwargs):
+    """The accounts an address belongs to in one syndicate. allauth's own lookup
+    (the address's EmailAddress rows, then User.email), which looks across all
+    syndicates, kept to this one. kwargs are allauth's."""
+    return [user for user in filter_users_by_email(email, **kwargs) if user.syndicate_id == syndicate.id]
 
 
 class SyndicateSpecificBackend(ModelBackend):
@@ -80,7 +88,8 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if sociallogin.is_existing:
             return
 
-        syndicate_id = syndicate_from_request(request).id
+        syndicate = syndicate_from_request(request)
+        syndicate_id = syndicate.id
         # some social logins don't have an email address, e.g. facebook accounts
         # with mobile numbers only, but allauth takes care of this case so just
         # ignore it
@@ -88,7 +97,8 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if not email:
             raise PermissionDenied('Email not exist in social login data.')
 
-        user = User.objects.filter(emailaddress__email__iexact=email, syndicate_id=syndicate_id).first()
+        users = filter_users_by_email_and_syndicate(email, syndicate, prefer_verified=True)
+        user = users[0] if users else None
         if not user:
             user = User.objects.get_or_create(
                 email=email,

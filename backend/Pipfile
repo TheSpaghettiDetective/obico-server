@@ -9,7 +9,7 @@ django = "==5.2.*"
 gunicorn = "*"
 dj-database-url = "*"
 psycopg2-binary = "*"
-django-allauth = "==0.63.6"
+django-allauth = {extras = ["socialaccount"], version = "==65.21.1"}
 django-widget-tweaks = "*"
 djangorestframework = "*"
 django-extensions = "*"

@@ -293,10 +293,14 @@ AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
 )
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = False
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
+# The login form's "username" is the email address: SyndicateSpecificBackend
+# looks it up within the request's syndicate. Users never pick a username, the
+# account adapter makes one, so it is not a sign-up field and allauth's check
+# that some login method is also a required sign-up field does not apply.
+ACCOUNT_LOGIN_METHODS = {'username'}
+SILENCED_SYSTEM_CHECKS = ['account.W001']
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True

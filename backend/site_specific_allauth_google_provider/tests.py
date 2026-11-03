@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.urls import reverse
@@ -20,9 +21,8 @@ from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from allauth.socialaccount.providers.apple.client import jwt_encode
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.tests import OAuth2TestsMixin
-from allauth.tests import TestCase, mocked_response
 
+from .allauth_testing import OAuth2TestsMixin, mocked_response
 from .provider import GoogleProvider
 
 

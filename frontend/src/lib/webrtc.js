@@ -18,7 +18,11 @@ function iceServers(authToken, turn) {
   if (turn?.server && turn.username && turn.credential) {
     const transports = turn.transports?.length ? turn.transports : ['udp', 'tcp']
     servers.push({
-      urls: transports.map((transport) => `turn:${turn.server}:${turn.port}?transport=${transport}`),
+      urls: transports.map((transport) =>
+        transport === 'tls'
+          ? `turns:${turn.server}:${turn.port}?transport=tcp`
+          : `turn:${turn.server}:${turn.port}?transport=${transport}`
+      ),
       username: turn.username,
       credential: turn.credential,
     })

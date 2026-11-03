@@ -80,6 +80,26 @@ stale-nonce=600
 
 Open only the ports you use (3478 udp/tcp by default, plus the relay range if you set `min-port`/`max-port`).
 
+### Behind an HTTPS reverse proxy {#behind-a-reverse-proxy}
+
+If you already run an HTTPS front for Obico (Caddy, nginx, Traefik), you can route TURN through it instead of opening extra ports. Run coturn plain, let the proxy terminate TLS, and set:
+
+```
+TURN_SERVER=turn.example.com
+TURN_PORT=443
+TURN_TRANSPORTS=tls
+```
+
+Browsers then use `turns:` URLs and agents use `turn_type = "tls"` — both reach the proxy on 443, which forwards plain TCP to coturn's 3478. A Caddy example:
+
+```
+turn.example.com {
+	reverse_proxy 127.0.0.1:3478
+}
+```
+
+One DNS name, one open port, a real TLS certificate — often the friendliest setup for mobile networks. The TURN server itself can then stay closed to the internet, reachable only from the proxy.
+
 ## 2. Configure Obico Server {#configure-obico-server}
 
 TURN is enabled by setting `TURN_SERVER`. Unset, the server behaves as before and the other `TURN_*` settings do nothing.

@@ -84,6 +84,7 @@
 # TURN_PORT=3478
 
 # TURN_TRANSPORTS=udp,tcp
+# udp, tcp, or tls (TURN over TLS via your HTTPS reverse proxy on TURN_PORT, e.g. 443).
 
 # TURN_SECRET=
 # Recommended. Shared secret for time-limited credentials (coturn: use-auth-secret / static-auth-secret).

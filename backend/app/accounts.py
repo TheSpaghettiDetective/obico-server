@@ -4,6 +4,7 @@ from allauth.account.adapter import DefaultAccountAdapter
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
+from ipware import get_client_ip as ipware_client_ip
 from app.models import User
 from django.contrib.auth.hashers import make_password
 import secrets
@@ -45,6 +46,16 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
 
     def format_email_subject(self, subject):
         return force_str(subject)
+
+    def get_client_ip(self, request):
+        # allauth's rate limits count per client IP. Behind a proxy, allauth
+        # itself now uses the proxy's address unless told how many proxies to
+        # trust, so every user would share one limit. Read the IP the way the
+        # rest of the server does (app/middleware.py), from X-Forwarded-For.
+        client_ip, _ = ipware_client_ip(request)
+        if not client_ip:
+            raise PermissionDenied('Unable to determine client IP address')
+        return client_ip
 
     def send_confirmation_mail(self, request, emailconfirmation, signup):
         activate_url = self.get_email_confirmation_url(request, emailconfirmation)

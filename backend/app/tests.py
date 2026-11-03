@@ -1,13 +1,14 @@
 from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
 from packaging.version import InvalidVersion
 from requests import Response
 from requests.exceptions import HTTPError
 
+from app.accounts import SyndicateSpecificAccountAdapter
 from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User
 from app.models.syndicate_models import Syndicate
 from app.views.tunnelv2_views import is_plugin_version_supported
@@ -305,3 +306,20 @@ class GCodeThumbnailParseTestCase(TestCase):
         _, thumbnails = self.parse(self.thumbnail_block(160, 160), self.thumbnail_block(160, 160))
 
         self.assertEqual(len(thumbnails), 2)  # 160x160 once, plus the generated 32x32
+
+
+class AccountAdapterClientIpTestCase(SimpleTestCase):
+    """allauth counts its rate limits per client IP. Behind a proxy that IP is
+    the first X-Forwarded-For address, not the proxy's own."""
+
+    def client_ip(self, **meta):
+        request = RequestFactory().get('/', **meta)
+        return SyndicateSpecificAccountAdapter(request).get_client_ip(request)
+
+    def test_behind_a_proxy(self):
+        self.assertEqual(
+            self.client_ip(HTTP_X_FORWARDED_FOR='203.0.113.7, 10.0.0.1', REMOTE_ADDR='10.0.0.2'),
+            '203.0.113.7')
+
+    def test_without_a_proxy(self):
+        self.assertEqual(self.client_ip(REMOTE_ADDR='198.51.100.4'), '198.51.100.4')

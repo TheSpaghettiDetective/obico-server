@@ -1,14 +1,14 @@
 from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
 from packaging.version import InvalidVersion
 from requests import Response
 from requests.exceptions import HTTPError
 
-from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User
+from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, SharedResource, User
 from app.models.syndicate_models import Syndicate
 from app.views.tunnelv2_views import is_plugin_version_supported
 from lib import mobile_notifications
@@ -305,3 +305,32 @@ class GCodeThumbnailParseTestCase(TestCase):
         _, thumbnails = self.parse(self.thumbnail_block(160, 160), self.thumbnail_block(160, 160))
 
         self.assertEqual(len(thumbnails), 2)  # 160x160 once, plus the generated 32x32
+@override_settings(SITE_ID=1)
+class PageContextTurnTestCase(TestCase):
+    """TURN credentials reach clients through printer data (API/WebSocket), never page context."""
+
+    def setUp(self):
+        syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'base'})
+        site, _ = Site.objects.get_or_create(id=1, defaults={'domain': 'testserver', 'name': 'testserver'})
+        syndicate.sites.add(site)
+        self.user = User.objects.create(email='pagecontext@test.com', syndicate=syndicate, is_pro=True)
+        self.printer = Printer.objects.create(user=self.user, auth_token='pagecontexttoken')
+        SharedResource.objects.create(printer=self.printer, share_token='sharetoken123')
+
+    def syndicate_context(self, url):
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        return response.context['page_context']['syndicate']
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_login_page_has_no_turn(self):
+        self.assertNotIn('turn', self.syndicate_context('/accounts/login/'))
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_authenticated_page_has_no_turn(self):
+        self.client.force_login(self.user)
+        self.assertNotIn('turn', self.syndicate_context('/printers/'))
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_shared_page_has_no_turn(self):
+        self.assertNotIn('turn', self.syndicate_context('/printers/share_token/sharetoken123/'))

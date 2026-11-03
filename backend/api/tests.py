@@ -3,6 +3,7 @@ from django.test import SimpleTestCase, TestCase, override_settings
 from unittest.mock import *
 from django.utils import timezone
 from datetime import timedelta
+import time
 from django.test import Client
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
@@ -774,3 +775,125 @@ class ParentFolderFilterTestCase(TestCase):
             response = self.client.get('/api/v1/g_code_files/', {'parent_folder': root})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.json()['results']), 0)
+@override_settings(SITE_ID=1)
+class OctoPrinterViewTestCase(TestCase):
+
+    def setUp(self):
+        syndicate = setup_syndicate()
+        user = User.objects.create(email='agent@test.com', syndicate=syndicate)
+        self.printer = Printer.objects.create(user=user, name='Agent Test Printer', auth_token='agenttoken123')
+        self.client = Client(HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}')
+
+    @override_settings(TURN_SERVER=None)
+    def test_no_turn_when_not_configured(self):
+        response = self.client.get('/api/v1/octo/printer/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.json()['printer']['turn'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None, TURN_AGENT_CREDENTIAL_TTL=3600)
+    def test_turn_config_for_agent(self):
+        response = self.client.get('/api/v1/octo/printer/')
+
+        self.assertEqual(response.status_code, 200)
+        turn = response.json()['printer']['turn']
+        self.assertEqual(turn['server'], 'turn.example.com')
+        self.assertEqual(turn['port'], 3478)
+        self.assertEqual(turn['transports'], ['udp', 'tcp'])
+        self.assertTrue(turn['username'].endswith(f':printer-{self.printer.id}'))
+        self.assertTrue(turn['credential'])
+        self.assertAlmostEqual(turn['expires_at'], int(time.time()) + 3600, delta=5)
+
+    def test_rejects_invalid_token(self):
+        response = Client(HTTP_AUTHORIZATION='Token nope').get('/api/v1/octo/printer/')
+
+        self.assertEqual(response.status_code, 401)
+
+
+@override_settings(SITE_ID=1)
+class PrinterTurnFieldTestCase(TestCase):
+    """`turn` reaches web and mobile clients inside printer data, with the contract the agents get."""
+
+    def setUp(self):
+        syndicate = setup_syndicate()
+        user = User.objects.create(email='turnfield@test.com', syndicate=syndicate)
+        self.printer = Printer.objects.create(user=user, name='Turn Field Printer', auth_token='turnfieldtoken')
+        self.client = Client()
+        self.client.force_login(user)
+
+    def printer_from(self, response):
+        self.assertEqual(response.status_code, 200)
+        printers = response.json()
+        if isinstance(printers, dict):
+            printers = printers['results']
+        return next(p for p in printers if p['id'] == self.printer.id)
+
+    def check_contract(self, turn):
+        self.assertEqual(turn['server'], 'turn.example.com')
+        self.assertEqual(turn['port'], 3478)
+        self.assertEqual(turn['transports'], ['udp', 'tcp'])
+        self.assertTrue(turn['username'].endswith(f':printer-{self.printer.id}'))
+        self.assertTrue(turn['credential'])
+
+    @override_settings(TURN_SERVER=None)
+    def test_none_when_not_configured(self):
+        self.assertIsNone(self.printer_from(self.client.get('/api/v1/printers/'))['turn'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_printers_api_carries_turn(self):
+        self.check_contract(self.printer_from(self.client.get('/api/v1/printers/'))['turn'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_public_serializer_carries_turn(self):
+        from api.serializers import PublicPrinterSerializer
+
+        self.check_contract(PublicPrinterSerializer(self.printer).data['turn'])
+
+    @override_settings(TURN_SERVER='turn.example.com', TURN_PORT=3478, TURN_TRANSPORTS=['udp', 'tcp'],
+                       TURN_SECRET='shared', TURN_USERNAME=None, TURN_CREDENTIAL=None)
+    def test_agents_and_web_get_the_same_printer_credential(self):
+        # Same printer -> same label for its agent and for its owner's browser; only the lifetimes differ
+        agent = Client(HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}').get('/api/v1/octo/printer/')
+        agent_turn = agent.json()['printer']['turn']
+        web_turn = self.printer_from(self.client.get('/api/v1/printers/'))['turn']
+
+        self.assertEqual(agent_turn['username'].split(':', 1)[1], web_turn['username'].split(':', 1)[1])
+        self.assertEqual(agent_turn['server'], web_turn['server'])
+        self.assertEqual(agent_turn['transports'], web_turn['transports'])
+
+
+# Stub of an enterprise TURN module, resolved through settings.TURN_MODULE below (like FD_MODULE)
+def get_turn_config(printer, ttl_seconds=None):
+    return {
+        'server': 'turn.obicocloud.example',
+        'port': 3478,
+        'transports': ['tcp'],
+        'username': f'cloud-{printer.id}',
+        'credential': 'cloud-credential',
+        'expires_at': None,
+    }
+
+
+@override_settings(SITE_ID=1, TURN_SERVER=None, TURN_MODULE='api.tests')
+class TurnModuleTestCase(TestCase):
+    """TURN implementation is resolved from settings.TURN_MODULE, the same mechanism as FD_MODULE."""
+
+    def setUp(self):
+        syndicate = setup_syndicate()
+        user = User.objects.create(email='turnmodule@test.com', syndicate=syndicate)
+        self.printer = Printer.objects.create(user=user, name='Module Printer', auth_token='moduletoken')
+
+    def test_agent_api_uses_the_configured_module(self):
+        # TURN_SERVER is unset, so the built-in lib.turn would return None: a value proves the override
+        response = Client(HTTP_AUTHORIZATION='Token moduletoken').get('/api/v1/octo/printer/')
+
+        self.assertEqual(response.json()['printer']['turn']['server'], 'turn.obicocloud.example')
+
+    def test_serializers_use_the_configured_module(self):
+        from api.serializers import PrinterSerializer, PublicPrinterSerializer
+
+        self.assertEqual(PublicPrinterSerializer(self.printer).data['turn']['server'], 'turn.obicocloud.example')
+        self.assertEqual(PrinterSerializer(self.printer).data['turn']['username'], f'cloud-{self.printer.id}')

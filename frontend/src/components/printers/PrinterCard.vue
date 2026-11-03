@@ -374,7 +374,7 @@ export default {
             this.webcam = webcams?.find(webcam => webcam.is_primary_camera === true);
             if (this.webcam) {
               this.webrtc = WebRTCConnection(this.webcam.stream_mode, this.webcam.stream_id)
-              this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+              this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token, this.printer.turn)
               this.printerComm.setWebRTCConnection(this.webcam.name, this.webrtc)
             }
           }

@@ -7,14 +7,30 @@ import { syndicate } from '@src/lib/page-context'
 let printerWebRTCUrl = (printerId) => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = (token) => `/ws/share_token/janus/${token}/`
 
-function iceServers(authToken) {
-  const turnServer = syndicate()?.turn_server
+function iceServers(authToken, turn) {
   const servers = [
     {
       urls: ['stun:stun.l.google.com:19302'],
     }
   ]
 
+  // Per-printer TURN info issued by the server, the same contract the agents get as printer.turn
+  if (turn?.server && turn.username && turn.credential) {
+    const transports = turn.transports?.length ? turn.transports : ['udp', 'tcp']
+    servers.push({
+      urls: transports.map((transport) =>
+        transport === 'tls'
+          ? `turns:${turn.server}:${turn.port}?transport=tcp`
+          : `turn:${turn.server}:${turn.port}?transport=${transport}`
+      ),
+      username: turn.username,
+      credential: turn.credential,
+    })
+    return servers
+  }
+
+  // Legacy: TURN server that authenticates with the printer's auth token
+  const turnServer = syndicate()?.turn_server
   if (turnServer) {
     servers.push(
       {
@@ -51,17 +67,17 @@ export default function WebRTCConnection(streamMode, streamIdToTest) {
     h264WebRTCConn: h264Webrtc,
     mjpegWebRTCConn: mjpegWebrtc,
 
-    openForShareToken(shareToken) {
-      self.connect(printerSharedWebRTCUrl(shareToken), shareToken)
+    openForShareToken(shareToken, turn) {
+      self.connect(printerSharedWebRTCUrl(shareToken), shareToken, turn)
     },
 
-    openForPrinter(printerId, authToken) {
-      self.connect(printerWebRTCUrl(printerId), authToken)
+    openForPrinter(printerId, authToken, turn) {
+      self.connect(printerWebRTCUrl(printerId), authToken, turn)
     },
-    connect(wsUri, token) {
+    connect(wsUri, token, turn) {
       self.initialized = true
-      if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token)
-      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.connect(wsUri, token)
+      if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token, turn)
+      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.connect(wsUri, token, turn)
     },
     disconnect() {
       if (self.h264WebRTCConn) self.h264WebRTCConn.janus.destroy()
@@ -175,8 +191,8 @@ export function DataChannelOnlyWebRTCConnection(streamIdsToTest) {
 
   let baseConnection = BaseWebRTCConnection(streamIdsToTest); // webcamName is null for data channel-only WebRTC
 
-  baseConnection.openForPrinter = function (printerId, authToken) {
-    baseConnection.connect(printerWebRTCUrl(printerId), authToken)
+  baseConnection.openForPrinter = function (printerId, authToken, turn) {
+    baseConnection.connect(printerWebRTCUrl(printerId), authToken, turn)
   };
 
   baseConnection.infoSuccessCallback = function (result, pluginHandle) {
@@ -215,23 +231,23 @@ function BaseWebRTCConnection(streamIdsToTest) {
       self.callbacks = {...self.callbacks, ...callbacks};
     },
 
-    connect(wsUri, token) {
+    connect(wsUri, token, turn) {
       Janus.init({
         debug: 'all',
         callback: () => {
           if (!Janus.isWebrtcSupported()) {
             return
           }
-          self.connectJanusWebSocket(wsUri, token)
+          self.connectJanusWebSocket(wsUri, token, turn)
         },
       })
     },
 
-    connectJanusWebSocket(wsUri, token) {
+    connectJanusWebSocket(wsUri, token, turn) {
       self.janus = new Janus({
         server:
           window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
-        iceServers: iceServers(token),
+        iceServers: iceServers(token, turn),
         ipv6: true,
         success: () => {
           self.janus.attach({

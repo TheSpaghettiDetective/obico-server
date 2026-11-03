@@ -166,6 +166,8 @@ class OctoPrinterView(APIView):
                 'id': printer.id,
                 'name': printer.name,
                 'retract_on_pause': printer.retract_on_pause,
+                'turn': importlib.import_module(settings.TURN_MODULE).get_turn_config(
+                    printer, settings.TURN_AGENT_CREDENTIAL_TTL),
             }
         })
 

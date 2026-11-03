@@ -28,6 +28,8 @@ If you are not getting the Premium Streaming in your self-hosted server, the fir
 
 If the Premium Streaming works in the Obico Cloud but not in your self-hosted server, chances are there are some problems with your server's network configurations.
 
+If streaming works on the same network as the printer but not from a mobile network, you need a TURN server. See [Set up a TURN server for webcam streaming](advanced/webcam-turn-server.md).
+
 At the minimum, your server's firewall should have the following rules allowed:
 
 - Inbound - port 3334 or whatever port your reverse proxy is on. If your server is on http.

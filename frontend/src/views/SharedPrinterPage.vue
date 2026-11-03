@@ -107,7 +107,7 @@ export default {
               const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
               this.printerComm.setWebRTCConnection(webcam.name, webrtc);
               // Has to be called after this.webcams.push(webcam) otherwise the callbacks won't be established properly.
-              webrtc.openForShareToken(this.shareToken)
+              webrtc.openForShareToken(this.shareToken, this.printer.turn)
             }
           }
        },

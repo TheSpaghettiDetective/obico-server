@@ -774,3 +774,33 @@ class ParentFolderFilterTestCase(TestCase):
             response = self.client.get('/api/v1/g_code_files/', {'parent_folder': root})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.json()['results']), 0)
+
+
+class ScrubSurrogatesTestCase(SimpleTestCase):
+
+    def test_replaces_escaped_lone_surrogates_so_message_can_be_packed(self):
+        import json, msgpack
+        from api.consumers import scrub_surrogates
+
+        # A client that json-dumps a filename holding an undecodable byte sends "\udce4" in the text frame.
+        data = json.loads(json.dumps({
+            'current_print_ts': 1,
+            'status': {'job': {'file': {'name': 'abcdefgh\udce4.gcode'}}, 'names': ['\udcf1']},
+        }))
+        with self.assertRaises(UnicodeEncodeError):
+            msgpack.packb(data)
+
+        scrubbed = scrub_surrogates(data)
+
+        self.assertEqual(scrubbed['status']['job']['file']['name'], 'abcdefgh�.gcode')
+        self.assertEqual(scrubbed['status']['names'], ['�'])
+        self.assertEqual(scrubbed['current_print_ts'], 1)
+        msgpack.packb(scrubbed)
+
+    def test_leaves_valid_text_untouched(self):
+        import json
+        from api.consumers import scrub_surrogates
+
+        # An escaped surrogate pair is decoded by json.loads into a real emoji and must survive.
+        data = json.loads('{"name": "caf\\u00e9 \\ud83d\\ude00", "n": null, "ok": true}')
+        self.assertEqual(scrub_surrogates(data), {'name': 'café 😀', 'n': None, 'ok': True})

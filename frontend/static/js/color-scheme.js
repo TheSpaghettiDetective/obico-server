@@ -170,6 +170,7 @@ const shadows = [
 function currentThemeValue(theme, syndicate) {
   const singleThemeSyndicates = {
     jusprin: Themes.Light,
+    jusprinv2: Themes.Light,
     yumi: Themes.Dark,
     kingroon: Themes.Light,
     mintion: Themes.Light,

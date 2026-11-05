@@ -24,4 +24,9 @@ export const syndicateTextConstant = {
     docRoot: 'https://www.obico.io/docs',
     appRoot: 'https://app.obico.io',
   },
+  jusprinv2:{
+    brandName: 'JusPrin',
+    docRoot: 'https://www.obico.io/docs',
+    appRoot: 'https://jusprinv2.obico.io',
+  },
 };

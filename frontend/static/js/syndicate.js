@@ -39,6 +39,46 @@ export const jusprin = {
   ],
 }
 
+// JusPrin 2, apart from JusPrin v1's brand above. Colours from JusPrin 2's
+// design tokens (JusPrin repo, resources/jusprin/ui/design-tokens.json).
+export const jusprinv2 = {
+  // only light theme is supported for now
+  colors: [
+    {
+      name: 'primary',
+      values: {[Themes.Light]: '#3A2D64', [Themes.Dark]: '#3A2D64'},
+    },
+    {
+      name: 'primary-hover',
+      values: {[Themes.Light]: '#4B3A77', [Themes.Dark]: '#4B3A77'},
+    },
+    {
+      name: 'on-primary',
+      values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#FFFFFF'},
+    },
+    {
+      name: 'background',
+      values: {[Themes.Light]: '#F6F2F7', [Themes.Dark]: '#F6F2F7'},
+    },
+    {
+      name: 'surface-primary',
+      values: {[Themes.Light]: '#F6F2F7', [Themes.Dark]: '#F6F2F7'},
+    },
+    {
+      name: 'surface-secondary',
+      values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#FFFFFF'},
+    },
+    {
+      name: 'text-primary',
+      values: {[Themes.Light]: '#17131F', [Themes.Dark]: '#17131F'},
+    },
+    {
+      name: 'text-secondary',
+      values: {[Themes.Light]: '#5F5767', [Themes.Dark]: '#5F5767'},
+    },
+  ],
+}
+
 export const yumi = {
   // only light theme is supported for now
   colors: [

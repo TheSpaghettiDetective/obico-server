@@ -64,6 +64,19 @@ class PrinterEventTestCase(TestCase):
         )
         self.assertTrue(PrinterEvent.objects.filter(image_url='event-image-url').exists())
 
+    def test_event_text_escapes_printer_name_and_filename(self):
+        self.printer.name = '<b>Printer</b>'
+        self.printer.save()
+        self.print.filename = '<i>file</i>.gcode'
+        self.print.save()
+        with patch('app.models.other_models.get_rotated_pic_url', return_value=None):
+            PrinterEvent.create(print=self.print, event_type=PrinterEvent.ENDED)
+
+        self.assertEqual(
+            PrinterEvent.objects.get(print=self.print).event_text,
+            '<div><i>Printer:</i> &lt;b&gt;Printer&lt;/b&gt;</div><div><i>G-Code:</i> &lt;i&gt;file&lt;/i&gt;.gcode</div>',
+        )
+
     def test_event_create_allows_missing_snapshot(self):
         with patch('app.models.other_models.get_rotated_pic_url', return_value=None), \
                 patch('app.models.other_models.celery_app'):

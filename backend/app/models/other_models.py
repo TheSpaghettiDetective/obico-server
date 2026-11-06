@@ -15,7 +15,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from safedelete.models import SafeDeleteModel
 from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
-from django.utils.html import mark_safe
+from django.utils.html import format_html, mark_safe
 from django.contrib.auth.hashers import make_password
 from django.db.models import F, Q
 from django.db.models.constraints import UniqueConstraint
@@ -525,7 +525,7 @@ class PrinterEvent(models.Model):
                 attrs = dict(event_class=PrinterEvent.INFO, event_title='Print Job ' + event_type.capitalize())
 
             attrs.update(dict(
-                event_text=f'<div><i>Printer:</i> {print_.printer.name}</div><div><i>G-Code:</i> {print_.filename}</div>',
+                event_text=format_html('<div><i>Printer:</i> {}</div><div><i>G-Code:</i> {}</div>', print_.printer.name, print_.filename),
             ))
             return attrs
 

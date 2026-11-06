@@ -348,6 +348,7 @@
 <script>
 import axios from 'axios'
 import split from 'lodash/split'
+import escape from 'lodash/escape'
 import VueSlider from 'vue-slider-component'
 
 import { normalizedPrinter } from '@src/lib/normalizers'
@@ -655,7 +656,7 @@ export default {
           axios.post(urls.printerAction(this.printerId, '/archive/')).then(() => {
             this.$swal.Prompt.fire({
               title: `${this.$i18next.t('Printer archived')}`,
-              html: `<p>${this.$i18next.t("{name} is archived.",{name:this.printer.name})}</p><p>${this.$i18next.t("You can find it on")} <a href="/ent/printers/archived/">${this.$i18next.t("this page")}</a> ${this.$i18next.t("and un-archive it")}.</p>`,
+              html: `<p>${this.$i18next.t("{name} is archived.",{name:escape(this.printer.name)})}</p><p>${this.$i18next.t("You can find it on")} <a href="/ent/printers/archived/">${this.$i18next.t("this page")}</a> ${this.$i18next.t("and un-archive it")}.</p>`,
               confirmButtonText: `${this.$i18next.t('Go to the printer page')}`,
             }).then(() => {
               window.location.href = '/printers/'

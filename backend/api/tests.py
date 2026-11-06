@@ -745,6 +745,13 @@ class CapImageSizeTestCase(SimpleTestCase):
         with self.assertRaises(ValidationError):
             cap_image_size(self.upload(data[:len(data) // 2]))
 
+    def test_jpeg_with_end_marker_but_no_scan_data_is_rejected(self):
+        data = make_jpeg()
+        headers_only = data[:data.index(b'\xff\xda')] + b'\xff\xd9'
+
+        with self.assertRaises(ValidationError):
+            cap_image_size(self.upload(headers_only))
+
 
 @override_settings(SITE_ID=1)
 class ParentFolderFilterTestCase(TestCase):

@@ -248,7 +248,14 @@ def cap_image_size(pic):
     if im.format == 'JPEG' and not jpeg_is_complete(pic.file):
         raise ValidationError('Corrupted image.')
 
+    # A JPEG can still have valid headers and an end-of-image marker but no scan data. Decode it
+    # fully, as the ML API will, so such a pic is rejected here instead of failing there.
     im = Image.open(pic.file)
+    try:
+        im.load()
+    except OSError:
+        raise ValidationError('Corrupted image.')
+
     if max(im.size) <= 1296:
         pic.file.seek(0)
         return pic

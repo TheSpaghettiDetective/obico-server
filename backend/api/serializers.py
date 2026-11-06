@@ -70,6 +70,12 @@ class BasePrinterSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'not_watching_reason', 'auth_token', 'archived_at',)
 
 
+class NestedPrinterSerializer(BasePrinterSerializer):
+    # A printer nested in a print doesn't need the agent's auth_token
+    class Meta(BasePrinterSerializer.Meta):
+        fields = tuple(f for f in BasePrinterSerializer.Meta.fields if f != 'auth_token')
+
+
 class BaseGCodeFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
@@ -94,7 +100,7 @@ class FirstLayerInspectionSerializer(serializers.ModelSerializer):
 
 class BasePrintSerializer(serializers.ModelSerializer):
     ended_at = serializers.DateTimeField(read_only=True)
-    printer = BasePrinterSerializer(many=False, read_only=True)
+    printer = NestedPrinterSerializer(many=False, read_only=True)
     g_code_file = BaseGCodeFileSerializer(many=False, read_only=True)
 
     class Meta:

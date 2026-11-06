@@ -172,8 +172,14 @@ class OctoPrinterView(APIView):
     def get(self, request):
         return self.get_response(request.auth, request.user)
 
+    # OctoPrint-Obico renames the printer from its settings page (plugin_apis.py). moonraker-obico doesn't PATCH this endpoint.
+    AGENT_WRITABLE_PRINTER_FIELDS = ('name',)
+
     def patch(self, request):
-        Printer.objects.filter(id=request.auth.id).update(**request.data)
+        fields = {k: v for k, v in request.data.items() if k in self.AGENT_WRITABLE_PRINTER_FIELDS}
+        if fields:
+            Printer.objects.filter(id=request.auth.id).update(**fields)
+            request.auth.refresh_from_db()
         return self.get_response(request.auth, request.user)
 
 

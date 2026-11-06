@@ -284,8 +284,11 @@ class PrinterViewSet(
 
 
     def partial_update(self, request, pk=None):
-        self.get_queryset().filter(pk=pk).update(**request.data)
         printer = get_printer_or_404(pk, request)
+        serializer = self.get_serializer(printer, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        # Write only the validated columns, so a concurrent agent update of current_print isn't overwritten
+        self.get_queryset().filter(pk=pk).update(**serializer.validated_data)
         printer.send_should_watch_status()
 
         return self.send_command_response(printer, True)
@@ -750,6 +753,8 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
     def list(self, request, *args, **kwargs):
         printer_id_to_link = request.GET.get('printer_id')
         if printer_id_to_link:
+            # The response includes the printer's auth_token, and verifying the code resets it
+            get_printer_or_404(printer_id_to_link, request, with_archived=True)
             code = OneTimeVerificationCode.objects.select_related('printer').filter(
                 printer_id=printer_id_to_link,
                 user=request.user

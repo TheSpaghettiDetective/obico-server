@@ -11,7 +11,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from safedelete.models import *
 from django.contrib.sites.models import Site
 
-from app.models import GCodeFile, GCodeFolder, Printer, Print, User
+from app.models import GCodeFile, GCodeFolder, OneTimeVerificationCode, Printer, Print, User
 from app.models.syndicate_models import Syndicate
 from api.octoprint_views import *
 from api.octoprint_messages import process_printer_status
@@ -804,3 +804,97 @@ class ScrubSurrogatesTestCase(SimpleTestCase):
         # An escaped surrogate pair is decoded by json.loads into a real emoji and must survive.
         data = json.loads('{"name": "caf\\u00e9 \\ud83d\\ude00", "n": null, "ok": true}')
         self.assertEqual(scrub_surrogates(data), {'name': 'café 😀', 'n': None, 'ok': True})
+
+
+@override_settings(SITE_ID=1)
+@patch('lib.channels.send_msg_to_printer')
+@patch('api.viewsets.send_status_to_web')
+class PrinterOwnershipTestCase(TestCase):
+    """A user must not be able to read or take over another user's printer."""
+
+    def setUp(self):
+        (self.user, self.printer, self.client) = init_data()
+        self.printer.auth_token = 'own-token'
+        self.printer.save()
+        self.other_user = User.objects.create(email='other@tsd.com', syndicate=self.user.syndicate)
+        self.other_printer = Printer.objects.create(user=self.other_user, name='Other Printer', auth_token='other-token')
+        self.other_print = Print.objects.create(
+            user=self.other_user, printer=self.other_printer, filename='other.gcode', started_at=timezone.now(), ext_id=2)
+
+    def test_verification_code_for_another_users_printer_is_404(self, *_):
+        response = self.client.get('/api/v1/onetimeverificationcodes/', {'printer_id': self.other_printer.id})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn('other-token', response.content.decode())
+        self.assertFalse(OneTimeVerificationCode.objects.filter(printer=self.other_printer).exists())
+
+    def test_verification_code_for_own_printer_still_works(self, *_):
+        response = self.client.get('/api/v1/onetimeverificationcodes/', {'printer_id': self.printer.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['printer']['id'], self.printer.id)
+
+    def test_patch_ignores_fields_the_serializer_does_not_allow(self, *_):
+        own_print = self.printer.current_print
+        response = self.client.patch(
+            f'/api/v1/printers/{self.printer.id}/',
+            {'name': 'Renamed', 'current_print': self.other_print.id, 'user': self.other_user.id, 'auth_token': 'chosen'},
+            content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('other-token', response.content.decode())
+        self.printer.refresh_from_db()
+        self.assertEqual(self.printer.name, 'Renamed')
+        self.assertEqual(self.printer.current_print, own_print)
+        self.assertEqual(self.printer.user, self.user)
+        self.assertNotEqual(self.printer.auth_token, 'chosen')
+
+    def test_patch_saves_settings_the_web_app_sends(self, *_):
+        response = self.client.patch(
+            f'/api/v1/printers/{self.printer.id}/',
+            {'watching_enabled': False, 'action_on_failure': 'NONE', 'detective_sensitivity': 1.2,
+             'tools_off_on_pause': False, 'min_timelapse_secs_on_finish': 60},
+            content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.printer.refresh_from_db()
+        self.assertFalse(self.printer.watching_enabled)
+        self.assertEqual(self.printer.action_on_failure, 'NONE')
+        self.assertEqual(self.printer.detective_sensitivity, 1.2)
+        self.assertFalse(self.printer.tools_off_on_pause)
+        self.assertEqual(self.printer.min_timelapse_secs_on_finish, 60)
+
+    def test_patch_rejects_invalid_value(self, *_):
+        response = self.client.patch(
+            f'/api/v1/printers/{self.printer.id}/', {'action_on_failure': 'BOGUS'}, content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_patch_another_users_printer_is_404(self, *_):
+        response = self.client.patch(
+            f'/api/v1/printers/{self.other_printer.id}/', {'name': 'Mine now'}, content_type='application/json')
+
+        self.assertEqual(response.status_code, 404)
+        self.other_printer.refresh_from_db()
+        self.assertEqual(self.other_printer.name, 'Other Printer')
+
+    def test_agent_patch_only_renames(self, *_):
+        own_print = self.printer.current_print
+        response = Client().patch(
+            '/api/v1/octo/printer/',
+            {'name': 'Renamed by agent', 'current_print': self.other_print.id, 'user': self.other_user.id},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['printer']['name'], 'Renamed by agent')
+        self.printer.refresh_from_db()
+        self.assertEqual(self.printer.name, 'Renamed by agent')
+        self.assertEqual(self.printer.current_print, own_print)
+        self.assertEqual(self.printer.user, self.user)
+
+    def test_printer_nested_in_a_print_has_no_auth_token(self, *_):
+        data = PrinterSerializer(self.printer).data
+
+        self.assertIn('auth_token', data)
+        self.assertNotIn('auth_token', data['current_print']['printer'])

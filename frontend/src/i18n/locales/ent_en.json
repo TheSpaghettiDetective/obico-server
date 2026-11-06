@@ -585,5 +585,6 @@
   "Fuzzy skin": "Fuzzy skin",
   "Choose a Printer": "Choose a Printer",
   "Choose a Filament": "Choose a Filament",
-  "Choose a Print Process": "Choose a Print Process"
+  "Choose a Print Process": "Choose a Print Process",
+  "Referral code: {code}. Your discount will appear at checkout. Prices below exclude discounts.": "Referral code: {{code}}. Your discount will appear at checkout. Prices below exclude discounts."
 }

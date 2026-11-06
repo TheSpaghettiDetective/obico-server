@@ -1,4 +1,5 @@
 import bson
+import re
 import time
 import json
 import functools
@@ -27,6 +28,23 @@ from .serializers import PublicPrinterSerializer, PrinterSerializer
 LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
 STATUS_UPDATE_MIN_SECS = 45
+LONE_SURROGATE_RE = re.compile('[\ud800-\udfff]')
+
+
+def scrub_surrogates(value):
+    """
+    json.loads accepts an escaped lone surrogate such as "\\udce4", which a client produces when it
+    json-dumps a string holding undecodable bytes (e.g. a Latin-1 filename). Such a string cannot be
+    encoded as UTF-8, so it later crashes the channel layer's msgpack packing and the database driver.
+    Replace those characters with U+FFFD where the message enters the server.
+    """
+    if isinstance(value, str):
+        return LONE_SURROGATE_RE.sub('\ufffd', value)
+    if isinstance(value, list):
+        return [scrub_surrogates(v) for v in value]
+    if isinstance(value, dict):
+        return {scrub_surrogates(k): scrub_surrogates(v) for k, v in value.items()}
+    return value
 
 
 def report_error(
@@ -286,7 +304,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             Presence.objects.touch(self.channel_name)
 
         if text_data:
-            data = json.loads(text_data)
+            data = scrub_surrogates(json.loads(text_data))
         else:
             data = bson.loads(bytes_data)
 

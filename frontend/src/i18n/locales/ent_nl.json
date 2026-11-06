@@ -587,5 +587,6 @@
   "Choose a Print Process": "Kies een afdrukproces",
   "When your three-month plan expires, you will have the chance to upgrade to one of Obico's": "Wanneer uw driemandenplan verloopt, heeft u de mogelijkheid om te upgraden naar een van Obico's plannen",
   "Plan discount. When you redeem your plan, you'll be asked to enter your credit card so we can give you the exclusive 20% discount when your plan renews.": "Plankorting. Wanneer u uw plan inwisselt, wordt u gevraagd uw creditcard in te voeren zodat we u de exclusieve korting van 20% kunnen geven wanneer uw plan verlengt.",
-  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "Als u uw webcam wilt bekijken met {localizedDom} en meer AI Detection Hours wilt krijgen zodat Obi uw prints voor u kan bewaken, kunt u upgraden naar het {planName}-plan."
+  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "Als u uw webcam wilt bekijken met {localizedDom} en meer AI Detection Hours wilt krijgen zodat Obi uw prints voor u kan bewaken, kunt u upgraden naar het {planName}-plan.",
+  "Referral code: {code}. Your discount will appear at checkout. Prices below exclude discounts.": "Verwijzingscode: {{code}}. Je korting wordt bij het afrekenen getoond. Onderstaande prijzen zijn exclusief kortingen."
 }

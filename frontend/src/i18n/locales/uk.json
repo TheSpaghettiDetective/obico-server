@@ -888,5 +888,6 @@
   "Apprise URL": "URL-адреса Apprise",
   "e.g. ntfy://user:pass@ntfy.sh/obico": "напр. ntfy://user:pass@ntfy.sh/obico",
   "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Надсилайте сповіщення через Apprise. Введіть URL-адресу Apprise для вашого сервісу, а формат URL дивіться в {localizedDom}.",
-  "Apprise wiki": "вікі Apprise"
+  "Apprise wiki": "вікі Apprise",
+  "Grouped by {{grouping}} to show the full selected period.": "Згруповано за {{grouping}}, щоб показати весь вибраний період."
 }

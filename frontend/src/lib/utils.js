@@ -2,6 +2,13 @@ import startCase from 'lodash/startCase'
 import toLower from 'lodash/toLower'
 import replace from 'lodash/replace'
 import get from 'lodash/get'
+import DOMPurify from 'dompurify'
+
+// Printer event text is HTML written by agents, or by the server around user-supplied names
+const EVENT_TEXT_TAGS = ['div', 'p', 'span', 'i', 'b', 'strong', 'em', 'br', 'ul', 'li']
+
+export const sanitizeEventText = (html) =>
+  DOMPurify.sanitize(html || '', { ALLOWED_TAGS: EVENT_TEXT_TAGS, ALLOWED_ATTR: [] })
 
 export function getNotificationSettingKey(notificationChannel, key) {
   return `${notificationChannel.channelName}_${key}`

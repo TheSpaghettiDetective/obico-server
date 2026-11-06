@@ -1,0 +1,13 @@
+# Intel GPU deployment for the ML API. Use with:
+#   docker compose -f docker-compose.yml -f docker-compose.intel.yml up -d --build
+
+services:
+  ml_api:
+    build:
+      context: ml_api
+      dockerfile: Dockerfile.intel
+    environment:
+      ML_API_GPU_PROVIDER: OpenVINOExecutionProvider
+      ML_API_OPENVINO_DEVICE: GPU
+    devices:
+      - /dev/dri:/dev/dri

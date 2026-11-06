@@ -1,0 +1,5 @@
+# Test-only dependencies: CI installs this; the images install requirements.txt.
+# site_specific_allauth_google_provider/tests.py imports pytest at module level even
+# though the suite runs under manage.py test.
+-r requirements.txt
+pytest==9.1.1

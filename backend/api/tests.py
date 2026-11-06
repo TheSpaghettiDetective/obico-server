@@ -1,17 +1,22 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from unittest.mock import *
 from django.utils import timezone
 from datetime import timedelta
 from django.test import Client
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+from rest_framework.test import APIRequestFactory, force_authenticate
 from safedelete.models import *
 from django.contrib.sites.models import Site
 
-from app.models import GCodeFile, Printer, Print, User
+from app.models import GCodeFile, GCodeFolder, OneTimeVerificationCode, Printer, Print, User
 from app.models.syndicate_models import Syndicate
 from api.octoprint_views import *
 from api.octoprint_messages import process_printer_status
+from api.serializers import PrinterSerializer
+from lib import channels
 
 
 def setup_syndicate():
@@ -36,6 +41,27 @@ def init_data():
     client.force_login(user)
 
     return (user, printer, client)
+
+
+@override_settings(SITE_ID=1)
+class PrinterSerializerTestCase(TestCase):
+    def setUp(self):
+        (_, self.printer, _) = init_data()
+
+    @patch('lib.channels.num_ws_connections', return_value=1)
+    def test_agent_connected_when_agent_websocket_is_present(self, num_ws_connections):
+        data = PrinterSerializer(self.printer).data
+
+        self.assertTrue(data['agent_connected'])
+        num_ws_connections.assert_called_once_with(
+            channels.octo_group_name(self.printer.id)
+        )
+
+    @patch('lib.channels.num_ws_connections', return_value=0)
+    def test_agent_disconnected_when_agent_websocket_is_absent(self, num_ws_connections):
+        data = PrinterSerializer(self.printer).data
+
+        self.assertFalse(data['agent_connected'])
 
 
 @override_settings(SITE_ID=1)
@@ -99,6 +125,193 @@ class GCodeFileUploadTestCase(TestCase):
         self.assertEqual(gcode_file.filament_total, 12.5)
         parse.assert_called_once()
         save_file_obj.assert_called_once()
+
+
+class AgentGCodeFileTestCase(SimpleTestCase):
+    @patch.object(GCodeFileView, 'get_queryset')
+    def test_missing_safe_filename_returns_400(self, get_queryset):
+        request = APIRequestFactory().post('/api/v1/octo/g_code_files/', {
+            'num_bytes': '0',
+            'agent_signature': 'ts:0',
+            'url': '',
+        })
+        force_authenticate(
+            request,
+            user=Mock(is_authenticated=True),
+            token=Mock(id=1),
+        )
+
+        response = GCodeFileView.as_view({'post': 'post'})(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('safe_filename', response.data)
+        get_queryset.assert_not_called()
+
+
+@override_settings(SITE_ID=1)
+class GCodeFileListingTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        syndicate = setup_syndicate()
+        cls.user = User.objects.create(email='gcode-list@test.com', syndicate=syndicate)
+        cls.printer = Printer.objects.create(user=cls.user, auth_token='gcode-list-test-token')
+        cls.files = GCodeFile.objects.bulk_create([
+            GCodeFile(
+                user=cls.user,
+                filename=f'file-{i}.gcode',
+                safe_filename=f'file-{i}.gcode',
+                metadata_json='{"estimated_time": 120, "padding": "' + 'x' * 4096 + '"}',
+                agent_signature=f'ts:{i}',
+                num_bytes=123,
+            )
+            for i in range(105)
+        ])
+        cls.print = Print.objects.create(
+            user=cls.user, printer=cls.printer, g_code_file=cls.files[-1],
+            filename=cls.files[-1].filename, started_at=timezone.now(), ext_id=1,
+        )
+
+    def agent_get(self, url):
+        return self.client.get(url, HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}')
+
+    def file_select_queries(self, queries):
+        return [
+            query['sql'] for query in queries
+            if query['sql'].startswith('SELECT')
+            and 'FROM "app_gcodefile"' in query['sql']
+            and 'COUNT(' not in query['sql']
+        ]
+
+    def test_agent_listing_limits_the_database_query(self):
+        with CaptureQueriesContext(connection) as queries:
+            response = self.agent_get('/api/v1/octo/g_code_files/?page_size=9999')
+
+        self.assertEqual(response.status_code, 200)
+        selects = self.file_select_queries(queries)
+        self.assertTrue(selects)
+        self.assertIn('LIMIT 100', selects[0])
+        self.assertEqual(len(response.json()['results']), 100)
+        self.assertIsNotNone(response.json()['next'])
+
+    def test_agent_default_listing_does_not_load_metadata_or_history(self):
+        with CaptureQueriesContext(connection) as queries:
+            response = self.agent_get('/api/v1/octo/g_code_files/?limit=1&page=1')
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body['count'], 105)
+        self.assertEqual(len(body['results']), 6)
+        self.assertEqual(body['results'][0]['id'], self.files[0].id)
+        self.assertNotIn('metadata_json', body['results'][0])
+        self.assertNotIn('print_set', body['results'][0])
+        selects = self.file_select_queries(queries)
+        self.assertEqual(len(selects), 1)
+        self.assertIn('LIMIT 6', selects[0])
+        self.assertNotIn('metadata_json', selects[0])
+        self.assertFalse(any('FROM "app_print"' in query['sql'] for query in queries))
+
+    def test_agent_next_links_cover_the_library_without_duplicates(self):
+        url = '/api/v1/octo/g_code_files/?page_size=24'
+        ids = []
+        for _ in range(5):
+            self.assertIsNotNone(url)
+            response = self.agent_get(url)
+            self.assertEqual(response.status_code, 200)
+            body = response.json()
+            self.assertLessEqual(len(body['results']), 24)
+            ids.extend(file['id'] for file in body['results'])
+            url = body['next']
+
+        self.assertIsNone(url)
+        self.assertEqual(ids, [file.id for file in self.files])
+
+    def test_mobile_listing_limits_the_database_query(self):
+        self.client.force_login(self.user)
+        with CaptureQueriesContext(connection) as queries:
+            response = self.client.get('/api/v1/g_code_files/?page_size=9999')
+
+        self.assertEqual(response.status_code, 200)
+        selects = self.file_select_queries(queries)
+        self.assertTrue(selects)
+        self.assertIn('LIMIT 100', selects[0])
+        self.assertEqual(len(response.json()['results']), 100)
+        self.assertIsNotNone(response.json()['next'])
+
+    def test_mobile_pages_and_details_keep_metadata_and_print_history(self):
+        self.client.force_login(self.user)
+        for page_size in (24, 25):
+            with self.subTest(page_size=page_size):
+                response = self.client.get(f'/api/v1/g_code_files/?page_size={page_size}')
+                self.assertEqual(response.status_code, 200)
+                body = response.json()
+                self.assertEqual(set(body), {'count', 'next', 'previous', 'results'})
+                self.assertEqual(body['count'], 105)
+                self.assertEqual(len(body['results']), page_size)
+                file = body['results'][0]
+                self.assertEqual(file['metadata_json'], self.files[-1].metadata_json)
+                self.assertEqual(file['print_set'][0]['id'], self.print.id)
+                second_page = self.client.get(body['next']).json()['results']
+                self.assertFalse({f['id'] for f in body['results']} & {f['id'] for f in second_page})
+
+        detail = self.client.get(f'/api/v1/g_code_files/{self.files[-1].id}/').json()
+        self.assertEqual(detail['metadata_json'], self.files[-1].metadata_json)
+        self.assertEqual(detail['print_set'][0]['id'], self.print.id)
+
+    def test_default_and_invalid_page_sizes_remain_bounded(self):
+        self.client.force_login(self.user)
+        for endpoint in ('/api/v1/g_code_files/', '/api/v1/octo/g_code_files/'):
+            for query in ('', '?page_size=0', '?page_size=-1', '?page_size=invalid'):
+                with self.subTest(endpoint=endpoint, query=query):
+                    response = self.agent_get(endpoint + query) if '/octo/' in endpoint else self.client.get(endpoint + query)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(len(response.json()['results']), 6)
+
+    def test_folder_listing_keeps_its_existing_page_size(self):
+        GCodeFolder.objects.bulk_create([
+            GCodeFolder(user=self.user, name=f'folder-{i}', safe_name=f'folder-{i}')
+            for i in range(120)
+        ])
+        self.client.force_login(self.user)
+        response = self.client.get('/api/v1/g_code_folders/?parent_folder=null&page_size=9999')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 120)
+        self.assertIsNone(response.json()['next'])
+
+    def test_listings_exclude_other_accounts_and_deleted_files(self):
+        other_user = User.objects.create(email='other-gcode-list@test.com', syndicate=self.user.syndicate)
+        GCodeFile.objects.create(user=other_user, filename='other.gcode', safe_filename='other.gcode')
+        self.files[0].delete()
+        self.assertEqual(self.client.get('/api/v1/octo/g_code_files/').status_code, 401)
+        agent = self.agent_get('/api/v1/octo/g_code_files/').json()
+        self.assertEqual(agent['count'], 104)
+        self.assertEqual(agent['results'][0]['id'], self.files[1].id)
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get('/api/v1/g_code_files/').json()['count'], 104)
+
+    def test_agent_upsert_and_patch_keep_the_existing_response(self):
+        auth = {'HTTP_AUTHORIZATION': f'Token {self.printer.auth_token}'}
+        data = {
+            'filename': 'agent.gcode', 'safe_filename': 'agent.gcode',
+            'agent_signature': 'ts:agent', 'metadata_json': '{"estimated_time": 60}',
+            'num_bytes': 123, 'url': '',
+        }
+        response = self.client.post('/api/v1/octo/g_code_files/', data, **auth)
+        self.assertEqual(response.status_code, 201)
+        body = response.json()
+        self.assertEqual(body['metadata_json'], data['metadata_json'])
+        self.assertEqual(body['resident_printer'], self.printer.id)
+        self.assertIn('print_set', body)
+        upsert = self.client.post('/api/v1/octo/g_code_files/', data, **auth)
+        self.assertEqual(upsert.status_code, 200)
+        self.assertEqual(upsert.json()['id'], body['id'])
+        patch = self.client.patch(
+            f'/api/v1/octo/g_code_files/{body["id"]}/',
+            {'metadata_json': '{"estimated_time": 90}'},
+            content_type='application/json', **auth,
+        )
+        self.assertEqual(patch.status_code, 200)
+        self.assertEqual(patch.json()['metadata_json'], '{"estimated_time": 90}')
+        self.assertIn('print_set', patch.json())
 
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"
 
@@ -491,3 +704,197 @@ class OAuthPrinterFlowTestCase(TestCase):
         self.assertIsNotNone(data.get('auth_token'))
         # Verify printer was created in database for this user
         self.assertTrue(Printer.objects.filter(id=data['id'], user=self.user).exists())
+
+
+def make_jpeg(size=(64, 48)):
+    import io, random
+    from PIL import Image as PILImage
+    rng = random.Random(1)
+    img = PILImage.new('RGB', size)
+    img.putdata([(rng.randint(0, 255), rng.randint(0, 255), rng.randint(0, 255)) for _ in range(size[0] * size[1])])
+    buf = io.BytesIO()
+    img.save(buf, 'JPEG', quality=60)
+    return buf.getvalue()
+
+
+class CapImageSizeTestCase(SimpleTestCase):
+    def upload(self, data):
+        return SimpleUploadedFile('pic', data, content_type='image/jpeg')
+
+    def test_complete_jpeg_is_accepted_unchanged(self):
+        data = make_jpeg()
+
+        pic = cap_image_size(self.upload(data))
+
+        self.assertEqual(pic.file.read(), data)
+
+    def test_complete_jpeg_with_trailing_zero_padding_is_accepted(self):
+        cap_image_size(self.upload(make_jpeg() + b'\x00\x00\x00'))
+
+    def test_truncated_jpeg_is_rejected(self):
+        data = make_jpeg()
+
+        for cut in (0.9, 0.5, 0.1):
+            with self.subTest(kept=cut):
+                with self.assertRaises(ValidationError):
+                    cap_image_size(self.upload(data[:int(len(data) * cut)]))
+
+    def test_truncated_large_jpeg_is_rejected_instead_of_being_repaired(self):
+        data = make_jpeg(size=(1400, 100))
+
+        with self.assertRaises(ValidationError):
+            cap_image_size(self.upload(data[:len(data) // 2]))
+
+
+@override_settings(SITE_ID=1)
+class ParentFolderFilterTestCase(TestCase):
+    def setUp(self):
+        syndicate = setup_syndicate()
+        self.user = User.objects.create(email='parent-folder@test.com', syndicate=syndicate)
+        self.client = Client()
+        self.client.force_login(self.user)
+        self.folder = GCodeFolder.objects.create(user=self.user, name='folder')
+        GCodeFile.objects.create(
+            user=self.user, filename='in.gcode', safe_filename='in.gcode', parent_folder=self.folder)
+
+    def test_non_numeric_parent_folder_returns_400(self):
+        for url in ('/api/v1/g_code_folders/', '/api/v1/g_code_files/'):
+            with self.subTest(url=url):
+                response = self.client.get(url, {'parent_folder': 'ToPrint'})
+
+                self.assertEqual(response.status_code, 400)
+                self.assertIn('parent_folder', response.json())
+
+    def test_numeric_and_root_parent_folder_still_work(self):
+        response = self.client.get('/api/v1/g_code_files/', {'parent_folder': self.folder.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 1)
+
+        for root in ('null', ''):
+            response = self.client.get('/api/v1/g_code_files/', {'parent_folder': root})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.json()['results']), 0)
+
+
+class ScrubSurrogatesTestCase(SimpleTestCase):
+
+    def test_replaces_escaped_lone_surrogates_so_message_can_be_packed(self):
+        import json, msgpack
+        from api.consumers import scrub_surrogates
+
+        # A client that json-dumps a filename holding an undecodable byte sends "\udce4" in the text frame.
+        data = json.loads(json.dumps({
+            'current_print_ts': 1,
+            'status': {'job': {'file': {'name': 'abcdefgh\udce4.gcode'}}, 'names': ['\udcf1']},
+        }))
+        with self.assertRaises(UnicodeEncodeError):
+            msgpack.packb(data)
+
+        scrubbed = scrub_surrogates(data)
+
+        self.assertEqual(scrubbed['status']['job']['file']['name'], 'abcdefgh�.gcode')
+        self.assertEqual(scrubbed['status']['names'], ['�'])
+        self.assertEqual(scrubbed['current_print_ts'], 1)
+        msgpack.packb(scrubbed)
+
+    def test_leaves_valid_text_untouched(self):
+        import json
+        from api.consumers import scrub_surrogates
+
+        # An escaped surrogate pair is decoded by json.loads into a real emoji and must survive.
+        data = json.loads('{"name": "caf\\u00e9 \\ud83d\\ude00", "n": null, "ok": true}')
+        self.assertEqual(scrub_surrogates(data), {'name': 'café 😀', 'n': None, 'ok': True})
+
+
+@override_settings(SITE_ID=1)
+@patch('lib.channels.send_msg_to_printer')
+@patch('api.viewsets.send_status_to_web')
+class PrinterOwnershipTestCase(TestCase):
+    """A user must not be able to read or take over another user's printer."""
+
+    def setUp(self):
+        (self.user, self.printer, self.client) = init_data()
+        self.printer.auth_token = 'own-token'
+        self.printer.save()
+        self.other_user = User.objects.create(email='other@tsd.com', syndicate=self.user.syndicate)
+        self.other_printer = Printer.objects.create(user=self.other_user, name='Other Printer', auth_token='other-token')
+        self.other_print = Print.objects.create(
+            user=self.other_user, printer=self.other_printer, filename='other.gcode', started_at=timezone.now(), ext_id=2)
+
+    def test_verification_code_for_another_users_printer_is_404(self, *_):
+        response = self.client.get('/api/v1/onetimeverificationcodes/', {'printer_id': self.other_printer.id})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn('other-token', response.content.decode())
+        self.assertFalse(OneTimeVerificationCode.objects.filter(printer=self.other_printer).exists())
+
+    def test_verification_code_for_own_printer_still_works(self, *_):
+        response = self.client.get('/api/v1/onetimeverificationcodes/', {'printer_id': self.printer.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['printer']['id'], self.printer.id)
+
+    def test_patch_ignores_fields_the_serializer_does_not_allow(self, *_):
+        own_print = self.printer.current_print
+        response = self.client.patch(
+            f'/api/v1/printers/{self.printer.id}/',
+            {'name': 'Renamed', 'current_print': self.other_print.id, 'user': self.other_user.id, 'auth_token': 'chosen'},
+            content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('other-token', response.content.decode())
+        self.printer.refresh_from_db()
+        self.assertEqual(self.printer.name, 'Renamed')
+        self.assertEqual(self.printer.current_print, own_print)
+        self.assertEqual(self.printer.user, self.user)
+        self.assertNotEqual(self.printer.auth_token, 'chosen')
+
+    def test_patch_saves_settings_the_web_app_sends(self, *_):
+        response = self.client.patch(
+            f'/api/v1/printers/{self.printer.id}/',
+            {'watching_enabled': False, 'action_on_failure': 'NONE', 'detective_sensitivity': 1.2,
+             'tools_off_on_pause': False, 'min_timelapse_secs_on_finish': 60},
+            content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.printer.refresh_from_db()
+        self.assertFalse(self.printer.watching_enabled)
+        self.assertEqual(self.printer.action_on_failure, 'NONE')
+        self.assertEqual(self.printer.detective_sensitivity, 1.2)
+        self.assertFalse(self.printer.tools_off_on_pause)
+        self.assertEqual(self.printer.min_timelapse_secs_on_finish, 60)
+
+    def test_patch_rejects_invalid_value(self, *_):
+        response = self.client.patch(
+            f'/api/v1/printers/{self.printer.id}/', {'action_on_failure': 'BOGUS'}, content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_patch_another_users_printer_is_404(self, *_):
+        response = self.client.patch(
+            f'/api/v1/printers/{self.other_printer.id}/', {'name': 'Mine now'}, content_type='application/json')
+
+        self.assertEqual(response.status_code, 404)
+        self.other_printer.refresh_from_db()
+        self.assertEqual(self.other_printer.name, 'Other Printer')
+
+    def test_agent_patch_only_renames(self, *_):
+        own_print = self.printer.current_print
+        response = Client().patch(
+            '/api/v1/octo/printer/',
+            {'name': 'Renamed by agent', 'current_print': self.other_print.id, 'user': self.other_user.id},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['printer']['name'], 'Renamed by agent')
+        self.printer.refresh_from_db()
+        self.assertEqual(self.printer.name, 'Renamed by agent')
+        self.assertEqual(self.printer.current_print, own_print)
+        self.assertEqual(self.printer.user, self.user)
+
+    def test_printer_nested_in_a_print_has_no_auth_token(self, *_):
+        data = PrinterSerializer(self.printer).data
+
+        self.assertIn('auth_token', data)
+        self.assertNotIn('auth_token', data['current_print']['printer'])

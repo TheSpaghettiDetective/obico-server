@@ -587,5 +587,6 @@
   "Choose a Print Process": "Bir Baskı İşlemi Seçin",
   "When your three-month plan expires, you will have the chance to upgrade to one of Obico's": "Üç aylık planınızın süresi dolduğunda, Obico'nun planlarından birine yükseltme şansınız olacak",
   "Plan discount. When you redeem your plan, you'll be asked to enter your credit card so we can give you the exclusive 20% discount when your plan renews.": "Plan indirimi. Planınızı kullandığınızda, planınız yenilendiğinde size özel %20 indirim sağlayabilmemiz için kredi kartı bilgilerinizi girmeniz istenecek.",
-  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "{localizedDom} ile web kameranızı izlemek ve Obi'nin baskılarınızı sizin için izleyebilmesi için daha fazla AI Detection Hours almak istiyorsanız, {planName} planına yükseltebilirsiniz."
+  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "{localizedDom} ile web kameranızı izlemek ve Obi'nin baskılarınızı sizin için izleyebilmesi için daha fazla AI Detection Hours almak istiyorsanız, {planName} planına yükseltebilirsiniz.",
+  "Referral code: {code}. Your discount will appear at checkout. Prices below exclude discounts.": "Referans kodu: {{code}}. İndiriminiz ödeme sırasında görünecektir. Aşağıdaki fiyatlara indirimler dahil değildir."
 }

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import get from 'lodash/get'
+import escape from 'lodash/escape'
 import { clearPrinterTransientState } from '@src/lib/printer-transient-state'
 
 import { printerCommManager } from '@src/lib/printer-comm'
@@ -16,7 +17,7 @@ export const confirmPrint = (gcode, printer) => {
   return new Promise((resolve, reject) => {
     Vue.swal
       .fire({
-        html: `<h5 style="text-align: center; line-height: 1.5;">${i18n.t("Print")} "${gcode.filename}" on <b>${printer.name}</b>?</h5>`,
+        html: `<h5 style="text-align: center; line-height: 1.5;">${i18n.t("Print")} "${escape(gcode.filename)}" on <b>${escape(printer.name)}</b>?</h5>`,
         imageUrl: gcode.getBigThumbnailUrl && gcode.getBigThumbnailUrl(),
         showCancelButton: true,
         confirmButtonText: `${i18n.t('Print!')}`,

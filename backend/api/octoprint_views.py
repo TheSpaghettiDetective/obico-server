@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone as dt_timezone
 from django.utils import timezone
 from django.db.models import Q
 import time
@@ -30,6 +30,7 @@ from lib.printer_discovery import (
     update_presence_for_device,)
 from lib.one_time_passcode import request_one_time_passcode
 from .authentication import PrinterAuthentication
+from .pagination import GCodeFilePagination
 from lib.file_storage import save_file_obj
 from lib import cache
 from lib.utils import save_pic, get_rotated_pic_url
@@ -37,7 +38,10 @@ from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, Prin
 from notifications.handlers import handler
 from lib.channels import send_status_to_web
 from config.celery import celery_app
-from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
+from .serializers import (
+    VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer,
+    GCodeFileSerializer, AgentGCodeFileListSerializer,
+)
 from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -168,8 +172,14 @@ class OctoPrinterView(APIView):
     def get(self, request):
         return self.get_response(request.auth, request.user)
 
+    # OctoPrint-Obico renames the printer from its settings page (plugin_apis.py). moonraker-obico doesn't PATCH this endpoint.
+    AGENT_WRITABLE_PRINTER_FIELDS = ('name',)
+
     def patch(self, request):
-        Printer.objects.filter(id=request.auth.id).update(**request.data)
+        fields = {k: v for k, v in request.data.items() if k in self.AGENT_WRITABLE_PRINTER_FIELDS}
+        if fields:
+            Printer.objects.filter(id=request.auth.id).update(**fields)
+            request.auth.refresh_from_db()
         return self.get_response(request.auth, request.user)
 
 
@@ -179,11 +189,11 @@ def alert_should_be_suppressed(current_print):
     if not current_print:
         return True
 
-    last_alerted = current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
+    last_alerted = current_print.alerted_at or datetime.fromtimestamp(0, dt_timezone.utc)
     if (timezone.now() - last_alerted).total_seconds() < ALERT_COOLDOWN_SECONDS:
         return True
 
-    last_acknowledged = current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+    last_acknowledged = current_print.alert_acknowledged_at or datetime.fromtimestamp(0, dt_timezone.utc)
     return last_alerted > last_acknowledged
 
 
@@ -200,7 +210,7 @@ def pause_if_needed(printer, img_url):
 
     printer_paused = False
     if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
-        last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+        last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, dt_timezone.utc)
         if (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS: # If user has acknowledged a previous alert, and it's in cooldown period, don't pause otherwise it can be annoying
             return
 
@@ -217,10 +227,25 @@ def pause_if_needed(printer, img_url):
     send_failure_alert(printer, img_url, is_warning=False, print_paused=printer_paused)
 
 
+def jpeg_is_complete(file):
+    JPEG_END_OF_IMAGE = b'\xff\xd9'
+    file.seek(0, os.SEEK_END)
+    file.seek(max(0, file.tell() - 64))
+    tail = file.read()
+    file.seek(0)
+    return tail.rstrip(b'\x00').endswith(JPEG_END_OF_IMAGE)
+
+
 def cap_image_size(pic):
     try:
         im = Image.open(pic.file)
-    except UnidentifiedImageError:
+    except OSError:  # UnidentifiedImageError, or "Truncated File Read" when the cut is inside the header
+        raise ValidationError('Corrupted image.')
+
+    # Image.open only reads the header, and LOAD_TRUNCATED_IMAGES (set above) makes Pillow pad a
+    # cut-off JPEG with gray instead of raising. The ML API cannot decode a cut-off JPEG, so a
+    # JPEG that does not end with its end-of-image marker must be rejected here.
+    if im.format == 'JPEG' and not jpeg_is_complete(pic.file):
         raise ValidationError('Corrupted image.')
 
     im = Image.open(pic.file)
@@ -365,12 +390,24 @@ class GCodeFileView(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet
 ):
+    """GET returns paginated summaries; POST/PATCH retain the full file response."""
+
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = GCodeFileSerializer
+    pagination_class = GCodeFilePagination
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return AgentGCodeFileListSerializer
+        return super().get_serializer_class()
 
     def get_queryset(self):
-        return GCodeFile.objects.filter(user=self.request.user)
+        qs = GCodeFile.objects.filter(user=self.request.user)
+        if self.action == 'list':
+            # Exclude large text columns in SQL, before Django materializes rows.
+            qs = qs.only(*AgentGCodeFileListSerializer.Meta.fields).order_by('id')
+        return qs
 
     # Post to this endpoint is considered an upsert, identified by resident_printer + agent_signature + safe_filename
     # Agent is required to upsert a GCodeFile before or during a print so that the Print can be linked to a GCodeFile
@@ -380,6 +417,9 @@ class GCodeFileView(
         serializer = self.get_serializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
+
+        if 'safe_filename' not in validated_data:
+            raise ValidationError({'safe_filename': 'This field is required.'})
 
         # Overwrite the foreign keys as they are not supposed to be set by the agent.
         validated_data['resident_printer_id'] = printer.id

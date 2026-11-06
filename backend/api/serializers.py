@@ -14,6 +14,7 @@ from app.models import (
     NotificationSetting, PrinterEvent, GCodeFolder, FirstLayerInspection, FirstLayerInspectionImage,
 )
 
+from lib import channels
 from notifications.handlers import handler
 
 
@@ -69,6 +70,12 @@ class BasePrinterSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'not_watching_reason', 'auth_token', 'archived_at',)
 
 
+class NestedPrinterSerializer(BasePrinterSerializer):
+    # A printer nested in a print doesn't need the agent's auth_token
+    class Meta(BasePrinterSerializer.Meta):
+        fields = tuple(f for f in BasePrinterSerializer.Meta.fields if f != 'auth_token')
+
+
 class BaseGCodeFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
@@ -93,7 +100,7 @@ class FirstLayerInspectionSerializer(serializers.ModelSerializer):
 
 class BasePrintSerializer(serializers.ModelSerializer):
     ended_at = serializers.DateTimeField(read_only=True)
-    printer = BasePrinterSerializer(many=False, read_only=True)
+    printer = NestedPrinterSerializer(many=False, read_only=True)
     g_code_file = BaseGCodeFileSerializer(many=False, read_only=True)
 
     class Meta:
@@ -132,13 +139,21 @@ class PrinterSerializer(BasePrinterSerializer):
     pic = serializers.DictField(read_only=True)
     status = serializers.DictField(read_only=True)
     settings = serializers.DictField(read_only=True)
+    agent_connected = serializers.SerializerMethodField()
     normalized_p = serializers.SerializerMethodField()
     current_print = BasePrintSerializer(read_only=True)
 
     class Meta:
         model = Printer
-        fields = BasePrinterSerializer.Meta.fields + ('pic', 'status', 'settings', 'current_print','normalized_p',)
-        read_only_fields = BasePrinterSerializer.Meta.read_only_fields + ('pic', 'status', 'settings', 'current_print', 'normalized_p',)
+        fields = BasePrinterSerializer.Meta.fields + (
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+        )
+        read_only_fields = BasePrinterSerializer.Meta.read_only_fields + (
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+        )
+
+    def get_agent_connected(self, obj: Printer) -> bool:
+        return channels.num_ws_connections(channels.octo_group_name(obj.id)) > 0
 
     def get_normalized_p(self, obj: Printer) -> float:
         return obj.printerprediction.normalized_p if hasattr(obj, 'printerprediction') else 0
@@ -180,7 +195,7 @@ class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
             else:
                 existing = GCodeFolder.objects.filter(user=user, parent_folder=parent_folder, safe_name=safe_name).first()
 
-            if existing and self.instance and existing.id != self.instance.id:
+            if existing and (self.instance is None or existing.id != self.instance.id):
                 raise serializers.ValidationError({'name': f'Already existed.'})
 
         return attrs
@@ -216,6 +231,18 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
 class GCodeFileSerializer(BaseGCodeFileSerializer):
     parent_folder = BaseGCodeFolderSerializer()
     print_set = BasePrintSerializer(many=True, read_only=True)
+
+
+class AgentGCodeFileListSerializer(serializers.ModelSerializer):
+    """Printer listings do not need metadata or nested account print history."""
+
+    class Meta:
+        model = GCodeFile
+        fields = (
+            'id', 'filename', 'safe_filename', 'num_bytes', 'url',
+            'agent_signature', 'resident_printer', 'parent_folder',
+            'created_at', 'updated_at',
+        )
 
 
 class MobileDeviceSerializer(serializers.ModelSerializer):

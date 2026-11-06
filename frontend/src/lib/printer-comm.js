@@ -3,7 +3,7 @@ import assign from 'lodash/assign'
 import Vue from 'vue'
 import ifvisible from 'ifvisible'
 import pako from 'pako'
-import { toArrayBuffer } from '@src/lib/utils'
+import { toArrayBuffer, sanitizeEventText } from '@src/lib/utils'
 import { clearPrinterTransientState } from '@src/lib/printer-transient-state'
 import i18n from '@src/i18n/i18n.js'
 
@@ -79,8 +79,8 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
       const printerEvent = msg.printer_event
       Vue.swal.Toast.fire({
         icon: printerEvent.event_class.toLowerCase(),
-        title: printerEvent.event_title,
-        html: printerEvent.event_text,
+        titleText: printerEvent.event_title,
+        html: sanitizeEventText(printerEvent.event_text),
       }).then((result) => {
         if (result.isDismissed && result.dismiss === 'close') {
           // SWAL returns 'close' as the reason when user clicks on the toast

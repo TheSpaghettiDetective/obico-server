@@ -888,5 +888,6 @@
   "Apprise URL": "Adres URL Apprise",
   "e.g. ntfy://user:pass@ntfy.sh/obico": "np. ntfy://user:pass@ntfy.sh/obico",
   "Send notifications through Apprise. Enter an Apprise URL for your service and see the {localizedDom} for the URL format.": "Wysyłaj powiadomienia przez Apprise. Wprowadź adres URL Apprise dla swojej usługi, a format adresu URL znajdziesz w {localizedDom}.",
-  "Apprise wiki": "wiki Apprise"
+  "Apprise wiki": "wiki Apprise",
+  "Grouped by {{grouping}} to show the full selected period.": "Pogrupowano według {{grouping}}, aby wyświetlić cały wybrany okres."
 }

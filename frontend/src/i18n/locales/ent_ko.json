@@ -587,5 +587,6 @@
   "Choose a Print Process": "인쇄 프로세스 선택",
   "When your three-month plan expires, you will have the chance to upgrade to one of Obico's": "3개월 플랜이 만료되면 Obico의 플랜 중 하나로 업그레이드할 기회가 주어집니다",
   "Plan discount. When you redeem your plan, you'll be asked to enter your credit card so we can give you the exclusive 20% discount when your plan renews.": "플랜 할인. 플랜을 사용할 때 신용카드를 입력하라는 요청을 받게 됩니다. 이를 통해 플랜이 갱신될 때 독점적인 20% 할인을 제공할 수 있습니다.",
-  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "{localizedDom}로 웹캠을 시청하고 Obi가 프린트를 대신 감시할 수 있도록 더 많은 AI Detection Hours를 얻으려면 {planName} 플랜으로 업그레이드할 수 있습니다."
+  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "{localizedDom}로 웹캠을 시청하고 Obi가 프린트를 대신 감시할 수 있도록 더 많은 AI Detection Hours를 얻으려면 {planName} 플랜으로 업그레이드할 수 있습니다.",
+  "Referral code: {code}. Your discount will appear at checkout. Prices below exclude discounts.": "추천 코드: {{code}}. 할인은 결제 시 표시됩니다. 아래 가격에는 할인이 포함되어 있지 않습니다."
 }

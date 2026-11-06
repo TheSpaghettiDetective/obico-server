@@ -5,7 +5,8 @@
         {{ eventTitle }}
         <i v-if="printerEvent.info_url" class="fas fa-external-link-alt"></i>
       </div>
-      <div class="description" v-html="printerEvent.event_text"></div>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <div class="description" v-html="eventText"></div>
       <div class="my-2 text-muted font-weight-light small">
         {{ printerEvent.created_at.format('LLLL') }}
       </div>
@@ -19,6 +20,8 @@
 </template>
 
 <script>
+import { sanitizeEventText } from '@src/lib/utils'
+
 export default {
   name: 'PrinterEventCard',
 
@@ -34,6 +37,9 @@ export default {
   computed: {
     eventTitle() {
       return this.printerEvent.event_title || `${this.$i18next.t('Unknown event')}`
+    },
+    eventText() {
+      return sanitizeEventText(this.printerEvent.event_text)
     },
     tintClass() {
       switch (this.printerEvent.event_class) {

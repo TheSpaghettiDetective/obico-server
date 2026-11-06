@@ -43,6 +43,7 @@
 <script>
 import urls from '@config/server-urls'
 import axios from 'axios'
+import escape from 'lodash/escape'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { sendToPrint, showRedirectModal, confirmPrint } from './sendToPrint'
 import { printerCommManager } from '@src/lib/printer-comm'
@@ -135,7 +136,7 @@ export default {
     selectPrinter(printer) {
       if (!printer.isPrintable()) {
         this.$swal.Reject.fire({
-          title: `${this.$i18next.t(`{name} isn't ready for print for one of the following reasons`,{name:printer.name})}:`,
+          title: `${this.$i18next.t(`{name} isn't ready for print for one of the following reasons`,{name:escape(printer.name)})}:`,
           html: `<ul style="text-align: left">
             <li>${this.$i18next.t(`{name} is powered off or not connected to the Internet`,{name:printer.agentDisplayName()})}</li>
             <li>${this.$i18next.t("Printer is not connected to {name}",{name:printer.agentDisplayName()})}</li>

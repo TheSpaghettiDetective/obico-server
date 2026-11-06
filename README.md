@@ -14,7 +14,7 @@ The AI failure detection in this project is based on a Deep Learning model. [See
 
 ## Prerequisites
 
-The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. An Nvidia GPU is optional but can vastly increase the power consumption and beef up the number of printers the server can handle.
+The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. GPU acceleration is optional but can vastly improve the number of printers the server can handle. NVIDIA CUDA and Intel OpenVINO acceleration are supported on Linux hosts; [see the hardware and GPU guides](https://www.obico.io/docs/server-guides/hardware-requirements/).
 
 [Detailed hardware minimum specs](https://www.obico.io/docs/server-guides/hardware-requirements/).
 

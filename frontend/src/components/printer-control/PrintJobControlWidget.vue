@@ -217,11 +217,18 @@ export default {
 
   methods: {
     openObicoFiles() {
-      this.printerFiles = false
-      this.$bvModal.show(this.modalId)
+      this.openFiles(false)
     },
     openPrinterFiles() {
-      this.printerFiles = true
+      this.openFiles(true)
+    },
+    openFiles(printerFiles) {
+      // savedPath holds folder ids for Obico files but printer-local paths for printer files,
+      // so a path saved in one mode must never be restored in the other.
+      if (printerFiles !== this.printerFiles) {
+        this.savedPath = [null]
+      }
+      this.printerFiles = printerFiles
       this.$bvModal.show(this.modalId)
     },
     scrollToTop() {

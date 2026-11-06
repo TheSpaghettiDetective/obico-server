@@ -15,8 +15,8 @@ from django.utils.translation import gettext_lazy as _
 
 from allauth.account.forms import ResetPasswordForm
 from allauth.account.adapter import get_adapter
-from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth import get_user_model
+from app.accounts import filter_users_by_email_and_syndicate
+from lib.syndicate import syndicate_from_request
 
 
 LOGGER = logging.getLogger(__name__)
@@ -32,11 +32,9 @@ class SocialAccountAwareLoginForm(LoginForm):
             if err.message == self.error_messages['email_password_mismatch']:
                 email = self.user_credentials().get('email', None)
                 if email is not None:
-                    user = User.objects.filter(email__iexact=email).first()
-                    if user is not None and not user.has_usable_password():
-                        has_social_accounts = user.socialaccount_set.exists()
-                        if has_social_accounts:
-                            self.no_password_yet = True
+                    users = filter_users_by_email_and_syndicate(email, syndicate_from_request(self.request))
+                    if any(not user.has_usable_password() and user.socialaccount_set.exists() for user in users):
+                        self.no_password_yet = True
             raise err
     error_messages = {
         'email_password_mismatch': _("Invalid email or password."),
@@ -79,21 +77,11 @@ class SyndicateSpecificResetPasswordForm(ResetPasswordForm):
     def clean_email(self):
         email = self.cleaned_data["email"]
         email = get_adapter().clean_email(email)
-        syndicate = get_current_site(self.request).syndicates.first()
-        self.users = filter_users_by_email_and_syndicate(email, syndicate)
+        syndicate = syndicate_from_request(self.request)
+        self.users = filter_users_by_email_and_syndicate(email, syndicate, is_active=True, prefer_verified=True)
         if not self.users:
             raise get_adapter().validation_error("unknown_email")
         return self.cleaned_data["email"]
-
-def filter_users_by_email_and_syndicate(email, syndicate):
-
-    User = get_user_model()
-    users = User.objects.filter(
-        emailaddress__email__iexact=email,
-        syndicate=syndicate
-    )
-
-    return list(users)
 
 class SyndicateSpecificAddEmailForm(AddEmailForm):
     def clean_email(self):
@@ -101,7 +89,7 @@ class SyndicateSpecificAddEmailForm(AddEmailForm):
         syndicate = self.user.syndicate  # Assuming the user has a syndicate attribute
 
         # Check if a user with this email already exists in the same syndicate
-        if User.objects.filter(emailaddress__email__iexact=email, syndicate=syndicate).exists():
+        if filter_users_by_email_and_syndicate(email, syndicate):
             raise forms.ValidationError(_("A user is already registered with this email address."))
 
         return email

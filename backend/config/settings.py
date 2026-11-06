@@ -185,7 +185,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 LANGUAGES = [
@@ -294,10 +293,14 @@ AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
 )
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = False
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
+# The login form's "username" is the email address: SyndicateSpecificBackend
+# looks it up within the request's syndicate. Users never pick a username, the
+# account adapter makes one, so it is not a sign-up field and allauth's check
+# that some login method is also a required sign-up field does not apply.
+ACCOUNT_LOGIN_METHODS = {'username'}
+SILENCED_SYSTEM_CHECKS = ['account.W001']
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
@@ -402,7 +405,13 @@ WEBPACK_LOADER = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
 if not WEBPACK_LOADER_ENABLED:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Django 5.1+ ignores the old STATICFILES_STORAGE setting; the storage backend
+    # must be selected through STORAGES or whitenoise silently runs without the
+    # manifest (no hashed filenames) and without brotli/gzip precompression.
+    STORAGES = {
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+    }
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '../frontend/static'),
     os.path.join(BASE_DIR, '../frontend/builds'),
@@ -468,6 +477,10 @@ PUBLIC_VERSION_CONTAINER = os.environ.get('PUBLIC_VERSION_CONTAINER', 'public-ve
 BUCKET_PREFIX = os.environ.get('BUCKET_PREFIX')
 ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
+# requests timeout for calls to the ML API. None means no timeout, which is the long-standing
+# behavior: self-hosted ML APIs (one gunicorn worker, often on CPU) can take many seconds per image.
+# Deployments that need a bound can override it with a (connect, read) tuple in seconds.
+ML_API_TIMEOUT = None
 
 PIC_POST_LIMIT_PER_MINUTE = int(os.environ.get('PIC_POST_LIMIT_PER_MINUTE') or '0') # 0 means no limits
 MIN_DETECTION_INTERVAL = 10 # 10s as the default interval between detections. Recommended not to change as the hyper parameters are tuned based on interval = 10s.

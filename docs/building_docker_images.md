@@ -1,5 +1,10 @@
 ## Building ML backend images
-The application images are built and published by CI (`.github/workflows/build-images.yaml`) on every push to the release branch. The arm64 legs run on GitHub's `ubuntu-24.04-arm` runners, which are free for public repositories; on a private fork they are billable, and a fork whose plan does not include them queues until the job times out. This page is about the ML *base* images, which are still built by hand. The GPU, Jetson and RK3588 variants start from one of them; the CPU image starts from `python:3.8-slim` and needs none. The web base is separate, built by `scripts/build_dockerfile_web_base.sh`.
+The application images are built and published by CI (`.github/workflows/build-images.yaml`) on every push to the release branch. The arm64 legs run on GitHub's `ubuntu-24.04-arm` runners, which are free for public repositories; on a private fork they are billable, and a fork whose plan does not include them queues until the job times out. This page is about the ML *base* images, which are still built by hand. The CUDA, Jetson and RK3588 variants start from one of them; the CPU and Intel/OpenVINO images are self-contained and need none. The web image is self-contained since the Python 3.12 move — `scripts/build_dockerfile_web_base.sh` only refreshes the legacy published web bases.
+
+The Intel GPU image is built locally from `ml_api/Dockerfile.intel` and does not
+use the CUDA base. It is selected by `docker-compose.intel.yml`; see the
+[Intel GPU guide](../website/docs/server-guides/advanced/intel-gpu.md) for the
+host driver and `/dev/dri` requirements.
 
 To build them, use the provided [build_base_images.sh](../ml_api/scripts/build_base_images.sh) script.
 It executes `docker` to build images, assign them tags and push into docker registry.

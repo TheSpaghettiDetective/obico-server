@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 import json
 import logging
+import re
 from django.conf import settings
 from rest_framework.serializers import ValidationError
 
@@ -14,6 +15,8 @@ from notifications.plugin import (
 
 LOGGER = logging.getLogger(__name__)
 
+WEBHOOK_URL_RE = re.compile(r'^https://((canary|ptb)\.)?(discord|discordapp)\.com/api(/v\d+)?/webhooks/\d+/[\w-]+/?(\?.*)?$')
+
 
 class DiscordNotificationPlugin(BaseNotificationPlugin):
     FAILURE_COLOR = 0xcf142b  # stop red
@@ -24,6 +27,10 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
     def validate_config(self, data: Dict) -> Dict:
         if 'webhook_url' in data:
             webhook_url = data['webhook_url'].strip()
+            if webhook_url and not WEBHOOK_URL_RE.match(webhook_url):
+                raise ValidationError(
+                    'webhook_url is not a Discord webhook URL. It should look like '
+                    'https://discord.com/api/webhooks/<id>/<token>')
             return {'webhook_url': webhook_url}
         raise ValidationError('webhook_url key is missing from config')
 

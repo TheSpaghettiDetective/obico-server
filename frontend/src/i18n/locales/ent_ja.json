@@ -587,5 +587,6 @@
   "Choose a Print Process": "印刷プロセスを選択する",
   "When your three-month plan expires, you will have the chance to upgrade to one of Obico's": "3ヶ月プランが期限切れになると、Obicoのいずれかのプランにアップグレードする機会があります",
   "Plan discount. When you redeem your plan, you'll be asked to enter your credit card so we can give you the exclusive 20% discount when your plan renews.": "プラン割引。プランを引き換える際に、クレジットカードの入力が求められます。これにより、プランが更新される際に独占的な20%割引を提供できます。",
-  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "{localizedDom}でウェブカメラを視聴し、ObiがあなたのためにプリントをウォッチできるようにAI Detection Hoursを増やしたい場合は、{planName}プランにアップグレードできます。"
+  "If you want to watch your webcam with the {localizedDom} and get more AI Detection Hours so that Obi can watch your prints for you, you can upgrade to the {planName} plan.": "{localizedDom}でウェブカメラを視聴し、ObiがあなたのためにプリントをウォッチできるようにAI Detection Hoursを増やしたい場合は、{planName}プランにアップグレードできます。",
+  "Referral code: {code}. Your discount will appear at checkout. Prices below exclude discounts.": "紹介コード：{{code}}。割引はお支払い時に表示されます。以下の価格には割引は含まれていません。"
 }

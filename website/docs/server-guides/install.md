@@ -18,9 +18,16 @@ Guides not directly maintained by the Obico Team and Contributors may be outdate
 
 ## Hardware Requirements {#hardware-requirements}
 
-The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. A NVidia GPU is optional but can vastly reduce the power consumption and beef up the number of printers the server can handle.
+The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. GPU acceleration is optional, but can vastly reduce the power consumption and increase the number of printers the server can handle.
 
 [More details about the hardware requirements for the Obico Server](hardware-requirements.md).
+
+For GPU acceleration on a Linux host, follow the guide for your hardware before starting the server:
+
+- [NVIDIA GPU with CUDA](advanced/nvidia-gpu.md)
+- [Intel GPU with OpenVINO](advanced/intel-gpu.md)
+
+AMD GPU acceleration is not currently included in the supplied images.
 
 :::caution
 
@@ -46,7 +53,7 @@ The following software is required before you start installing the server:
 git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 ```
 
-2. Run it! Do **either** one of these based on what OS you are using:
+2. Run it! Do **either** one of these based on what OS you are using. If you are using an Intel GPU, use the [Intel GPU guide](advanced/intel-gpu.md), which supplies the additional Compose file and build command:
     - If you are on Linux: `cd obico-server && sudo docker compose up -d`
     - If you are on Mac: `cd obico-server && docker compose up -d`
     - If you are on Windows: `cd obico-server; docker compose up -d`

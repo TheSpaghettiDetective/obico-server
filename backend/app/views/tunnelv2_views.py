@@ -209,7 +209,12 @@ def tunnel_api(request, octoprinttunnel):
 
 
 def is_plugin_version_supported(agent: str, version: str) -> bool:
-    return packaging.version.parse(version) >= MIN_SUPPORTED_VERSION[agent]
+    # Only Obico's own plugins have a minimum version. Any other agent reports its own name and
+    # version format, so there is nothing to compare its version against.
+    min_version = MIN_SUPPORTED_VERSION.get(agent)
+    if min_version is None:
+        return True
+    return packaging.version.parse(version) >= min_version
 
 
 def should_cache(agent, path):

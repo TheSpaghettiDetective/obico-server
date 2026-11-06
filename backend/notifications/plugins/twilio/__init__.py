@@ -53,6 +53,26 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
         return (config.get('phone_country_code') or '') + (config.get('phone_number') or '')
 
     def send_sms(self, body: str, to_number: str):
+        try:
+            parsed_number = phonenumbers.parse(to_number, None)
+        except phonenumbers.NumberParseException:
+            LOGGER.warning("SMS skipped because the destination number is invalid")
+            return
+        country_code = parsed_number.country_code
+        # The stored number can keep the national trunk prefix (e.g. +44 07786...), which
+        # phonenumbers accepts but Twilio rejects. Always send the normalized E.164 form.
+        to_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+
+        if (
+            settings.TWILIO_COUNTRY_CODES
+            and country_code not in settings.TWILIO_COUNTRY_CODES
+        ):
+            LOGGER.warning(
+                "SMS skipped for unsupported destination country code +%s",
+                country_code,
+            )
+            return
+
         twilio_client = Client(os.environ.get('TWILIO_ACCOUNT_SID'), os.environ.get('TWILIO_AUTH_TOKEN'))
         from_number = os.environ.get('TWILIO_FROM_NUMBER')
 

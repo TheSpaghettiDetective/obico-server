@@ -104,6 +104,7 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
                   name: d.dirname,
                   id: path,
                   path,
+                  created_at: toMomentOrNull(new Date(d.modified * 1000)),
                   children: [], // To signify this is a folder, not a file
                 }
               }

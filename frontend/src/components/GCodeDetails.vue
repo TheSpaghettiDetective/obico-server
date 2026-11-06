@@ -61,7 +61,8 @@
           </div>
           <div class="value">
             <!-- eslint-disable-next-line vue/no-v-html -->
-            <span v-html="item.value"></span>
+            <span v-if="item.html" v-html="item.html"></span>
+            <span v-else>{{ item.value }}</span>
           </div>
         </div>
       </div>
@@ -87,7 +88,8 @@
             </div>
             <div class="value">
               <!-- eslint-disable-next-line vue/no-v-html -->
-              <span v-html="item.value"></span>
+              <span v-if="item.html" v-html="item.html"></span>
+              <span v-else>{{ item.value }}</span>
             </div>
           </div>
         </div>
@@ -178,7 +180,7 @@ export default {
           name: 'total_prints',
           faIcon: 'fas fa-hashtag',
           title: `${this.$i18next.t('Total prints')}`,
-          value: `
+          html: `
             ${this.file.totalPrints || 0}
             (<span class="text-success">${this.file.successPrints || 0}</span> /
             <span class="text-danger">${this.file.failedPrints || 0}</span>)

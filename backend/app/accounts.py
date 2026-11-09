@@ -16,11 +16,21 @@ from django.utils.encoding import force_str
 from django.conf import settings
 
 
-def filter_users_by_email_and_syndicate(email, syndicate, **kwargs):
+def filter_users_by_email_and_syndicate(email, syndicate, prefer_verified=False, **kwargs):
     """The accounts an address belongs to in one syndicate. allauth's own lookup
     (the address's EmailAddress rows, then User.email), which looks across all
-    syndicates, kept to this one. kwargs are allauth's."""
-    return [user for user in filter_users_by_email(email, **kwargs) if user.syndicate_id == syndicate.id]
+    syndicates, kept to this one. kwargs are allauth's.
+
+    prefer_verified is applied after the syndicate filter, not passed to allauth:
+    allauth drops every unverified account once the address is verified anywhere,
+    so a verified account in another syndicate would hide this one's."""
+    users = [user for user in filter_users_by_email(email, **kwargs) if user.syndicate_id == syndicate.id]
+    if prefer_verified:
+        verified = set(EmailAddress.objects.filter(
+            user__in=users, email__iexact=email, verified=True).values_list('user_id', flat=True))
+        if verified:
+            return [user for user in users if user.id in verified]
+    return users
 
 
 class SyndicateSpecificBackend(ModelBackend):

@@ -374,6 +374,21 @@ class EmailLookupBySyndicateTestCase(TestCase):
         self.assertEqual(filter_users_by_email_and_syndicate('b2@example.com', self.base), [second])
         self.assertEqual(filter_users_by_email_and_syndicate('a@example.com', self.other), [elsewhere])
 
+    def test_a_verified_address_in_another_syndicate_hides_nothing(self):
+        verified_elsewhere = self.user('a@example.com', self.other)
+        EmailAddress.objects.create(user=verified_elsewhere, email='a@example.com', verified=True, primary=True)
+        unverified = self.user('a@example.com', self.base)
+        EmailAddress.objects.create(user=unverified, email='a@example.com', primary=True)
+        self.assertEqual(filter_users_by_email_and_syndicate('a@example.com', self.base, prefer_verified=True),
+                         [unverified])
+
+    def test_prefers_the_verified_account_within_the_syndicate(self):
+        verified = self.user('a@example.com', self.base)
+        EmailAddress.objects.create(user=verified, email='a@example.com', verified=True, primary=True)
+        self.user('A@example.com', self.base)  # User.email only
+        self.assertEqual(filter_users_by_email_and_syndicate('a@example.com', self.base, prefer_verified=True),
+                         [verified])
+
     def reset_form(self, email, **meta):
         request = RequestFactory().post('/', **meta)
         request.user = AnonymousUser()

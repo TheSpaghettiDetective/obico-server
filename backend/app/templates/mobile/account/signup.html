@@ -19,21 +19,7 @@
   <div class="row justify-content-center logreg">
     <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
       <div id="logreg-forms" class="my-3 pt-3">
-        <div class="d-flex justify-content-center w-100 py-4">
-          {% if page_context.syndicate.name != 'base' %}
-            {% if page_context.syndicate.logo_full %}
-              <img src="{{ page_context.syndicate.logo_full }}" alt="Obico Logo" style="max-width: 150px;">
-            {% else %}
-              <svg width="150" height="45">
-                <use href="#{{ page_context.syndicate.name }}-svg-logo-full" />
-              </svg>
-            {% endif %}
-          {% else %}
-          <svg width="150" height="45">
-            <use href="#svg-logo-full" />
-          </svg>
-          {% endif %}
-        </div>
+        {% include "account/snippets/logo.html" %}
 
         {% if page_context.syndicate.name == 'base' %}
         <div style="margin-bottom: 1rem; padding-left: 12px;">

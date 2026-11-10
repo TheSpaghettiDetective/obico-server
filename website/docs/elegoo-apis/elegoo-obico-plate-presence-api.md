@@ -68,7 +68,7 @@ API request was processed successfully.
 {
   "plate_missing": true,
   "markers_found": [
-    {"position": "front", "x": 591.0, "y": 662.0, "w": 110.4, "h": 49.2}
+    {"position": "front", "x": 589.0, "y": 659.0, "w": 108.1, "h": 53.3}
   ]
 }
 ```

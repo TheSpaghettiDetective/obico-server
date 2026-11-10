@@ -30,7 +30,7 @@ from lib import channels
 from lib.file_storage import save_file_obj
 from lib import cache
 from lib.syndicate import syndicate_from_request
-from app.accounts import filter_users_by_email_and_syndicate
+from app.accounts import users_by_email
 from allauth.account.views import EmailView
 
 from app.forms import SyndicateSpecificResetPasswordForm
@@ -60,7 +60,7 @@ class SocialAccountAwareSignupView(SignupView):
     def form_valid(self, form):
             email = form.cleaned_data['email']
             syndicate = syndicate_from_request(self.request)
-            if filter_users_by_email_and_syndicate(email, syndicate):
+            if users_by_email(email, syndicate):
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
             return super(SocialAccountAwareSignupView, self).form_valid(form)

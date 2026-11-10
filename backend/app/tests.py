@@ -12,14 +12,17 @@ from allauth.account.models import EmailAddress
 from django.contrib.auth.models import AnonymousUser
 from django.test import override_settings
 
-from app.accounts import SyndicateSpecificAccountAdapter, filter_users_by_email_and_syndicate
+from app.accounts import SyndicateSpecificAccountAdapter, users_by_email
 from app.forms import SyndicateSpecificResetPasswordForm
-from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User
+from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User, SiteSyndicate
 from app.models.syndicate_models import Syndicate
 from app.views.tunnelv2_views import is_plugin_version_supported
 from lib import mobile_notifications
 from lib.url_signing import HmacSignedUrl, new_signed_url
 from lib.utils import get_rotated_pic_url
+from lib import syndicate as syndicate_lib
+from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
 
 
 class PrinterEventTestCase(TestCase):
@@ -27,7 +30,7 @@ class PrinterEventTestCase(TestCase):
     def setUp(self):
         syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'test'})
         site, _ = Site.objects.get_or_create(id=1, defaults={'domain': 'testserver', 'name': 'testserver'})
-        syndicate.sites.add(site)
+        SiteSyndicate.objects.update_or_create(site=site, defaults={'syndicate': syndicate})
         self.user = User.objects.create(email='event@test.com', syndicate=syndicate)
         self.printer = Printer.objects.create(user=self.user)
         self.print = Print.objects.create(
@@ -344,17 +347,14 @@ class AccountAdapterClientIpTestCase(SimpleTestCase):
 
 
 class EmailLookupBySyndicateTestCase(TestCase):
-    """Every lookup of an account by address is allauth's own (EmailAddress
-    rows, then User.email), kept to one syndicate."""
+    """Every lookup of an account by address (EmailAddress rows and User.email)
+    keeps to one syndicate."""
 
     def setUp(self):
         self.base, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'base'})
         self.other, _ = Syndicate.objects.get_or_create(id=2, defaults={'name': 'yumi'})
-        site, _ = Site.objects.get_or_create(domain='testserver', defaults={'name': 'testserver'})
-        self.base.sites.add(site)
-        site_id = override_settings(SITE_ID=site.id)
-        site_id.enable()
-        self.addCleanup(site_id.disable)
+        self.site, _ = Site.objects.get_or_create(domain='testserver', defaults={'name': 'testserver'})
+        SiteSyndicate.objects.update_or_create(site=self.site, defaults={'syndicate': self.base})
 
     def user(self, email, syndicate, password=None):
         user = User.objects.create(email=email, username=f'{email}_{syndicate.id}', syndicate=syndicate)
@@ -370,28 +370,33 @@ class EmailLookupBySyndicateTestCase(TestCase):
         second = self.user('b@example.com', self.base)
         EmailAddress.objects.create(user=second, email='b2@example.com')
         elsewhere = self.user('a@example.com', self.other)
-        self.assertEqual(filter_users_by_email_and_syndicate('A@example.com', self.base), [no_rows])
-        self.assertEqual(filter_users_by_email_and_syndicate('b2@example.com', self.base), [second])
-        self.assertEqual(filter_users_by_email_and_syndicate('a@example.com', self.other), [elsewhere])
+        self.assertEqual(users_by_email('A@example.com', self.base), [no_rows])
+        self.assertEqual(users_by_email('b2@example.com', self.base), [second])
+        self.assertEqual(users_by_email('a@example.com', self.other), [elsewhere])
+
+    def test_an_account_with_both_records_is_found_once(self):
+        user = self.user('a@example.com', self.base)
+        EmailAddress.objects.create(user=user, email='a@example.com', primary=True)
+        self.assertEqual(users_by_email('a@example.com', self.base), [user])
 
     def test_a_verified_address_in_another_syndicate_hides_nothing(self):
         verified_elsewhere = self.user('a@example.com', self.other)
         EmailAddress.objects.create(user=verified_elsewhere, email='a@example.com', verified=True, primary=True)
         unverified = self.user('a@example.com', self.base)
         EmailAddress.objects.create(user=unverified, email='a@example.com', primary=True)
-        self.assertEqual(filter_users_by_email_and_syndicate('a@example.com', self.base, prefer_verified=True),
-                         [unverified])
+        self.assertEqual(users_by_email('a@example.com', self.base), [unverified])
 
-    def test_prefers_the_verified_account_within_the_syndicate(self):
-        verified = self.user('a@example.com', self.base)
-        EmailAddress.objects.create(user=verified, email='a@example.com', verified=True, primary=True)
-        self.user('A@example.com', self.base)  # User.email only
-        self.assertEqual(filter_users_by_email_and_syndicate('a@example.com', self.base, prefer_verified=True),
-                         [verified])
+    def test_inactive_accounts(self):
+        user = self.user('a@example.com', self.base)
+        user.is_active = False
+        user.save()
+        self.assertEqual(users_by_email('a@example.com', self.base), [user])
+        self.assertEqual(users_by_email('a@example.com', self.base, is_active=True), [])
 
     def reset_form(self, email, **meta):
         request = RequestFactory().post('/', **meta)
         request.user = AnonymousUser()
+        request.site = self.site
         return SyndicateSpecificResetPasswordForm(data={'email': email}, request=request)
 
     def test_password_reset_follows_the_syndicate_header(self):
@@ -406,3 +411,67 @@ class EmailLookupBySyndicateTestCase(TestCase):
         form = self.reset_form('a@example.com')
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.users, [user])
+
+
+class SiteSyndicateTestCase(TestCase):
+    """Each site serves one syndicate."""
+
+    def setUp(self):
+        self.base, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'base'})
+        self.other, _ = Syndicate.objects.get_or_create(id=2, defaults={'name': 'yumi'})
+
+    def test_a_new_site_serves_the_first_syndicate(self):
+        site = Site.objects.create(domain='192.168.1.5:3334', name='mine')
+        self.assertEqual(site.site_syndicate.syndicate, self.base)
+
+    def test_a_site_added_in_django_admin(self):
+        # The self-hosting guide's way (website/docs/server-guides/configure.md).
+        admin = User.objects.create_superuser(email='site-admin@example.com', password='supersecret')
+        self.client.force_login(admin)
+        response = self.client.post('/admin/sites/site/add/', {'domain': '192.168.1.5:3334', 'name': 'mine'})
+        self.assertEqual(response.status_code, 302, response.content)
+        self.assertEqual(Site.objects.get(domain='192.168.1.5:3334').site_syndicate.syndicate, self.base)
+
+    def test_links_use_the_syndicates_first_site_by_domain(self):
+        for domain in ('example.com', 'localhost:3334', '192.168.1.5:3334'):
+            site, _ = Site.objects.get_or_create(domain=domain, defaults={'name': domain})
+            SiteSyndicate.objects.update_or_create(site=site, defaults={'syndicate': self.other})
+        syndicate_lib.SYNDICATE_DOMAIN_CACHE.clear()
+        self.addCleanup(syndicate_lib.SYNDICATE_DOMAIN_CACHE.clear)
+        self.assertTrue(syndicate_lib.build_full_url_for_syndicate('/printers/', 'yumi').endswith(
+            '://192.168.1.5:3334/printers/'))
+
+
+class SiteSyndicateMigrationTestCase(TestCase):
+    """Migration 0086, from the many-to-many link to one syndicate per site.
+    PostgreSQL rolls the schema back with the test's transaction."""
+    before = [('app', '0085_printerprediction_normalized_p')]
+    after = [('app', '0086_sitesyndicate')]
+
+    def test_each_site_keeps_its_first_syndicate_and_an_unlinked_one_gets_the_first(self):
+        executor = MigrationExecutor(connection)
+        executor.migrate(self.before)
+        apps = executor.loader.project_state(self.before).apps
+        Site, Syndicate_ = apps.get_model('sites', 'Site'), apps.get_model('app', 'Syndicate')
+        base = Syndicate_.objects.order_by('id').first()
+        # base was inserted with id 1 by a migration that left the id sequence behind.
+        other = Syndicate_.objects.create(id=Syndicate_.objects.order_by('-id').first().id + 1, name='kingroon')
+        both = Site.objects.create(domain='both.example.com', name='both')
+        base.sites.add(both)
+        other.sites.add(both)
+        theirs = Site.objects.create(domain='theirs.example.com', name='theirs')
+        other.sites.add(theirs)
+        unlinked = Site.objects.create(domain='unlinked.example.com', name='unlinked')
+
+        # The rows' foreign key checks are deferred to the end of the
+        # transaction, and a table with checks pending cannot be dropped.
+        with connection.cursor() as cursor:
+            cursor.execute('SET CONSTRAINTS ALL IMMEDIATE')
+        executor = MigrationExecutor(connection)
+        executor.migrate(self.after)
+        apps = executor.loader.project_state(self.after).apps
+        links = dict(apps.get_model('app', 'SiteSyndicate').objects.values_list('site_id', 'syndicate_id'))
+        self.assertEqual(links[both.id], base.id)
+        self.assertEqual(links[theirs.id], other.id)
+        self.assertEqual(links[unlinked.id], base.id)
+        self.assertEqual(set(links), set(Site.objects.values_list('id', flat=True)))

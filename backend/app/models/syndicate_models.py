@@ -18,7 +18,9 @@ def dh_is_unlimited(dh):
 
 
 class Syndicate(models.Model):
-    sites = models.ManyToManyField(Site, related_name='syndicates')
+    """A set of accounts that cannot see each other's: the same address makes a
+    separate account in each. A request's host picks its syndicate (SiteSyndicate,
+    lib/syndicate.py); an account is in one syndicate for good."""
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -27,17 +29,23 @@ class Syndicate(models.Model):
         return f'{self.name}'
 
 
-@receiver(post_save, sender=Site)
-def add_site_to_default_syndicate(sender, instance, created, **kwargs):
-    if created:
-        try:
-            syndicate = Syndicate.objects.order_by('id').first()
-            if syndicate:
-                syndicate.sites.add(instance)
-        except Syndicate.DoesNotExist:
-            pass
+class SiteSyndicate(models.Model):
+    """The one syndicate a site's host serves. A syndicate may have several hosts."""
+    site = models.OneToOneField(Site, on_delete=models.CASCADE, primary_key=True, related_name='site_syndicate')
+    syndicate = models.ForeignKey(Syndicate, on_delete=models.CASCADE, related_name='site_syndicates')
 
-post_save.connect(add_site_to_default_syndicate, sender=Site)
+    def __str__(self):
+        return f'{self.site.domain} -> {self.syndicate.name}'
+
+
+@receiver(post_save, sender=Site)
+def serve_the_first_syndicate(sender, instance, created, **kwargs):
+    # A site added in Django admin, as the self-hosting guide does, serves the
+    # first syndicate. set_up_jusprinv2_syndicate moves its host afterwards.
+    if created:
+        syndicate = Syndicate.objects.order_by('id').first()
+        if syndicate:
+            SiteSyndicate.objects.create(site=instance, syndicate=syndicate)
 
 
 class UserManager(BaseUserManager):

@@ -203,7 +203,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
 
-        from_email = syndicate.settings_for_syndicate(user.syndicate_name).get('from_email', settings.DEFAULT_FROM_EMAIL)
+        from_email = syndicate.brand_settings(syndicate.brand_of_syndicate(user.syndicate_name)).get('from_email', settings.DEFAULT_FROM_EMAIL)
 
         msg = EmailMessage(
             subject,

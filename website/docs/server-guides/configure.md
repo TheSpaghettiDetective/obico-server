@@ -116,7 +116,7 @@ cd obico-server && docker compose run web ./manage.py site --add server_ip_addre
 Replace xxxx in the command with the Django site determined in the previous step.
 
 :::tip
-If you set up your Obico Server before June 5th, 2024, you may need to run the following command after the server is upgraded:
+If you set up your Obico Server before June 5th, 2024, upgrading it to a version from after November 9th, 2026 fixes its sites for you. When upgrading to an older version, run the following command after the server is upgraded:
 
 ```
 cd obico-server && docker compose run web ./manage.py site --fix

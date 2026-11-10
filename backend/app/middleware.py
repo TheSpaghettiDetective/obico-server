@@ -11,9 +11,12 @@ from django.contrib.sites.middleware import CurrentSiteMiddleware
 from django.contrib.sites.models import Site
 from django.http.request import split_domain_port
 from ipware import get_client_ip
+import json
+import sentry_sdk
 
 from .views import tunnelv2_views
 from lib.tunnelv2 import OctoprintTunnelV2Helper
+from lib.syndicate import host_syndicate, header_syndicate_name
 
 from app.models import User
 from django.contrib.auth import login as auth_login
@@ -153,6 +156,53 @@ def syndicate_header(get_response):
     return middleware
 
 
+def syndicate_mismatch(get_response):
+    """Reports a request whose host, X-Obico-Syndicate header (or the cookie
+    syndicate_header leaves) and signed-in account name different syndicates:
+    to Sentry, and as one log line. A header naming only a brand, such as
+    Yumi's, is no mismatch; brands are not compared.
+
+    With settings.SYNDICATE_MISMATCH 'refuse', an account of another syndicate
+    than the host's is refused before the view runs. That refuses an Obico admin
+    impersonating a Kingroon account on Obico's host too; they would use
+    Kingroon's host. An account an API view signs in by token is known only
+    after the view, so it is reported, not refused."""
+    def middleware(request):
+        if (settings.SYNDICATE_MISMATCH == 'refuse' and request.user.is_authenticated
+                and request.user.syndicate_id != host_syndicate(request).id):
+            _report_syndicate_mismatch(request)
+            raise PermissionDenied("An account of another syndicate than the host's")
+        response = get_response(request)
+        _report_syndicate_mismatch(request)
+        return response
+
+    return middleware
+
+
+def _report_syndicate_mismatch(request):
+    signed_in = request.user.is_authenticated
+    header = header_syndicate_name(request)
+    if not signed_in and header is None:
+        return
+    host = host_syndicate(request)
+    account_differs = signed_in and request.user.syndicate_id != host.id
+    header_differs = header is not None and header != host.name and header in settings.SYNDICATES
+    if not (account_differs or header_differs):
+        return
+    details = {
+        'host': request.get_host(),
+        'host_syndicate': host.name,
+        'header_syndicate': header,
+        'account_syndicate': request.user.syndicate.name if signed_in else None,
+        'path': request.path,
+        'user_agent': request.META.get('HTTP_USER_AGENT', ''),
+    }
+    LOGGER.warning('syndicate_mismatch %s', json.dumps(details))
+    sentry_sdk.capture_message('Syndicate mismatch', level='warning',
+                               tags={key: details[key] for key in ('host_syndicate', 'header_syndicate', 'account_syndicate')},
+                               contexts={'syndicate_mismatch': details})
+
+
 SITE_CACHE = {}
 DEFAULT_SITE = None
 
@@ -178,8 +228,10 @@ class TopDomainMatchingCurrentSiteMiddleware(CurrentSiteMiddleware):
                 site = self._get_site_by_top_level_domain(host)
             except Site.DoesNotExist:
                 # For situations when site is not found by domain, such as load balancer health checks.
+                # The lowest id, Obico's own host: Site orders by domain, which
+                # put app.kingroon.com first.
                 if DEFAULT_SITE is None:
-                    DEFAULT_SITE = Site.objects.first()
+                    DEFAULT_SITE = Site.objects.order_by('id').first()
                 site = DEFAULT_SITE
 
             request.site = site

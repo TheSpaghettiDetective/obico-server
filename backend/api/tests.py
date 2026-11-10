@@ -11,7 +11,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from safedelete.models import *
 from django.contrib.sites.models import Site
 
-from app.models import GCodeFile, GCodeFolder, OneTimeVerificationCode, Printer, Print, User
+from app.models import GCodeFile, GCodeFolder, OneTimeVerificationCode, Printer, Print, User, SiteSyndicate
 from app.models.syndicate_models import Syndicate
 from api.octoprint_views import *
 from api.octoprint_messages import process_printer_status
@@ -23,7 +23,7 @@ def setup_syndicate():
     """Create a syndicate and associate it with a site for tests."""
     syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'test'})
     site, _ = Site.objects.get_or_create(id=1, defaults={'domain': 'testserver', 'name': 'testserver'})
-    syndicate.sites.add(site)
+    SiteSyndicate.objects.update_or_create(site=site, defaults={'syndicate': syndicate})
     return syndicate
 
 

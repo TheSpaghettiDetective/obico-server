@@ -103,6 +103,7 @@ MIDDLEWARE = [
     'hijack.middleware.HijackUserMiddleware',
     'app.middleware.check_x_api',
     'app.middleware.syndicate_header',
+    'app.middleware.syndicate_mismatch',
 ]
 
 if DEBUG:
@@ -522,7 +523,10 @@ CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('CSRF_TRUSTED_ORIGINS') or '[]'
 # https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-SYNDICATES = {
+# Brands: what a page or email looks like (name, logo, sender, links). Picked per
+# request by lib/syndicate.py's brand_from_request; never stored, never used to
+# pick accounts. 'jusprin' is JusPrin v1's, on Obico's hosts.
+BRANDS = {
   'base': {
     'display_name': 'Obico',
     'from_email': DEFAULT_FROM_EMAIL,
@@ -535,3 +539,15 @@ SYNDICATES = {
     'logo_full': '/static/jusprin/img/jusprin-svg-logo-full.png',
   },
 }
+
+# Syndicates (app.models.Syndicate) by name, and the brand each one's hosts and
+# emails show.
+SYNDICATES = {
+  'base': {'brand': 'base'},
+}
+
+# What happens when a request's host, X-Obico-Syndicate header and signed-in
+# account name different syndicates (lib/syndicate.py). 'log' reports it and keeps
+# the old order (account, then header, then host); 'refuse' lets the host alone
+# decide and refuses an account from another syndicate.
+SYNDICATE_MISMATCH = os.environ.get('SYNDICATE_MISMATCH', 'log')

@@ -167,7 +167,9 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         ctx['unsub_url'] = unsub_url
 
         headers = {
-            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{clean_mailing_list}>'
+            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{clean_mailing_list}>',
+            # One-click unsubscribe (RFC 8058), which Gmail and Yahoo require of bulk senders.
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         }
 
         if img_url:

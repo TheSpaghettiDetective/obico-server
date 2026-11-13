@@ -177,6 +177,10 @@ def slack_oauth_callback(request):
     return redirect('/user_preferences/notification_slack/')
 
 
+# The link in an email's body (GET), and one-click unsubscribe (RFC 8058): mail
+# providers POST 'List-Unsubscribe=One-Click' to the List-Unsubscribe URL, with no
+# CSRF token. The unguessable unsub_token in the URL is what authorizes either.
+@csrf_exempt
 def unsubscribe_email(request):
     unsub_token = request.GET.get('unsub_token')
     email_list = request.GET.get('list')

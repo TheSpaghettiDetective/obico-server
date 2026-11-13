@@ -4,7 +4,15 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from rest_framework.serializers import ValidationError
 
+from allauth.account.models import EmailAddress
+from django.contrib.sites.models import Site
+from django.core import mail
+
+from app.models import SiteSyndicate, User
+from app.models.syndicate_models import Syndicate
+from notifications.handlers import handler
 from notifications.plugins.discord import DiscordNotificationPlugin
+from notifications.plugins.email import EmailNotificationPlugin
 from notifications.plugins.twilio import TwillioNotificationPlugin
 
 
@@ -76,3 +84,31 @@ class DiscordWebhookUrlTestCase(TestCase):
 
     def test_validate_config_still_allows_clearing_the_url(self):
         self.assertEqual(self.plugin.validate_config({'webhook_url': ''}), {'webhook_url': ''})
+
+
+@override_settings(EMAIL_HOST='smtp.example.com')
+class EmailUnsubscribeHeadersTestCase(TestCase):
+    """Gmail and Yahoo require bulk senders to support one-click unsubscribe
+    (RFC 8058): an https List-Unsubscribe URL plus List-Unsubscribe-Post."""
+
+    def setUp(self):
+        syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'base'})
+        site, _ = Site.objects.get_or_create(domain='testserver', defaults={'name': 'testserver'})
+        SiteSyndicate.objects.update_or_create(site=site, defaults={'syndicate': syndicate})
+        self.user = User.objects.create(email='headers@example.com', syndicate=syndicate)
+        EmailAddress.objects.create(user=self.user, email=self.user.email, verified=True, primary=True)
+
+    def test_notification_email_offers_one_click_unsubscribe(self):
+        EmailNotificationPlugin().send_emails(
+            user=handler.get_user_context(self.user),
+            subject='Test',
+            mailing_list='print_done',
+            template_path='email/test_email.html',
+            ctx={},
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0].message()
+        self.assertEqual(message['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click')
+        self.assertIn(
+            f'/unsubscribe_email/?unsub_token={self.user.unsub_token}&list=print_done>',
+            message['List-Unsubscribe'])

@@ -1,7 +1,8 @@
+import uuid
 from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import Client, RequestFactory, SimpleTestCase, TestCase
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
 from packaging.version import InvalidVersion
@@ -14,7 +15,7 @@ from django.test import override_settings
 
 from app.accounts import SyndicateSpecificAccountAdapter, users_by_email
 from app.forms import SyndicateSpecificResetPasswordForm
-from app.models import GCodeFile, MobileDevice, Print, Printer, PrinterEvent, User, SiteSyndicate
+from app.models import GCodeFile, MobileDevice, NotificationSetting, Print, Printer, PrinterEvent, User, SiteSyndicate
 from app.models.syndicate_models import Syndicate
 from app.views.tunnelv2_views import is_plugin_version_supported
 from lib import mobile_notifications
@@ -411,6 +412,62 @@ class EmailLookupBySyndicateTestCase(TestCase):
         form = self.reset_form('a@example.com')
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.users, [user])
+
+
+class UnsubscribeEmailTestCase(TestCase):
+    """The unsubscribe link in notification emails. A person clicks it in the
+    email body (GET); Gmail's one-click unsubscribe (RFC 8058) POSTs
+    'List-Unsubscribe=One-Click' to the same URL, with no CSRF token."""
+
+    def setUp(self):
+        syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'base'})
+        site, _ = Site.objects.get_or_create(domain='testserver', defaults={'name': 'testserver'})
+        SiteSyndicate.objects.update_or_create(site=site, defaults={'syndicate': syndicate})
+        # Django caches the site per host; another test's rolled-back site would linger.
+        Site.objects.clear_cache()
+        self.addCleanup(Site.objects.clear_cache)
+        self.user = User.objects.create(email='unsub@example.com', syndicate=syndicate)
+        self.nsetting = NotificationSetting.objects.get(user=self.user, name='email')
+        self.client = Client(enforce_csrf_checks=True)
+
+    def url(self, unsub_token, email_list='print_done'):
+        return f'/unsubscribe_email/?unsub_token={unsub_token}&list={email_list}'
+
+    def test_link_click_turns_the_setting_off(self):
+        response = self.client.get(self.url(self.user.unsub_token))
+        self.assertEqual(response.status_code, 200)
+        self.nsetting.refresh_from_db()
+        self.assertFalse(self.nsetting.notify_on_print_done)
+
+    def test_one_click_post_turns_the_setting_off(self):
+        response = self.client.post(
+            self.url(self.user.unsub_token),
+            data='List-Unsubscribe=One-Click',
+            content_type='application/x-www-form-urlencoded')
+        self.assertEqual(response.status_code, 200)
+        self.nsetting.refresh_from_db()
+        self.assertFalse(self.nsetting.notify_on_print_done)
+
+    def test_one_click_post_turns_account_notifications_off(self):
+        response = self.client.post(
+            self.url(self.user.unsub_token, 'account_notification'),
+            data='List-Unsubscribe=One-Click',
+            content_type='application/x-www-form-urlencoded')
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.account_notification_by_email)
+
+    def test_an_unknown_token_is_not_found(self):
+        for response in (
+            self.client.get(self.url(uuid.uuid4())),
+            self.client.post(
+                self.url(uuid.uuid4()),
+                data='List-Unsubscribe=One-Click',
+                content_type='application/x-www-form-urlencoded'),
+        ):
+            self.assertEqual(response.status_code, 404)
+        self.nsetting.refresh_from_db()
+        self.assertTrue(self.nsetting.notify_on_print_done)
 
 
 class SiteSyndicateTestCase(TestCase):

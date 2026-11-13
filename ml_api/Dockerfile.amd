@@ -1,0 +1,66 @@
+# AMD GPU image for the ONNX Runtime MIGraphX execution provider.
+#
+# AMD deprecated the ROCm execution provider in ONNX Runtime and now builds
+# the MIGraphX provider into its ONNX Runtime wheels. This is a third separate
+# image (alongside CUDA and Intel) because the ONNX Runtime Python
+# distributions replace the same `onnxruntime` package and cannot be installed
+# side by side.
+#
+# The image is amd64-only. It starts from AMD's official ROCm development
+# image (which ships Ubuntu plus AMD's signed apt sources) and installs the
+# ROCm HIP + MIGraphX runtime packages, because the ~20 MB MIGraphX wheel
+# dynamically links against them. The host needs the amdgpu kernel driver
+# with KFD enabled (/dev/kfd) plus /dev/dri render nodes, which are passed
+# into the container at runtime.
+FROM rocm/dev-ubuntu-24.04:7.2.1
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# AMD's dev image ships Ubuntu + AMD's signed apt sources with the HIP
+# runtime present; MIGraphX itself is installed explicitly so the image
+# carries exactly what the MIGraphX wheel links against (MIGraphX core +
+# C API, and its compute libraries), not the full ROCm dev SDK.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3.12-venv \
+        migraphx=2.15.0.70201-81~24.04 \
+        migraphx-dev=2.15.0.70201-81~24.04 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV LD_LIBRARY_PATH=/opt/rocm/lib
+
+# The ROCm dev image ships Ubuntu's externally-managed system Python
+# (PEP 668); the application lives in a dedicated venv instead.
+RUN python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --no-cache-dir --upgrade pip patchelf
+
+WORKDIR /app
+
+# The MIGraphX ONNX Runtime wheel is published by AMD per ROCm release; this
+# pin matches the ROCm runtime baked into the base image above. The wheel
+# contains the full ONNX Runtime plus the MIGraphX execution provider, so CPU
+# inference keeps working on hosts where the GPU provider cannot initialize.
+# The HIP-linked extension can request an executable stack, which Docker's
+# default runtime rejects; clear the ELF flag as in the Intel image.
+COPY requirements.txt /app/
+RUN /opt/venv/bin/pip install --no-cache-dir \
+        "https://repo.radeon.com/rocm/manylinux/rocm-rel-7.2.1/onnxruntime_migraphx-1.23.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl" \
+        opencv-python-headless==4.12.0.88 \
+    && find /opt/venv/lib/python3.12/site-packages/onnxruntime \
+        -type f -name '*.so*' -exec /opt/venv/bin/patchelf --clear-execstack {} + \
+    && /opt/venv/bin/pip install --no-cache-dir --requirement requirements.txt
+
+ENV PATH="/opt/venv/bin:${PATH}"
+
+COPY model/*.url model/*.sha256 /app/model/
+COPY scripts/fetch_verified.sh /usr/local/bin/fetch_verified
+RUN mkdir -p /model_cache/ml_api/onnx \
+    && fetch_verified "$(tr -d '\r' < model/model-weights.onnx.url)" \
+        /model_cache/ml_api/onnx/model-weights.onnx 50000000 \
+        "$(tr -d '\r' < model/model-weights.onnx.sha256)"
+
+COPY . /app
+
+EXPOSE 3333
+
+CMD ["gunicorn", "--bind", "0.0.0.0:3333", "--workers", "1", "--timeout", "120", "wsgi"]

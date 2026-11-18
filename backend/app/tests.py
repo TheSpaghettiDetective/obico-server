@@ -1,5 +1,7 @@
 import uuid
 from django.contrib.sites.models import Site
+from django.contrib import messages
+from django.core import mail
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import Client, RequestFactory, SimpleTestCase, TestCase
@@ -497,6 +499,39 @@ class SiteSyndicateTestCase(TestCase):
         self.addCleanup(syndicate_lib.SYNDICATE_DOMAIN_CACHE.clear)
         self.assertTrue(syndicate_lib.build_full_url_for_syndicate('/printers/', 'yumi').endswith(
             '://192.168.1.5:3334/printers/'))
+
+
+@override_settings(EMAIL_HOST='smtp.example.com')
+class SendTestEmailAdminActionTestCase(TestCase):
+    """The "Send test email" action on Django admin's user list. Only sign-up
+    creates the EmailAddress rows email is sent to, so an account created in
+    Django admin, like the default root@example.com, has none."""
+
+    def setUp(self):
+        # Seeded by migration 0002, as on every new server.
+        self.admin = User.objects.get(email='root@example.com')
+        self.client.force_login(self.admin)
+
+    def send_test_email(self, *users):
+        return self.client.post('/admin/app/user/', {
+            'action': 'send_test_email',
+            '_selected_action': [u.id for u in users],
+        }, follow=True)
+
+    def test_an_account_with_no_address_is_told_it_cannot_receive_one(self):
+        response = self.send_test_email(self.admin)
+        self.assertEqual(len(mail.outbox), 0)
+        sent = list(response.context['messages'])
+        self.assertEqual([m.level for m in sent], [messages.ERROR])
+        self.assertIn('root@example.com', sent[0].message)
+        self.assertIn('created in Django admin', sent[0].message)
+
+    def test_an_account_that_signed_up_gets_one(self):
+        signed_up = User.objects.create(email='signed-up@example.com', syndicate_id=1)
+        EmailAddress.objects.create(user=signed_up, email=signed_up.email, primary=True)
+        response = self.send_test_email(self.admin, signed_up)
+        self.assertEqual([m.to for m in mail.outbox], [['signed-up@example.com']])
+        self.assertEqual(sorted(m.level for m in response.context['messages']), [messages.SUCCESS, messages.ERROR])
 
 
 class SiteSyndicateMigrationTestCase(TestCase):

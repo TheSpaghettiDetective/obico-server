@@ -14,6 +14,7 @@ from rest_framework import status
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ImproperlyConfigured
+from django.core.cache import cache
 from django.http import Http404
 import json
 import io
@@ -320,6 +321,9 @@ class OctoPrinterDiscoveryView(APIView):
         return Response(discovery_response)
 
 
+VERIFY_CODE_MAX_ATTEMPTS = 5
+
+
 class OneTimeVerificationCodeVerifyView(APIView):
     throttle_classes = [AnonRateThrottle]
 
@@ -332,10 +336,16 @@ class OneTimeVerificationCodeVerifyView(APIView):
         serializer = VerifyCodeInputSerializer(data={'code': request.GET.get('code')})
         serializer.is_valid(raise_exception=True)
 
+        code_value = serializer.validated_data['code']
+        fail_cache_key = f'verify_fail:{code_value}'
+        if cache.get(fail_cache_key, 0) >= VERIFY_CODE_MAX_ATTEMPTS:
+            return Response({'detail': "Requested resource does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
         code = OneTimeVerificationCode.objects.filter(
-            code=serializer.validated_data['code']).first()
+            code=code_value).first()
 
         if code:
+            cache.delete(fail_cache_key)
             if not code.printer:
                 printer = Printer.objects.create(
                     name="My Awesome Cloud Printer",
@@ -352,6 +362,7 @@ class OneTimeVerificationCodeVerifyView(APIView):
             code.save()
             return Response(OneTimeVerificationCodeSerializer(code, many=False).data)
         else:
+            cache.set(fail_cache_key, cache.get(fail_cache_key, 0) + 1, timeout=7200)
             return Response({'detail': "Requested resource does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 

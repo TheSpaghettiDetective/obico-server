@@ -39,6 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
             'is_pro': {'read_only': True},
             'dh_balance': {'read_only': True},
             'unsub_token': {'read_only': True},
+            'tunnel_cap_multiplier': {'read_only': True},
         }
 
 

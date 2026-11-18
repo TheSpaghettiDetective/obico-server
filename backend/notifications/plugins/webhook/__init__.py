@@ -1,5 +1,7 @@
 from typing import Dict, Optional, Any
 import logging
+import ipaddress
+import socket
 import requests  # type: ignore
 import io
 import os
@@ -27,8 +29,24 @@ class WebhookNotificationPlugin(BaseNotificationPlugin):
     def validate_config(self, data: Dict) -> Dict:
         if 'custom_webhook_URL' in data:
             custom_webhook_URL = data['custom_webhook_URL'].strip()
+            self._assert_safe_url(custom_webhook_URL)
             return {'custom_webhook_URL': custom_webhook_URL}
         raise ValidationError('custom_webhook_URL is missing from config')
+
+    def _assert_safe_url(self, url: str) -> None:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            raise ValidationError('Webhook URL must use http or https')
+        hostname = parsed.hostname
+        if not hostname:
+            raise ValidationError('Webhook URL must have a valid hostname')
+        try:
+            addr = ipaddress.ip_address(socket.gethostbyname(hostname))
+        except (socket.gaierror, ValueError):
+            raise ValidationError('Webhook URL hostname could not be resolved')
+        if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved or addr.is_multicast:
+            raise ValidationError('Webhook URL must not point to a private or reserved address')
 
     def get_webhook_URL_from_config(self, config: Dict) -> str:
         if config and 'custom_webhook_URL' in config:

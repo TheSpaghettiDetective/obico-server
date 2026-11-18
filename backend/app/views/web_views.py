@@ -14,6 +14,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils import timezone
+from django.utils._os import safe_join
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -302,7 +303,9 @@ def serve_jpg_file(request, file_path):
     url = HmacSignedUrl(request.get_full_path())
     if not url.is_authorized():
         return HttpResponseForbidden("You do not have permission to view this media")
-    full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    # The digest only proves the server signed this path. safe_join refuses a path
+    # outside MEDIA_ROOT (absolute, or climbing out with '..').
+    full_path = safe_join(settings.MEDIA_ROOT, file_path)
 
     # Determine content type based on file extension
     content_type = mimetypes.guess_type(file_path)[0]

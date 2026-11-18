@@ -212,7 +212,9 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
         fields = '__all__'
-        read_only_fields = ('user', 'resident_printer', 'safe_filename')
+        # The file and thumbnail addresses are written by the server when it stores the upload.
+        read_only_fields = ('user', 'resident_printer', 'safe_filename',
+                            'url', 'thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url')
 
     def validate_parent_folder(self, parent_folder):
         if parent_folder is not None and self.context['request'].user != parent_folder.user:
@@ -232,6 +234,14 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
 class GCodeFileSerializer(BaseGCodeFileSerializer):
     parent_folder = BaseGCodeFolderSerializer()
     print_set = BasePrintSerializer(many=True, read_only=True)
+
+
+class AgentGCodeFileUpdateSerializer(GCodeFileSerializer):
+    """An agent updating a file record cannot change where the file and its thumbnails are stored."""
+
+    class Meta(BaseGCodeFileSerializer.Meta):
+        read_only_fields = BaseGCodeFileSerializer.Meta.read_only_fields + (
+            'url', 'thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url')
 
 
 class AgentGCodeFileListSerializer(serializers.ModelSerializer):

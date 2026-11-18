@@ -1,4 +1,8 @@
+import socket
 from unittest.mock import patch
+
+import requests
+import telebot.apihelper
 
 from django.test import TestCase
 from django.test.utils import override_settings
@@ -13,6 +17,7 @@ from app.models.syndicate_models import Syndicate
 from notifications.handlers import handler
 from notifications.plugins.discord import DiscordNotificationPlugin
 from notifications.plugins.email import EmailNotificationPlugin
+from notifications.plugins.telegram import TelegramNotificationPlugin
 from notifications.plugins.twilio import TwillioNotificationPlugin
 
 
@@ -112,3 +117,25 @@ class EmailUnsubscribeHeadersTestCase(TestCase):
         self.assertIn(
             f'/unsubscribe_email/?unsub_token={self.user.unsub_token}&list=print_done>',
             message['List-Unsubscribe'])
+
+
+@patch.dict('os.environ', {'TELEGRAM_BOT_TOKEN': '123456:test-bot-secret'})
+class TelegramErrorWithoutTokenTestCase(TestCase):
+    """The Telegram request address holds the bot token. A failed request's error must not."""
+
+    def refused(self, *args, **kwargs):
+        raise ConnectionRefusedError(111, 'Connection refused')
+
+    def resolved(self, *args, **kwargs):
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', ('192.0.2.1', 443))]
+
+    def test_connection_failure_does_not_show_the_token(self):
+        telebot.apihelper._get_req_session(reset=True)  # no pooled connection
+        # Nothing leaves the test: name lookup is answered locally and every connect is refused.
+        with patch('socket.getaddrinfo', self.resolved), patch('socket.socket.connect', self.refused):
+            with self.assertRaises(requests.exceptions.ConnectionError) as raised:
+                TelegramNotificationPlugin().call_telegram(chat_id='1', message='It works!')
+
+        self.assertIn('/bot<TELEGRAM_BOT_TOKEN>/sendMessage', str(raised.exception))
+        self.assertNotIn('test-bot-secret', str(raised.exception))
+        self.assertTrue(raised.exception.__suppress_context__)

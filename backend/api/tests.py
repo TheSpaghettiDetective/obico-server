@@ -905,3 +905,55 @@ class PrinterOwnershipTestCase(TestCase):
 
         self.assertIn('auth_token', data)
         self.assertNotIn('auth_token', data['current_print']['printer'])
+
+
+
+@override_settings(SITE_ID=1)
+class GCodeFileAddressTestCase(TestCase):
+    """The file and thumbnail addresses of a G-code file are written by the server only."""
+
+    ADDRESS_FIELDS = ('url', 'thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url')
+
+    def setUp(self):
+        (self.user, self.printer, self.client) = init_data()
+        self.printer.auth_token = 'gcode-address-test-token'
+        self.printer.save()
+        self.stored = GCodeFile.objects.create(
+            user=self.user, filename='a.gcode', safe_filename='a.gcode',
+            url='/media/tsd-gcodes/1/1?digest=x', thumbnail1_url='/media/tsd-timelapses/1.png?digest=x')
+        self.planted = {field: 'http://anything.example/media//etc/passwd' for field in self.ADDRESS_FIELDS}
+
+    def test_web_create_ignores_addresses(self):
+        response = self.client.post('/api/v1/g_code_files/', {'filename': 'p.gcode', **self.planted},
+                                    content_type='application/json')
+
+        self.assertEqual(response.status_code, 201)
+        created = GCodeFile.objects.get(id=response.json()['id'])
+        for field in self.ADDRESS_FIELDS:
+            self.assertIsNone(getattr(created, field))
+
+    def test_web_update_ignores_addresses(self):
+        response = self.client.patch(f'/api/v1/g_code_files/{self.stored.id}/', {'filename': 'b.gcode', **self.planted},
+                                     content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.stored.refresh_from_db()
+        self.assertEqual(self.stored.filename, 'b.gcode')
+        self.assertEqual(self.stored.url, '/media/tsd-gcodes/1/1?digest=x')
+        self.assertEqual(self.stored.thumbnail1_url, '/media/tsd-timelapses/1.png?digest=x')
+        self.assertIsNone(self.stored.thumbnail2_url)
+
+    def test_agent_update_ignores_addresses_but_records_where_it_stored_the_file(self):
+        # What OctoPrint-Obico and moonraker-obico send after downloading a file to print
+        response = self.client.patch(
+            f'/api/v1/octo/g_code_files/{self.stored.id}/',
+            {'agent_signature': 'md5:abc', 'safe_filename': 'a_1.gcode', **self.planted},
+            content_type='application/json', HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}')
+
+        self.assertEqual(response.status_code, 200)
+        self.stored.refresh_from_db()
+        self.assertEqual(self.stored.agent_signature, 'md5:abc')
+        self.assertEqual(self.stored.safe_filename, 'a_1.gcode')
+        self.assertEqual(self.stored.url, '/media/tsd-gcodes/1/1?digest=x')
+        self.assertEqual(self.stored.thumbnail1_url, '/media/tsd-timelapses/1.png?digest=x')
+        self.assertIsNone(self.stored.thumbnail2_url)

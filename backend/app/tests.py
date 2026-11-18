@@ -1,3 +1,5 @@
+import os
+import tempfile
 import uuid
 from django.contrib.sites.models import Site
 from django.contrib import messages
@@ -221,6 +223,35 @@ class ResignMediaUrlsCommandTestCase(TestCase):
         self.gcode_file.refresh_from_db()
         self.assertTrue(self.gcode_file.url.startswith('/media/g_code_files/1.gcode?digest='))
         self.assertTrue(HmacSignedUrl(self.gcode_file.url).is_authorized())
+
+
+    def test_addresses_outside_media_are_not_signed(self):
+        planted = [
+            'http://anything.example/media//etc/passwd',
+            '/media/../../../etc/passwd',
+            '/media/%2e%2e/%2e%2e/etc/passwd',
+            'https://storage.example.com/bucket/1.gcode?sig=provider',
+        ]
+        files = [GCodeFile.objects.create(user=self.user, filename='p.gcode', safe_filename='p.gcode',
+                                          url=url, thumbnail1_url=url) for url in planted]
+
+        call_command('resign_media_urls')
+
+        for gcode_file, url in zip(files, planted):
+            gcode_file.refresh_from_db()
+            self.assertEqual(gcode_file.url, url)
+            self.assertEqual(gcode_file.thumbnail1_url, url)
+
+    def test_file_on_a_printer_is_not_signed(self):
+        # The agent stores its own path to the file; a /media/ path there was not written by the server.
+        on_printer = GCodeFile.objects.create(
+            user=self.user, filename='p.gcode', safe_filename='p.gcode', resident_printer=self.printer,
+            url='/media/tsd-timelapses/private/1.mp4')
+
+        call_command('resign_media_urls')
+
+        on_printer.refresh_from_db()
+        self.assertEqual(on_printer.url, '/media/tsd-timelapses/private/1.mp4')
 
 
 class RewriteMediaUrlHostCommandTestCase(TestCase):
@@ -567,3 +598,39 @@ class SiteSyndicateMigrationTestCase(TestCase):
         self.assertEqual(links[theirs.id], other.id)
         self.assertEqual(links[unlinked.id], base.id)
         self.assertEqual(set(links), set(Site.objects.values_list('id', flat=True)))
+
+
+class ServeMediaFileTestCase(TestCase):
+    """A signed /media/ link serves only files inside MEDIA_ROOT."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.media_root = os.path.join(tmp.name, 'media')
+        os.makedirs(os.path.join(self.media_root, 'tsd-timelapses'))
+        with open(os.path.join(self.media_root, 'tsd-timelapses', '1.jpg'), 'wb') as f:
+            f.write(b'snapshot')
+        with open(os.path.join(tmp.name, 'outside.txt'), 'wb') as f:
+            f.write(b'outside')
+        override = override_settings(MEDIA_ROOT=self.media_root)
+        override.enable()
+        self.addCleanup(override.disable)
+
+    def get(self, path):
+        return Client().get(new_signed_url(path))
+
+    def test_signed_link_to_a_media_file_is_served(self):
+        response = self.get('/media/tsd-timelapses/1.jpg')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(b''.join(response.streaming_content), b'snapshot')
+
+    def test_wrong_digest_is_refused(self):
+        response = Client().get('/media/tsd-timelapses/1.jpg?digest=wrong')
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_signed_link_outside_media_root_is_refused(self):
+        for path in ('/media/../outside.txt', '/media/tsd-timelapses/../../outside.txt', '/media/' + self.media_root + '/../outside.txt'):
+            with self.subTest(path=path):
+                self.assertEqual(self.get(path).status_code, 400)

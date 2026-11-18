@@ -1,10 +1,10 @@
-from django.test import TestCase, TransactionTestCase
+from django.test import SimpleTestCase, TestCase, TransactionTestCase
 from unittest.mock import patch
 
 
 from app.models import User, HeaterTracker, Printer, Print, Syndicate
 from .heater_trackers import process_heater_temps
-from .url_signing import HmacSignedUrl, new_signed_url, rewrite_url_origin
+from .url_signing import HmacSignedUrl, is_media_url, new_signed_url, rewrite_url_origin
 
 
 class HeaterTrackerTestCase(TransactionTestCase):
@@ -280,3 +280,31 @@ class MlApiTimeoutDefaultTestCase(TestCase):
         # Self-hosted ML APIs can be slow (one CPU worker); deployments opt in to a bound via settings.
         from config import settings as base_settings
         self.assertIsNone(base_settings.ML_API_TIMEOUT)
+
+
+class IsMediaUrlTestCase(SimpleTestCase):
+    """Only a link to a file inside MEDIA_ROOT may be signed."""
+
+    def test_links_to_stored_media_are_media(self):
+        for url in ('/media/tsd-gcodes/1/2?digest=stale',
+                    'http://old-host:3334/media/tsd-timelapses/private/1.mp4',
+                    'https://example.com/media/tsd-timelapses/gcode_thumbnails/1/2/1.png'):
+            with self.subTest(url=url):
+                self.assertTrue(is_media_url(url))
+
+    def test_paths_outside_media_root_are_not_media(self):
+        for url in ('http://anything.example/media//etc/passwd',
+                    '/media/../../../etc/passwd',
+                    '/media/tsd-gcodes/../../../../etc/passwd',
+                    '/media/%2e%2e/%2e%2e/%2e%2e/etc/passwd',
+                    '/media/%2Fetc%2Fpasswd'):
+            with self.subTest(url=url):
+                self.assertFalse(is_media_url(url))
+
+    def test_other_addresses_are_not_media(self):
+        for url in ('https://storage.example.com/bucket/1.mp4?sig=provider',
+                    'subdir/file.gcode',
+                    '/etc/passwd',
+                    '/mediafoo/x.jpg'):
+            with self.subTest(url=url):
+                self.assertFalse(is_media_url(url))

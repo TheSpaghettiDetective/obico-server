@@ -34,7 +34,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         bot_name = None
         bot = self.get_telegram_bot()
         try:
-            bot_name = bot.get_me().username
+            bot_name = self._send(bot.get_me).username
         except Exception as e:
             LOGGER.warn("Couldn't get telegram bot name: " + str(e))
 
@@ -164,6 +164,13 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             except ConnectionError:
                 attempts += 1
                 time.sleep(0.05)
+            except requests.exceptions.RequestException as e:
+                # The request address holds the bot token, and requests quotes the address in its
+                # error text. Raise the same error without the token, and without the original
+                # attached, so neither the reply to the user nor an error report carries it.
+                error = type(e)(str(e).replace(bot_method.__self__.token, '<TELEGRAM_BOT_TOKEN>'))
+                del e
+                raise error from None
 
     def default_button(self):
         markup = types.InlineKeyboardMarkup(row_width=1)

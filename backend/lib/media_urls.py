@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 from app.models import Print, PrinterEvent, GCodeFile, models, PrintShotFeedback
 
@@ -35,15 +35,17 @@ def print_progress_bar(iteration, total, prefix='Progress:', suffix='Complete', 
         print()
 
 
-def transform_urls_on_model(obj: models.Model, url_fields: List[str], transform: Callable[[str], str], save: bool = True) -> int:
+def transform_urls_on_model(obj: models.Model, url_fields: List[str], transform: Callable[[str], str], save: bool = True, rows: Optional[models.QuerySet] = None) -> int:
     """
-    Applies `transform` to every non-empty URL field on every row of `obj`, saving each
-    row that changed. Returns the number of URLs that were changed. With save=False,
-    nothing is written but the count is still returned (for dry runs).
+    Applies `transform` to every non-empty URL field on every row of `obj` (or only
+    the given `rows`), saving each row that changed. Returns the number of URLs that
+    were changed. With save=False, nothing is written but the count is still
+    returned (for dry runs).
     """
+    rows = obj.objects.all() if rows is None else rows
     changed_urls = 0
-    total_rows = len(obj.objects.all())
-    for idx, row in enumerate(obj.objects.all()):
+    total_rows = len(rows)
+    for idx, row in enumerate(rows):
         changed = False
         for url_field in url_fields:
             url = getattr(row, url_field)

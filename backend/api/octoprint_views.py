@@ -41,7 +41,7 @@ from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import (
     VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer,
-    GCodeFileSerializer, AgentGCodeFileListSerializer,
+    GCodeFileSerializer, AgentGCodeFileListSerializer, AgentGCodeFileUpdateSerializer,
 )
 from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -418,6 +418,8 @@ class GCodeFileView(
     def get_serializer_class(self):
         if self.action == 'list':
             return AgentGCodeFileListSerializer
+        if self.action == 'partial_update':
+            return AgentGCodeFileUpdateSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):

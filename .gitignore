@@ -53,6 +53,8 @@ coverage.xml
 local_settings.py
 db.sqlite3
 /backend/data
+/backend/.django_secret_key
+/backend/.media_urls_signed_with
 
 # Flask stuff:
 instance/

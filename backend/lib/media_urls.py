@@ -44,8 +44,8 @@ def transform_urls_on_model(obj: models.Model, url_fields: List[str], transform:
     """
     rows = obj.objects.all() if rows is None else rows
     changed_urls = 0
-    total_rows = len(rows)
-    for idx, row in enumerate(rows):
+    total_rows = rows.count()
+    for idx, row in enumerate(rows.iterator()):  # in batches: this runs at server start, on small boards too
         changed = False
         for url_field in url_fields:
             url = getattr(row, url_field)

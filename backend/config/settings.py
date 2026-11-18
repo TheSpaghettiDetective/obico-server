@@ -26,8 +26,30 @@ SYNDICATE = os.environ.get('SYNDICATE') or 'base'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
+def secret_key_from_file(path):
+    """
+    The key this server generated on its first start, saved at `path`. The web and
+    tasks containers start together, so the key is written to a temporary file and
+    hard-linked into place: whichever process links first wins, and both read its key.
+    """
+    if not os.path.exists(path):
+        from django.core.management.utils import get_random_secret_key
+        tmp_path = f'{path}.{os.getpid()}.tmp'
+        with os.fdopen(os.open(tmp_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'w') as f:
+            f.write(get_random_secret_key())
+        try:
+            os.link(tmp_path, path)
+        except FileExistsError:
+            pass  # Another process saved its key first; that one is used.
+        finally:
+            os.remove(tmp_path)
+    with open(path) as f:
+        return f.read().strip()
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag'
+# Without DJANGO_SECRET_KEY, the server generates a key on its first start and keeps it in the backend folder.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or secret_key_from_file(os.path.join(BASE_DIR, '.django_secret_key'))
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_COOKIE_REFRESH_INTERVAL = 60 * 60 * 24  # Refresh session cookies once every 24 hours

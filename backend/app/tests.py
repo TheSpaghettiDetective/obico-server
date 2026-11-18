@@ -211,6 +211,12 @@ class ResignMediaUrlsCommandTestCase(TestCase):
             safe_filename='test.gcode',
             url='/media/g_code_files/1.gcode?digest=stale',
         )
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.signed_with_path = os.path.join(tmp.name, '.media_urls_signed_with')
+        signed_with = patch('app.management.commands.resign_media_urls.SIGNED_WITH_PATH', self.signed_with_path)
+        signed_with.start()
+        self.addCleanup(signed_with.stop)
 
     def test_urls_keep_their_host_and_get_valid_digest(self):
         call_command('resign_media_urls')
@@ -224,6 +230,21 @@ class ResignMediaUrlsCommandTestCase(TestCase):
         self.assertTrue(self.gcode_file.url.startswith('/media/g_code_files/1.gcode?digest='))
         self.assertTrue(HmacSignedUrl(self.gcode_file.url).is_authorized())
 
+
+    def test_once_per_key_signs_only_after_the_key_changes(self):
+        call_command('resign_media_urls', once_per_key=True)
+        self.gcode_file.refresh_from_db()
+        self.assertTrue(HmacSignedUrl(self.gcode_file.url).is_authorized())
+
+        GCodeFile.objects.filter(id=self.gcode_file.id).update(url='/media/g_code_files/1.gcode?digest=stale')
+        call_command('resign_media_urls', once_per_key=True)  # same key: nothing to do
+        self.gcode_file.refresh_from_db()
+        self.assertEqual(self.gcode_file.url, '/media/g_code_files/1.gcode?digest=stale')
+
+        with override_settings(SECRET_KEY='a-rotated-key'):
+            call_command('resign_media_urls', once_per_key=True)
+            self.gcode_file.refresh_from_db()
+            self.assertTrue(HmacSignedUrl(self.gcode_file.url).is_authorized())
 
     def test_addresses_outside_media_are_not_signed(self):
         planted = [
@@ -634,3 +655,35 @@ class ServeMediaFileTestCase(TestCase):
         for path in ('/media/../outside.txt', '/media/tsd-timelapses/../../outside.txt', '/media/' + self.media_root + '/../outside.txt'):
             with self.subTest(path=path):
                 self.assertEqual(self.get(path).status_code, 400)
+
+
+class SecretKeyFromFileTestCase(SimpleTestCase):
+    """Without DJANGO_SECRET_KEY, the server generates a key once and keeps it."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.dir = tmp.name
+        self.path = os.path.join(tmp.name, '.django_secret_key')
+
+    def test_first_start_generates_a_private_key_and_later_starts_reuse_it(self):
+        from config.settings import secret_key_from_file
+
+        key = secret_key_from_file(self.path)
+
+        self.assertGreaterEqual(len(key), 50)
+        self.assertEqual(os.stat(self.path).st_mode & 0o777, 0o600)
+        self.assertEqual(secret_key_from_file(self.path), key)
+        self.assertEqual(os.listdir(self.dir), ['.django_secret_key'])
+
+    def test_a_process_starting_at_the_same_time_uses_the_key_saved_first(self):
+        from config.settings import secret_key_from_file
+        with open(self.path, 'w') as f:
+            f.write('saved-by-the-other-process')
+
+        # This process checked before the other one saved its key.
+        with patch('os.path.exists', return_value=False):
+            key = secret_key_from_file(self.path)
+
+        self.assertEqual(key, 'saved-by-the-other-process')
+        self.assertEqual(os.listdir(self.dir), ['.django_secret_key'])

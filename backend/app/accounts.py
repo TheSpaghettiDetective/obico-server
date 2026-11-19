@@ -1,6 +1,7 @@
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.account.internal.userkit import unicode_ci_compare
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -19,11 +20,21 @@ def users_by_email(email, syndicate, is_active=None):
     """The accounts in one syndicate that an address belongs to, by their
     EmailAddress rows or their own email. allauth's own lookup
     (filter_users_by_email) looks across every syndicate, so none of our paths
-    calls it."""
+    calls it.
+
+    The database's case-insensitive match also matches different addresses
+    whose upper-case forms are the same, such as a dotless "ı" for "i". Mail
+    goes to the address that was typed, so like allauth's lookup this keeps
+    only the accounts whose stored address is the typed one under Unicode case
+    folding."""
     users = User.objects.filter(Q(emailaddress__email__iexact=email) | Q(email__iexact=email), syndicate=syndicate)
     if is_active is not None:
         users = users.filter(is_active=is_active)
-    return list(users.distinct())
+    return [
+        user for user in users.distinct().prefetch_related('emailaddress_set')
+        if unicode_ci_compare(user.email, email)
+        or any(unicode_ci_compare(address.email, email) for address in user.emailaddress_set.all())
+    ]
 
 
 class SyndicateSpecificBackend(ModelBackend):

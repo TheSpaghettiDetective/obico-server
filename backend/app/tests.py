@@ -663,6 +663,18 @@ class SecretKeyFromFileTestCase(SimpleTestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
+    def test_an_address_that_only_upper_cases_the_same_is_another_address(self):
+        # The upper case of "ı" (dotless i) is "I", so the database's
+        # case-insensitive match finds these accounts. "example.ınvalıd" is
+        # another domain, and mail would go to the typed address.
+        user = self.user('a@example.invalid', self.base, password='correct horse')
+        EmailAddress.objects.create(user=user, email='b@example.invalid', primary=True)
+        for look_alike in ('a@example.ınvalıd', 'b@example.ınvalıd'):
+            self.assertEqual(users_by_email(look_alike, self.base), [])
+            self.assertFalse(self.reset_form(look_alike).is_valid())
+        self.assertEqual(users_by_email('A@EXAMPLE.INVALID', self.base), [user])
+        self.assertEqual(users_by_email('B@example.invalid', self.base), [user])
+
         self.dir = tmp.name
         self.path = os.path.join(tmp.name, '.django_secret_key')
 

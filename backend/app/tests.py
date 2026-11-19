@@ -353,6 +353,189 @@ class PluginVersionSupportedTestCase(TestCase):
             is_plugin_version_supported('octoprint_obico', 'not-a-version')
 
 
+class TunnelPrinterCookiesTestCase(TestCase):
+    """Cookies a printer sets through a tunnel stay on the tunnel's address."""
+
+    def response_cookies(self, cookies):
+        from app.models import OctoPrintTunnel
+        from app.views import tunnelv2_views
+        user, _ = User.objects.get_or_create(email='tunnel@example.com')
+        tunnel = OctoPrintTunnel(id=1, printer=Printer(id=1, user=user), subdomain_code='abc123', app='App')
+        reply = {'response': {'status': 200, 'headers': {}, 'content': b'', 'cookies': cookies}}
+        with patch.object(tunnelv2_views.channels, 'send_msg_to_printer'), \
+                patch.object(tunnelv2_views.cache, 'octoprinttunnel_http_response_get', return_value=reply):
+            resp = tunnelv2_views._tunnel_http_req_and_wait_for_resp(tunnel, '/', 'GET', {}, b'', request_is_secure=True)
+        return [v for k, v in resp.items() if k.lower() == 'set-cookie']
+
+    def test_a_domain_attribute_is_removed(self):
+        for cookie in ['tsd_sessionid=x; Domain=app.obico.io; Path=/', 'tsd_sessionid=x; path=/; domain =.obico.io',
+                       'tsd_sessionid=x;Domain=app.obico.io']:
+            [kept] = self.response_cookies([cookie])
+            self.assertNotIn('domain', kept.lower(), cookie)
+            self.assertTrue(kept.startswith('tsd_sessionid=x'))
+
+    def test_cookies_without_a_domain_pass_unchanged(self):
+        # Printer pages of any agent may use common names such as csrftoken.
+        self.assertEqual(self.response_cookies(['csrftoken=t; Path=/; SameSite=Lax']),
+                         ['csrftoken=t; Path=/; SameSite=Lax; Secure; Max-Age=7776000'])
+
+    def test_octoprint_cookies_still_get_the_browser_port(self):
+        self.assertEqual(self.response_cookies(['session_P80=s; Path=/; HttpOnly']), [
+            'session_P443=s; Path=/; HttpOnly; Secure; Max-Age=7776000',
+            'session_P80=s; Path=/; HttpOnly; Secure; Max-Age=7776000'])
+
+
+@override_settings(SITE_ID=1, TUNNEL_DOMAIN='tun.example', OCTOPRINT_TUNNEL_PORT_RANGE=None)
+class TunnelDomainTestCase(TestCase):
+    """Tunnels on a domain of their own, which browsers treat as another site."""
+
+    def setUp(self):
+        from app.models import OctoPrintTunnel
+        self.user = User.objects.create(email='tunnel-owner@example.com')
+        self.user.set_password('first password')
+        self.user.save()
+        self.printer = Printer.objects.create(user=self.user, name='p', auth_token='tunnel-domain-test-1')
+        self.tunnel = OctoPrintTunnel.get_or_create_for_internal_use(self.printer)
+        self.host = f'{self.tunnel.subdomain_code}.tun.example'
+        self.site_domain = Site.objects.get(id=1).domain
+        self.old_host = f'{self.tunnel.subdomain_code}.tunnels.{self.site_domain}'
+        self.app_tunnel = OctoPrintTunnel.create(self.printer, app='Some App')
+
+    def sign_in_link(self, client=None):
+        client = client or Client()
+        client.force_login(self.user)
+        resp = client.get(f'/octoprint/{self.printer.id}/')
+        self.assertEqual(resp.status_code, 302)
+        return resp['Location']
+
+    def follow_sign_in(self, link, host=None, **headers):
+        host = host or self.host
+        prefix = f'http://{host}'
+        self.assertTrue(link.startswith(prefix + '/_tsd_/signin/?token='), link)
+        return Client(HTTP_HOST=host).get(link[len(prefix):], **headers)
+
+    def tunnel_cookie(self, resp):
+        from lib.tunnelv2 import TUNNEL_SESSION_COOKIE_NAME
+        cookie = resp.cookies[TUNNEL_SESSION_COOKIE_NAME]
+        self.assertEqual((cookie['httponly'], cookie['samesite'], cookie['domain']), (True, 'Lax', ''))
+        return cookie.value
+
+    def usage(self, cookie=None, host=None, **headers):
+        from lib.tunnelv2 import TUNNEL_SESSION_COOKIE_NAME
+        client = Client(HTTP_HOST=host or self.host)
+        if cookie:
+            client.cookies[TUNNEL_SESSION_COOKIE_NAME] = cookie
+        return client.get('/_tsd_/tunnelusage/', **headers)
+
+    def test_the_tunnel_address_is_on_the_tunnel_domain(self):
+        self.assertTrue(self.tunnel.get_internal_tunnel_url(RequestFactory().get('/')).endswith(f'://{self.host}'))
+        with override_settings(TUNNEL_DOMAIN=''):
+            self.assertTrue(self.tunnel.get_internal_tunnel_url(RequestFactory().get('/')).endswith(f'://{self.old_host}'))
+
+    def test_the_owner_is_signed_in_to_the_tunnel_with_a_one_time_link(self):
+        link = self.sign_in_link()
+        resp = self.follow_sign_in(link)
+        self.assertEqual((resp.status_code, resp['Location']), (302, '/'))
+        cookie = self.tunnel_cookie(resp)
+        self.assertEqual(self.usage(cookie).status_code, 200)
+        self.assertEqual(self.follow_sign_in(link).status_code, 401)
+
+    def test_without_the_cookie_the_tunnel_is_closed(self):
+        self.assertEqual(self.usage().status_code, 401)
+        self.assertEqual(self.usage('forged').status_code, 401)
+
+    def test_the_cookie_opens_only_its_own_tunnel(self):
+        from app.models import OctoPrintTunnel
+        cookie = self.tunnel_cookie(self.follow_sign_in(self.sign_in_link()))
+        other_printer = Printer.objects.create(user=self.user, name='q', auth_token='tunnel-domain-test-2')
+        other = OctoPrintTunnel.get_or_create_for_internal_use(other_printer)
+        self.assertEqual(self.usage(cookie, host=f'{other.subdomain_code}.tun.example').status_code, 401)
+
+    def test_a_password_change_closes_the_tunnel(self):
+        cookie = self.tunnel_cookie(self.follow_sign_in(self.sign_in_link()))
+        self.user.set_password('second password')
+        self.user.save()
+        self.assertEqual(self.usage(cookie).status_code, 401)
+
+    def test_requests_from_another_tunnel_page_do_not_get_the_cookie(self):
+        cookie = self.tunnel_cookie(self.follow_sign_in(self.sign_in_link()))
+        self.assertEqual(self.usage(cookie, HTTP_SEC_FETCH_SITE='same-site', HTTP_SEC_FETCH_MODE='cors').status_code, 401)
+        self.assertEqual(self.usage(cookie, HTTP_SEC_FETCH_SITE='same-origin', HTTP_SEC_FETCH_MODE='cors').status_code, 200)
+        # Following a link from another site to the tunnel still works
+        self.assertEqual(self.usage(cookie, HTTP_SEC_FETCH_SITE='cross-site', HTTP_SEC_FETCH_MODE='navigate').status_code, 200)
+
+    def test_websockets_from_another_page_do_not_get_the_cookie(self):
+        from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError, TUNNEL_SESSION_COOKIE_NAME
+        cookie = self.tunnel_cookie(self.follow_sign_in(self.sign_in_link()))
+
+        def scope(origin):
+            return {'headers': [(b'host', self.host.encode()), (b'origin', origin.encode())],
+                    'cookies': {TUNNEL_SESSION_COOKIE_NAME: cookie}, 'user': AnonymousUser()}
+
+        self.assertEqual(OctoprintTunnelV2Helper.get_octoprinttunnel(scope(f'https://{self.host}')), self.tunnel)
+        for origin in ('https://other.tun.example', 'https://app.example'):
+            with self.assertRaises(TunnelAuthenticationError):
+                OctoprintTunnelV2Helper.get_octoprinttunnel(scope(origin))
+
+    def test_a_page_on_an_old_address_moves_to_the_tunnel_domain(self):
+        client = Client(HTTP_HOST=self.old_host)
+        client.force_login(self.user)
+        resp = client.get('/some/page?x=1', HTTP_SEC_FETCH_DEST='iframe')
+        self.assertEqual(resp.status_code, 302)
+        signed_in = self.follow_sign_in(resp['Location'])
+        self.assertEqual(signed_in['Location'], '/some/page?x=1')
+
+
+    def test_an_app_page_opened_with_its_password_on_an_old_address_needs_no_password_again(self):
+        import base64
+        old_app_host = f'{self.app_tunnel.subdomain_code}.tunnels.{self.site_domain}'
+        new_app_host = f'{self.app_tunnel.subdomain_code}.tun.example'
+
+        def basic(password):
+            return 'Basic ' + base64.b64encode(f'{self.app_tunnel.basicauth_username}:{password}'.encode()).decode()
+
+        # Browsers send the password from the link only when asked for it
+        for headers in ({}, {'HTTP_AUTHORIZATION': basic('wrong')}):
+            asked = Client(HTTP_HOST=old_app_host).get('/some/page', HTTP_SEC_FETCH_DEST='document', **headers)
+            self.assertEqual(asked.status_code, 401)
+            self.assertTrue(asked['WWW-Authenticate'].startswith('Basic realm='))
+
+        resp = Client(HTTP_HOST=old_app_host).get(
+            '/some/page?x=1', HTTP_SEC_FETCH_DEST='document',
+            HTTP_AUTHORIZATION=basic(self.app_tunnel.plain_basicauth_password))
+        self.assertEqual(resp.status_code, 302)
+        signed_in = self.follow_sign_in(resp['Location'], host=new_app_host)
+        self.assertEqual(signed_in['Location'], '/some/page?x=1')
+        cookie = self.tunnel_cookie(signed_in)
+        self.assertEqual(self.usage(cookie, host=new_app_host).status_code, 200)
+        # Good for this app's tunnel only
+        self.assertEqual(self.usage(cookie).status_code, 401)
+        self.app_tunnel.delete()
+        self.assertEqual(self.usage(cookie, host=new_app_host).status_code, 401)
+
+    def test_apps_keep_using_old_addresses(self):
+        import base64
+        app_host = f'{self.app_tunnel.subdomain_code}.tunnels.{self.site_domain}'
+        auth = base64.b64encode(f'{self.app_tunnel.basicauth_username}:{self.app_tunnel.plain_basicauth_password}'.encode()).decode()
+        self.assertEqual(self.usage(host=app_host, HTTP_AUTHORIZATION=f'Basic {auth}').status_code, 200)
+        client = Client(HTTP_HOST=self.old_host)
+        client.force_login(self.user)
+        self.assertEqual(client.get('/_tsd_/tunnelusage/').status_code, 200)
+
+    @override_settings(TUNNEL_DOMAIN='')
+    def test_without_a_tunnel_domain_nothing_changes(self):
+        client = Client()
+        client.force_login(self.user)
+        self.assertEqual(client.get(f'/octoprint/{self.printer.id}/')['Location'], f'http://{self.old_host}')
+        client = Client(HTTP_HOST=self.old_host)
+        client.force_login(self.user)
+        self.assertEqual(client.get('/_tsd_/tunnelusage/', HTTP_SEC_FETCH_DEST='document').status_code, 200)
+
+    def test_the_tunnel_cookie_is_not_sent_to_the_printer(self):
+        from app.views.tunnelv2_views import DJANGO_COOKIE_RE
+        self.assertTrue(DJANGO_COOKIE_RE.match('tsd_tunnel_session=x'))
+
+
 class GCodeThumbnailParseTestCase(TestCase):
     """lib.gcode_metadata.parse reads the thumbnail files that the moonraker parser writes."""
 

@@ -830,7 +830,9 @@ class OctoPrintTunnel(SafeDeleteModel):
         return free.pop()
 
     def get_host(self, request):
-        if self.subdomain_code:
+        if self.subdomain_code and settings.TUNNEL_DOMAIN:
+            host = f'{self.subdomain_code}.{settings.TUNNEL_DOMAIN}'
+        elif self.subdomain_code:
             host = '{subdomain_code}.tunnels.{site.domain}'.format(
                 subdomain_code=self.subdomain_code,
                 site=get_current_site(request),

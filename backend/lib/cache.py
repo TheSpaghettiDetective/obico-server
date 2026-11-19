@@ -50,6 +50,10 @@ def disco_device_secret_hash_key(client_ip: str, device_id: str) -> str:
     return f'printer_discovery:{client_ip}:secret_hash:{device_id}'
 
 
+def tunnel_signin_key(token: str) -> str:
+    return f'tunnel_signin:{token}'
+
+
 def one_time_passcode_key(code) -> str:
     return f'otp:{code}'
 
@@ -314,6 +318,16 @@ def disco_pop_raw_device_messages(
             tordset_key, min='-inf', max=cur_time - expiration_secs)
         conn.zpopmin(tordset_key, message_count)
         return [raw_msg for (raw_msg, _) in conn.execute()[1]]
+
+
+def tunnel_signin_set(token: str, data: dict, expire_secs: int) -> None:
+    REDIS.setex(tunnel_signin_key(token), expire_secs, json.dumps(data))
+
+
+def tunnel_signin_pop(token: str) -> Optional[dict]:
+    # A sign-in link works once
+    raw = REDIS.getdel(tunnel_signin_key(token))
+    return json.loads(raw) if raw else None
 
 
 def lookup_value_by_one_time_passcode(code):

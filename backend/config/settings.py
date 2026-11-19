@@ -458,6 +458,10 @@ TWILIO_COUNTRY_CODES = []  # serviced country codes, no restrictions by default
 
 OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP') or '1099511627776')  # 1TB by default
 OCTOPRINT_TUNNEL_SUBDOMAIN_RE = re.compile(r'^(\w+)\.tunnels.*$')
+# A domain of the tunnels' own, such as "example-tunnels.net", puts each tunnel at
+# <code>.<domain>. Browsers treat that as another site, so pages served through a tunnel
+# don't get this site's sign-in cookie. Empty keeps tunnels at <code>.tunnels.<this site>.
+TUNNEL_DOMAIN = (os.environ.get('TUNNEL_DOMAIN') or '').strip().lower()
 OCTOPRINT_TUNNEL_PORT_RANGE = range(
         int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[0].strip('"\'')),
         int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[1].strip('"\'')),

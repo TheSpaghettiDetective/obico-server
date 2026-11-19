@@ -5,6 +5,7 @@ from whitenoise.middleware import WhiteNoiseMiddleware
 import time
 from django.utils.cache import patch_vary_headers
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.middleware.gzip import GZipMiddleware
 from django.utils.http import http_date
 from django.urls import reverse, NoReverseMatch
 from django.contrib.sites.middleware import CurrentSiteMiddleware
@@ -33,6 +34,22 @@ class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
             return None
 
         return super().get_response(request)
+
+
+class TSDGZipMiddleware(GZipMiddleware):
+    """Django hides a response's length from the BREACH attack by putting random bytes in the gzip
+    header's file-name field. Some apps that call printers through a tunnel, such as OctoApp, refuse
+    gzip that has a file name, so tunnel responses are gzipped without those bytes."""
+
+    def __init__(self, get_response):
+        super().__init__(get_response)
+        self.without_file_name = GZipMiddleware(get_response)
+        self.without_file_name.max_random_bytes = 0
+
+    def process_response(self, request, response):
+        if OctoprintTunnelV2Helper.is_tunnel_request(request):
+            return self.without_file_name.process_response(request, response)
+        return super().process_response(request, response)
 
 
 def octoprint_tunnelv2(get_response):

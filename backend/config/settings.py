@@ -108,7 +108,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
-    'django.middleware.gzip.GZipMiddleware',
+    'app.middleware.TSDGZipMiddleware',
     'app.middleware.RefreshSessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -130,7 +130,7 @@ MIDDLEWARE = [
 
 if DEBUG:
     # Add debug toolbar
-    gzip_index = MIDDLEWARE.index('django.middleware.gzip.GZipMiddleware')
+    gzip_index = MIDDLEWARE.index('app.middleware.TSDGZipMiddleware')
     MIDDLEWARE.insert(gzip_index+1, "debug_toolbar.middleware.DebugToolbarMiddleware")
     INSTALLED_APPS.append("debug_toolbar")
     import socket  # only if you haven't already imported this

@@ -386,6 +386,56 @@ class TunnelPrinterCookiesTestCase(TestCase):
 
 
 @override_settings(SITE_ID=1, TUNNEL_DOMAIN='tun.example', OCTOPRINT_TUNNEL_PORT_RANGE=None)
+class TunnelGzipTestCase(TestCase):
+    """Tunnel responses are gzipped without a file name in the gzip header. Some apps (OctoApp)
+    refuse gzip with a file name, which is where Django puts its BREACH padding."""
+
+    GZIP_FLAGS_BYTE = 3
+    GZIP_FNAME = 0x08
+
+    def setUp(self):
+        user = User.objects.create(email='tunnel-gzip@example.com')
+        self.printer = Printer.objects.create(user=user, name='p', auth_token='tunnel-gzip-test-1', agent_version='2.7.2')
+        self.content = b'{"state": "Operational", "temps": [' + b', '.join([b'210.0'] * 200) + b']}'
+
+    def assert_gzipped_without_file_name(self, tunnel, host):
+        import base64
+        import gzip
+        from app.views import tunnelv2_views
+        auth = base64.b64encode(f'{tunnel.basicauth_username}:{tunnel.plain_basicauth_password}'.encode()).decode()
+        reply = {'response': {'status': 200, 'headers': {'Content-Type': 'application/json'}, 'content': self.content}}
+        with patch.object(tunnelv2_views.channels, 'num_ws_connections', return_value=1), \
+                patch.object(tunnelv2_views.channels, 'send_msg_to_printer'), \
+                patch.object(tunnelv2_views.cache, 'octoprinttunnel_http_response_get', return_value=reply):
+            resp = Client(HTTP_HOST=host).get('/api/printer', HTTP_AUTHORIZATION=f'Basic {auth}', HTTP_ACCEPT_ENCODING='gzip')
+        self.assertEqual((resp.status_code, resp['Content-Encoding']), (200, 'gzip'), host)
+        self.assertFalse(resp.content[self.GZIP_FLAGS_BYTE] & self.GZIP_FNAME, host)
+        self.assertEqual(gzip.decompress(resp.content), self.content, host)
+
+    def test_tunnel_responses_have_no_file_name_in_the_gzip_header(self):
+        from app.models import OctoPrintTunnel
+        tunnel = OctoPrintTunnel.create(self.printer, app='Some App')
+        site_domain = Site.objects.get(id=1).domain
+        self.assert_gzipped_without_file_name(tunnel, f'{tunnel.subdomain_code}.tunnels.{site_domain}')
+        self.assert_gzipped_without_file_name(tunnel, f'{tunnel.subdomain_code}.tun.example')
+
+    @override_settings(TUNNEL_DOMAIN='', OCTOPRINT_TUNNEL_PORT_RANGE=range(4000, 4001))
+    def test_tunnels_on_a_port_of_their_own_too(self):
+        # How self-hosted servers run tunnels
+        from app.models import OctoPrintTunnel
+        tunnel = OctoPrintTunnel.create(self.printer, app='Some App')
+        self.assert_gzipped_without_file_name(tunnel, 'localhost:4000')
+
+    def test_other_pages_keep_the_random_padding(self):
+        from django.http import HttpResponse
+        from app.middleware import TSDGZipMiddleware
+        request = RequestFactory().get('/', HTTP_ACCEPT_ENCODING='gzip')
+        resp = TSDGZipMiddleware(lambda r: HttpResponse(self.content))(request)
+        self.assertEqual(resp['Content-Encoding'], 'gzip')
+        self.assertTrue(resp.content[self.GZIP_FLAGS_BYTE] & self.GZIP_FNAME)
+
+
+@override_settings(SITE_ID=1, TUNNEL_DOMAIN='tun.example', OCTOPRINT_TUNNEL_PORT_RANGE=None)
 class TunnelDomainTestCase(TestCase):
     """Tunnels on a domain of their own, which browsers treat as another site."""
 

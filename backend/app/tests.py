@@ -945,3 +945,197 @@ class SecretKeyFromFileTestCase(SimpleTestCase):
 
         self.assertEqual(key, 'saved-by-the-other-process')
         self.assertEqual(os.listdir(self.dir), ['.django_secret_key'])
+
+
+class OAuthApplicationRegistrationTestCase(TestCase):
+    """Only staff register and manage OAuth applications; everyone else keeps the
+    authorization flow and the list of apps they authorized."""
+
+    def setUp(self):
+        from oauth2_provider.models import Application
+        self.member = User.objects.create(email='member@example.com')
+        self.staff = User.objects.create(email='staff@example.com', is_staff=True)
+        self.app = Application.objects.create(
+            name='Staff App', user=self.staff, client_type='confidential',
+            authorization_grant_type='authorization-code', redirect_uris='https://app.example/cb')
+
+    def client_for(self, user=None):
+        client = Client()
+        if user:
+            client.force_login(user)
+        return client
+
+    def test_a_member_cannot_register_or_manage_applications(self):
+        from oauth2_provider.models import Application
+        client = self.client_for(self.member)
+        resp = client.post('/o/applications/register/', {
+            'name': 'Obico', 'client_type': 'confidential',
+            'authorization_grant_type': 'authorization-code', 'redirect_uris': 'https://attacker.example/cb'})
+        self.assertEqual(resp.status_code, 403)
+        self.assertFalse(Application.objects.filter(name='Obico').exists())
+        for path in ['/o/applications/', '/o/applications/register/', f'/o/applications/{self.app.id}/',
+                     f'/o/applications/{self.app.id}/update/', f'/o/applications/{self.app.id}/delete/']:
+            self.assertEqual(client.get(path).status_code, 403, path)
+
+    def test_a_signed_out_visitor_cannot_reach_the_application_pages(self):
+        self.assertEqual(self.client_for().get('/o/applications/register/').status_code, 403)
+
+    def test_staff_can_register_an_application(self):
+        from oauth2_provider.models import Application
+        resp = self.client_for(self.staff).post('/o/applications/register/', {
+            'name': 'New App', 'client_id': 'new-app-id', 'client_secret': 'new-app-secret',
+            'hash_client_secret': 'on', 'client_type': 'confidential',
+            'authorization_grant_type': 'authorization-code', 'redirect_uris': 'https://new.example/cb',
+            'post_logout_redirect_uris': '', 'allowed_origins': '', 'algorithm': ''})
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(Application.objects.filter(name='New App', user=self.staff).exists())
+
+    def test_a_member_still_authorizes_apps_and_sees_the_ones_authorized(self):
+        client = self.client_for(self.member)
+        resp = client.get('/o/authorize/', {
+            'response_type': 'code', 'client_id': self.app.client_id,
+            'redirect_uri': 'https://app.example/cb', 'scope': 'read'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Staff App')
+        self.assertEqual(client.get('/o/authorized_tokens/').status_code, 200)
+
+
+class XApiKeyIsNotASignInTestCase(TestCase):
+    """An OAuth token works only as a Bearer token on the API; in an X-Api-Key
+    header it signs nobody in to the site's pages."""
+
+    def setUp(self):
+        import datetime
+        from oauth2_provider.models import AccessToken, Application
+        self.user = User.objects.create(email='token-owner@example.com')
+        self.user.set_unusable_password()  # as after a Google, Apple or emailed-code sign-up
+        self.user.save()
+        app = Application.objects.create(
+            name='Some App', client_type='confidential',
+            authorization_grant_type='authorization-code', redirect_uris='https://app.example/cb')
+        self.token = AccessToken.objects.create(
+            user=self.user, application=app, token='x-api-key-test-token', scope='read',
+            expires=timezone.now() + datetime.timedelta(days=1)).token
+
+    def test_a_token_in_x_api_key_opens_no_signed_in_page(self):
+        for path in ['/accounts/email/', '/accounts/password/set/', '/user_preferences/']:
+            resp = Client().get(path, HTTP_X_API_KEY=self.token)
+            self.assertEqual(resp.status_code, 302, path)
+            self.assertTrue(resp['Location'].startswith('/accounts/login/'), path)
+
+    def test_a_token_in_x_api_key_sets_no_password(self):
+        Client().post('/accounts/password/set/', {'password1': 'A-new-password-1', 'password2': 'A-new-password-1'},
+                      HTTP_X_API_KEY=self.token)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.has_usable_password())
+
+    def test_the_same_token_still_works_as_a_bearer_token_on_the_api(self):
+        resp = Client().get('/api/v1/printers/', HTTP_AUTHORIZATION=f'Bearer {self.token}')
+        self.assertEqual(resp.status_code, 200)
+
+
+# The views an OAuth token reaches: the API for apps in website/docs/api/.
+# Adding one here opens it to every app a user has authorized.
+OAUTH_TOKEN_VIEWS = {
+    'api.viewsets.ApiVersionView',
+    'api.viewsets.GCodeFileViewSet',
+    'api.viewsets.GCodeFolderViewSet',
+    'api.viewsets.PrintViewSet',
+    'api.viewsets.PrinterViewSet',
+    'app.jusprin.views.JusPrinChatViewSet',
+    'app.jusprin.views.JusPrinContactSupportRequestViewSet',
+    'app.jusprin.views.JusPrinMeViewSet',
+    'app.jusprin.views.JusPrinPlateAnalysisViewSet',
+}
+
+
+def _view_classes(patterns):
+    from django.urls import URLPattern, URLResolver
+    for p in patterns:
+        if isinstance(p, URLResolver):
+            yield from _view_classes(p.url_patterns)
+        elif isinstance(p, URLPattern):
+            view = getattr(p.callback, 'cls', None) or getattr(p.callback, 'view_class', None)
+            if view is not None:
+                yield view
+
+
+class OAuthTokenViewsTestCase(SimpleTestCase):
+    """Every view of this project that takes OAuth tokens takes them through
+    ScopedOAuth2Authentication, and only the listed views declare scopes."""
+
+    def views(self):
+        from django.urls import get_resolver
+        return {v for v in _view_classes(get_resolver().url_patterns) if v.__module__.split('.')[0] in ('api', 'app')}
+
+    def test_no_view_takes_tokens_without_the_scope_rule(self):
+        from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+        from api.authentication import ScopedOAuth2Authentication
+        for view in self.views():
+            for auth in getattr(view, 'authentication_classes', ()):
+                if issubclass(auth, OAuth2Authentication):
+                    self.assertIs(auth, ScopedOAuth2Authentication, f'{view.__module__}.{view.__name__}')
+
+    def test_only_the_api_for_apps_declares_scopes(self):
+        declared = {f'{v.__module__}.{v.__name__}' for v in self.views() if hasattr(v, 'required_scopes')}
+        self.assertEqual(declared, OAUTH_TOKEN_VIEWS)
+
+
+class OAuthTokenScopeTestCase(TestCase):
+    """A token reaches only the API for apps, needs `read` to read and `write`
+    to change anything there, and never becomes a browser session."""
+
+    def setUp(self):
+        import datetime
+        from oauth2_provider.models import AccessToken, Application
+        self.user = User.objects.create(email='scoped-token-owner@example.com')
+        self.gcode = GCodeFile.objects.create(user=self.user, filename='part.gcode', safe_filename='part.gcode')
+        app = Application.objects.create(
+            name='Some App', client_type='confidential',
+            authorization_grant_type='authorization-code', redirect_uris='https://app.example/cb')
+
+        def token(scope):
+            return AccessToken.objects.create(
+                user=self.user, application=app, token=f'scoped-{scope.replace(" ", "-")}', scope=scope,
+                expires=timezone.now() + datetime.timedelta(days=1)).token
+        self.read, self.read_write = token('read'), token('read write')
+
+    def call(self, method, path, token, data=None):
+        return getattr(Client(), method)(path, data, content_type='application/json',
+                                         HTTP_AUTHORIZATION=f'Bearer {token}')
+
+    def test_a_read_token_reads_but_changes_nothing(self):
+        self.assertEqual(self.call('get', '/api/v1/g_code_files/', self.read).status_code, 200)
+        resp = self.call('patch', f'/api/v1/g_code_files/{self.gcode.id}/', self.read, {'filename': 'renamed.gcode'})
+        self.assertEqual(resp.status_code, 403)
+        self.gcode.refresh_from_db()
+        self.assertEqual(self.gcode.filename, 'part.gcode')
+
+    def test_a_write_token_changes_the_api_for_apps(self):
+        resp = self.call('patch', f'/api/v1/g_code_files/{self.gcode.id}/', self.read_write, {'filename': 'renamed.gcode'})
+        self.assertEqual(resp.status_code, 200)
+
+    def test_a_token_is_no_sign_in_outside_the_api_for_apps(self):
+        for method, path in [('get', '/api/v1/users/me/'), ('patch', '/api/v1/users/me/'),
+                             ('get', '/api/v1/notification_settings/'), ('post', '/api/v1/mobile_devices/'),
+                             ('post', '/api/v1/tunnels/'), ('get', '/api/v1/printer_events/')]:
+            self.assertEqual(self.call(method, path, self.read_write, {}).status_code, 403, path)
+
+    def test_a_browser_session_is_not_affected(self):
+        client = Client()
+        client.force_login(self.user, backend='app.accounts.SyndicateSpecificBackend')
+        self.assertEqual(client.get('/api/v1/users/me/').status_code, 200)
+
+    def test_a_token_does_not_turn_a_failed_sign_in_into_a_session(self):
+        syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'base'})
+        site, _ = Site.objects.get_or_create(domain='testserver', defaults={'name': 'testserver'})
+        SiteSyndicate.objects.update_or_create(site=site, defaults={'syndicate': syndicate})
+        # Django caches the site per host; another test's rolled-back site would linger.
+        Site.objects.clear_cache()
+        self.addCleanup(Site.objects.clear_cache)
+        client = Client()
+        resp = client.post('/accounts/login/', {'login': 'nobody@example.invalid', 'password': 'wrong-password-1'},
+                           HTTP_AUTHORIZATION=f'Bearer {self.read}')
+        self.assertNotEqual(resp.status_code, 302)
+        self.assertIsNone(client.session.get('_auth_user_id'))
+        self.assertEqual(client.get('/api/v1/users/me/').status_code, 403)

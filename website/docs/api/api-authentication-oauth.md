@@ -125,28 +125,21 @@ curl -X POST https://app.obico.io/o/token/ \
 
 ## Using the Access Token
 
-Once you have an access token, you can make authenticated API requests using either method:
-
-### Method 1: Authorization Header (Recommended)
+Once you have an access token, send it in the `Authorization` header:
 
 ```bash
 curl https://app.obico.io/api/v1/printers/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-### Method 2: X-API-KEY Header
-
-```bash
-curl https://app.obico.io/api/v1/printers/ \
-  -H "X-API-KEY: YOUR_ACCESS_TOKEN"
-```
-
 ## Available Scopes
 
 | Scope | Description |
 |-------|-------------|
-| `read` | Read access to user data and printer information |
-| `write` | Write access to modify settings, upload files, and control printers |
+| `read` | Needed for every `GET` request to the endpoints in the API Reference below |
+| `write` | Needed for every other request to them: controlling printers, changing or deleting prints and files, uploading G-code, and sending AI chat messages |
+
+A token works only on the endpoints listed in the API Reference. Every other endpoint treats a request that carries a token as signed out.
 
 ## Token Expiration
 
@@ -171,14 +164,7 @@ Content-Type: application/x-www-form-urlencoded
 
 ## API Reference
 
-Once authenticated, you can access the following API endpoints. All endpoints are prefixed with `https://app.obico.io`.
-
-### User
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/users/me/` | Get current user's profile |
-| PATCH | `/api/v1/users/me/` | Update current user's profile |
+Once authenticated, you can access the following API endpoints, and only these. All endpoints are prefixed with `https://app.obico.io`.
 
 ### Printers
 

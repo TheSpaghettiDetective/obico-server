@@ -123,7 +123,6 @@ MIDDLEWARE = [
     'app.middleware.check_admin_ip_whitelist',
     'allauth.account.middleware.AccountMiddleware',
     'hijack.middleware.HijackUserMiddleware',
-    'app.middleware.check_x_api',
     'app.middleware.syndicate_header',
     'app.middleware.syndicate_mismatch',
 ]
@@ -318,9 +317,12 @@ RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 
 # Allauth
 
+# No OAuth2Backend: with it, any sign-in that fails its own check falls back to
+# the request's bearer token, so a wrong password sent with an app's token
+# signs in as the token's owner and gets a full browser session. Tokens are
+# checked only by ScopedOAuth2Authentication (api/authentication.py).
 AUTHENTICATION_BACKENDS = (
     'app.accounts.SyndicateSpecificBackend',
-    'oauth2_provider.backends.OAuth2Backend',
 )
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
@@ -351,7 +353,12 @@ if RECAPTCHA_SITE_KEY:
 
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365 * 100,  # 100 years
-    'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
+    # Shown on the consent page. What each one opens is decided per request
+    # by ScopedOAuth2Authentication: `read` for reads, `write` for changes.
+    'SCOPES': {
+        'read': 'See your printers, prints, G-code files and AI chats',
+        'write': 'Control your printers, change or delete your prints and G-code files, upload G-code, and send AI chat messages that use your AI credits',
+    },
     'PKCE_REQUIRED': False,
     'ALLOWED_REDIRECT_URI_SCHEMES': ['http', 'https'],  # http to allow self-hosted servers
 }

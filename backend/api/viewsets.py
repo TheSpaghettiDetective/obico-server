@@ -23,7 +23,7 @@ from random import random, seed
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.pagination import PageNumberPagination
 import requests
-from ipware import get_client_ip
+from lib.client_ip import client_ip as get_client_ip
 import json
 import pytz
 from django.utils.dateparse import parse_datetime
@@ -837,7 +837,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     def list(self, request):
         MAX_UNLINKED_PRINTERS_PER_IP = 2
 
-        client_ip, is_routable = get_client_ip(request)
+        client_ip = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
         if not client_ip:
@@ -850,7 +850,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
 
     @report_validationerror
     def create(self, request):
-        client_ip, is_routable = get_client_ip(request)
+        client_ip = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
         if not client_ip:

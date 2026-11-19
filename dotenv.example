@@ -30,6 +30,10 @@
 #  Existing timelapses will keep using whatever domain/localhost was configured when they were created which can make them inaccessible through the webpage
 
 # CSRF_TRUSTED_ORIGINS=
+
+# Number of reverse proxies in front of the server that add to X-Forwarded-For (for example 1 for one nginx).
+# 0 ignores that header. See https://www.obico.io/docs/server-guides/advanced/reverse-proxy/
+# NUM_TRUSTED_PROXIES=0
 # A list of trusted origins for unsafe requests (e.g. POST). For example: ["https://obico.mydomain.com", "https://*.example.com"]. Necessary if, for example, a Cloudflare tunnel is used for external access.
 
 # SOCIAL_LOGIN=False

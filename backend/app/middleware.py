@@ -10,7 +10,7 @@ from django.urls import reverse, NoReverseMatch
 from django.contrib.sites.middleware import CurrentSiteMiddleware
 from django.contrib.sites.models import Site
 from django.http.request import split_domain_port
-from ipware import get_client_ip
+from lib.client_ip import client_ip as get_client_ip
 import json
 import sentry_sdk
 
@@ -99,7 +99,7 @@ def check_admin_ip_whitelist(get_response):
 
     def middleware(request):
         if request.path.startswith(prefix) and settings.ADMIN_IP_WHITELIST:
-            client_ip, is_routable = get_client_ip(request)
+            client_ip = get_client_ip(request)
             if client_ip not in settings.ADMIN_IP_WHITELIST:
                 raise PermissionDenied()
 

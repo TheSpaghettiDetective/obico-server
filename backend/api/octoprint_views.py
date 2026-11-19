@@ -22,7 +22,7 @@ import os
 import logging
 import importlib
 from python_ipware import IpWare
-from ipware import get_client_ip
+from lib.client_ip import client_ip as get_client_ip
 from binascii import hexlify
 
 from .utils import report_validationerror
@@ -279,7 +279,7 @@ class OctoPrinterDiscoveryView(APIView):
 
     @report_validationerror
     def post(self, request, format=None):
-        client_ip, is_routable = get_client_ip(request)
+        client_ip = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
         if not client_ip:

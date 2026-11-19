@@ -56,6 +56,17 @@ The "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. The 
 3. Find `CSRF_TRUSTED_ORIGINS=` and replace it with `CSRF_TRUSTED_ORIGINS=["reverse_proxy_domain"]`.
 4. Restart the server: `docker-compose restart`.
 
+## 4. Tell the server how many proxies are in front of it: {#4-tell-the-server-how-many-proxies-are-in-front-of-it}
+
+The server limits sign-in attempts and finds printers on the same network by each visitor's IP address. A reverse proxy adds the visitor's address to the `X-Forwarded-For` header. The server trusts that header only if you say how many proxies add to it, because anyone can send the header themselves.
+
+1. If you haven't already, make a copy of `dotenv.example` and rename it as `.env` in the `obico-server` directory.
+2. Open `.env` using your favorite editor.
+3. Set `NUM_TRUSTED_PROXIES` to the number of proxies in front of the server, for example `NUM_TRUSTED_PROXIES=1` for one NGINX, Traefik, IIS or Cloudflare Tunnel. Leave it at `0` if visitors connect to the server directly.
+4. Restart the server: `docker-compose restart`.
+
+If this is left at `0` behind a proxy, every visitor looks like the proxy: they share the limits on sign-in attempts.
+
 ## NGINX {#nginx}
 
 For webcam feed to work, remember to activate Websockets Support. Otherwise there will no webfeed when accessing through proxy.

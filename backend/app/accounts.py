@@ -5,7 +5,7 @@ from allauth.account.internal.userkit import unicode_ci_compare
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from ipware import get_client_ip as ipware_client_ip
+from lib.client_ip import client_ip as trusted_client_ip
 from app.models import User
 from django.contrib.auth.hashers import make_password
 import secrets
@@ -73,11 +73,9 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
         return force_str(subject)
 
     def get_client_ip(self, request):
-        # allauth's rate limits count per client IP. Behind a proxy, allauth
-        # itself now uses the proxy's address unless told how many proxies to
-        # trust, so every user would share one limit. Read the IP the way the
-        # rest of the server does (app/middleware.py), from X-Forwarded-For.
-        client_ip, _ = ipware_client_ip(request)
+        # allauth's rate limits count per client IP. Read it the way the rest
+        # of the server does, trusting NUM_TRUSTED_PROXIES proxies.
+        client_ip = trusted_client_ip(request)
         if not client_ip:
             raise PermissionDenied('Unable to determine client IP address')
         return client_ip

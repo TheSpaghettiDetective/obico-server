@@ -385,20 +385,33 @@ class GCodeThumbnailParseTestCase(TestCase):
 
 
 class AccountAdapterClientIpTestCase(SimpleTestCase):
-    """allauth counts its rate limits per client IP. Behind a proxy that IP is
-    the first X-Forwarded-For address, not the proxy's own."""
+    """allauth counts its rate limits per client IP, read like every other
+    client address: X-Forwarded-For counted back NUM_TRUSTED_PROXIES entries."""
 
-    def client_ip(self, **meta):
-        request = RequestFactory().get('/', **meta)
-        return SyndicateSpecificAccountAdapter(request).get_client_ip(request)
+    def client_ip(self, proxies, **meta):
+        from django.test import override_settings
+        from rest_framework.settings import api_settings
+        with override_settings(REST_FRAMEWORK={'NUM_PROXIES': proxies}):
+            api_settings.reload()
+            request = RequestFactory().get('/', **meta)
+            try:
+                return SyndicateSpecificAccountAdapter(request).get_client_ip(request)
+            finally:
+                api_settings.reload()
 
-    def test_behind_a_proxy(self):
+    def test_without_a_proxy_the_header_is_ignored(self):
+        self.assertEqual(self.client_ip(0, HTTP_X_FORWARDED_FOR='203.0.113.9', REMOTE_ADDR='198.51.100.4'), '198.51.100.4')
+
+    def test_behind_one_proxy(self):
         self.assertEqual(
-            self.client_ip(HTTP_X_FORWARDED_FOR='203.0.113.7, 10.0.0.1', REMOTE_ADDR='10.0.0.2'),
-            '203.0.113.7')
+            self.client_ip(1, HTTP_X_FORWARDED_FOR='203.0.113.9, 198.51.100.4', REMOTE_ADDR='10.0.0.2'),
+            '198.51.100.4')
 
-    def test_without_a_proxy(self):
-        self.assertEqual(self.client_ip(REMOTE_ADDR='198.51.100.4'), '198.51.100.4')
+    def test_behind_a_google_load_balancer(self):
+        # It keeps what the client wrote and appends the client and itself.
+        self.assertEqual(
+            self.client_ip(2, HTTP_X_FORWARDED_FOR='203.0.113.9, 198.51.100.4, 34.95.90.112', REMOTE_ADDR='35.191.0.1'),
+            '198.51.100.4')
 
 
 class EmailLookupBySyndicateTestCase(TestCase):

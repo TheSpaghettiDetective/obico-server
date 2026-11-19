@@ -291,7 +291,14 @@ SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)
 
 # DRF settings:
 
+# How many proxies in front of this server append to X-Forwarded-For. The
+# client is the entry that many places from the end; entries before it are
+# whatever the client wrote. 0 ignores the header and uses the connection's
+# address. See the reverse-proxy guide.
+NUM_TRUSTED_PROXIES = int(os.environ.get('NUM_TRUSTED_PROXIES') or '0')
+
 REST_FRAMEWORK = {
+    'NUM_PROXIES': NUM_TRUSTED_PROXIES,
     'DEFAULT_THROTTLE_RATES': {
         'anon': '3600/hour',
         'user': '3600/hour',

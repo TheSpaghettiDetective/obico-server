@@ -2,7 +2,7 @@ import dataclasses
 import json
 import time
 import re
-import random
+import secrets
 import string
 
 from lib.cache import (
@@ -18,8 +18,8 @@ from lib.cache import (
 def request_one_time_passcode(one_time_passcode: str, code_length=5) -> str:
     verification_code = lookup_value_by_one_time_passcode(one_time_passcode)
     if verification_code is None: # one_time_passcode not existed in cache
-        letters_and_digits = string.ascii_letters + string.digits
-        new_code = ''.join(random.choice(letters_and_digits) for _ in range(code_length)).lower()
+        letters_and_digits = string.ascii_lowercase + string.digits
+        new_code = ''.join(secrets.choice(letters_and_digits) for _ in range(code_length))
         set_value_by_one_time_passcode(new_code, 60*60*2, '') # one time passcode has a ttl of 2 hours
         return (new_code, '')
     else:

@@ -1,4 +1,6 @@
 import dataclasses
+import hashlib
+import hmac
 import json
 import time
 import re
@@ -13,6 +15,8 @@ from lib.cache import (
     disco_pop_raw_device_messages,
     disco_update_raw_device_info,
     disco_get_active_raw_device_infos,
+    disco_claim_device_secret_hash,
+    disco_get_device_secret_hash,
 )
 
 # message to device will expire in ..
@@ -20,6 +24,9 @@ LINKHELPER_MESSAGE_EXPIRATION_SECS = 60
 
 # device is considered offline if does not call in ..
 LINKHELPER_PRESENCE_EXPIRATION_SECS = 4
+
+# a device's secret hash is kept this long after its last announcement
+LINKHELPER_SECRET_HASH_EXPIRATION_SECS = 60 * 60
 
 
 class DeviceMessageSerializer(serializers.Serializer):
@@ -137,3 +144,26 @@ def update_presence_for_device(
         raw_deviceinfo=json.dumps(device_info),
         cur_time=t,
         expiration_secs=expiration_secs)
+
+
+def hash_device_secret(secret: str) -> str:
+    return hashlib.sha256(secret.encode()).hexdigest()
+
+
+def is_announced_by_device(client_ip: str, device_id: str, secret_hash: Optional[str]) -> bool:
+    # Whether an announcement comes from the device that first announced this device_id.
+    # Anyone behind the same address can see a device_id and announce it too. A device whose
+    # first announcement carries the hash of its secret is told apart from them. One whose first
+    # announcement carries no hash (plugins released before the hash was added) is not, as before.
+    stored = disco_claim_device_secret_hash(
+        client_ip=client_ip,
+        device_id=device_id,
+        secret_hash=secret_hash,
+        expiration_secs=LINKHELPER_SECRET_HASH_EXPIRATION_SECS,
+    )
+    return not stored or (secret_hash is not None and hmac.compare_digest(stored, secret_hash))
+
+
+def is_secret_of_device(client_ip: str, device_id: str, secret: str) -> bool:
+    stored = disco_get_device_secret_hash(client_ip, device_id)
+    return not stored or hmac.compare_digest(stored, hash_device_secret(secret))

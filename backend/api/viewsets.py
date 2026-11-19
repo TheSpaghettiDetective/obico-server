@@ -8,7 +8,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, Throttled
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
 from rest_framework.views import APIView
@@ -19,7 +19,8 @@ from django.conf import settings
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from random import random, seed
+import secrets
+from django.core.cache import cache as django_cache
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.pagination import PageNumberPagination
 import requests
@@ -49,6 +50,7 @@ from lib.file_storage import save_file_obj, delete_file
 from lib.printer_discovery import (
     push_message_for_device,
     get_active_devices_for_client_ip,
+    is_secret_of_device,
     DeviceMessage,
 )
 from lib.one_time_passcode import check_one_time_passcode
@@ -766,9 +768,8 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
             ).first()
 
         if not code:
-            seed()
             while True:
-                new_code = '%06d' % (int(random() * 1500450271) % 1000000)
+                new_code = '%06d' % secrets.randbelow(1000000)
                 if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
                     break
 
@@ -812,6 +813,11 @@ class SharedResourceViewSet(mixins.ListModelMixin,
             .data)
 
 
+# Wrong passcodes one account may try in an hour
+ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER = 10
+ONE_TIME_PASSCODE_FAILURE_WINDOW_SECS = 60 * 60
+
+
 class OneTimePasscodeViewSet(
     mixins.CreateModelMixin,
     viewsets.GenericViewSet):
@@ -822,9 +828,15 @@ class OneTimePasscodeViewSet(
         verification_code = request.data.get('verification_code')
         one_time_passcode = request.data.get('one_time_passcode')
 
+        failures_key = f'one_time_passcode_failures:{request.user.id}'
+        if django_cache.get(failures_key, 0) >= ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER:
+            raise Throttled()
+
         verification_code_obj = get_object_or_404(OneTimeVerificationCode, user=request.user, code=verification_code)
 
         if not check_one_time_passcode(one_time_passcode, verification_code_obj.code):
+            django_cache.add(failures_key, 0, timeout=ONE_TIME_PASSCODE_FAILURE_WINDOW_SECS)
+            django_cache.incr(failures_key)
             return JsonResponse({'detail': 'Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
         return JsonResponse({'detail': 'OK'}, status=status.HTTP_200_OK)
@@ -867,6 +879,10 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         device_secret = self.request.data.get('device_secret')
         if device_secret is None:
             raise ValidationError({'device_secret': "missing param"})
+
+        # The code goes only to a device that holds this secret
+        if not is_secret_of_device(client_ip, device_id, device_secret):
+            raise ValidationError({'device_secret': "does not match the device"})
 
         push_message_for_device(
             client_ip,

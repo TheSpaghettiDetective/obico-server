@@ -957,3 +957,134 @@ class GCodeFileAddressTestCase(TestCase):
         self.assertEqual(self.stored.url, '/media/tsd-gcodes/1/1?digest=x')
         self.assertEqual(self.stored.thumbnail1_url, '/media/tsd-timelapses/1.png?digest=x')
         self.assertIsNone(self.stored.thumbnail2_url)
+
+
+LOCAL_CACHE = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
+
+
+@override_settings(SITE_ID=1, CACHES=LOCAL_CACHE)
+class LinkCodeGuessingTestCase(TestCase):
+    """Wrong 6-digit codes and wrong one-time passcodes are limited per client
+    and per account, not per guessed value."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        (self.user, self.printer, self.client) = init_data()
+
+    def verify(self, code, ip='198.51.100.7'):
+        return Client(REMOTE_ADDR=ip).get(f'/api/v1/octo/verify/?code={code}')
+
+    def test_verify_answers_instead_of_crashing(self):
+        self.assertEqual(self.verify('123456').status_code, 404)
+
+    def test_a_client_trying_different_codes_is_stopped(self):
+        OneTimeVerificationCode.objects.create(user=self.user, code='424242')
+        for n in range(VERIFY_CODE_MAX_FAILURES_PER_CLIENT):
+            self.assertEqual(self.verify(f'{100000 + n}').status_code, 404)
+        self.assertEqual(self.verify('424242').status_code, 429)
+        self.assertEqual(self.verify('424242', ip='198.51.100.8').status_code, 200)
+
+    def test_a_success_does_not_clear_the_failures(self):
+        OneTimeVerificationCode.objects.create(user=self.user, code='111111')
+        for n in range(VERIFY_CODE_MAX_FAILURES_PER_CLIENT - 1):
+            self.verify(f'{100000 + n}')
+        self.assertEqual(self.verify('111111').status_code, 200)
+        self.verify('100099')
+        OneTimeVerificationCode.objects.create(user=self.user, code='222222')
+        self.assertEqual(self.verify('222222').status_code, 429)
+
+    def test_guessing_a_code_before_it_is_issued_does_not_block_its_owner(self):
+        for _ in range(5):
+            self.verify('515151')
+        OneTimeVerificationCode.objects.create(user=self.user, code='515151')
+        self.assertEqual(self.verify('515151', ip='198.51.100.8').status_code, 200)
+
+    @patch('api.viewsets.check_one_time_passcode', return_value=False)
+    def test_an_account_trying_different_passcodes_is_stopped(self, check):
+        from api.viewsets import ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER
+        OneTimeVerificationCode.objects.create(user=self.user, code='626262')
+
+        def submit(passcode):
+            return self.client.post('/api/v1/one_time_passcodes/', {'verification_code': '626262', 'one_time_passcode': passcode},
+                                    content_type='application/json').status_code
+
+        for n in range(ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER):
+            self.assertEqual(submit(f'zz{n:03d}'), 404)
+        check.return_value = True
+        self.assertEqual(submit('right'), 429)
+        self.assertEqual(check.call_count, ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER)
+
+
+class LinkCodeGenerationTestCase(SimpleTestCase):
+
+    @patch('lib.one_time_passcode.set_value_by_one_time_passcode')
+    @patch('lib.one_time_passcode.lookup_value_by_one_time_passcode', return_value=None)
+    @patch('lib.one_time_passcode.secrets.choice', return_value='7')
+    def test_passcodes_come_from_secrets_in_the_same_format(self, choice, *_):
+        from lib.one_time_passcode import request_one_time_passcode
+        self.assertEqual(request_one_time_passcode('')[0], '77777')
+        self.assertEqual(set(choice.call_args.args[0]), set('abcdefghijklmnopqrstuvwxyz0123456789'))
+
+
+@override_settings(SITE_ID=1, CACHES=LOCAL_CACHE)
+class PrinterDiscoverySecretTestCase(TestCase):
+    # Everyone here shares one address, as people behind one home or office router do
+    IP = '198.51.100.77'
+    DEVICE_ID = 'd' * 32
+    SECRET = 's' * 64
+
+    def setUp(self):
+        self.clear_discovery_keys()
+        self.user = User.objects.create(email='discovery@example.com')
+        self.browser = Client(REMOTE_ADDR=self.IP)
+        self.browser.force_login(self.user)
+
+    def tearDown(self):
+        self.clear_discovery_keys()
+
+    def clear_discovery_keys(self):
+        from lib.cache import REDIS
+        for key in REDIS.scan_iter(f'printer_discovery:{self.IP}:*'):
+            REDIS.delete(key)
+
+    def poll(self, **extra):
+        device = {'device_id': self.DEVICE_ID, 'host_or_ip': '192.168.1.50', 'port': 80, 'hostname': 'printer', **extra}
+        return Client(REMOTE_ADDR=self.IP).post('/api/v1/octo/unlinked/', device, content_type='application/json')
+
+    def link(self, secret):
+        return self.browser.post('/api/v1/printer_discovery/', {'code': '424242', 'device_id': self.DEVICE_ID, 'device_secret': secret},
+                                 content_type='application/json')
+
+    def secret_hash(self, secret):
+        import hashlib
+        return hashlib.sha256(secret.encode()).hexdigest()
+
+    def test_the_code_reaches_only_polls_with_the_device_secret_hash(self):
+        self.assertEqual(self.poll(device_secret_hash=self.secret_hash(self.SECRET)).status_code, 200)
+        self.assertEqual(self.link(self.SECRET).status_code, 200)
+
+        self.assertEqual(self.poll().status_code, 400)
+        self.assertEqual(self.poll(device_secret_hash=self.secret_hash('another secret')).status_code, 400)
+
+        messages = self.poll(device_secret_hash=self.secret_hash(self.SECRET)).json()['messages']
+        self.assertEqual([m['data']['code'] for m in messages], ['424242'])
+
+    def test_the_hash_is_not_listed(self):
+        self.poll(device_secret_hash=self.secret_hash(self.SECRET))
+        listed = self.browser.get('/api/v1/printer_discovery/').json()
+        self.assertEqual([d['device_id'] for d in listed], [self.DEVICE_ID])
+        self.assertNotIn('device_secret_hash', listed[0])
+
+    def test_a_secret_that_is_not_the_device_secret_is_refused(self):
+        self.poll(device_secret_hash=self.secret_hash(self.SECRET))
+        self.assertEqual(self.link('not the device secret').status_code, 400)
+        self.assertEqual(self.poll(device_secret_hash=self.secret_hash(self.SECRET)).json()['messages'], [])
+
+    def test_a_device_that_sends_no_hash_works_as_before(self):
+        # Plugins released before the hash was added. A later poll with a hash does not take the device over.
+        self.assertEqual(self.poll().status_code, 200)
+        self.assertEqual(self.poll(device_secret_hash=self.secret_hash('attacker')).status_code, 200)
+        self.assertEqual(self.link(self.SECRET).status_code, 200)
+        messages = self.poll().json()['messages']
+        self.assertEqual([m['data'] for m in messages], [{'code': '424242', 'secret': self.SECRET}])

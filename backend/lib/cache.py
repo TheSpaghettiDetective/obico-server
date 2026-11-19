@@ -46,6 +46,10 @@ def disco_to_device_message_queue_key(
     return f'printer_discovery:{client_ip}:messages_to:{device_id}'
 
 
+def disco_device_secret_hash_key(client_ip: str, device_id: str) -> str:
+    return f'printer_discovery:{client_ip}:secret_hash:{device_id}'
+
+
 def one_time_passcode_key(code) -> str:
     return f'otp:{code}'
 
@@ -231,6 +235,27 @@ def disco_update_raw_device_info(
         conn.expire(tordset_key, expiration_secs)
         conn.setex(device_info_key, expiration_secs, raw_deviceinfo)
         conn.execute()
+
+
+def disco_claim_device_secret_hash(
+    client_ip: str,
+    device_id: str,
+    secret_hash: Optional[str],
+    expiration_secs: int
+) -> Optional[str]:
+    # The first announcement for this device is kept: its hash, or '' when it sent none.
+    # The one stored is returned.
+    key = disco_device_secret_hash_key(client_ip, device_id)
+    announced = secret_hash or ''
+    REDIS.set(key, announced, ex=expiration_secs, nx=True)
+    stored = REDIS.get(key)
+    if stored == announced:
+        REDIS.expire(key, expiration_secs)
+    return stored
+
+
+def disco_get_device_secret_hash(client_ip: str, device_id: str) -> Optional[str]:
+    return REDIS.get(disco_device_secret_hash_key(client_ip, device_id))
 
 
 def disco_get_active_raw_device_infos(

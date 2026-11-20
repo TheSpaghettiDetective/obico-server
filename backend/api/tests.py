@@ -334,6 +334,19 @@ class AlertTestCase(TestCase):
     def setUp(self):
         (self.user, self.printer, self.client) = init_data()
 
+    def test_mute_after_the_print_ended_mutes_nothing(self, send_failure_alert):
+        # The alert stays on a page that is still open; the person taps mute
+        # after the print was cancelled (OBICO-SERVER-B2K).
+        self.printer.current_print = None
+        self.printer.save()
+
+        response = self.client.post(
+            '/api/v1/printers/{}/mute_current_print/?mute_alert=true'.format(self.printer.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()['succeeded'])
+        self.assertIsNone(response.json()['printer']['current_print'])
+
     def test_warning_once_and_cancel(self, send_failure_alert):
         alert_if_needed(self.printer, None)
         send_failure_alert.assert_called_once_with(

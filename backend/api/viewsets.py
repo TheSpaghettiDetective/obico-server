@@ -159,6 +159,10 @@ class PrinterViewSet(
     @action(detail=True, methods=['post', 'get'])
     def mute_current_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
+        if not printer.current_print:
+            # The print ended while its alert was still on screen; nothing to
+            # mute, and the status sent back updates that page.
+            return self.send_command_response(printer, False)
         printer.mute_current_print(request.GET.get('mute_alert', 'false').lower() == 'true')
 
         return self.send_command_response(printer, True)

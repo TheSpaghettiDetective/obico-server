@@ -1,0 +1,14 @@
+# AMD GPU deployment for the ML API (MIGraphX execution provider). Use with:
+#   docker compose -f docker-compose.yml -f docker-compose.amd.yml up -d --build
+
+services:
+  ml_api:
+    build:
+      context: ml_api
+      dockerfile: Dockerfile.amd
+    environment:
+      ML_API_GPU_PROVIDER: MIGraphXExecutionProvider
+      ML_API_MIGRAPHX_DEVICE_ID: 0
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri

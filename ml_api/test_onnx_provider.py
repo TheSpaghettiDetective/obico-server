@@ -43,3 +43,38 @@ def test_gpu_provider_must_remain_active(tmp_path, monkeypatch):
             assert 'OpenVINOExecutionProvider was requested but is not active' in str(error)
         else:
             raise AssertionError('a GPU request must not silently become CPU inference')
+
+def test_migraphx_gpu_provider_is_configured(tmp_path, monkeypatch):
+    session = Mock()
+    session.get_providers.return_value = [
+        'MIGraphXExecutionProvider',
+        'CPUExecutionProvider',
+    ]
+    monkeypatch.setenv('ML_API_GPU_PROVIDER', 'MIGraphXExecutionProvider')
+    monkeypatch.setenv('ML_API_MIGRAPHX_DEVICE_ID', '1')
+
+    with patch('lib.onnx.onnxruntime.InferenceSession', return_value=session) as create_session:
+        OnnxNet('model.onnx', _meta_file(tmp_path), use_gpu=True)
+
+    assert create_session.call_args.kwargs['providers'] == [
+        'MIGraphXExecutionProvider',
+        'CPUExecutionProvider',
+    ]
+    assert create_session.call_args.kwargs['provider_options'] == [
+        {'device_id': 1},
+        {},
+    ]
+
+
+def test_migraphx_gpu_provider_must_remain_active(tmp_path, monkeypatch):
+    session = Mock()
+    session.get_providers.return_value = ['CPUExecutionProvider']
+    monkeypatch.setenv('ML_API_GPU_PROVIDER', 'MIGraphXExecutionProvider')
+
+    with patch('lib.onnx.onnxruntime.InferenceSession', return_value=session):
+        try:
+            OnnxNet('model.onnx', _meta_file(tmp_path), use_gpu=True)
+        except RuntimeError as error:
+            assert 'MIGraphXExecutionProvider was requested but is not active' in str(error)
+        else:
+            raise AssertionError('a GPU request must not silently become CPU inference')

@@ -18,7 +18,7 @@ Guides not directly maintained by the Obico Team and Contributors may be outdate
 
 ## Hardware Requirements {#hardware-requirements}
 
-The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. GPU acceleration is optional, but can vastly reduce the power consumption and increase the number of printers the server can handle.
+The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. GPU acceleration is optional, but can vastly reduce the power consumption and increase the number of printers the server can handle. AMD GPU acceleration (ROCm/MIGraphX) is supported on Linux hosts; follow the [AMD GPU guide](advanced/amd-gpu.md) if you plan to use it.
 
 [More details about the hardware requirements for the Obico Server](hardware-requirements.md).
 

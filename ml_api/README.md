@@ -135,6 +135,10 @@ These projects run this server or its model to watch printers. Thank you for bui
 - [Obico ML Home Assistant add-on](https://github.com/nobodyguy/obico_ml_ha_addon), by nobodyguy.
 - [P1S AI print monitor for Home Assistant](https://github.com/Aleksusss/ha-p1s-ai-print-monitor), by Aleksusss.
 - [PrintFarmer](https://github.com/OlyForge3D/PrintFarmer): print farm management.
+- [Print Handy](https://github.com/catduckgnaf/print-handy): slices models sent from Discord, Telegram or Matrix, and watches the camera for failed prints.
+- [print-guard](https://github.com/Servation/print-guard): Windows program that watches a Bambu Lab P1S camera and pauses failing prints.
+- [PrintView](https://github.com/wvfouram/printview): Raspberry Pi 5 service for a Bambu Lab P1S, with local spaghetti detection and timelapses.
+- [bambu-print-guard](https://github.com/noskillor/bambu-print-guard): Home Assistant automation that sends a photo of the failure when a Bambu Lab print goes wrong.
 
 If your project uses Obico's detection, please link back to this page from your README, for example "Failure detection by [Obico](https://github.com/TheSpaghettiDetective/obico-server/tree/release/ml_api)", and open a pull request adding yourself to this list.
 

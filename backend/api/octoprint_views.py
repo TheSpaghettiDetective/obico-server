@@ -36,7 +36,7 @@ from .pagination import GCodeFilePagination
 from lib.file_storage import save_file_obj
 from lib import cache
 from lib.utils import save_pic, get_rotated_pic_url
-from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
+from app.models import Printer, OneTimeVerificationCode, PrinterEvent, GCodeFile
 from notifications.handlers import handler
 from lib.channels import send_status_to_web
 from config.celery import celery_app
@@ -130,15 +130,12 @@ class OctoPrintPicView(APIView):
            False: No detection was performed. img_url was not updated
         '''
 
-        if not printer.should_watch() or not printer.actively_printing():
+        if not printer.actively_printing():
             return False
 
-        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
-
-        if time.time() - prediction.updated_at.timestamp() < settings.MIN_DETECTION_INTERVAL:
+        _, refusal = printer.start_detection()
+        if refusal:
             return False
-
-        cache.print_num_predictions_incr(printer.current_print.id)
 
         # Dynamic import of failure detection module (allows enterprise override)
         fd_module = importlib.import_module(settings.FD_MODULE)

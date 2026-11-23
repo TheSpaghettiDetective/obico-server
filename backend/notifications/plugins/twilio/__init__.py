@@ -5,6 +5,7 @@ from twilio.rest import Client  # type: ignore
 from django.conf import settings
 import os
 from rest_framework.serializers import ValidationError
+from rest_framework.exceptions import PermissionDenied
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -78,8 +79,12 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)
 
+    def user_may_receive_sms(self, user) -> bool:
+        # SMS is a paid-plan feature: real alerts and test messages follow this same rule
+        return user.is_pro
+
     def send_failure_alert(self, context: FailureAlertContext) -> None:
-        if not TWILIO_ENABLED or not context.user.is_pro:
+        if not TWILIO_ENABLED or not self.user_may_receive_sms(context.user):
             LOGGER.warn("Twilio settings are missing. Ignored send requests")
             return
 
@@ -92,6 +97,9 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
         return self.send_sms(body=text, to_number=to_number)
 
     def send_test_message(self, context: TestMessageContext) -> None:
+        if not self.user_may_receive_sms(context.user):
+            raise PermissionDenied()
+
         to_number = self.get_number_from_config(context.config)
         self.send_sms(
             body='Obico App Test Notification - It works!',

@@ -130,6 +130,14 @@ def print_num_predictions_incr(print_id):
         pipe.execute()
 
 
+def printer_detection_claim(printer_id, secs):
+    """Claims the printer's next failure detection for secs. Returns 0 when claimed, or the seconds left on an earlier claim."""
+    key = printer_key_prefix(printer_id) + 'detection_claim'
+    if REDIS.set(key, '1', nx=True, ex=secs):
+        return 0
+    return max(REDIS.ttl(key), 1)
+
+
 def print_num_predictions_get(print_id):
     key = f'{print_key_prefix(print_id)}:pred'
     return int(REDIS.get(key) or 0)
@@ -168,6 +176,11 @@ def print_progress_get(print_id):
 
 def octoprinttunnel_http_response_set(ref, data,
                                       expire_secs=TUNNEL_RSP_EXPIRE_SECS):
+    # The printer echoes back the ref the server issued (tunnelv2_views builds it as "v2.<tunnel id>...").
+    # Any other ref would name another key under the same prefix, such as the tunnel usage counter.
+    if not isinstance(ref, str) or not ref.startswith('v2.'):
+        raise ValueError(f'Tunnel response ref was not issued by the server: {ref!r}')
+
     key = f"{TUNNEL_PREFIX}.{ref}"
     with BREDIS.pipeline() as pipe:
         pipe.lpush(key, bson.dumps(data))

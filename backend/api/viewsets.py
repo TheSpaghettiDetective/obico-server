@@ -8,7 +8,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError, Throttled
+from rest_framework.exceptions import ValidationError, Throttled, PermissionDenied as APIPermissionDenied
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
 from rest_framework.views import APIView
@@ -20,9 +20,10 @@ from django.shortcuts import render
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 import secrets
 from django.core.cache import cache as django_cache
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.pagination import PageNumberPagination
 import requests
+import math
 from lib.client_ip import client_ip as get_client_ip
 import json
 import pytz
@@ -244,6 +245,10 @@ class PrinterViewSet(
             - result.p: Failure probability (0-1)
             - result.temporal_stats: Stats for smoothing detection noise
             - result.detections: List of [confidence, [xc, yc, w, h]] tuples
+
+        Detections follow the same rules as pictures from a printer's agent (Printer.start_detection):
+        403 with the reason when detection is off for the print or the account is out of AI hours,
+        429 when the last detection was less than MIN_DETECTION_INTERVAL ago. Each detection counts toward the print's AI hours.
         """
         printer = get_printer_or_404(pk, request)
 
@@ -255,8 +260,11 @@ class PrinterViewSet(
 
         img = request.FILES['img']
 
-        # Get or create prediction object
-        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
+        prediction, refusal = printer.start_detection()
+        if refusal and refusal.reason:
+            raise APIPermissionDenied(refusal.reason)
+        if refusal:
+            raise Throttled(wait=math.ceil(refusal.wait_secs))
 
         # Call ML API for detection
         pic_id = str(timezone.now().timestamp())
@@ -665,15 +673,19 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
     def update(self, request, *args, **kwargs):
         unanswered_print_shots = self.get_queryset().filter(answered_at__isnull=True)
-        should_credit = len(unanswered_print_shots) == 1 and unanswered_print_shots.first().id == int(kwargs['pk'])
+        last_unanswered = unanswered_print_shots.first() if len(unanswered_print_shots) == 1 else None
+        was_last_unanswered = last_unanswered is not None and last_unanswered.id == int(kwargs['pk'])
 
+        resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
+
+        # Credit only an update that really answered the print's last unanswered shot
+        should_credit = was_last_unanswered and bool(resp.data.get('answer')) and resp.data.get('answered_at') is not None
         if should_credit:
-            _print = unanswered_print_shots.first().print
+            _print = last_unanswered.print
             celery_app.send_task('app_ent.tasks.base_tasks.credit_dh_for_contribution',
                                  args=[request.user.id, 2, f'Credit | Focused Feedback - "{_print.filename[:100]}"', f'ff:p:{_print.id}']
                                  )
 
-        resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
         return Response({'instance': resp.data, 'credited_dhs': 2 if should_credit else 0})
 
 
@@ -804,6 +816,9 @@ class SharedResourceViewSet(mixins.ListModelMixin,
 
     def create(self, request):
         printer = get_printer_or_404(request.GET.get('printer_id'), request)
+        if not request.user.is_pro:
+            # Sharing is a paid-plan feature: the share page and its websockets only serve printers of paid-plan users
+            raise PermissionDenied
         # When the GET API is slow, the user may try to turn on the sharing toggle when it's on already
         SharedResource.objects.get_or_create(printer=printer, defaults={'share_token': hexlify(os.urandom(18)).decode()})
         return self.response_from_printer(request)
@@ -903,6 +918,12 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         return Response({'queued': True})
 
 
+class NotificationTestMessageThrottle(UserRateThrottle):
+    # A test message can be an SMS that the server's Twilio account pays for
+    scope = 'notification_test_message'
+    rate = '10/hour'
+
+
 class NotificationSettingsViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
@@ -937,7 +958,7 @@ class NotificationSettingsViewSet(
 
         return Response({"plugins": loaded})
 
-    @action(detail=True, methods=['post', ])
+    @action(detail=True, methods=['post', ], throttle_classes=[NotificationTestMessageThrottle])
     def send_test_message(self, request, pk):
         obj = self.get_object()
         try:

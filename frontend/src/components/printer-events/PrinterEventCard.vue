@@ -1,9 +1,9 @@
 <template>
   <div class="printer-event-card my-3" :class="tintBorderClass">
-    <div class="printer-event-text" :class="{ link: printerEvent.info_url }" @click="onTextClick">
+    <div class="printer-event-text" :class="{ link: infoUrl }" @click="onTextClick">
       <div class="title font-weight-bold my-2" :class="tintClass">
         {{ eventTitle }}
-        <i v-if="printerEvent.info_url" class="fas fa-external-link-alt"></i>
+        <i v-if="infoUrl" class="fas fa-external-link-alt"></i>
       </div>
       <!-- eslint-disable-next-line vue/no-v-html -->
       <div class="description" v-html="eventText"></div>
@@ -21,6 +21,7 @@
 
 <script>
 import { sanitizeEventText } from '@src/lib/utils'
+import { webUrlOrNull } from '@src/lib/redirect-urls'
 
 export default {
   name: 'PrinterEventCard',
@@ -40,6 +41,9 @@ export default {
     },
     eventText() {
       return sanitizeEventText(this.printerEvent.event_text)
+    },
+    infoUrl() {
+      return webUrlOrNull(this.printerEvent.info_url)
     },
     tintClass() {
       switch (this.printerEvent.event_class) {
@@ -69,8 +73,8 @@ export default {
 
   methods: {
     onTextClick() {
-      if (this.printerEvent.info_url) {
-        window.open(this.printerEvent.info_url, '_blank')
+      if (this.infoUrl) {
+        window.open(this.infoUrl, '_blank')
       }
     },
   },

@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { discoverySecretUrl } from '@src/lib/printer-supplied-urls'
+
 export default {
   name: 'AutoLinkPopup',
   props: {
@@ -71,13 +73,15 @@ export default {
       this.linking = true
       this.gotSecret = null
 
-      this.obicoDiscoveryPopup = window.open(
-        this.destUrl(),
+      const destUrl = this.destUrl()
+      // A device whose address can't be used gets no popup and fails the handshake below
+      this.obicoDiscoveryPopup = destUrl ? window.open(
+        destUrl,
         '_blank',
         'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=100'
-      )
+      ) : null
 
-      if (!this.obicoDiscoveryPopup) {
+      if (destUrl && !this.obicoDiscoveryPopup) {
         this.cancel()
         this.$swal.Prompt.fire({
           icon: 'error',
@@ -104,7 +108,7 @@ export default {
             title: `${this.$i18next.t('Handshake failed!')}`,
             html: `<p>${this.$i18next.t("Please make sure")}:</p>
               <ul>
-                <li>${this.$i18next.t("The OctoPrint you want to link is at {host}:{port}, and it's connected to the same local network as your computer/phone.",{host:this.discoveredPrinter.host_or_ip,port:this.discoveredPrinter.port})}</li>
+                <li>${this.$i18next.t("The OctoPrint you want to link is at {host}:{port}, and it's connected to the same local network as your computer/phone.",{host:this.discoveredPrinter.host_or_ip,port:this.discoveredPrinter.port,interpolation:{escapeValue:true}})}</li>
                 <li>${this.$i18next.t("The version of plugin is 1.8.0 or above.")}</li>
               </ul>`,
             confirmButtonText: `${this.$i18next.t('Okay!')}`,
@@ -120,10 +124,7 @@ export default {
     },
 
     destUrl() {
-      const pluginName = this.discoveredPrinter.agent ? 'obico' : 'thespaghettidetective'
-      return `http://${this.discoveredPrinter.host_or_ip}:${
-        this.discoveredPrinter.port || '80'
-      }/plugin/${pluginName}/grab-discovery-secret?device_id=${this.discoveredPrinter.device_id}`
+      return discoverySecretUrl(this.discoveredPrinter)
     },
 
     switchToManual() {
@@ -140,6 +141,10 @@ export default {
 
     gotWindowMessage(ev) {
       const data = { ...(ev?.data || {}) }
+      // Only the popup this dialog opened may hand over the device secret
+      if (!this.obicoDiscoveryPopup || ev.source !== this.obicoDiscoveryPopup) {
+        return
+      }
       if (this.gotSecret || !this.discoveredPrinter.device_id || !data.device_secret) {
         console.log('Ignored message', ev)
         return

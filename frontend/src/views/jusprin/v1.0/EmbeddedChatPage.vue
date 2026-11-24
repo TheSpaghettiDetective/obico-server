@@ -49,7 +49,7 @@
                   </i18next>
                 </div>
               </div>
-              <VueMarkdown v-else>{{ message.content }}</VueMarkdown>
+              <VueMarkdown v-else :html="false">{{ message.content }}</VueMarkdown>
               <gradient-fadable-container
                 v-if="
                   message.per_override_explanations && message.per_override_explanations.length > 0
@@ -94,7 +94,7 @@
           <div v-if="message.suggested_printing_method" class="message-block mt-2">
             <div class="message-content">
               <div class="pt-2 pb-1">{{ $t("I suggest the following to achieve the best results:") }}</div>
-              <VueMarkdown>{{ message.suggested_printing_method }}</VueMarkdown>
+              <VueMarkdown :html="false">{{ message.suggested_printing_method }}</VueMarkdown>
             </div>
           </div>
           <div v-if="message.jusprinNotification" class="message-block mt-2">
@@ -139,7 +139,7 @@
         <div v-if="thinking" class="message assistant">
           <div class="message-block align-items-center">
             <div class="message-content thinking-animation">
-              <VueMarkdown>_{{ $t("Thinking...") }}_</VueMarkdown>
+              <VueMarkdown :html="false">_{{ $t("Thinking...") }}_</VueMarkdown>
             </div>
           </div>
         </div>

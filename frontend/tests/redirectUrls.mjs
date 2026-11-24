@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 
 // Load this Vue ES module without changing the frontend package's module type.
 const source = await readFile(new URL('../src/lib/redirect-urls.js', import.meta.url), 'utf8')
-const { appOrSameOriginUrlOrNull, sameOriginUrlOrNull } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`)
+const { appOrSameOriginUrlOrNull, sameOriginUrlOrNull, webUrlOrNull } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`)
 const page = 'https://app.obico.io/tunnels/new/?app=OctoApp'
 
 // Where the tunnel authorization page may send the person: an app, or this site
@@ -21,5 +21,13 @@ const tunnelPage = '/tunnels/new/?app=OctoApp&success_redirect_url=greatapp%3A%2
 assert.equal(sameOriginUrlOrNull(tunnelPage, page), tunnelPage)
 for (const url of ['javascript:alert(1)', 'https://attacker.example/', '//attacker.example/x', null]) {
   assert.equal(sameOriginUrlOrNull(url, page), null, String(url))
+}
+
+// Printer event links: the plugins send documentation pages on other sites
+for (const url of ['https://obico.io/docs/user-guides/webcam-feed-is-not-showing/', 'http://192.168.1.5/']) {
+  assert.equal(webUrlOrNull(url), url)
+}
+for (const url of ['javascript:alert(1)', ' JavaScript:alert(1)', 'java\tscript:alert(1)', 'data:text/html,<script>1</script>', 'mobileraker://obico', '/printer_events/', '', null, undefined]) {
+  assert.equal(webUrlOrNull(url), null, String(url))
 }
 console.log('redirect-urls ok')

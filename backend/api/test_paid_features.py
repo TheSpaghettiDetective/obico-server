@@ -332,3 +332,32 @@ class SmsTestMessagePlanTestCase(SimpleTestCase):
     def test_a_paid_plan_account_can_send_an_sms_test(self, send_sms):
         TwillioNotificationPlugin().send_test_message(self.context(is_pro=True))
         send_sms.assert_called_once()
+
+
+@override_settings(SITE_ID=1, CACHES=LOCAL_CACHE)
+@patch('twilio.rest.api.v2010.account.message.MessageList.create')
+class SmsTestMessageAnswerTestCase(TestCase):
+    """The test-message answer says "sent" only when the SMS was handed to Twilio."""
+
+    def press_test(self, config):
+        from django.core.cache import cache as django_cache
+        django_cache.clear()
+        user, client = make_user('sms-answer@example.invalid', is_pro=True)
+        setting = NotificationSetting.objects.create(user=user, name='twilio', config_json=json.dumps(config))
+        return client.post(f'/api/v1/notification_settings/{setting.id}/send_test_message/')
+
+    def test_a_saved_number_without_a_plus_is_not_reported_as_sent(self, create):
+        response = self.press_test({'phone_country_code': '1', 'phone_number': '2025550123'})
+        self.assertEqual((response.status_code, response.json()['status']), (418, 'error'))
+        create.assert_not_called()
+
+    def test_a_cleared_number_is_not_reported_as_sent(self, create):
+        response = self.press_test({'phone_country_code': '', 'phone_number': ''})
+        self.assertEqual((response.status_code, response.json()['status']), (418, 'error'))
+        create.assert_not_called()
+
+    @patch.dict('os.environ', {'TWILIO_ACCOUNT_SID': 'sid', 'TWILIO_AUTH_TOKEN': 'token', 'TWILIO_FROM_NUMBER': '+15550100'})
+    def test_a_good_number_is_sent(self, create):
+        response = self.press_test({'phone_country_code': '+1', 'phone_number': '2025550123'})
+        self.assertEqual((response.status_code, response.json()['status']), (200, 'sent'))
+        create.assert_called_once()

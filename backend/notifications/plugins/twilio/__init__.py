@@ -53,12 +53,13 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
     def get_number_from_config(self, config: Dict) -> str:
         return (config.get('phone_country_code') or '') + (config.get('phone_number') or '')
 
-    def send_sms(self, body: str, to_number: str):
+    def send_sms(self, body: str, to_number: str) -> bool:
+        """Hand the message to Twilio and return True, or return False when the number can't be sent to."""
         try:
             parsed_number = phonenumbers.parse(to_number, None)
         except phonenumbers.NumberParseException:
             LOGGER.warning("SMS skipped because the destination number is invalid")
-            return
+            return False
         country_code = parsed_number.country_code
         # The stored number can keep the national trunk prefix (e.g. +44 07786...), which
         # phonenumbers accepts but Twilio rejects. Always send the normalized E.164 form.
@@ -72,12 +73,13 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
                 "SMS skipped for unsupported destination country code +%s",
                 country_code,
             )
-            return
+            return False
 
         twilio_client = Client(os.environ.get('TWILIO_ACCOUNT_SID'), os.environ.get('TWILIO_AUTH_TOKEN'))
         from_number = os.environ.get('TWILIO_FROM_NUMBER')
 
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)
+        return True
 
     def user_may_receive_sms(self, user) -> bool:
         # SMS is a paid-plan feature: real alerts and test messages follow this same rule
@@ -101,10 +103,13 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
             raise PermissionDenied()
 
         to_number = self.get_number_from_config(context.config)
-        self.send_sms(
+        sent = self.send_sms(
             body='Obico App Test Notification - It works!',
             to_number=to_number,
         )
+        if not sent:
+            # The saved number is missing, unreadable or in a country we no longer send to.
+            raise ValidationError({'phone_number': 'Invalid phone number'})
 
     def validate_phone_country_code(self, phone_country_code: str) -> str:
         if phone_country_code:

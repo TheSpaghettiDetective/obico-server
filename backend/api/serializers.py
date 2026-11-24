@@ -16,6 +16,7 @@ from app.models import (
 )
 
 from lib import channels
+from lib import relay as relay_settings
 from notifications.handlers import handler
 
 
@@ -144,15 +145,19 @@ class PrinterSerializer(BasePrinterSerializer):
     agent_connected = serializers.SerializerMethodField()
     normalized_p = serializers.SerializerMethodField()
     current_print = BasePrintSerializer(read_only=True)
+    relay = serializers.SerializerMethodField()
 
     class Meta:
         model = Printer
         fields = BasePrinterSerializer.Meta.fields + (
-            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p', 'relay',
         )
         read_only_fields = BasePrinterSerializer.Meta.read_only_fields + (
-            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p', 'relay',
         )
+
+    def get_relay(self, obj: Printer) -> dict:
+        return relay_settings.for_viewer(obj)
 
     def get_agent_connected(self, obj: Printer) -> bool:
         return channels.num_ws_connections(channels.octo_group_name(obj.id)) > 0
@@ -378,10 +383,14 @@ class PrinterEventSerializer(serializers.ModelSerializer):
 
 class PublicPrinterSerializer(serializers.ModelSerializer):
     pic = serializers.DictField(read_only=True)
+    relay = serializers.SerializerMethodField()
 
     class Meta:
         model = Printer
-        fields = ('name', 'pic', 'settings')
+        fields = ('name', 'pic', 'settings', 'relay')
+
+    def get_relay(self, obj: Printer) -> dict:
+        return relay_settings.for_shared_viewer(obj)
 
 
 class VerifyCodeInputSerializer(serializers.Serializer):

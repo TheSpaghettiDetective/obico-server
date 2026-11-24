@@ -9,6 +9,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from django.contrib.messages import constants as messages
+from django.core.exceptions import ImproperlyConfigured
 
 
 def get_bool(key, default):
@@ -591,3 +592,17 @@ SYNDICATES = {
 # the old order (account, then header, then host); 'refuse' lets the host alone
 # decide and refuses an account from another syndicate.
 SYNDICATE_MISMATCH = os.environ.get('SYNDICATE_MISMATCH', 'log')
+
+# Video relay (TURN) that clients get in the printer responses (lib/relay.py),
+# so the relay can move without a client release. RELAY_HOST unset means no
+# relay; clients get only STUN. A relay credential is "<expiry unix time>:<name>"
+# and an HMAC of it under RELAY_SECRETS' first secret (coturn's
+# use-auth-secret); the relay has the same secrets. A second secret exists only
+# during a rotation: add the new secret to the relay, put it first here, wait
+# out RELAY_PRINTER_CREDENTIAL_SECS, then remove the old one in both places.
+RELAY_HOST = os.environ.get('RELAY_HOST') or None
+RELAY_SECRETS = [s for s in os.environ.get('RELAY_SECRETS', '').split(',') if s]
+RELAY_VIEWER_CREDENTIAL_SECS = 24 * 3600
+RELAY_PRINTER_CREDENTIAL_SECS = 7 * 24 * 3600
+if RELAY_HOST and not RELAY_SECRETS:
+    raise ImproperlyConfigured('RELAY_HOST is set without RELAY_SECRETS')

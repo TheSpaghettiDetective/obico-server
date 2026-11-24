@@ -35,6 +35,7 @@ from .authentication import PrinterAuthentication
 from .pagination import GCodeFilePagination
 from lib.file_storage import save_file_obj
 from lib import cache
+from lib import relay as relay_settings
 from lib.utils import save_pic, get_rotated_pic_url
 from app.models import Printer, OneTimeVerificationCode, PrinterEvent, GCodeFile
 from notifications.handlers import handler
@@ -165,6 +166,7 @@ class OctoPrinterView(APIView):
                 'id': printer.id,
                 'name': printer.name,
                 'retract_on_pause': printer.retract_on_pause,
+                'relay': relay_settings.for_printer(printer),
             }
         })
 

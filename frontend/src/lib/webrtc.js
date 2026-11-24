@@ -7,7 +7,13 @@ import { syndicate } from '@src/lib/page-context'
 let printerWebRTCUrl = (printerId) => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = (token) => `/ws/share_token/janus/${token}/`
 
-function iceServers(authToken) {
+function iceServers(authToken, relay) {
+  // The server sends the relay to use, with a short-lived credential. Until
+  // it is set up to (no relay entry with a username), use the brand's relay
+  // with the token as before.
+  if (relay?.ice_servers?.some((s) => s.username)) {
+    return relay.ice_servers
+  }
   const turnServer = syndicate()?.turn_server
   // A relay reached over TLS keeps the token, which TURN sends as the user
   // name, off the network in clear. When there is one, the plain relay is not
@@ -61,17 +67,17 @@ export default function WebRTCConnection(streamMode, streamIdToTest) {
     h264WebRTCConn: h264Webrtc,
     mjpegWebRTCConn: mjpegWebrtc,
 
-    openForShareToken(shareToken) {
-      self.connect(printerSharedWebRTCUrl(shareToken), shareToken)
+    openForShareToken(shareToken, relay) {
+      self.connect(printerSharedWebRTCUrl(shareToken), shareToken, relay)
     },
 
-    openForPrinter(printerId, authToken) {
-      self.connect(printerWebRTCUrl(printerId), authToken)
+    openForPrinter(printerId, authToken, relay) {
+      self.connect(printerWebRTCUrl(printerId), authToken, relay)
     },
-    connect(wsUri, token) {
+    connect(wsUri, token, relay) {
       self.initialized = true
-      if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token)
-      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.connect(wsUri, token)
+      if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token, relay)
+      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.connect(wsUri, token, relay)
     },
     disconnect() {
       if (self.h264WebRTCConn) self.h264WebRTCConn.janus.destroy()
@@ -185,8 +191,8 @@ export function DataChannelOnlyWebRTCConnection(streamIdsToTest) {
 
   let baseConnection = BaseWebRTCConnection(streamIdsToTest); // webcamName is null for data channel-only WebRTC
 
-  baseConnection.openForPrinter = function (printerId, authToken) {
-    baseConnection.connect(printerWebRTCUrl(printerId), authToken)
+  baseConnection.openForPrinter = function (printerId, authToken, relay) {
+    baseConnection.connect(printerWebRTCUrl(printerId), authToken, relay)
   };
 
   baseConnection.infoSuccessCallback = function (result, pluginHandle) {
@@ -225,23 +231,23 @@ function BaseWebRTCConnection(streamIdsToTest) {
       self.callbacks = {...self.callbacks, ...callbacks};
     },
 
-    connect(wsUri, token) {
+    connect(wsUri, token, relay) {
       Janus.init({
         debug: 'all',
         callback: () => {
           if (!Janus.isWebrtcSupported()) {
             return
           }
-          self.connectJanusWebSocket(wsUri, token)
+          self.connectJanusWebSocket(wsUri, token, relay)
         },
       })
     },
 
-    connectJanusWebSocket(wsUri, token) {
+    connectJanusWebSocket(wsUri, token, relay) {
       self.janus = new Janus({
         server:
           window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
-        iceServers: iceServers(token),
+        iceServers: iceServers(token, relay),
         ipv6: true,
         success: () => {
           self.janus.attach({

@@ -1200,3 +1200,41 @@ class SignupTestCase(TestCase):
         response = self.sign_up('jordan.whitfield@example.com', 'jordan.whitfield')
         self.assertContains(response, 'The password is too similar to the')
         self.assertFalse(self.created('jordan.whitfield@example.com'))
+
+
+class PasswordChangeAndSetTestCase(TestCase):
+    """The change-password and set-password pages say why a new password was refused."""
+
+    OLD = 'violet-harbor-1847'
+
+    def setUp(self):
+        self.user = User.objects.create_user(email='keeper@example.com', password=self.OLD)
+        EmailAddress.objects.create(user=self.user, email=self.user.email, primary=True, verified=True)
+        self.client = Client()
+        self.client.force_login(self.user)
+
+    def test_change_password_shows_why_the_new_one_was_refused(self):
+        response = self.client.post('/accounts/password/change/', {
+            'oldpassword': self.OLD, 'password1': '48213975', 'password2': '48213975'})
+        self.assertContains(response, 'This password is entirely numeric.')
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(self.OLD))
+
+    def test_change_password_leaves_short_passwords_to_the_server(self):
+        page = self.client.get('/accounts/password/change/')
+        self.assertNotContains(page, 'pattern=')
+        response = self.client.post('/accounts/password/change/', {
+            'oldpassword': self.OLD, 'password1': 'k7#q', 'password2': 'k7#q'})
+        self.assertContains(response, 'at least 8 characters')
+
+    def test_set_password_shows_why_the_new_one_was_refused(self):
+        self.user.set_unusable_password()
+        self.user.save()
+        self.client.force_login(self.user)
+        page = self.client.get('/accounts/password/set/')
+        self.assertNotContains(page, 'pattern=')
+        response = self.client.post('/accounts/password/set/', {
+            'password1': '48213975', 'password2': '48213975'})
+        self.assertContains(response, 'This password is entirely numeric.')
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.has_usable_password())

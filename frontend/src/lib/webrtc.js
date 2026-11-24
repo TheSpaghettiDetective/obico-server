@@ -9,13 +9,23 @@ let printerSharedWebRTCUrl = (token) => `/ws/share_token/janus/${token}/`
 
 function iceServers(authToken) {
   const turnServer = syndicate()?.turn_server
+  // A relay reached over TLS keeps the token, which TURN sends as the user
+  // name, off the network in clear. When there is one, the plain relay is not
+  // offered at all, since the browser would try both.
+  const turnsServer = syndicate()?.turns_server
   const servers = [
     {
       urls: ['stun:stun.l.google.com:19302'],
     }
   ]
 
-  if (turnServer) {
+  if (turnsServer) {
+    servers.push({
+      urls: `turns:${turnsServer}:443?transport=tcp`,
+      credential: authToken,
+      username: authToken,
+    })
+  } else if (turnServer) {
     servers.push(
       {
         urls: `turn:${turnServer}:80?transport=udp`,

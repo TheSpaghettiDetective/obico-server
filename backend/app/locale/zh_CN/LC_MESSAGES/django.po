@@ -616,8 +616,8 @@ msgstr "我们绝不会与他人分享您的电子邮件。"
 
 #: app/templates/account/signup.html:107
 #: app/templates/mobile/account/signup.html:101
-msgid "At least 6 characters. And be secure, please."
-msgstr "至少 6 个字符。请确保安全。"
+msgid "At least 8 characters. And be secure, please."
+msgstr "至少 8 个字符。请确保安全。"
 
 #: app/templates/account/signup.html:131
 #: app/templates/mobile/account/signup.html:125
@@ -650,8 +650,8 @@ msgid "you are already logged in as %(user_display)s."
 msgstr "您已作为 %(user_display)s 登录。"
 
 #: app/templates/account/snippets/password_change_form.html:4
-msgid "Passwords must be At least 6 characters. And be secure, please."
-msgstr "密码必须至少为 6 个字符。并请确保安全。"
+msgid "Passwords must be At least 8 characters. And be secure, please."
+msgstr "密码必须至少为 8 个字符。并请确保安全。"
 
 #: app/templates/account/verification_sent.html:5
 #: app/templates/account/verification_sent.html:9

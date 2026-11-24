@@ -1139,3 +1139,64 @@ class OAuthTokenScopeTestCase(TestCase):
         self.assertNotEqual(resp.status_code, 302)
         self.assertIsNone(client.session.get('_auth_user_id'))
         self.assertEqual(client.get('/api/v1/users/me/').status_code, 403)
+
+
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+class SignupTestCase(TestCase):
+    """Sign-up on the web and in the mobile apps: reCAPTCHA when the server has
+    a key, and the password rules."""
+
+    PASSWORD = 'violet-harbor-1847'
+
+    def setUp(self):
+        self.base, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'base'})
+        self.site, _ = Site.objects.get_or_create(domain='testserver', defaults={'name': 'testserver'})
+        SiteSyndicate.objects.update_or_create(site=self.site, defaults={'syndicate': self.base})
+        # Django caches the site per host; another test's rolled-back site would linger.
+        Site.objects.clear_cache()
+        self.addCleanup(Site.objects.clear_cache)
+
+    def sign_up(self, email, password, **extra):
+        return Client().post('/mobile/auth/signup/', {
+            'email': email, 'password1': password, 'password2': password, **extra})
+
+    def created(self, email):
+        return User.objects.filter(email=email).exists()
+
+    @override_settings(RECAPTCHA_SITE_KEY=None, RECAPTCHA_SECRET_KEY=None, ACCOUNT_FORMS={})
+    def test_without_a_recaptcha_key_mobile_sign_up_needs_none(self):
+        page = Client().get('/mobile/auth/signup/')
+        self.assertNotContains(page, 'recaptcha/api.js')
+        response = self.sign_up('new@example.com', self.PASSWORD)
+        self.assertRedirects(response, '/mobile/auth/fetch/', fetch_redirect_response=False)
+        self.assertTrue(self.created('new@example.com'))
+
+    @override_settings(RECAPTCHA_SITE_KEY='site-key', RECAPTCHA_SECRET_KEY='secret-key',
+                       ACCOUNT_FORMS={'signup': 'app.forms.RecaptchaSignupForm'})
+    def test_with_a_recaptcha_key_mobile_sign_up_needs_a_token(self):
+        page = Client().get('/mobile/auth/signup/')
+        self.assertContains(page, 'recaptcha/api.js?render=site-key')
+        self.assertContains(page, 'name="recaptcha_token"')
+
+        response = self.sign_up('bot@example.com', self.PASSWORD)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.created('bot@example.com'))
+
+        answer = Response()
+        answer.status_code = 200
+        answer._content = b'{"success": true, "action": "signup_form"}'
+        with patch('app.forms.requests.post', return_value=answer) as verify:
+            response = self.sign_up('person@example.com', self.PASSWORD, recaptcha_token='token-from-google')
+        self.assertEqual(verify.call_args.kwargs['data'], {'response': 'token-from-google', 'secret': 'secret-key'})
+        self.assertRedirects(response, '/mobile/auth/fetch/', fetch_redirect_response=False)
+        self.assertTrue(self.created('person@example.com'))
+
+    def test_an_all_number_password_is_refused(self):
+        response = self.sign_up('digits@example.com', '48213975')
+        self.assertContains(response, 'This password is entirely numeric.')
+        self.assertFalse(self.created('digits@example.com'))
+
+    def test_a_password_like_the_email_address_is_refused(self):
+        response = self.sign_up('jordan.whitfield@example.com', 'jordan.whitfield')
+        self.assertContains(response, 'The password is too similar to the')
+        self.assertFalse(self.created('jordan.whitfield@example.com'))

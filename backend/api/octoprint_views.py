@@ -42,7 +42,7 @@ from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import (
     VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer,
-    GCodeFileSerializer, AgentGCodeFileListSerializer, AgentGCodeFileUpdateSerializer,
+    AgentGCodeFileSerializer, AgentGCodeFileListSerializer, AgentGCodeFileUpdateSerializer,
 )
 from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -421,7 +421,7 @@ class GCodeFileView(
 
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
-    serializer_class = GCodeFileSerializer
+    serializer_class = AgentGCodeFileSerializer
     pagination_class = GCodeFilePagination
 
     def get_serializer_class(self):

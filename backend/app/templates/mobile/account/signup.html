@@ -48,6 +48,7 @@
         {% endfor %}
         <form class="signup form-signup" id="signup_form" method="POST">
           {% csrf_token %}
+          <input type="hidden" name="recaptcha_token" id='recaptcha'>
           {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
           <div class="input-group">
             <div class="input-group-prepend">
@@ -84,7 +85,7 @@
               {% endfor %}
             </small>
             {% else %}
-            <small id="password1Help" class="form-text">{% trans "At least 6 characters. And be secure, please." %}</small>
+            <small id="password1Help" class="form-text">{% trans "At least 8 characters. And be secure, please." %}</small>
             {% endif %}
           </div>
           <div class="input-group">
@@ -145,4 +146,20 @@
 {% block page_js %}
 {{ block.super }}
 <script src="{% static 'js/signup.js' %}"></script>
+{% if settings.RECAPTCHA_SITE_KEY %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ settings.RECAPTCHA_SITE_KEY }}"></script>
+<script>
+  grecaptcha.ready(function() {
+      $('#signup_form').submit(function(e){
+          var form = this;
+          e.preventDefault()
+          grecaptcha.execute('{{ settings.RECAPTCHA_SITE_KEY }}', {action: 'signup_form'}).then(function(token) {
+              $('#recaptcha').val(token)
+              form.submit()
+          });
+      })
+
+  });
+</script>
+{% endif %}
 {% endblock page_js %}

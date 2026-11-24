@@ -313,6 +313,26 @@ class GCodeFileListingTestCase(TestCase):
         self.assertEqual(patch.json()['metadata_json'], '{"estimated_time": 90}')
         self.assertIn('print_set', patch.json())
 
+    def test_agent_can_set_only_a_bare_file_name(self):
+        auth = {'HTTP_AUTHORIZATION': f'Token {self.printer.auth_token}'}
+        data = {
+            'filename': 'cube.gcode', 'safe_filename': '../models/cube.gcode',
+            'agent_signature': 'ts:cube', 'num_bytes': 123, 'url': '',
+        }
+        created = self.client.post('/api/v1/octo/g_code_files/', data, **auth)
+        self.assertEqual(created.status_code, 201)
+        self.assertEqual(created.json()['safe_filename'], 'cube.gcode')
+        file_url = f'/api/v1/octo/g_code_files/{created.json()["id"]}/'
+        for sent, kept in (('..\\..\\cube2.gcode', 'cube2.gcode'), ('cube3.gcode', 'cube3.gcode')):
+            with self.subTest(sent=sent):
+                patch = self.client.patch(file_url, {'safe_filename': sent}, content_type='application/json', **auth)
+                self.assertEqual(patch.status_code, 200)
+                self.assertEqual(GCodeFile.objects.get(id=created.json()['id']).safe_filename, kept)
+        for sent in ('..', 'models/..'):
+            with self.subTest(sent=sent):
+                patch = self.client.patch(file_url, {'safe_filename': sent}, content_type='application/json', **auth)
+                self.assertEqual(patch.status_code, 400)
+
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"
 
 def status_msg(print_ts, filename, event):

@@ -3,6 +3,7 @@ from rest_framework.reverse import reverse
 from rest_framework.relations import PrimaryKeyRelatedField
 from django.conf import settings
 import re
+from pathlib import PureWindowsPath
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
 import phonenumbers
@@ -236,7 +237,18 @@ class GCodeFileSerializer(BaseGCodeFileSerializer):
     print_set = BasePrintSerializer(many=True, read_only=True)
 
 
-class AgentGCodeFileUpdateSerializer(GCodeFileSerializer):
+class AgentGCodeFileSerializer(GCodeFileSerializer):
+    """The printer saves a downloaded file under safe_filename, so a printer
+    can set only a bare file name: any folder part, '/' or '\\', is dropped."""
+
+    def validate_safe_filename(self, safe_filename):
+        name = PureWindowsPath(safe_filename).name
+        if name in ('', '.', '..'):
+            raise serializers.ValidationError('Not a file name.')
+        return name
+
+
+class AgentGCodeFileUpdateSerializer(AgentGCodeFileSerializer):
     """An agent updating a file record cannot change where the file and its thumbnails are stored."""
 
     class Meta(BaseGCodeFileSerializer.Meta):

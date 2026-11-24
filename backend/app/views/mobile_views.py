@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from allauth.account.views import SignupView
-from allauth.account.forms import SignupForm
 
 from allauth.core.exceptions import ImmediateHttpResponse
 from django.core.exceptions import PermissionDenied
@@ -37,9 +36,6 @@ class MobileLoginView(SocialAccountAwareLoginView):
 
 class MobileSignupView(SignupView):
     template_name = 'mobile/account/signup.html'
-
-    def get_form_class(self):
-        return SignupForm
 
     def get_success_url(self):
         return '/mobile/auth/fetch/'

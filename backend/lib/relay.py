@@ -29,11 +29,11 @@ def printer_urls(host):
     return [f'turn:{host}:80?transport=tcp']
 
 
-def _ice_servers(urls_for_host, name, lifetime_secs):
+def _ice_servers(urls_for_host, name):
     servers = [{'urls': STUN_URLS}]
     expires_at = None
     if settings.RELAY_HOST:
-        expires_at = int(time.time()) + lifetime_secs
+        expires_at = int(time.time()) + settings.RELAY_CREDENTIAL_SECS
         username = f'{expires_at}:{name}'
         servers.append({
             'urls': urls_for_host(settings.RELAY_HOST),
@@ -48,12 +48,12 @@ def _ice_servers(urls_for_host, name, lifetime_secs):
 # viewers of its shared link.
 
 def for_printer(printer):
-    return _ice_servers(printer_urls, f'p{printer.id}', settings.RELAY_PRINTER_CREDENTIAL_SECS)
+    return _ice_servers(printer_urls, f'p{printer.id}')
 
 
 def for_viewer(printer):
-    return _ice_servers(viewer_urls, f'v{printer.id}', settings.RELAY_VIEWER_CREDENTIAL_SECS)
+    return _ice_servers(viewer_urls, f'v{printer.id}')
 
 
 def for_shared_viewer(printer):
-    return _ice_servers(viewer_urls, f's{printer.id}', settings.RELAY_VIEWER_CREDENTIAL_SECS)
+    return _ice_servers(viewer_urls, f's{printer.id}')

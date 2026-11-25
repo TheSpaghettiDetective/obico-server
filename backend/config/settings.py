@@ -599,10 +599,12 @@ SYNDICATE_MISMATCH = os.environ.get('SYNDICATE_MISMATCH', 'log')
 # and an HMAC of it under RELAY_SECRETS' first secret (coturn's
 # use-auth-secret); the relay has the same secrets. A second secret exists only
 # during a rotation: add the new secret to the relay, put it first here, wait
-# out RELAY_PRINTER_CREDENTIAL_SECS, then remove the old one in both places.
+# out RELAY_CREDENTIAL_SECS, then remove the old one in both places.
 RELAY_HOST = os.environ.get('RELAY_HOST') or None
 RELAY_SECRETS = [s for s in os.environ.get('RELAY_SECRETS', '').split(',') if s]
-RELAY_VIEWER_CREDENTIAL_SECS = 24 * 3600
-RELAY_PRINTER_CREDENTIAL_SECS = 7 * 24 * 3600
+# One lifetime for printers and viewers. Printers renew 24 hours before the
+# expiry and restart their video to do it, and released plugins keep that
+# window forever, so the lifetime has to stay well above a day.
+RELAY_CREDENTIAL_SECS = 7 * 24 * 3600
 if RELAY_HOST and not RELAY_SECRETS:
     raise ImproperlyConfigured('RELAY_HOST is set without RELAY_SECRETS')

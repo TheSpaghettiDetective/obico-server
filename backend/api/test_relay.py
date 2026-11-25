@@ -44,28 +44,28 @@ class RelayInPrinterResponsesTestCase(TestCase):
         SharedResource.objects.create(printer=self.printer, share_token='relay-share-token')
         return PublicPrinterSerializer(self.printer).data['relay']
 
-    def assert_relay(self, got, urls, name, lifetime_secs):
+    def assert_relay(self, got, urls, name):
         self.assertEqual(got['ice_servers'][0], {'urls': STUN})
         server = got['ice_servers'][1]
         self.assertEqual(server['urls'], urls)
         expires_at, got_name = server['username'].split(':')
         self.assertEqual(got_name, name)
         self.assertEqual(int(expires_at), got['expires_at'])
-        self.assertAlmostEqual(got['expires_at'], time.time() + lifetime_secs, delta=60)
+        self.assertAlmostEqual(got['expires_at'], time.time() + 7 * 24 * 3600, delta=60)
         # Signed with the first secret, which is what the relay checks first.
         self.assertEqual(server['credential'], relay.credential_password(server['username'], 'test-secret-one'))
 
     @override_settings(**RELAY_ON)
     def test_the_printer_gets_its_own_tcp_relay_for_a_week(self):
-        self.assert_relay(self.plugin_relay(), PRINTER_URLS, f'p{self.printer.id}', 7 * 24 * 3600)
+        self.assert_relay(self.plugin_relay(), PRINTER_URLS, f'p{self.printer.id}')
 
     @override_settings(**RELAY_ON)
-    def test_the_owners_page_and_app_get_the_viewer_relay_for_a_day(self):
-        self.assert_relay(self.owner_relay(), VIEWER_URLS, f'v{self.printer.id}', 24 * 3600)
+    def test_the_owners_page_and_app_get_the_viewer_relay_for_a_week(self):
+        self.assert_relay(self.owner_relay(), VIEWER_URLS, f'v{self.printer.id}')
 
     @override_settings(**RELAY_ON)
     def test_a_shared_link_viewer_gets_a_name_of_its_own(self):
-        self.assert_relay(self.shared_relay(), VIEWER_URLS, f's{self.printer.id}', 24 * 3600)
+        self.assert_relay(self.shared_relay(), VIEWER_URLS, f's{self.printer.id}')
 
     @override_settings(**RELAY_ON)
     def test_no_response_carries_the_printer_token_as_a_relay_credential(self):

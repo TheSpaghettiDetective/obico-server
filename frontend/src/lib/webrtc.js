@@ -67,17 +67,18 @@ export default function WebRTCConnection(streamMode, streamIdToTest) {
     h264WebRTCConn: h264Webrtc,
     mjpegWebRTCConn: mjpegWebrtc,
 
-    openForShareToken(shareToken, relay) {
-      self.connect(printerSharedWebRTCUrl(shareToken), shareToken, relay)
+    // getRelay returns the printer's relay as the page has it now (printer.relay).
+    openForShareToken(shareToken, getRelay) {
+      self.connect(printerSharedWebRTCUrl(shareToken), shareToken, getRelay)
     },
 
-    openForPrinter(printerId, authToken, relay) {
-      self.connect(printerWebRTCUrl(printerId), authToken, relay)
+    openForPrinter(printerId, authToken, getRelay) {
+      self.connect(printerWebRTCUrl(printerId), authToken, getRelay)
     },
-    connect(wsUri, token, relay) {
+    connect(wsUri, token, getRelay) {
       self.initialized = true
-      if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token, relay)
-      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.connect(wsUri, token, relay)
+      if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token, getRelay)
+      if (self.mjpegWebRTCConn) self.mjpegWebRTCConn.connect(wsUri, token, getRelay)
     },
     disconnect() {
       if (self.h264WebRTCConn) self.h264WebRTCConn.janus.destroy()
@@ -191,8 +192,8 @@ export function DataChannelOnlyWebRTCConnection(streamIdsToTest) {
 
   let baseConnection = BaseWebRTCConnection(streamIdsToTest); // webcamName is null for data channel-only WebRTC
 
-  baseConnection.openForPrinter = function (printerId, authToken, relay) {
-    baseConnection.connect(printerWebRTCUrl(printerId), authToken, relay)
+  baseConnection.openForPrinter = function (printerId, authToken, getRelay) {
+    baseConnection.connect(printerWebRTCUrl(printerId), authToken, getRelay)
   };
 
   baseConnection.infoSuccessCallback = function (result, pluginHandle) {
@@ -231,23 +232,28 @@ function BaseWebRTCConnection(streamIdsToTest) {
       self.callbacks = {...self.callbacks, ...callbacks};
     },
 
-    connect(wsUri, token, relay) {
+    connect(wsUri, token, getRelay) {
       Janus.init({
         debug: 'all',
         callback: () => {
           if (!Janus.isWebrtcSupported()) {
             return
           }
-          self.connectJanusWebSocket(wsUri, token, relay)
+          self.connectJanusWebSocket(wsUri, token, getRelay)
         },
       })
     },
 
-    connectJanusWebSocket(wsUri, token, relay) {
+    connectJanusWebSocket(wsUri, token, getRelay) {
       self.janus = new Janus({
         server:
           window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
-        iceServers: iceServers(token, relay),
+        // Janus calls this for each new peer connection. The video restarts
+        // with a new one each time the tab is shown again, and the relay
+        // credential the page loaded with expires, so read the printer's relay
+        // as the page has it now. The server sends the printer, with a fresh
+        // credential, on every update.
+        iceServers: () => iceServers(token, getRelay()),
         ipv6: true,
         success: () => {
           self.janus.attach({

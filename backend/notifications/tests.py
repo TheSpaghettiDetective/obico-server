@@ -44,6 +44,9 @@ class TwilioCountryCodeTestCase(TestCase):
         mock_client_cls.assert_not_called()
 
 
+# A deployment's TWILIO_COUNTRY_CODES may leave out the UK (+44), whose numbers these tests
+# send to; no restriction keeps them about the number's form alone.
+@override_settings(TWILIO_COUNTRY_CODES=[])
 class TwilioNumberNormalizationTestCase(TestCase):
 
     def setUp(self):

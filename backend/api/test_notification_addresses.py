@@ -21,9 +21,9 @@ DNS = {
 REAL_GETADDRINFO = socket.getaddrinfo
 
 
-def fake_getaddrinfo(host, *args, **kwargs):
-    if host in ('redis', 'db'):  # the test's own services
-        return REAL_GETADDRINFO(host, *args, **kwargs)
+def fake_getaddrinfo(host, port=None, *args, **kwargs):
+    if host in ('redis', 'db'):  # the test's own services, where they run under those names
+        return REAL_GETADDRINFO(host, port, *args, **kwargs)
     try:
         socket.inet_pton(socket.AF_INET, host)
         addr = host
@@ -31,7 +31,8 @@ def fake_getaddrinfo(host, *args, **kwargs):
         if host not in DNS:
             raise socket.gaierror(socket.EAI_NONAME, 'Name or service not known')
         addr = DNS[host]
-    return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (addr, 0))]
+    # The port asked for: the test's Redis can be at localhost, and has to be reachable there.
+    return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (addr, int(port or 0)))]
 
 
 def fake_gethostbyname(host):

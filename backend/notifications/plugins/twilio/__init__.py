@@ -147,7 +147,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
             else:
                 raise ValidationError('Both phone_number and phone_country_code need to be present.')
 
-        return data
+        return {k: data[k] for k in ('phone_country_code', 'phone_number') if k in data}
 
 
 def __load_plugin__():

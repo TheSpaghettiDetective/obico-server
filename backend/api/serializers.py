@@ -338,22 +338,28 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
     def validate_name(self, name):
         name = name.strip()
-        plugin = handler.notification_plugin_by_name(name)
-        if not plugin:
-            raise Exception(f'Notification Plugin "{name}" is not loaded')
+        if not handler.notification_plugin_by_name(name):
+            raise serializers.ValidationError(f'Notification Plugin "{name}" is not loaded')
 
         return name
 
     def validate(self, data):
-        name = data['name']
+        # The settings that will be stored are checked by the plugin of the type
+        # that will be stored: on create, on a full update, when the settings
+        # change and when the type changes. A request that changes neither, such
+        # as switching one event on, leaves settings that were checked when saved.
+        name = data.get('name', self.instance.name if self.instance else None)
+        if not name:
+            raise serializers.ValidationError({'name': 'This field is required.'})
         plugin = handler.notification_plugin_by_name(name)
-        if not plugin:
-            raise Exception(f'Notification Plugin "{name}" is not loaded')
 
-        need_to_validate_config = (not self.partial) or 'config' in data
-        if need_to_validate_config:
+        type_changes = self.instance is None or name != self.instance.name
+        if (not self.partial) or type_changes or 'config' in data:
+            config = data['config'] if 'config' in data else (self.instance.config if self.instance else {})
+            if any(value is not None and not isinstance(value, (str, int, float, bool)) for value in config.values()):
+                raise serializers.ValidationError({'config': 'Each setting must be text, a number, or true or false.'})
             try:
-                data['config'] = plugin.instance.validate_config(data['config'])
+                data['config'] = plugin.instance.validate_config(config)
             except serializers.ValidationError as e:
                 raise serializers.ValidationError({'config': e.detail})
 
@@ -361,7 +367,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
     def save(self):
         config = self.validated_data.pop('config', None)
-        if config:
+        if config is not None:
             self.validated_data['config_json'] = json.dumps(config)
 
         # HACK: For some reason sqlite will set created_at to None on a PATCH call and results in an exception. Force it now()

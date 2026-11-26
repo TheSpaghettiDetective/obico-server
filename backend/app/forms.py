@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 
 from allauth.account.forms import ResetPasswordForm
 from allauth.account.adapter import get_adapter
-from app.accounts import filter_users_by_email_and_syndicate
+from app.accounts import users_by_email
 from lib.syndicate import syndicate_from_request
 
 
@@ -32,7 +32,7 @@ class SocialAccountAwareLoginForm(LoginForm):
             if err.message == self.error_messages['email_password_mismatch']:
                 email = self.user_credentials().get('email', None)
                 if email is not None:
-                    users = filter_users_by_email_and_syndicate(email, syndicate_from_request(self.request))
+                    users = users_by_email(email, syndicate_from_request(self.request))
                     if any(not user.has_usable_password() and user.socialaccount_set.exists() for user in users):
                         self.no_password_yet = True
             raise err
@@ -78,7 +78,7 @@ class SyndicateSpecificResetPasswordForm(ResetPasswordForm):
         email = self.cleaned_data["email"]
         email = get_adapter().clean_email(email)
         syndicate = syndicate_from_request(self.request)
-        self.users = filter_users_by_email_and_syndicate(email, syndicate, is_active=True, prefer_verified=True)
+        self.users = users_by_email(email, syndicate, is_active=True)
         if not self.users:
             raise get_adapter().validation_error("unknown_email")
         return self.cleaned_data["email"]
@@ -89,7 +89,7 @@ class SyndicateSpecificAddEmailForm(AddEmailForm):
         syndicate = self.user.syndicate  # Assuming the user has a syndicate attribute
 
         # Check if a user with this email already exists in the same syndicate
-        if filter_users_by_email_and_syndicate(email, syndicate):
+        if users_by_email(email, syndicate):
             raise forms.ValidationError(_("A user is already registered with this email address."))
 
         return email

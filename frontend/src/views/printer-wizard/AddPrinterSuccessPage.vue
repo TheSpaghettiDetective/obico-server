@@ -93,6 +93,7 @@ import axios from 'axios'
 import PageLayout from '@src/components/PageLayout.vue'
 import SavingAnimation from '@src/components/SavingAnimation.vue'
 import urls from '@config/server-urls'
+import { sameOriginUrlOrNull } from '@src/lib/redirect-urls'
 
 export default {
   components: {
@@ -115,7 +116,11 @@ export default {
   },
   computed: {
     redirectToTunnelCreation() {
-      return new URLSearchParams(window.location.search).get('redirectToTunnelCreation')
+      // Always a path on this site, made by the tunnel authorization page
+      return sameOriginUrlOrNull(
+        new URLSearchParams(window.location.search).get('redirectToTunnelCreation'),
+        window.location.href
+      )
     },
     editPrinterUrl() {
       return `/printers/${this.verifiedPrinter.id}/`

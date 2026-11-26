@@ -11,7 +11,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from safedelete.models import *
 from django.contrib.sites.models import Site
 
-from app.models import GCodeFile, GCodeFolder, OneTimeVerificationCode, Printer, Print, User
+from app.models import GCodeFile, GCodeFolder, OneTimeVerificationCode, Printer, Print, User, SiteSyndicate
 from app.models.syndicate_models import Syndicate
 from api.octoprint_views import *
 from api.octoprint_messages import process_printer_status
@@ -23,7 +23,7 @@ def setup_syndicate():
     """Create a syndicate and associate it with a site for tests."""
     syndicate, _ = Syndicate.objects.get_or_create(id=1, defaults={'name': 'test'})
     site, _ = Site.objects.get_or_create(id=1, defaults={'domain': 'testserver', 'name': 'testserver'})
-    syndicate.sites.add(site)
+    SiteSyndicate.objects.update_or_create(site=site, defaults={'syndicate': syndicate})
     return syndicate
 
 
@@ -313,6 +313,26 @@ class GCodeFileListingTestCase(TestCase):
         self.assertEqual(patch.json()['metadata_json'], '{"estimated_time": 90}')
         self.assertIn('print_set', patch.json())
 
+    def test_agent_can_set_only_a_bare_file_name(self):
+        auth = {'HTTP_AUTHORIZATION': f'Token {self.printer.auth_token}'}
+        data = {
+            'filename': 'cube.gcode', 'safe_filename': '../models/cube.gcode',
+            'agent_signature': 'ts:cube', 'num_bytes': 123, 'url': '',
+        }
+        created = self.client.post('/api/v1/octo/g_code_files/', data, **auth)
+        self.assertEqual(created.status_code, 201)
+        self.assertEqual(created.json()['safe_filename'], 'cube.gcode')
+        file_url = f'/api/v1/octo/g_code_files/{created.json()["id"]}/'
+        for sent, kept in (('..\\..\\cube2.gcode', 'cube2.gcode'), ('cube3.gcode', 'cube3.gcode')):
+            with self.subTest(sent=sent):
+                patch = self.client.patch(file_url, {'safe_filename': sent}, content_type='application/json', **auth)
+                self.assertEqual(patch.status_code, 200)
+                self.assertEqual(GCodeFile.objects.get(id=created.json()['id']).safe_filename, kept)
+        for sent in ('..', 'models/..'):
+            with self.subTest(sent=sent):
+                patch = self.client.patch(file_url, {'safe_filename': sent}, content_type='application/json', **auth)
+                self.assertEqual(patch.status_code, 400)
+
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"
 
 def status_msg(print_ts, filename, event):
@@ -333,6 +353,19 @@ def status_msg_without_event(print_ts, filename):
 class AlertTestCase(TestCase):
     def setUp(self):
         (self.user, self.printer, self.client) = init_data()
+
+    def test_mute_after_the_print_ended_mutes_nothing(self, send_failure_alert):
+        # The alert stays on a page that is still open; the person taps mute
+        # after the print was cancelled (OBICO-SERVER-B2K).
+        self.printer.current_print = None
+        self.printer.save()
+
+        response = self.client.post(
+            '/api/v1/printers/{}/mute_current_print/?mute_alert=true'.format(self.printer.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()['succeeded'])
+        self.assertIsNone(response.json()['printer']['current_print'])
 
     def test_warning_once_and_cancel(self, send_failure_alert):
         alert_if_needed(self.printer, None)
@@ -745,6 +778,13 @@ class CapImageSizeTestCase(SimpleTestCase):
         with self.assertRaises(ValidationError):
             cap_image_size(self.upload(data[:len(data) // 2]))
 
+    def test_jpeg_with_end_marker_but_no_scan_data_is_rejected(self):
+        data = make_jpeg()
+        headers_only = data[:data.index(b'\xff\xda')] + b'\xff\xd9'
+
+        with self.assertRaises(ValidationError):
+            cap_image_size(self.upload(headers_only))
+
 
 @override_settings(SITE_ID=1)
 class ParentFolderFilterTestCase(TestCase):
@@ -898,3 +938,186 @@ class PrinterOwnershipTestCase(TestCase):
 
         self.assertIn('auth_token', data)
         self.assertNotIn('auth_token', data['current_print']['printer'])
+
+
+
+@override_settings(SITE_ID=1)
+class GCodeFileAddressTestCase(TestCase):
+    """The file and thumbnail addresses of a G-code file are written by the server only."""
+
+    ADDRESS_FIELDS = ('url', 'thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url')
+
+    def setUp(self):
+        (self.user, self.printer, self.client) = init_data()
+        self.printer.auth_token = 'gcode-address-test-token'
+        self.printer.save()
+        self.stored = GCodeFile.objects.create(
+            user=self.user, filename='a.gcode', safe_filename='a.gcode',
+            url='/media/tsd-gcodes/1/1?digest=x', thumbnail1_url='/media/tsd-timelapses/1.png?digest=x')
+        self.planted = {field: 'http://anything.example/media//etc/passwd' for field in self.ADDRESS_FIELDS}
+
+    def test_web_create_ignores_addresses(self):
+        response = self.client.post('/api/v1/g_code_files/', {'filename': 'p.gcode', **self.planted},
+                                    content_type='application/json')
+
+        self.assertEqual(response.status_code, 201)
+        created = GCodeFile.objects.get(id=response.json()['id'])
+        for field in self.ADDRESS_FIELDS:
+            self.assertIsNone(getattr(created, field))
+
+    def test_web_update_ignores_addresses(self):
+        response = self.client.patch(f'/api/v1/g_code_files/{self.stored.id}/', {'filename': 'b.gcode', **self.planted},
+                                     content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.stored.refresh_from_db()
+        self.assertEqual(self.stored.filename, 'b.gcode')
+        self.assertEqual(self.stored.url, '/media/tsd-gcodes/1/1?digest=x')
+        self.assertEqual(self.stored.thumbnail1_url, '/media/tsd-timelapses/1.png?digest=x')
+        self.assertIsNone(self.stored.thumbnail2_url)
+
+    def test_agent_update_ignores_addresses_but_records_where_it_stored_the_file(self):
+        # What OctoPrint-Obico and moonraker-obico send after downloading a file to print
+        response = self.client.patch(
+            f'/api/v1/octo/g_code_files/{self.stored.id}/',
+            {'agent_signature': 'md5:abc', 'safe_filename': 'a_1.gcode', **self.planted},
+            content_type='application/json', HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}')
+
+        self.assertEqual(response.status_code, 200)
+        self.stored.refresh_from_db()
+        self.assertEqual(self.stored.agent_signature, 'md5:abc')
+        self.assertEqual(self.stored.safe_filename, 'a_1.gcode')
+        self.assertEqual(self.stored.url, '/media/tsd-gcodes/1/1?digest=x')
+        self.assertEqual(self.stored.thumbnail1_url, '/media/tsd-timelapses/1.png?digest=x')
+        self.assertIsNone(self.stored.thumbnail2_url)
+
+
+LOCAL_CACHE = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
+
+
+@override_settings(SITE_ID=1, CACHES=LOCAL_CACHE)
+class LinkCodeGuessingTestCase(TestCase):
+    """Wrong 6-digit codes and wrong one-time passcodes are limited per client
+    and per account, not per guessed value."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        (self.user, self.printer, self.client) = init_data()
+
+    def verify(self, code, ip='198.51.100.7'):
+        return Client(REMOTE_ADDR=ip).get(f'/api/v1/octo/verify/?code={code}')
+
+    def test_verify_answers_instead_of_crashing(self):
+        self.assertEqual(self.verify('123456').status_code, 404)
+
+    def test_a_client_trying_different_codes_is_stopped(self):
+        OneTimeVerificationCode.objects.create(user=self.user, code='424242')
+        for n in range(VERIFY_CODE_MAX_FAILURES_PER_CLIENT):
+            self.assertEqual(self.verify(f'{100000 + n}').status_code, 404)
+        self.assertEqual(self.verify('424242').status_code, 429)
+        self.assertEqual(self.verify('424242', ip='198.51.100.8').status_code, 200)
+
+    def test_a_success_does_not_clear_the_failures(self):
+        OneTimeVerificationCode.objects.create(user=self.user, code='111111')
+        for n in range(VERIFY_CODE_MAX_FAILURES_PER_CLIENT - 1):
+            self.verify(f'{100000 + n}')
+        self.assertEqual(self.verify('111111').status_code, 200)
+        self.verify('100099')
+        OneTimeVerificationCode.objects.create(user=self.user, code='222222')
+        self.assertEqual(self.verify('222222').status_code, 429)
+
+    def test_guessing_a_code_before_it_is_issued_does_not_block_its_owner(self):
+        for _ in range(5):
+            self.verify('515151')
+        OneTimeVerificationCode.objects.create(user=self.user, code='515151')
+        self.assertEqual(self.verify('515151', ip='198.51.100.8').status_code, 200)
+
+    @patch('api.viewsets.check_one_time_passcode', return_value=False)
+    def test_an_account_trying_different_passcodes_is_stopped(self, check):
+        from api.viewsets import ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER
+        OneTimeVerificationCode.objects.create(user=self.user, code='626262')
+
+        def submit(passcode):
+            return self.client.post('/api/v1/one_time_passcodes/', {'verification_code': '626262', 'one_time_passcode': passcode},
+                                    content_type='application/json').status_code
+
+        for n in range(ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER):
+            self.assertEqual(submit(f'zz{n:03d}'), 404)
+        check.return_value = True
+        self.assertEqual(submit('right'), 429)
+        self.assertEqual(check.call_count, ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER)
+
+
+class LinkCodeGenerationTestCase(SimpleTestCase):
+
+    @patch('lib.one_time_passcode.set_value_by_one_time_passcode')
+    @patch('lib.one_time_passcode.lookup_value_by_one_time_passcode', return_value=None)
+    @patch('lib.one_time_passcode.secrets.choice', return_value='7')
+    def test_passcodes_come_from_secrets_in_the_same_format(self, choice, *_):
+        from lib.one_time_passcode import request_one_time_passcode
+        self.assertEqual(request_one_time_passcode('')[0], '77777')
+        self.assertEqual(set(choice.call_args.args[0]), set('abcdefghijklmnopqrstuvwxyz0123456789'))
+
+
+@override_settings(SITE_ID=1, CACHES=LOCAL_CACHE)
+class PrinterDiscoverySecretTestCase(TestCase):
+    # Everyone here shares one address, as people behind one home or office router do
+    IP = '198.51.100.77'
+    DEVICE_ID = 'd' * 32
+    SECRET = 's' * 64
+
+    def setUp(self):
+        self.clear_discovery_keys()
+        self.user = User.objects.create(email='discovery@example.com')
+        self.browser = Client(REMOTE_ADDR=self.IP)
+        self.browser.force_login(self.user)
+
+    def tearDown(self):
+        self.clear_discovery_keys()
+
+    def clear_discovery_keys(self):
+        from lib.cache import REDIS
+        for key in REDIS.scan_iter(f'printer_discovery:{self.IP}:*'):
+            REDIS.delete(key)
+
+    def poll(self, **extra):
+        device = {'device_id': self.DEVICE_ID, 'host_or_ip': '192.168.1.50', 'port': 80, 'hostname': 'printer', **extra}
+        return Client(REMOTE_ADDR=self.IP).post('/api/v1/octo/unlinked/', device, content_type='application/json')
+
+    def link(self, secret):
+        return self.browser.post('/api/v1/printer_discovery/', {'code': '424242', 'device_id': self.DEVICE_ID, 'device_secret': secret},
+                                 content_type='application/json')
+
+    def secret_hash(self, secret):
+        import hashlib
+        return hashlib.sha256(secret.encode()).hexdigest()
+
+    def test_the_code_reaches_only_polls_with_the_device_secret_hash(self):
+        self.assertEqual(self.poll(device_secret_hash=self.secret_hash(self.SECRET)).status_code, 200)
+        self.assertEqual(self.link(self.SECRET).status_code, 200)
+
+        self.assertEqual(self.poll().status_code, 400)
+        self.assertEqual(self.poll(device_secret_hash=self.secret_hash('another secret')).status_code, 400)
+
+        messages = self.poll(device_secret_hash=self.secret_hash(self.SECRET)).json()['messages']
+        self.assertEqual([m['data']['code'] for m in messages], ['424242'])
+
+    def test_the_hash_is_not_listed(self):
+        self.poll(device_secret_hash=self.secret_hash(self.SECRET))
+        listed = self.browser.get('/api/v1/printer_discovery/').json()
+        self.assertEqual([d['device_id'] for d in listed], [self.DEVICE_ID])
+        self.assertNotIn('device_secret_hash', listed[0])
+
+    def test_a_secret_that_is_not_the_device_secret_is_refused(self):
+        self.poll(device_secret_hash=self.secret_hash(self.SECRET))
+        self.assertEqual(self.link('not the device secret').status_code, 400)
+        self.assertEqual(self.poll(device_secret_hash=self.secret_hash(self.SECRET)).json()['messages'], [])
+
+    def test_a_device_that_sends_no_hash_works_as_before(self):
+        # Plugins released before the hash was added. A later poll with a hash does not take the device over.
+        self.assertEqual(self.poll().status_code, 200)
+        self.assertEqual(self.poll(device_secret_hash=self.secret_hash('attacker')).status_code, 200)
+        self.assertEqual(self.link(self.SECRET).status_code, 200)
+        messages = self.poll().json()['messages']
+        self.assertEqual([m['data'] for m in messages], [{'code': '424242', 'secret': self.SECRET}])

@@ -14,7 +14,7 @@
   {% block meta_viewport %}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   {% endblock meta_viewport %}
-  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. {{ page_context.syndicate.display_name }} is the easiest way to monitor and control your 3D printer from anywhere.">
+  <meta name="description" content="{% if page_context.syndicate.description %}{{ page_context.syndicate.description }}{% else %}The all-in-one, open-source, smart 3D printing platform for makers. {{ page_context.syndicate.display_name }} is the easiest way to monitor and control your 3D printer from anywhere.{% endif %}">
   <meta name="author" content="">
 
   {% block title %}

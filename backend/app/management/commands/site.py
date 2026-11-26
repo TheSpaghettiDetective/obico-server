@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from app.models.syndicate_models import Syndicate
+from app.models.syndicate_models import Syndicate, SiteSyndicate
 from django.contrib.sites.models import Site
 
 class Command(BaseCommand):
@@ -40,16 +40,13 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(self.style.SUCCESS(f'Site "{site_domain}" already exists.'))
 
-                # Link the site to the syndicate if not already linked
-                if not site.syndicates.filter(id=syndicate.id).exists():
-                    site.syndicates.add(syndicate)
+                # A site already serving a syndicate keeps it.
+                SiteSyndicate.objects.get_or_create(site=site, defaults={'syndicate': syndicate})
 
     def fix_site(self, syndicate):
         with transaction.atomic():
             # Link all sites without a syndicate to the syndicate
-            sites_without_syndicate = Site.objects.filter(syndicates__isnull=True)
-
-            for site in sites_without_syndicate:
-                site.syndicates.add(syndicate)
+            for site in Site.objects.filter(site_syndicate__isnull=True):
+                SiteSyndicate.objects.create(site=site, syndicate=syndicate)
 
         self.stdout.write(self.style.SUCCESS('Sites fixed successfully.'))

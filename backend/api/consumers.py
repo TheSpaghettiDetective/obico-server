@@ -189,12 +189,15 @@ class WebConsumer(JsonWebsocketConsumer):
         self.send_json(msg)
 
 
+def get_shared_printer(share_token):
+    # The same lookup as the share page (web_views.printer_shared): an active printer whose owner is on a paid plan
+    return Printer.objects.get(sharedresource__share_token=share_token, user__is_pro=True)
+
+
 class SharedWebConsumer(WebConsumer):
 
     def get_printer(self):
-        return SharedResource.objects.select_related('printer').get(
-            share_token=self.scope['url_route']['kwargs']['share_token']
-        ).printer
+        return get_shared_printer(self.scope['url_route']['kwargs']['share_token'])
 
     @newrelic.agent.background_task()
     @report_error
@@ -410,9 +413,7 @@ class JanusWebConsumer(WebsocketConsumer):
 class JanusSharedWebConsumer(JanusWebConsumer):
 
     def get_printer(self):
-        return SharedResource.objects.select_related('printer').get(
-            share_token=self.scope['url_route']['kwargs']['share_token']
-        ).printer
+        return get_shared_printer(self.scope['url_route']['kwargs']['share_token'])
 
 
 class OctoprintTunnelWebConsumer(WebsocketConsumer):

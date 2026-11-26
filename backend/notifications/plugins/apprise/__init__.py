@@ -5,6 +5,7 @@ import apprise  # type: ignore
 from rest_framework.serializers import ValidationError
 
 from lib import syndicate
+from lib.public_address import is_public_host
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -36,8 +37,19 @@ class AppriseNotificationPlugin(BaseNotificationPlugin):
         # a silent no-op when a notification is later sent.
         if apprise_url and not apprise.Apprise().add(apprise_url):
             raise ValidationError('apprise_url is not a valid Apprise URL')
+        if apprise_url and self.points_inward(apprise_url):
+            raise ValidationError('apprise_url must not point to a private or reserved address')
 
         return {'apprise_url': apprise_url}
+
+    def points_inward(self, apprise_url: str) -> bool:
+        # For services Apprise reaches at a host the user names (json://, ntfy://,
+        # gotify://, ...), that host must be on the public internet. Services at a
+        # fixed address carry a token where the host would be; a token does not
+        # resolve, so it passes.
+        service = apprise.Apprise.instantiate(apprise_url)
+        host = getattr(service, 'host', None)
+        return bool(host) and is_public_host(host) is False
 
     def get_apprise_url_from_config(self, config: Dict) -> str:
         if config and 'apprise_url' in config:
@@ -64,6 +76,10 @@ class AppriseNotificationPlugin(BaseNotificationPlugin):
         if not apobj.add(apprise_url):
             LOGGER.warning('Ignoring notification: Apprise could not parse the configured URL')
             return
+        # Checked again here, for channels saved before the check existed and
+        # host names that now resolve somewhere else.
+        if self.points_inward(apprise_url):
+            raise ValidationError('apprise_url must not point to a private or reserved address')
 
         # The title/body helpers on the base plugin emit <b>/<i>/<u> tags, so
         # tell Apprise to treat the body as HTML.

@@ -9,6 +9,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from django.contrib.messages import constants as messages
+from django.core.exceptions import ImproperlyConfigured
 
 
 def get_bool(key, default):
@@ -26,8 +27,30 @@ SYNDICATE = os.environ.get('SYNDICATE') or 'base'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
+def secret_key_from_file(path):
+    """
+    The key this server generated on its first start, saved at `path`. The web and
+    tasks containers start together, so the key is written to a temporary file and
+    hard-linked into place: whichever process links first wins, and both read its key.
+    """
+    if not os.path.exists(path):
+        from django.core.management.utils import get_random_secret_key
+        tmp_path = f'{path}.{os.getpid()}.tmp'
+        with os.fdopen(os.open(tmp_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'w') as f:
+            f.write(get_random_secret_key())
+        try:
+            os.link(tmp_path, path)
+        except FileExistsError:
+            pass  # Another process saved its key first; that one is used.
+        finally:
+            os.remove(tmp_path)
+    with open(path) as f:
+        return f.read().strip()
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag'
+# Without DJANGO_SECRET_KEY, the server generates a key on its first start and keeps it in the backend folder.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or secret_key_from_file(os.path.join(BASE_DIR, '.django_secret_key'))
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_COOKIE_REFRESH_INTERVAL = 60 * 60 * 24  # Refresh session cookies once every 24 hours
@@ -86,7 +109,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
-    'django.middleware.gzip.GZipMiddleware',
+    'app.middleware.TSDGZipMiddleware',
     'app.middleware.RefreshSessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -101,13 +124,13 @@ MIDDLEWARE = [
     'app.middleware.check_admin_ip_whitelist',
     'allauth.account.middleware.AccountMiddleware',
     'hijack.middleware.HijackUserMiddleware',
-    'app.middleware.check_x_api',
     'app.middleware.syndicate_header',
+    'app.middleware.syndicate_mismatch',
 ]
 
 if DEBUG:
     # Add debug toolbar
-    gzip_index = MIDDLEWARE.index('django.middleware.gzip.GZipMiddleware')
+    gzip_index = MIDDLEWARE.index('app.middleware.TSDGZipMiddleware')
     MIDDLEWARE.insert(gzip_index+1, "debug_toolbar.middleware.DebugToolbarMiddleware")
     INSTALLED_APPS.append("debug_toolbar")
     import socket  # only if you haven't already imported this
@@ -164,18 +187,18 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    # },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    # },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    # },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    # },
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 
@@ -268,7 +291,14 @@ SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)
 
 # DRF settings:
 
+# How many proxies in front of this server append to X-Forwarded-For. The
+# client is the entry that many places from the end; entries before it are
+# whatever the client wrote. 0 ignores the header and uses the connection's
+# address. See the reverse-proxy guide.
+NUM_TRUSTED_PROXIES = int(os.environ.get('NUM_TRUSTED_PROXIES') or '0')
+
 REST_FRAMEWORK = {
+    'NUM_PROXIES': NUM_TRUSTED_PROXIES,
     'DEFAULT_THROTTLE_RATES': {
         'anon': '3600/hour',
         'user': '3600/hour',
@@ -288,9 +318,12 @@ RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 
 # Allauth
 
+# No OAuth2Backend: with it, any sign-in that fails its own check falls back to
+# the request's bearer token, so a wrong password sent with an app's token
+# signs in as the token's owner and gets a full browser session. Tokens are
+# checked only by ScopedOAuth2Authentication (api/authentication.py).
 AUTHENTICATION_BACKENDS = (
     'app.accounts.SyndicateSpecificBackend',
-    'oauth2_provider.backends.OAuth2Backend',
 )
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
@@ -321,7 +354,12 @@ if RECAPTCHA_SITE_KEY:
 
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 365 * 100,  # 100 years
-    'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
+    # Shown on the consent page. What each one opens is decided per request
+    # by ScopedOAuth2Authentication: `read` for reads, `write` for changes.
+    'SCOPES': {
+        'read': 'See your printers, prints, G-code files and AI chats',
+        'write': 'Control your printers, change or delete your prints and G-code files, upload G-code, and send AI chat messages that use your AI credits',
+    },
     'PKCE_REQUIRED': False,
     'ALLOWED_REDIRECT_URI_SCHEMES': ['http', 'https'],  # http to allow self-hosted servers
 }
@@ -428,6 +466,10 @@ TWILIO_COUNTRY_CODES = []  # serviced country codes, no restrictions by default
 
 OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP') or '1099511627776')  # 1TB by default
 OCTOPRINT_TUNNEL_SUBDOMAIN_RE = re.compile(r'^(\w+)\.tunnels.*$')
+# A domain of the tunnels' own, such as "example-tunnels.net", puts each tunnel at
+# <code>.<domain>. Browsers treat that as another site, so pages served through a tunnel
+# don't get this site's sign-in cookie. Empty keeps tunnels at <code>.tunnels.<this site>.
+TUNNEL_DOMAIN = (os.environ.get('TUNNEL_DOMAIN') or '').strip().lower()
 OCTOPRINT_TUNNEL_PORT_RANGE = range(
         int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[0].strip('"\'')),
         int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[1].strip('"\'')),
@@ -522,7 +564,10 @@ CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('CSRF_TRUSTED_ORIGINS') or '[]'
 # https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-SYNDICATES = {
+# Brands: what a page or email looks like (name, logo, sender, links). Picked per
+# request by lib/syndicate.py's brand_from_request; never stored, never used to
+# pick accounts. 'jusprin' is JusPrin v1's, on Obico's hosts.
+BRANDS = {
   'base': {
     'display_name': 'Obico',
     'from_email': DEFAULT_FROM_EMAIL,
@@ -535,3 +580,31 @@ SYNDICATES = {
     'logo_full': '/static/jusprin/img/jusprin-svg-logo-full.png',
   },
 }
+
+# Syndicates (app.models.Syndicate) by name, and the brand each one's hosts and
+# emails show.
+SYNDICATES = {
+  'base': {'brand': 'base'},
+}
+
+# What happens when a request's host, X-Obico-Syndicate header and signed-in
+# account name different syndicates (lib/syndicate.py). 'log' reports it and keeps
+# the old order (account, then header, then host); 'refuse' lets the host alone
+# decide and refuses an account from another syndicate.
+SYNDICATE_MISMATCH = os.environ.get('SYNDICATE_MISMATCH', 'log')
+
+# Video relay (TURN) that clients get in the printer responses (lib/relay.py),
+# so the relay can move without a client release. RELAY_HOST unset means no
+# relay; clients get only STUN. A relay credential is "<expiry unix time>:<name>"
+# and an HMAC of it under RELAY_SECRETS' first secret (coturn's
+# use-auth-secret); the relay has the same secrets. A second secret exists only
+# during a rotation: add the new secret to the relay, put it first here, wait
+# out RELAY_CREDENTIAL_SECS, then remove the old one in both places.
+RELAY_HOST = os.environ.get('RELAY_HOST') or None
+RELAY_SECRETS = [s for s in os.environ.get('RELAY_SECRETS', '').split(',') if s]
+# One lifetime for printers and viewers. Printers renew 24 hours before the
+# expiry and restart their video to do it, and released plugins keep that
+# window forever, so the lifetime has to stay well above a day.
+RELAY_CREDENTIAL_SECS = 7 * 24 * 3600
+if RELAY_HOST and not RELAY_SECRETS:
+    raise ImproperlyConfigured('RELAY_HOST is set without RELAY_SECRETS')

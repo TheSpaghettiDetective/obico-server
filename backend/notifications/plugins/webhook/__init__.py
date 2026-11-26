@@ -9,6 +9,7 @@ import requests
 from rest_framework.serializers import ValidationError
 from datetime import datetime
 
+from lib.public_address import is_public_host
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
@@ -27,8 +28,22 @@ class WebhookNotificationPlugin(BaseNotificationPlugin):
     def validate_config(self, data: Dict) -> Dict:
         if 'custom_webhook_URL' in data:
             custom_webhook_URL = data['custom_webhook_URL'].strip()
+            self._assert_safe_url(custom_webhook_URL)
             return {'custom_webhook_URL': custom_webhook_URL}
         raise ValidationError('custom_webhook_URL is missing from config')
+
+    def _assert_safe_url(self, url: str, error=ValidationError) -> None:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            raise error('Webhook URL must use http or https')
+        if not parsed.hostname:
+            raise error('Webhook URL must have a valid hostname')
+        public = is_public_host(parsed.hostname)
+        if public is None:
+            raise error('Webhook URL hostname could not be resolved')
+        if not public:
+            raise error('Webhook URL must not point to a private or reserved address')
 
     def get_webhook_URL_from_config(self, config: Dict) -> str:
         if config and 'custom_webhook_URL' in config:
@@ -51,8 +66,16 @@ class WebhookNotificationPlugin(BaseNotificationPlugin):
         timeout: float = 5.0,
     ) -> None:
 
+        # Checked again here: the channel may have been saved before the check
+        # existed, or its host name may now resolve somewhere else. Redirects are
+        # not followed, because the address they lead to was never checked.
+        self._assert_safe_url(url, error=WebhookException)
         headers = {'content-type': 'application/json'}
-        response = requests.post(url, json=eventData, headers=headers, timeout=timeout)
+        response = requests.post(url, json=eventData, headers=headers, timeout=timeout, allow_redirects=False)
+        if response.is_redirect:
+            raise WebhookException(
+                f'Webhook URL answered with a redirect ({response.status_code}) and Obico does not follow redirects. '
+                'Use the address it redirects to.')
         response.raise_for_status()
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:

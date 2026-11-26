@@ -83,7 +83,10 @@ class BaseNotificationPlugin(object):
     ## Public APIs.
 
     def validate_config(self, data: Dict) -> Dict:
-        return data
+        # A plugin stores only the settings it names in its own validate_config.
+        # Anything else could be picked up by another plugin after the
+        # channel's type is changed.
+        return {}
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
         raise NotImplementedError

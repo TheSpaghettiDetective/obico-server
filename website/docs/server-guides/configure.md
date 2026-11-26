@@ -116,7 +116,7 @@ cd obico-server && docker compose run web ./manage.py site --add server_ip_addre
 Replace xxxx in the command with the Django site determined in the previous step.
 
 :::tip
-If you set up your Obico Server before June 5th, 2024, you may need to run the following command after the server is upgraded:
+If you set up your Obico Server before June 5th, 2024, upgrading it to a version from after November 9th, 2026 fixes its sites for you. When upgrading to an older version, run the following command after the server is upgraded:
 
 ```
 cd obico-server && docker compose run web ./manage.py site --fix
@@ -137,15 +137,15 @@ Add `--dry-run` to see how many links would be changed without changing anything
 
 ## (Re-)generate `DJANGO_SECRET_KEY` {#re-generate-django_secret_key}
 
-This step is optional. But you are highly recommended to generate `DJANGO_SECRET_KEY` and rotate (re-generate) it periodically, especially if you have your Obico Server exposed to the Internet via reverse proxy.
+The Obico Server signs the links to your timelapses, snapshots and G-Code files with a secret key. If `DJANGO_SECRET_KEY` is not set in `.env`, the server generates a random key the first time it starts and keeps it in the file `backend/.django_secret_key`. Keep that file private, and include it in your backups.
 
-:::caution
-If this step is omitted, the Obico Server will use the default value, which is not recommended unless your intention is just to quickly spin up an temporary Obico Server for evaluation or testing.
+:::info
+When the key changes, the server re-signs the stored links the next time it starts, so your previous prints and G-Code files keep working. Everyone who is signed in has to sign in again.
+
+Earlier versions of the Obico Server used a built-in default key when `DJANGO_SECRET_KEY` was not set. Upgrading such a server changes the key once, as described above.
 :::
 
-:::caution
-If you are upgrading the Obico Server from a version before October 20th, 2023, you need to go through these steps. Otherwise, all of your previous prints and G-Code files will be unusable.
-:::
+To rotate the key, either delete `backend/.django_secret_key` and restart the server, or set your own key in `.env`:
 
 1. Randomly generate the next `DJANGO_SECRET_KEY`:
 
@@ -159,12 +159,6 @@ docker compose exec web ./manage.py gen_site_secret
 
 ```
 docker compose stop && docker compose up -d
-```
-
-4. Re-sign all media URL. This step is important, otherwise all of your previous prints and G-Code files will be unusable.
-
-```
-docker compose exec web ./manage.py resign_media_urls
 ```
 
 ## What's next? {#whats-next}

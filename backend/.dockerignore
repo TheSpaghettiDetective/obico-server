@@ -3,3 +3,5 @@ static_build
 frontend/node_modules
 celerybeat-schedule
 db.sqlite3
+.django_secret_key
+.media_urls_signed_with

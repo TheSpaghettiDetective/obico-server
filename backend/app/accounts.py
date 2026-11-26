@@ -1,41 +1,53 @@
 from allauth.account.models import EmailAddress
-from allauth.account.utils import filter_users_by_email
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.account.internal.userkit import unicode_ci_compare
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
-from ipware import get_client_ip as ipware_client_ip
+from django.db.models import Q
+from lib.client_ip import client_ip as trusted_client_ip
 from app.models import User
 from django.contrib.auth.hashers import make_password
 import secrets
 
-from lib.syndicate import syndicate_from_request, settings_for_syndicate
+from lib.syndicate import syndicate_from_request, brand_from_request, brand_settings
 
 from django.utils.encoding import force_str
 from django.conf import settings
 
 
-def filter_users_by_email_and_syndicate(email, syndicate, **kwargs):
-    """The accounts an address belongs to in one syndicate. allauth's own lookup
-    (the address's EmailAddress rows, then User.email), which looks across all
-    syndicates, kept to this one. kwargs are allauth's."""
-    return [user for user in filter_users_by_email(email, **kwargs) if user.syndicate_id == syndicate.id]
+def users_by_email(email, syndicate, is_active=None):
+    """The accounts in one syndicate that an address belongs to, by their
+    EmailAddress rows or their own email. allauth's own lookup
+    (filter_users_by_email) looks across every syndicate, so none of our paths
+    calls it.
+
+    The database's case-insensitive match also matches different addresses
+    whose upper-case forms are the same, such as a dotless "ı" for "i". Mail
+    goes to the address that was typed, so like allauth's lookup this keeps
+    only the accounts whose stored address is the typed one under Unicode case
+    folding."""
+    users = User.objects.filter(Q(emailaddress__email__iexact=email) | Q(email__iexact=email), syndicate=syndicate)
+    if is_active is not None:
+        users = users.filter(is_active=is_active)
+    return [
+        user for user in users.distinct().prefetch_related('emailaddress_set')
+        if unicode_ci_compare(user.email, email)
+        or any(unicode_ci_compare(address.email, email) for address in user.emailaddress_set.all())
+    ]
 
 
 class SyndicateSpecificBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is None:
             username = kwargs.get('email')
-        UserModel = get_user_model()
-        if request is not None:
-            syndicate = syndicate_from_request(request)
-            try:
-                user = UserModel.objects.get(email__iexact=username, syndicate=syndicate)
-                if user.check_password(password):
-                    return user
-            except UserModel.DoesNotExist:
-                return None
+        if request is None or username is None:
+            return None
+        users = users_by_email(username, syndicate_from_request(request))
+        if len(users) > 1:
+            raise User.MultipleObjectsReturned(f'{len(users)} accounts in one syndicate share an address')
+        if users and users[0].check_password(password):
+            return users[0]
         return None
 
 
@@ -47,28 +59,30 @@ class SyndicateSpecificAccountAdapter(DefaultAccountAdapter):
     def populate_username(self, request, user):
         user.username = f'{user.email}_{user.syndicate.id}'
 
+    def pre_login(self, request, user, **kwargs):
+        # Every lookup that finds the account keeps to the request's syndicate.
+        syndicate = syndicate_from_request(request)
+        if user.syndicate_id != syndicate.id:
+            raise AssertionError(f'Signing in to a {user.syndicate.name} account on a {syndicate.name} request')
+        return super().pre_login(request, user, **kwargs)
+
     def get_from_email(self):
-        syndicate = syndicate_from_request(self.request)
-        from_email = settings_for_syndicate(syndicate.name).get('from_email', settings.DEFAULT_FROM_EMAIL)
-        return from_email
+        return brand_settings(brand_from_request(self.request)).get('from_email', settings.DEFAULT_FROM_EMAIL)
 
     def format_email_subject(self, subject):
         return force_str(subject)
 
     def get_client_ip(self, request):
-        # allauth's rate limits count per client IP. Behind a proxy, allauth
-        # itself now uses the proxy's address unless told how many proxies to
-        # trust, so every user would share one limit. Read the IP the way the
-        # rest of the server does (app/middleware.py), from X-Forwarded-For.
-        client_ip, _ = ipware_client_ip(request)
+        # allauth's rate limits count per client IP. Read it the way the rest
+        # of the server does, trusting NUM_TRUSTED_PROXIES proxies.
+        client_ip = trusted_client_ip(request)
         if not client_ip:
             raise PermissionDenied('Unable to determine client IP address')
         return client_ip
 
     def send_confirmation_mail(self, request, emailconfirmation, signup):
         activate_url = self.get_email_confirmation_url(request, emailconfirmation)
-        syndicate = syndicate_from_request(request)
-        syndicate_name = settings_for_syndicate(syndicate.name).get('display_name', "Obico")
+        syndicate_name = brand_settings(brand_from_request(request)).get('display_name', "Obico")
 
         ctx = {
             "user": emailconfirmation.email_address.user,
@@ -97,7 +111,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if not email:
             raise PermissionDenied('Email not exist in social login data.')
 
-        users = filter_users_by_email_and_syndicate(email, syndicate, prefer_verified=True)
+        users = users_by_email(email, syndicate)
         user = users[0] if users else None
         if not user:
             user = User.objects.get_or_create(

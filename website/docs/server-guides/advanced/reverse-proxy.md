@@ -56,6 +56,29 @@ The "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. The 
 3. Find `CSRF_TRUSTED_ORIGINS=` and replace it with `CSRF_TRUSTED_ORIGINS=["reverse_proxy_domain"]`.
 4. Restart the server: `docker-compose restart`.
 
+## 4. Tell the server how many proxies are in front of it: {#4-tell-the-server-how-many-proxies-are-in-front-of-it}
+
+The server limits sign-in attempts and finds printers on the same network by each visitor's IP address. A reverse proxy adds the visitor's address to the `X-Forwarded-For` header. The server trusts that header only if you say how many proxies add to it, because anyone can send the header themselves.
+
+1. If you haven't already, make a copy of `dotenv.example` and rename it as `.env` in the `obico-server` directory.
+2. Open `.env` using your favorite editor.
+3. Set `NUM_TRUSTED_PROXIES` to the number of proxies in front of the server, for example `NUM_TRUSTED_PROXIES=1` for one NGINX, Traefik, IIS or Cloudflare Tunnel. Leave it at `0` if visitors connect to the server directly.
+4. Restart the server: `docker-compose restart`.
+
+:::caution
+Servers upgraded from a release before November 2026 need this step. Earlier releases read the visitor's address from `X-Forwarded-For` without being told to. The server no longer does, so a server behind a proxy that keeps the default `0` sees every visitor as the proxy.
+:::
+
+If this is left at `0` behind a proxy, every visitor looks like the proxy. What you will see:
+
+- Everyone shares one limit on sign-in attempts and one limit on wrong printer link codes. Ten wrong 6-digit codes in an hour, from anyone, stop everyone from linking a printer by code until the hour has passed.
+- When someone links a printer, the list of printers found on their network shows the unlinked printers of every visitor, not only the ones on that person's network.
+- If you set `ADMIN_IP_WHITELIST`, it is compared with the proxy's address. The Django admin then refuses you, or lets everyone in if the proxy's own address is on the list.
+
+If the number is larger than the real number of proxies, a visitor can pick the address the server sees by sending the header themselves. Count only the proxies that add to `X-Forwarded-For`. A proxy in front of another proxy counts as two.
+
+To check the number, ask a person on a different network to open the sign-in page and type a wrong password a few times, and confirm that you can still sign in from your own network.
+
 ## NGINX {#nginx}
 
 For webcam feed to work, remember to activate Websockets Support. Otherwise there will no webfeed when accessing through proxy.

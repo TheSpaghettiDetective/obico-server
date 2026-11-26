@@ -7,13 +7,14 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, Throttled
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework import viewsets, mixins
 from rest_framework import status
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ImproperlyConfigured
+from django.core.cache import cache as django_cache
 from django.http import Http404
 import json
 import io
@@ -21,26 +22,28 @@ import os
 import logging
 import importlib
 from python_ipware import IpWare
-from ipware import get_client_ip
+from lib.client_ip import client_ip as get_client_ip
 from binascii import hexlify
 
 from .utils import report_validationerror
 from lib.printer_discovery import (
     pull_messages_for_device,
-    update_presence_for_device,)
+    update_presence_for_device,
+    is_announced_by_device,)
 from lib.one_time_passcode import request_one_time_passcode
 from .authentication import PrinterAuthentication
 from .pagination import GCodeFilePagination
 from lib.file_storage import save_file_obj
 from lib import cache
+from lib import relay as relay_settings
 from lib.utils import save_pic, get_rotated_pic_url
-from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
+from app.models import Printer, OneTimeVerificationCode, PrinterEvent, GCodeFile
 from notifications.handlers import handler
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import (
     VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer,
-    GCodeFileSerializer, AgentGCodeFileListSerializer,
+    AgentGCodeFileSerializer, AgentGCodeFileListSerializer, AgentGCodeFileUpdateSerializer,
 )
 from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -128,15 +131,12 @@ class OctoPrintPicView(APIView):
            False: No detection was performed. img_url was not updated
         '''
 
-        if not printer.should_watch() or not printer.actively_printing():
+        if not printer.actively_printing():
             return False
 
-        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
-
-        if time.time() - prediction.updated_at.timestamp() < settings.MIN_DETECTION_INTERVAL:
+        _, refusal = printer.start_detection()
+        if refusal:
             return False
-
-        cache.print_num_predictions_incr(printer.current_print.id)
 
         # Dynamic import of failure detection module (allows enterprise override)
         fd_module = importlib.import_module(settings.FD_MODULE)
@@ -166,6 +166,7 @@ class OctoPrinterView(APIView):
                 'id': printer.id,
                 'name': printer.name,
                 'retract_on_pause': printer.retract_on_pause,
+                'relay': relay_settings.for_printer(printer),
             }
         })
 
@@ -248,7 +249,14 @@ def cap_image_size(pic):
     if im.format == 'JPEG' and not jpeg_is_complete(pic.file):
         raise ValidationError('Corrupted image.')
 
+    # A JPEG can still have valid headers and an end-of-image marker but no scan data. Decode it
+    # fully, as the ML API will, so such a pic is rejected here instead of failing there.
     im = Image.open(pic.file)
+    try:
+        im.load()
+    except OSError:
+        raise ValidationError('Corrupted image.')
+
     if max(im.size) <= 1296:
         pic.file.seek(0)
         return pic
@@ -271,7 +279,7 @@ class OctoPrinterDiscoveryView(APIView):
 
     @report_validationerror
     def post(self, request, format=None):
-        client_ip, is_routable = get_client_ip(request)
+        client_ip = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
         if not client_ip:
@@ -290,10 +298,18 @@ class OctoPrinterDiscoveryView(APIView):
         messages = []
         device_info = request.data
 
+        # Kept out of device_info, which anyone behind the same address can list
+        secret_hash = device_info.pop('device_secret_hash', None)
+        if secret_hash is not None and not isinstance(secret_hash, str):
+            raise ValidationError({'device_secret_hash': 'must be a string'})
+
         device_host_or_ip, _ = IpWare().get_client_ip({'REMOTE_ADDR': device_info['host_or_ip']}) # Tricky IPWare into returning an IP address without request.META
 
         if device_host_or_ip and device_host_or_ip.is_private:
             device_info['host_or_ip'] = str(device_host_or_ip)
+
+            if not is_announced_by_device(client_ip, device_info['device_id'], secret_hash):
+                raise ValidationError({'device_secret_hash': 'does not match the device that announced this device_id'})
 
             update_presence_for_device(
                 client_ip=client_ip,
@@ -313,6 +329,12 @@ class OctoPrinterDiscoveryView(APIView):
         return Response(discovery_response)
 
 
+# Wrong codes one client may try in an hour. A success does not clear the
+# count, or an attacker could clear it with codes of their own.
+VERIFY_CODE_MAX_FAILURES_PER_CLIENT = 10
+VERIFY_CODE_FAILURE_WINDOW_SECS = 60 * 60
+
+
 class OneTimeVerificationCodeVerifyView(APIView):
     throttle_classes = [AnonRateThrottle]
 
@@ -325,8 +347,13 @@ class OneTimeVerificationCodeVerifyView(APIView):
         serializer = VerifyCodeInputSerializer(data={'code': request.GET.get('code')})
         serializer.is_valid(raise_exception=True)
 
+        code_value = serializer.validated_data['code']
+        failures_key = f'verify_code_failures:{get_client_ip(request)}'
+        if django_cache.get(failures_key, 0) >= VERIFY_CODE_MAX_FAILURES_PER_CLIENT:
+            raise Throttled()
+
         code = OneTimeVerificationCode.objects.filter(
-            code=serializer.validated_data['code']).first()
+            code=code_value).first()
 
         if code:
             if not code.printer:
@@ -345,6 +372,8 @@ class OneTimeVerificationCodeVerifyView(APIView):
             code.save()
             return Response(OneTimeVerificationCodeSerializer(code, many=False).data)
         else:
+            django_cache.add(failures_key, 0, timeout=VERIFY_CODE_FAILURE_WINDOW_SECS)
+            django_cache.incr(failures_key)
             return Response({'detail': "Requested resource does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -394,12 +423,14 @@ class GCodeFileView(
 
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
-    serializer_class = GCodeFileSerializer
+    serializer_class = AgentGCodeFileSerializer
     pagination_class = GCodeFilePagination
 
     def get_serializer_class(self):
         if self.action == 'list':
             return AgentGCodeFileListSerializer
+        if self.action == 'partial_update':
+            return AgentGCodeFileUpdateSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):

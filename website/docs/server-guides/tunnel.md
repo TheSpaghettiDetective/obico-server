@@ -6,6 +6,10 @@ title: OctoPrint/Klipper tunnel
 Because of the nature of OctoPrint/Klipper tunnel, there is no point to set it up without a reverse proxy. Please make sure you have the [reverse proxy set up and properly configured](./advanced/reverse-proxy.md) before proceeding to setting up the server for OctoPrint/Klipper tunnel.
 :::
 
+:::note
+The `TUNNEL_DOMAIN` setting, added in November 2026, is used by the hosted service and is not supported on self-hosted servers yet. A server set up by this guide gives each tunnel a port. Leave `TUNNEL_DOMAIN` unset.
+:::
+
 ## Configure the Obico Server to serve OctoPrint tunnels {#configure-the-obico-server-to-serve-octoprint-tunnels}
 
 ### 1. Decide a range of ports to be used for the tunnels {#1-decide-a-range-of-ports-to-be-used-for-the-tunnels}

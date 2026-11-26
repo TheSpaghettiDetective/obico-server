@@ -273,6 +273,7 @@ import moment from 'moment'
 import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { user, settings } from '@src/lib/page-context'
+import { appOrSameOriginUrlOrNull } from '@src/lib/redirect-urls'
 import octopodLogo from '@static/img/octopod.webp'
 import octoappLogo from '@static/img/octoapp.webp'
 import polymerLogo from '@static/img/polymer.webp'
@@ -414,8 +415,10 @@ export default {
             this.authorized = true
             const tunnelEndpoint = response.data.tunnel_endpoint
             const redirectUrl =
-              new URLSearchParams(window.location.search).get('success_redirect_url') ||
-              '/tunnels/succeeded/'
+              appOrSameOriginUrlOrNull(
+                new URLSearchParams(window.location.search).get('success_redirect_url'),
+                window.location.href
+              ) || '/tunnels/succeeded/'
             window.location.replace(`${redirectUrl}?tunnel_endpoint=${tunnelEndpoint}`)
           })
           .catch((error) => {

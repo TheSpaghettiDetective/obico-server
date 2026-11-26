@@ -8,28 +8,29 @@ from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, Throttled, PermissionDenied as APIPermissionDenied
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
 from rest_framework.views import APIView
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from random import random, seed
-from rest_framework.throttling import AnonRateThrottle
+import secrets
+from django.core.cache import cache as django_cache
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.pagination import PageNumberPagination
 import requests
-from ipware import get_client_ip
+import math
+from lib.client_ip import client_ip as get_client_ip
 import json
 import pytz
 from django.utils.dateparse import parse_datetime
 
 from .utils import report_validationerror
-from .authentication import CsrfExemptSessionAuthentication
+from .authentication import CsrfExemptSessionAuthentication, ScopedOAuth2Authentication
 from .pagination import GCodeFilePagination
 from .print_stats import stats_parameters, summarize_prints
 from app.models import (
@@ -49,6 +50,7 @@ from lib.file_storage import save_file_obj, delete_file
 from lib.printer_discovery import (
     push_message_for_device,
     get_active_devices_for_client_ip,
+    is_secret_of_device,
     DeviceMessage,
 )
 from lib.one_time_passcode import check_one_time_passcode
@@ -81,7 +83,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class UserViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     serializer_class = UserSerializer
 
     @action(detail=False, methods=['get', 'patch'])
@@ -108,7 +110,8 @@ class PrinterViewSet(
 ):
 
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
+    required_scopes = []  # in the API for apps: see ScopedOAuth2Authentication
     serializer_class = PrinterSerializer
 
     def get_queryset(self):
@@ -157,6 +160,10 @@ class PrinterViewSet(
     @action(detail=True, methods=['post', 'get'])
     def mute_current_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
+        if not printer.current_print:
+            # The print ended while its alert was still on screen; nothing to
+            # mute, and the status sent back updates that page.
+            return self.send_command_response(printer, False)
         printer.mute_current_print(request.GET.get('mute_alert', 'false').lower() == 'true')
 
         return self.send_command_response(printer, True)
@@ -238,6 +245,10 @@ class PrinterViewSet(
             - result.p: Failure probability (0-1)
             - result.temporal_stats: Stats for smoothing detection noise
             - result.detections: List of [confidence, [xc, yc, w, h]] tuples
+
+        Detections follow the same rules as pictures from a printer's agent (Printer.start_detection):
+        403 with the reason when detection is off for the print or the account is out of AI hours,
+        429 when the last detection was less than MIN_DETECTION_INTERVAL ago. Each detection counts toward the print's AI hours.
         """
         printer = get_printer_or_404(pk, request)
 
@@ -249,8 +260,11 @@ class PrinterViewSet(
 
         img = request.FILES['img']
 
-        # Get or create prediction object
-        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
+        prediction, refusal = printer.start_detection()
+        if refusal and refusal.reason:
+            raise APIPermissionDenied(refusal.reason)
+        if refusal:
+            raise Throttled(wait=math.ceil(refusal.wait_secs))
 
         # Call ML API for detection
         pic_id = str(timezone.now().timestamp())
@@ -309,7 +323,8 @@ class PrintViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
+    required_scopes = []  # in the API for apps: see ScopedOAuth2Authentication
     serializer_class = PrintSerializer
 
     def get_queryset(self, date_range=None):
@@ -438,7 +453,8 @@ class PrintViewSet(
 
 class GCodeFolderViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
+    required_scopes = []  # in the API for apps: see ScopedOAuth2Authentication
     pagination_class = StandardResultsSetPagination
 
     def get_serializer_class(self):
@@ -490,7 +506,8 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
 class GCodeFileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
+    required_scopes = []  # in the API for apps: see ScopedOAuth2Authentication
     pagination_class = GCodeFilePagination
 
     def get_serializer_class(self):
@@ -636,7 +653,7 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
                                mixins.ListModelMixin,
                                viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     serializer_class = PrintShotFeedbackSerializer
 
     def get_queryset(self):
@@ -656,15 +673,19 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
     def update(self, request, *args, **kwargs):
         unanswered_print_shots = self.get_queryset().filter(answered_at__isnull=True)
-        should_credit = len(unanswered_print_shots) == 1 and unanswered_print_shots.first().id == int(kwargs['pk'])
+        last_unanswered = unanswered_print_shots.first() if len(unanswered_print_shots) == 1 else None
+        was_last_unanswered = last_unanswered is not None and last_unanswered.id == int(kwargs['pk'])
 
+        resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
+
+        # Credit only an update that really answered the print's last unanswered shot
+        should_credit = was_last_unanswered and bool(resp.data.get('answer')) and resp.data.get('answered_at') is not None
         if should_credit:
-            _print = unanswered_print_shots.first().print
+            _print = last_unanswered.print
             celery_app.send_task('app_ent.tasks.base_tasks.credit_dh_for_contribution',
                                  args=[request.user.id, 2, f'Credit | Focused Feedback - "{_print.filename[:100]}"', f'ff:p:{_print.id}']
                                  )
 
-        resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
         return Response({'instance': resp.data, 'credited_dhs': 2 if should_credit else 0})
 
 
@@ -676,7 +697,7 @@ class OctoPrintTunnelViewSet(
     viewsets.GenericViewSet,
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     serializer_class = OctoPrintTunnelSerializer
 
     def get_queryset(self):
@@ -701,7 +722,7 @@ class OctoPrintTunnelViewSet(
 class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
                                   viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
 
     def list(self, request, *args, **kwargs):
         return Response({
@@ -717,7 +738,7 @@ class MobileDeviceViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     serializer_class = MobileDeviceSerializer
 
     def get_queryset(self):
@@ -747,7 +768,7 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
                                      mixins.RetrieveModelMixin,
                                      viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     serializer_class = OneTimeVerificationCodeSerializer
 
     def list(self, request, *args, **kwargs):
@@ -766,9 +787,8 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
             ).first()
 
         if not code:
-            seed()
             while True:
-                new_code = '%06d' % (int(random() * 1500450271) % 1000000)
+                new_code = '%06d' % secrets.randbelow(1000000)
                 if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
                     break
 
@@ -787,7 +807,7 @@ class SharedResourceViewSet(mixins.ListModelMixin,
                             mixins.CreateModelMixin,
                             mixins.DestroyModelMixin,
                             viewsets.GenericViewSet):
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     permission_classes = (IsAuthenticated,)
     serializer_class = SharedResourceSerializer
 
@@ -796,6 +816,9 @@ class SharedResourceViewSet(mixins.ListModelMixin,
 
     def create(self, request):
         printer = get_printer_or_404(request.GET.get('printer_id'), request)
+        if not request.user.is_pro:
+            # Sharing is a paid-plan feature: the share page and its websockets only serve printers of paid-plan users
+            raise PermissionDenied
         # When the GET API is slow, the user may try to turn on the sharing toggle when it's on already
         SharedResource.objects.get_or_create(printer=printer, defaults={'share_token': hexlify(os.urandom(18)).decode()})
         return self.response_from_printer(request)
@@ -812,6 +835,11 @@ class SharedResourceViewSet(mixins.ListModelMixin,
             .data)
 
 
+# Wrong passcodes one account may try in an hour
+ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER = 10
+ONE_TIME_PASSCODE_FAILURE_WINDOW_SECS = 60 * 60
+
+
 class OneTimePasscodeViewSet(
     mixins.CreateModelMixin,
     viewsets.GenericViewSet):
@@ -822,9 +850,15 @@ class OneTimePasscodeViewSet(
         verification_code = request.data.get('verification_code')
         one_time_passcode = request.data.get('one_time_passcode')
 
+        failures_key = f'one_time_passcode_failures:{request.user.id}'
+        if django_cache.get(failures_key, 0) >= ONE_TIME_PASSCODE_MAX_FAILURES_PER_USER:
+            raise Throttled()
+
         verification_code_obj = get_object_or_404(OneTimeVerificationCode, user=request.user, code=verification_code)
 
         if not check_one_time_passcode(one_time_passcode, verification_code_obj.code):
+            django_cache.add(failures_key, 0, timeout=ONE_TIME_PASSCODE_FAILURE_WINDOW_SECS)
+            django_cache.incr(failures_key)
             return JsonResponse({'detail': 'Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
         return JsonResponse({'detail': 'OK'}, status=status.HTTP_200_OK)
@@ -837,7 +871,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     def list(self, request):
         MAX_UNLINKED_PRINTERS_PER_IP = 2
 
-        client_ip, is_routable = get_client_ip(request)
+        client_ip = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
         if not client_ip:
@@ -850,7 +884,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
 
     @report_validationerror
     def create(self, request):
-        client_ip, is_routable = get_client_ip(request)
+        client_ip = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
         if not client_ip:
@@ -868,6 +902,10 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         if device_secret is None:
             raise ValidationError({'device_secret': "missing param"})
 
+        # The code goes only to a device that holds this secret
+        if not is_secret_of_device(client_ip, device_id, device_secret):
+            raise ValidationError({'device_secret': "does not match the device"})
+
         push_message_for_device(
             client_ip,
             device_id,
@@ -880,6 +918,12 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         return Response({'queued': True})
 
 
+class NotificationTestMessageThrottle(UserRateThrottle):
+    # A test message can be an SMS that the server's Twilio account pays for
+    scope = 'notification_test_message'
+    rate = '10/hour'
+
+
 class NotificationSettingsViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
@@ -889,7 +933,7 @@ class NotificationSettingsViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     serializer_class = NotificationSettingSerializer
 
     def get_queryset(self):
@@ -914,7 +958,7 @@ class NotificationSettingsViewSet(
 
         return Response({"plugins": loaded})
 
-    @action(detail=True, methods=['post', ])
+    @action(detail=True, methods=['post', ], throttle_classes=[NotificationTestMessageThrottle])
     def send_test_message(self, request, pk):
         obj = self.get_object()
         try:
@@ -931,7 +975,7 @@ class PrinterEventViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     serializer_class = PrinterEventSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -971,7 +1015,7 @@ class FirstLayerInspectionImageViewSet(
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
     serializer_class = FirstLayerInspectionImageSerializer
 
     def get_queryset(self):
@@ -986,7 +1030,8 @@ class FirstLayerInspectionImageViewSet(
 
 class ApiVersionView(APIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, ScopedOAuth2Authentication)
+    required_scopes = []  # in the API for apps: see ScopedOAuth2Authentication
 
     def get(self, request, format=None):
         return Response({'version': '1.0.0'})

@@ -548,7 +548,7 @@ export default {
         if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: err,
+            titleText: err,
           })
         }
       })
@@ -581,7 +581,7 @@ export default {
         if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: err,
+            titleText: err,
           })
         }
       })
@@ -605,7 +605,7 @@ export default {
                 if (err) {
                   this.$swal.Toast.fire({
                     icon: 'error',
-                    title: err,
+                    titleText: err,
                   })
                 }
               }
@@ -632,7 +632,7 @@ export default {
         if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: err,
+            titleText: err,
           })
         }
       })
@@ -660,7 +660,7 @@ export default {
         if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: err,
+            titleText: err,
           })
         } else {
           this.getCurrentZOffset()
@@ -702,7 +702,7 @@ export default {
           } else {
             this.$swal.Toast.fire({
               icon: 'error',
-              title: err,
+              titleText: err,
             })
           }
         } else {

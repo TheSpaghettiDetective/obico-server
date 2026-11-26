@@ -147,6 +147,12 @@ Starts a new print session for the specified printer.
 
 Submits an image for AI failure detection on the current print.
 
+Detections follow the same rules as pictures sent by a printer's agent:
+
+- Each detection counts toward the account's AI Detection Hours, which are deducted when the print finishes.
+- Detections run at most once every 10 seconds per printer. This includes the first 10 seconds after `start_print`. A request sent sooner is answered with `429`; wait the number of seconds the answer gives before sending the next image.
+- No detection runs while AI failure detection is turned off for the printer, while alerts are muted for the current print, or when the account has run out of AI Detection Hours. The answer is `403`.
+
 #### Request {#predict-request}
 
 This POST request should be sent as `multipart/form-data` format.
@@ -208,9 +214,17 @@ Use temporal stats to smoothen out detection noise. A simplistic approach:
 
 Missing required `img` parameter.
 
+##### Status code: `403` {#predict-403}
+
+No detection ran. `detail` says why, for example `You have run out of AI Detection Hours`.
+
 ##### Status code: `404` {#predict-404}
 
 Printer is not currently printing.
+
+##### Status code: `429` {#predict-429}
+
+The last detection on this printer was less than 10 seconds ago. No detection ran and nothing was counted. The `Retry-After` header gives the seconds to wait.
 
 ---
 
@@ -322,5 +336,5 @@ print("Finished print:", response.json())
 
 - These APIs are designed for OAuth applications that manage the print lifecycle directly without connecting a physical printer agent.
 - For printers with connected agents (OctoPrint/Moonraker), use the existing `cancel_print`, `pause_print`, `resume_print` endpoints which send commands to the agent.
-- The `predict` endpoint uses the same ML model as the standard Obico failure detection.
+- The `predict` endpoint uses the same ML model, the same 10-second interval and the same AI Detection Hour accounting as the standard Obico failure detection.
 

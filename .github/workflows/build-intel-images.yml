@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - image: obico-ml-api
+          - image: obico-ml-api-intel
             context: ml_api
             dockerfile: Dockerfile.intel
     steps:
@@ -45,8 +45,9 @@ jobs:
         with:
           images: ghcr.io/thespaghettidetective/${{ matrix.image }}
           tags: |
-            type=sha,format=short,prefix=intel-
-            type=raw,value=intel-latest
+            type=sha,format=short,prefix=sha-
+            type=raw,value=release,enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push
         uses: docker/build-push-action@v6

@@ -12,3 +12,4 @@ title: Elegoo APIs
 - [Elegoo-Obico Chats API](./elegoo-obico-chats-api.md)
 - [Elegoo-Obico Failure Detection API](./elegoo-obico-failure-detection-api.md)
 - [Elegoo-Obico Plate Analysis API](./elegoo-obico-plate-analysis-api.md)
+- [Elegoo-Obico Plate Presence API](./elegoo-obico-plate-presence-api.md)

@@ -1,5 +1,6 @@
 import sys
 
+from allauth.account.models import EmailAddress
 from django.contrib import admin
 
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
@@ -18,7 +19,15 @@ from notifications.plugins.email import EmailNotificationPlugin
 from notifications.handlers import handler
 
 def send_test_email(modeladmin, request, queryset):
+    # Email goes to a user's EmailAddress rows, and only sign-up creates them,
+    # so an account created in Django admin (like the seeded root@example.com)
+    # has none and would get nothing.
+    no_address = []
+    sent = 0
     for u in queryset.all():
+        if not EmailAddress.objects.filter(user=u).exists():
+            no_address.append(u.email)
+            continue
         user_ctx = handler.get_user_context(u)
         EmailNotificationPlugin().send_emails(
             user=user_ctx,
@@ -28,7 +37,13 @@ def send_test_email(modeladmin, request, queryset):
             ctx={},
             verified_only=False,
         )
-    messages.success(request, 'Test email sent. Check your server logs if you do not see test email in your inbox.')
+        sent += 1
+    if no_address:
+        messages.error(request, f'No test email sent to {", ".join(no_address)}. '
+                       'Accounts created in Django admin, such as the default root@example.com account, '
+                       'can\'t receive test emails. Pick an account that signed up on the sign-up page.')
+    if sent:
+        messages.success(request, 'Test email sent. Check your server logs if you do not see test email in your inbox.')
 
 
 @admin.register(User)

@@ -3,7 +3,7 @@ import logging
 from django.utils import translation
 from django.conf import settings
 
-from lib.syndicate import syndicate_from_request, settings_for_syndicate
+from lib.syndicate import brand_from_request, brand_settings
 
 
 RE_TSD_APP_PLATFORM = re.compile(r'TSDApp-(?P<platform>\w+)')
@@ -15,15 +15,9 @@ def additional_context_export(request):
         m = RE_TSD_APP_PLATFORM.match(request.headers.get('X-TSD-Platform', '') or request.headers.get('user-agent', ''))
         platform = m.groupdict()['platform'] if m else ''
 
-    # TODO: JusPrin syndicate hack so that we can set branding without add a syndicate to the DB
-    user_agent = request.META.get('HTTP_USER_AGENT', 'Not provided')
-    if user_agent.startswith("JusPrin"):
-        syndicate_name = 'jusprin'
-    else:
-        syndicate_name = syndicate_from_request(request).name
-
-    syndicate_settings = settings_for_syndicate(syndicate_name)
-    syndicate_settings['name'] = syndicate_name
+    # Named 'syndicate' in the templates and the frontend, but it is the brand.
+    brand = brand_from_request(request)
+    syndicate_settings = dict(brand_settings(brand), name=brand)
 
     language = request.GET.get('lang') or request.META.get('HTTP_ACCEPT_LANGUAGE', 'en-US')
 

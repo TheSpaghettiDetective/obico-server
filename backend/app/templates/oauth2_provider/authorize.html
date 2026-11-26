@@ -19,9 +19,9 @@
 
                     <p>{{ application.name }} {% trans "requires the following permissions" %}</p>
                     <ul>
-                        <li>Query your printer status.</li>
-                        <li>Upload G-Code to your account.</li>
-                        <li>Access your {{ page_context.syndicate.display_name }} printer page.</li>
+                        {% for scope in scopes_descriptions %}
+                            <li>{{ scope }}</li>
+                        {% endfor %}
                     </ul>
 
                     {{ form.errors }}

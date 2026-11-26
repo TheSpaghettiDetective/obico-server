@@ -603,8 +603,8 @@ msgstr "Мы никогда не передадим ваш адрес элект
 
 #: app/templates/account/signup.html:107
 #: app/templates/mobile/account/signup.html:101
-msgid "At least 6 characters. And be secure, please."
-msgstr "Не менее 6 символов. И будьте в безопасности, пожалуйста."
+msgid "At least 8 characters. And be secure, please."
+msgstr "Не менее 8 символов. И будьте в безопасности, пожалуйста."
 
 #: app/templates/account/signup.html:131
 #: app/templates/mobile/account/signup.html:125
@@ -635,7 +635,7 @@ msgid "you are already logged in as %(user_display)s."
 msgstr "Вы уже вошли как %(user_display)s."
 
 #: app/templates/account/snippets/password_change_form.html:4
-msgid "Passwords must be At least 6 characters. And be secure, please."
+msgid "Passwords must be At least 8 characters. And be secure, please."
 msgstr ""
 "Пароли должны быть не менее 6 символов. И быть безопасными, пожалуйста."
 

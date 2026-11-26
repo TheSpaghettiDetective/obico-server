@@ -3,11 +3,14 @@ from typing import Optional, Union
 import logging
 import base64
 import binascii
+import re
 
 # from asgiref.typing import HTTPScope
 import django.http
 from django.contrib.auth.hashers import check_password
 from django.conf import settings
+from django.core import signing
+from django.utils.crypto import constant_time_compare
 from django.core.exceptions import PermissionDenied
 from app.models import User, OctoPrintTunnel
 
@@ -15,6 +18,19 @@ HTTPScope = dict
 ScopeOrRequest = Union[HTTPScope, django.http.HttpRequest]
 
 LOGGER = logging.getLogger(__name__)
+
+# Signs a person in to one tunnel on settings.TUNNEL_DOMAIN, where this site's own
+# sign-in cookie is not sent. Set by tunnelv2_views.tunnel_signin.
+TUNNEL_SESSION_COOKIE_NAME = 'tsd_tunnel_session'
+TUNNEL_SESSION_SALT = 'lib.tunnelv2.tunnel_session'
+TUNNEL_CODE_RE = re.compile(r'^\w+$')
+
+
+def tunnel_session_cookie_value(tunnel: OctoPrintTunnel, user: User) -> str:
+    # The password hash part makes a password change sign the person out of the tunnel too
+    return signing.dumps(
+        {'tunnel': tunnel.id, 'user': user.id, 'auth': user.get_session_auth_hash()},
+        salt=TUNNEL_SESSION_SALT)
 
 
 class TunnelAuthenticationError(Exception):
@@ -47,7 +63,26 @@ class OctoprintTunnelV2Helper(object):
             return None
 
     @classmethod
+    def get_tunnel_domain_code(cls, s_or_r: ScopeOrRequest) -> Optional[str]:
+        # "abc123" for a request to abc123.<settings.TUNNEL_DOMAIN>; None for any other host
+        if not settings.TUNNEL_DOMAIN:
+            return None
+        hostname = cls.get_host(s_or_r).split(':')[0].lower()
+        code, _, domain = hostname.partition('.')
+        if domain == settings.TUNNEL_DOMAIN.split(':')[0] and TUNNEL_CODE_RE.match(code):
+            return code
+        return None
+
+    @classmethod
+    def is_on_tunnel_domain(cls, tunnel: OctoPrintTunnel) -> bool:
+        return bool(settings.TUNNEL_DOMAIN and tunnel.subdomain_code)
+
+    @classmethod
     def get_subdomain_code(cls, s_or_r: ScopeOrRequest) -> str:
+        code = cls.get_tunnel_domain_code(s_or_r)
+        if code:
+            return code
+
         host = cls.get_host(s_or_r)
         try:
             m = settings.OCTOPRINT_TUNNEL_SUBDOMAIN_RE.match(host)
@@ -86,13 +121,65 @@ class OctoprintTunnelV2Helper(object):
     @classmethod
     def _get_user(cls, s_or_r: ScopeOrRequest) -> Optional[User]:
         if isinstance(s_or_r, django.http.HttpRequest):
-            if s_or_r.user.is_authenticated:
-                return s_or_r.user
+            # Not "'user' in s_or_r": on a request, "in" reads through its body
+            return s_or_r.user if s_or_r.user.is_authenticated else None
 
         if 'user' in s_or_r:
             if s_or_r['user'].is_authenticated:
                 return s_or_r['user']
 
+        return None
+
+    @classmethod
+    def get_cookie(cls, s_or_r: ScopeOrRequest, name: str) -> Optional[str]:
+        if isinstance(s_or_r, django.http.HttpRequest):
+            return s_or_r.COOKIES.get(name)
+        return s_or_r.get('cookies', {}).get(name)
+
+    @classmethod
+    def get_header(cls, s_or_r: ScopeOrRequest, name: str) -> str:
+        if isinstance(s_or_r, django.http.HttpRequest):
+            return s_or_r.headers.get(name, '')
+        for (k, v) in s_or_r['headers']:
+            if k.decode().lower() == name.lower():
+                return v.decode()
+        return ''
+
+    @classmethod
+    def is_from_another_page(cls, s_or_r: ScopeOrRequest) -> bool:
+        # Every tunnel on settings.TUNNEL_DOMAIN is the same site to a browser, so a page in
+        # one tunnel could send requests to another with that tunnel's cookie. Following a link
+        # to a tunnel is still allowed.
+        if isinstance(s_or_r, django.http.HttpRequest):
+            return (
+                s_or_r.headers.get('Sec-Fetch-Site') in ('same-site', 'cross-site') and not (
+                    s_or_r.headers.get('Sec-Fetch-Mode') == 'navigate' and
+                    s_or_r.method in ('GET', 'HEAD')
+                )
+            )
+        origin = cls.get_header(s_or_r, 'origin')
+        return bool(origin) and origin.split('://', 1)[-1].lower() != cls.get_host(s_or_r).lower()
+
+    @classmethod
+    def _tunnel_session_user(
+        cls, s_or_r: ScopeOrRequest, tunnel: OctoPrintTunnel
+    ) -> Optional[User]:
+        value = cls.get_cookie(s_or_r, TUNNEL_SESSION_COOKIE_NAME)
+        if not value or cls.is_from_another_page(s_or_r):
+            return None
+        try:
+            data = signing.loads(value, salt=TUNNEL_SESSION_SALT, max_age=settings.SESSION_COOKIE_AGE)
+        except signing.BadSignature:  # also raised when the cookie is too old
+            return None
+
+        user = tunnel.printer.user
+        if (
+            data.get('tunnel') == tunnel.id and
+            data.get('user') == user.id and
+            user.is_active and
+            constant_time_compare(data.get('auth', ''), user.get_session_auth_hash())
+        ):
+            return user
         return None
 
     @classmethod
@@ -105,6 +192,9 @@ class OctoprintTunnelV2Helper(object):
                 return
 
             raise PermissionDenied
+
+        if cls._tunnel_session_user(s_or_r, tunnel) is not None:
+            return
 
         raise TunnelAuthenticationError('missing session', realm=None)
 
@@ -175,7 +265,10 @@ class OctoprintTunnelV2Helper(object):
             raise TunnelAuthenticationError('invalid credentials', realm=None)
 
         if tunnel.basicauth_username:
-            cls._validate_tunnel_basic_auth(s_or_r, tunnel)
+            # An app's page opened from the tunnel's old address is signed in with a cookie;
+            # see tunnelv2_views.redirect_page_to_tunnel_domain
+            if cls._tunnel_session_user(s_or_r, tunnel) is None:
+                cls._validate_tunnel_basic_auth(s_or_r, tunnel)
         else:
             cls._validate_tunnel_session(s_or_r, tunnel)
         return tunnel

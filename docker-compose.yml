@@ -21,6 +21,7 @@ x-web-defaults: &web-defaults
     SITE_USES_HTTPS: '${SITE_USES_HTTPS-False}'
     SITE_IS_PUBLIC: '${SITE_IS_PUBLIC-False}'
     CSRF_TRUSTED_ORIGINS: '${CSRF_TRUSTED_ORIGINS-}'
+    NUM_TRUSTED_PROXIES: '${NUM_TRUSTED_PROXIES-0}'
     SOCIAL_LOGIN: '${SOCIAL_LOGIN-False}'
     REDIS_URL: '${REDIS_URL-redis://redis:6379}'
     DATABASE_URL: '${DATABASE_URL-sqlite:////app/db.sqlite3}'
@@ -93,7 +94,7 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
+    command: sh -c 'python manage.py migrate && python manage.py resign_media_urls --once-per-key && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider --no-check-certificate http://web:3334/hc/"]
       start_period: 30s

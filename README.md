@@ -1,22 +1,46 @@
-# The Obico Server
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="website/static/img/logo_dark.svg">
+    <img src="website/static/img/logo.svg" alt="Obico" height="72">
+  </picture>
+</p>
 
-This repo is everything you need to run a self-hosted Obico Server.
+<p align="center">
+  <strong>Open-source AI failure detection and remote monitoring for 3D printers.</strong><br>
+  Runs on your own computer. Works with OctoPrint and Klipper.
+</p>
 
-[Obico](https://www.obico.io) is a community-built, open-source smart 3D printing platform used by makers, enthusiasts, and tinkerers around the world.
+<p align="center">
+  <a href="https://github.com/TheSpaghettiDetective/obico-server"><img src="https://img.shields.io/github/stars/TheSpaghettiDetective/obico-server?style=flat-square" alt="Stars"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/TheSpaghettiDetective/obico-server?style=flat-square" alt="License: AGPL-3.0"></a>
+  <a href="https://obico.io/discord"><img src="https://img.shields.io/badge/chat-Discord-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord"></a>
+</p>
 
-The AI failure detection in this project is based on a Deep Learning model. [See how the model works on real data](https://app.obico.io/ent_pub/publictimelapses/).
+Obico (formerly The Spaghetti Detective) watches your prints through the printer's webcam. When the AI sees a print failing, such as spaghetti or a part knocked off the bed, it alerts you and can pause the print. This repo is the whole server, so you can run it at home on your own hardware.
 
-> **Note:** If you are looking for information about setting up self-hosted server for [JusPrin](https://github.com/TheSpaghettiDetective/JusPrin), please see [README_jusprin_server.md](README_jusprin_server.md) for specific instructions.
+<p align="center">
+  <img src="docs/img/readme-failure-detected.png" alt="Obico's phone app and web app showing a failing print, with the AI's detections boxed and the print paused" width="640">
+</p>
+
+## What you get
+
+- **AI failure detection.** A deep-learning model checks webcam snapshots during the print, and pauses it or alerts you when it sees a failure. [See it on real prints](https://app.obico.io/ent_pub/publictimelapses/?utm_source=github&utm_medium=readme&utm_campaign=obico-server).
+- **Remote monitoring and control.** Watch the webcam and control the printer from a browser or the Obico app for [iOS](https://apps.apple.com/us/app/the-spaghetti-detective/id1540646623) and [Android](https://play.google.com/store/apps/details?id=com.thespaghettidetective.android).
+- **Notifications.** Email, Telegram, Discord, Slack, Pushover, Pushbullet, SMS (Twilio), webhooks and more through Apprise.
+- **Works with your printer's software.** Connect printers through the [OctoPrint plugin](https://github.com/TheSpaghettiDetective/OctoPrint-Obico) or the [Klipper plugin](https://github.com/TheSpaghettiDetective/moonraker-obico) (Mainsail, Fluidd, Creality K1 and Sonic Pad).
+- **Runs on modest hardware.** Any PC from the last 10 years will do. NVIDIA and Intel GPUs, and the RK3588 NPU, speed up detection.
+
+Don't want to run a server? [Obico Cloud](https://www.obico.io/obico-cloud-vs-self-hosted.html?utm_source=github&utm_medium=readme&utm_campaign=obico-server) runs this same code for you.
+
+> **Looking for the JusPrin server?** See [README_jusprin_server.md](README_jusprin_server.md).
 
 # Install and run the server
 
-> **Note:** For more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/).*
+> **Note:** For more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/?utm_source=github&utm_medium=readme&utm_campaign=obico-server).
 
 ## Prerequisites
 
-The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. GPU acceleration is optional but can vastly improve the number of printers the server can handle. NVIDIA CUDA and Intel OpenVINO acceleration are supported on Linux hosts; [see the hardware and GPU guides](https://www.obico.io/docs/server-guides/hardware-requirements/).
-
-[Detailed hardware minimum specs](https://www.obico.io/docs/server-guides/hardware-requirements/).
+The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. GPU acceleration is optional but can vastly improve the number of printers the server can handle. NVIDIA CUDA and Intel OpenVINO acceleration are supported on Linux hosts; [see the hardware and GPU guides](https://www.obico.io/docs/server-guides/hardware-requirements/?utm_source=github&utm_medium=readme&utm_campaign=obico-server).
 
 ### Software requirements
 
@@ -100,6 +124,7 @@ That's it! You now have a fully-functional Obico Server that your OctoPrint can 
 # Configure clients to use self-hosted Obico Server
 
 - [Obico for OctoPrint plugin](https://www.obico.io/docs/server-guides/configure-octoprint-plugin/).
+- [Obico for Klipper plugin](https://www.obico.io/docs/user-guides/klipper-setup/).
 - [Obico mobile app](https://www.obico.io/docs/server-guides/configure-mobile-app).
 
 # Contribute to Obico

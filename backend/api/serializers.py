@@ -3,6 +3,7 @@ from rest_framework.reverse import reverse
 from rest_framework.relations import PrimaryKeyRelatedField
 from django.conf import settings
 import re
+from pathlib import PureWindowsPath
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
 import phonenumbers
@@ -15,6 +16,7 @@ from app.models import (
 )
 
 from lib import channels
+from lib import relay as relay_settings
 from notifications.handlers import handler
 
 
@@ -39,6 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
             'is_pro': {'read_only': True},
             'dh_balance': {'read_only': True},
             'unsub_token': {'read_only': True},
+            'tunnel_cap_multiplier': {'read_only': True},
         }
 
 
@@ -142,15 +145,19 @@ class PrinterSerializer(BasePrinterSerializer):
     agent_connected = serializers.SerializerMethodField()
     normalized_p = serializers.SerializerMethodField()
     current_print = BasePrintSerializer(read_only=True)
+    relay = serializers.SerializerMethodField()
 
     class Meta:
         model = Printer
         fields = BasePrinterSerializer.Meta.fields + (
-            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p', 'relay',
         )
         read_only_fields = BasePrinterSerializer.Meta.read_only_fields + (
-            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p',
+            'pic', 'status', 'settings', 'agent_connected', 'current_print', 'normalized_p', 'relay',
         )
+
+    def get_relay(self, obj: Printer) -> dict:
+        return relay_settings.for_viewer(obj)
 
     def get_agent_connected(self, obj: Printer) -> bool:
         return channels.num_ws_connections(channels.octo_group_name(obj.id)) > 0
@@ -211,7 +218,9 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
         fields = '__all__'
-        read_only_fields = ('user', 'resident_printer', 'safe_filename')
+        # The file and thumbnail addresses are written by the server when it stores the upload.
+        read_only_fields = ('user', 'resident_printer', 'safe_filename',
+                            'url', 'thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url')
 
     def validate_parent_folder(self, parent_folder):
         if parent_folder is not None and self.context['request'].user != parent_folder.user:
@@ -231,6 +240,25 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
 class GCodeFileSerializer(BaseGCodeFileSerializer):
     parent_folder = BaseGCodeFolderSerializer()
     print_set = BasePrintSerializer(many=True, read_only=True)
+
+
+class AgentGCodeFileSerializer(GCodeFileSerializer):
+    """The printer saves a downloaded file under safe_filename, so a printer
+    can set only a bare file name: any folder part, '/' or '\\', is dropped."""
+
+    def validate_safe_filename(self, safe_filename):
+        name = PureWindowsPath(safe_filename).name
+        if name in ('', '.', '..'):
+            raise serializers.ValidationError('Not a file name.')
+        return name
+
+
+class AgentGCodeFileUpdateSerializer(AgentGCodeFileSerializer):
+    """An agent updating a file record cannot change where the file and its thumbnails are stored."""
+
+    class Meta(BaseGCodeFileSerializer.Meta):
+        read_only_fields = BaseGCodeFileSerializer.Meta.read_only_fields + (
+            'url', 'thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url')
 
 
 class AgentGCodeFileListSerializer(serializers.ModelSerializer):
@@ -310,22 +338,28 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
     def validate_name(self, name):
         name = name.strip()
-        plugin = handler.notification_plugin_by_name(name)
-        if not plugin:
-            raise Exception(f'Notification Plugin "{name}" is not loaded')
+        if not handler.notification_plugin_by_name(name):
+            raise serializers.ValidationError(f'Notification Plugin "{name}" is not loaded')
 
         return name
 
     def validate(self, data):
-        name = data['name']
+        # The settings that will be stored are checked by the plugin of the type
+        # that will be stored: on create, on a full update, when the settings
+        # change and when the type changes. A request that changes neither, such
+        # as switching one event on, leaves settings that were checked when saved.
+        name = data.get('name', self.instance.name if self.instance else None)
+        if not name:
+            raise serializers.ValidationError({'name': 'This field is required.'})
         plugin = handler.notification_plugin_by_name(name)
-        if not plugin:
-            raise Exception(f'Notification Plugin "{name}" is not loaded')
 
-        need_to_validate_config = (not self.partial) or 'config' in data
-        if need_to_validate_config:
+        type_changes = self.instance is None or name != self.instance.name
+        if (not self.partial) or type_changes or 'config' in data:
+            config = data['config'] if 'config' in data else (self.instance.config if self.instance else {})
+            if any(value is not None and not isinstance(value, (str, int, float, bool)) for value in config.values()):
+                raise serializers.ValidationError({'config': 'Each setting must be text, a number, or true or false.'})
             try:
-                data['config'] = plugin.instance.validate_config(data['config'])
+                data['config'] = plugin.instance.validate_config(config)
             except serializers.ValidationError as e:
                 raise serializers.ValidationError({'config': e.detail})
 
@@ -333,7 +367,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
     def save(self):
         config = self.validated_data.pop('config', None)
-        if config:
+        if config is not None:
             self.validated_data['config_json'] = json.dumps(config)
 
         # HACK: For some reason sqlite will set created_at to None on a PATCH call and results in an exception. Force it now()
@@ -355,10 +389,14 @@ class PrinterEventSerializer(serializers.ModelSerializer):
 
 class PublicPrinterSerializer(serializers.ModelSerializer):
     pic = serializers.DictField(read_only=True)
+    relay = serializers.SerializerMethodField()
 
     class Meta:
         model = Printer
-        fields = ('name', 'pic', 'settings')
+        fields = ('name', 'pic', 'settings', 'relay')
+
+    def get_relay(self, obj: Printer) -> dict:
+        return relay_settings.for_shared_viewer(obj)
 
 
 class VerifyCodeInputSerializer(serializers.Serializer):

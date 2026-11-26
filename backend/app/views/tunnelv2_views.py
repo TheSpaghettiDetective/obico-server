@@ -2,6 +2,7 @@ import time
 import functools
 import re
 import json
+import secrets
 import packaging.version
 from types import MethodType
 from datetime import datetime, timedelta
@@ -18,7 +19,9 @@ import sentry_sdk
 from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
-from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
+from lib.tunnelv2 import (
+    OctoprintTunnelV2Helper, TunnelAuthenticationError,
+    TUNNEL_SESSION_COOKIE_NAME, tunnel_session_cookie_value)
 from app.models import OctoPrintTunnel
 
 
@@ -30,10 +33,18 @@ PLUGIN_STATIC_RE = re.compile(r'/plugin/[\w_-]+/static/')
 DJANGO_COOKIE_RE = re.compile(
     fr'^{settings.CSRF_COOKIE_NAME}=|'
     fr'^{settings.SESSION_COOKIE_NAME}=|'
-    fr'^{settings.LANGUAGE_COOKIE_NAME}='
+    fr'^{settings.LANGUAGE_COOKIE_NAME}=|'
+    fr'^{TUNNEL_SESSION_COOKIE_NAME}='
 )
 
+TUNNEL_SIGNIN_PATH = '/_tsd_/signin/'
+TUNNEL_SIGNIN_EXPIRE_SECS = 60
+
+# Values of Sec-Fetch-Dest for a request whose answer the browser shows as a page
+PAGE_FETCH_DESTS = ('document', 'iframe', 'frame', 'embed', 'object')
+
 OCTOPRINT_COOKIE_PORT_RE = re.compile(r'^[_\w]+_P(\d+)')
+COOKIE_DOMAIN_ATTR_RE = re.compile(r';\s*domain\s*(=[^;]*)?(?=;|$)', re.IGNORECASE)
 
 OVER_FREE_LIMIT_HTML = """
 <html>
@@ -130,24 +141,103 @@ def redirect_to_tunnel_url(request, pk):
                 </body>
             </html>
             """, status=NOT_AVAILABLE_STATUS_CODE)
+    if OctoprintTunnelV2Helper.is_on_tunnel_domain(tunnel):
+        return tunnel_signin_redirect(request, tunnel, request.user, '/')
+
     url = tunnel.get_internal_tunnel_url(request)
     return HttpResponseRedirect(url)
+
+
+def tunnel_signin_redirect(request, tunnel, user, path):
+    # This site's sign-in cookie does not reach the tunnel's own domain. A one-time link
+    # signs the person in to this one tunnel there.
+    token = secrets.token_urlsafe(32)
+    cache.tunnel_signin_set(
+        token, {'tunnel': tunnel.id, 'user': user.id, 'path': path}, TUNNEL_SIGNIN_EXPIRE_SECS)
+    return HttpResponseRedirect(
+        f'{tunnel.get_internal_tunnel_url(request)}{TUNNEL_SIGNIN_PATH}?token={token}')
+
+
+def tunnel_signin(request):
+    code = OctoprintTunnelV2Helper.get_tunnel_domain_code(request)
+    tunnel = OctoPrintTunnel.objects.filter(
+        subdomain_code=code).select_related('printer__user').first() if code else None
+    data = cache.tunnel_signin_pop(request.GET.get('token', ''))
+    user = tunnel.printer.user if tunnel else None
+    if not (
+        tunnel and data and user.is_active and
+        data['tunnel'] == tunnel.id and data['user'] == user.id
+    ):
+        return HttpResponse('invalid or expired sign-in link', status=401)
+
+    path = data['path'] if data['path'].startswith('/') and not data['path'].startswith('//') else '/'
+    resp = HttpResponseRedirect(path)
+    # No Domain attribute: the cookie stays on this one tunnel's address
+    resp.set_cookie(
+        TUNNEL_SESSION_COOKIE_NAME,
+        tunnel_session_cookie_value(tunnel, user),
+        max_age=settings.SESSION_COOKIE_AGE,
+        secure=request.is_secure(),
+        httponly=True,
+        samesite='Lax',
+    )
+    return resp
+
+
+def redirect_page_to_tunnel_domain(request):
+    # A page from a tunnel's old address (<code>.tunnels.<site>) gets this site's sign-in
+    # cookie with every request it makes, so browsers are sent to the tunnel's own domain.
+    # Apps calling the old address, which don't ask for a page, keep working there.
+    code = OctoprintTunnelV2Helper.get_subdomain_code(request)
+    tunnel = OctoPrintTunnel.objects.filter(subdomain_code=code).select_related('printer__user').first()
+    if tunnel is None:
+        return HttpResponse('invalid credentials', status=401)
+
+    path = request.get_full_path()
+    if (
+        not tunnel.basicauth_username and
+        request.user.is_authenticated and
+        request.user.id == tunnel.printer.user_id
+    ):
+        return tunnel_signin_redirect(request, tunnel, request.user, path)
+
+    if tunnel.basicauth_username:
+        # An app's saved link carries the tunnel's username and password. Browsers send them
+        # only after being asked, and never on to another site, so they are asked for and
+        # checked here, then turned into a one-time sign-in link.
+        try:
+            OctoprintTunnelV2Helper._validate_tunnel_basic_auth(request, tunnel)
+        except TunnelAuthenticationError as exc:
+            return tunnel_auth_error_response(exc)
+        return tunnel_signin_redirect(request, tunnel, tunnel.printer.user, path)
+
+    return HttpResponseRedirect(f'{tunnel.get_internal_tunnel_url(request)}{path}', status=307)
+
+
+def tunnel_auth_error_response(exc):
+    resp = HttpResponse(exc.message, status=401)
+    if exc.realm:
+        resp['WWW-Authenticate'] = f'Basic realm="{exc.realm}", charset="UTF-8"'
+    return resp
 
 
 @csrf_exempt
 @xframe_options_exempt
 def octoprint_http_tunnel(request):
+    on_tunnel_domain = OctoprintTunnelV2Helper.get_tunnel_domain_code(request) is not None
+    if on_tunnel_domain and request.path == TUNNEL_SIGNIN_PATH:
+        return tunnel_signin(request)
+
+    if (
+        settings.TUNNEL_DOMAIN and not on_tunnel_domain and
+        request.headers.get('Sec-Fetch-Dest') in PAGE_FETCH_DESTS
+    ):
+        return redirect_page_to_tunnel_domain(request)
+
     try:
         octoprinttunnel = OctoprintTunnelV2Helper.get_octoprinttunnel(request)
     except TunnelAuthenticationError as exc:
-        resp = HttpResponse(
-            exc.message,
-            status=401
-        )
-        if exc.realm:
-            resp['WWW-Authenticate'] =\
-                f'Basic realm="{exc.realm}", charset="UTF-8"'
-        return resp
+        return tunnel_auth_error_response(exc)
 
     # "Special path" starting with "/_tsd_/" is dedicated to tunnel APIs
     if request.path.lower().startswith('/_tsd_/'):
@@ -414,6 +504,10 @@ def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_header
     # in some browsers (FF gives wwarning)
     tunnel_cookies = []
     for cookie in (data['response'].get('cookies', ()) or ()):
+        # Without a Domain attribute a cookie stays on the tunnel's own address. With one,
+        # the printer could set cookies for the whole site, such as its sign-in cookie.
+        cookie = COOKIE_DOMAIN_ATTR_RE.sub('', cookie)
+
         if (
             request_is_secure and
             'secure' not in cookie.lower()

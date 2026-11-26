@@ -86,6 +86,25 @@ html[data-theme=dark] .sidebarItem {
   margin-bottom: 28px;
 }
 
+.jusprinLockup {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4%;
+  background: radial-gradient(circle at 50% 40%, #5b3f8f 0%, #2a2350 45%, #161d27 80%);
+  border: 2px solid rgba(206, 132, 183, .35);
+}
+
+.jusprinCone {
+  width: 50%;
+}
+
+.jusprinName {
+  width: 75%;
+}
+
 .learnMoreButton {
   border: 1px solid #181623;
   box-sizing: border-box;

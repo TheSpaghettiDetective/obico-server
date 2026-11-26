@@ -167,7 +167,9 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         ctx['unsub_url'] = unsub_url
 
         headers = {
-            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{clean_mailing_list}>'
+            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{clean_mailing_list}>',
+            # One-click unsubscribe (RFC 8058), which Gmail and Yahoo require of bulk senders.
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         }
 
         if img_url:
@@ -203,7 +205,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
 
-        from_email = syndicate.settings_for_syndicate(user.syndicate_name).get('from_email', settings.DEFAULT_FROM_EMAIL)
+        from_email = syndicate.brand_settings(syndicate.brand_of_syndicate(user.syndicate_name)).get('from_email', settings.DEFAULT_FROM_EMAIL)
 
         msg = EmailMessage(
             subject,

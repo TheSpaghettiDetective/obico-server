@@ -22,7 +22,7 @@ Example:
 - `app`: Required. The name of your app.
 - `platform`: Optional. It can be "OctoPrint" or "Klipper". Default to "OctoPrint" if absent.
 - `printer_id`: Optional. If not provided, and the user has more than 1 printers linked to his/her Obico account, the page will list all printers for the user to choose from.
-- `success_redirect_url`: Optional. If not provided, the page will be redirected to `https://app.obico.io/tunnels/succeeded/` on successful authorization.
+- `success_redirect_url`: Optional. An address that opens your app, such as `greatapp://callback`. Addresses of web pages on other sites are not accepted, because the redirect carries the tunnel's username and password. If not provided or not accepted, the page will be redirected to `https://app.obico.io/tunnels/succeeded/` on successful authorization.
 
 ### Redirect on success {#redirect-on-success}
 

@@ -4,8 +4,10 @@ import flask
 from flask_compress import Compress
 from flask import abort, make_response, request, jsonify
 from os import path, environ
+import logging
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 import cv2
 import numpy as np
 import requests
@@ -23,7 +25,14 @@ SESSION_TTL_SECONDS = 60*2
 if environ.get('SENTRY_DSN'):
     sentry_sdk.init(
         dsn=environ.get('SENTRY_DSN'),
-        integrations=[FlaskIntegration(), ],
+        integrations=[
+            FlaskIntegration(),
+            # Log lines become breadcrumbs only, never events of their own, as in the
+            # backend's settings.py. Code that wants Sentry to know calls
+            # capture_exception; without this, one failure was reported once per
+            # error log line too, including the backoff library's "Giving up" line.
+            LoggingIntegration(level=logging.INFO, event_level=None),
+        ],
     )
 
 app = flask.Flask(__name__)

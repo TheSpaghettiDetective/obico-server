@@ -19,8 +19,8 @@ module.exports = {
   },
   themeConfig: {
     announcementBar: {
-      id: 'giveStarOnGitHubAnnouncement',
-      content: `⭐️ If you like Obico, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/TheSpaghettiDetective/obico-server">GitHub</a>`,
+      id: 'jusprin2Announcement',
+      content: `🎉 JusPrin 2 is out: the free AI slicer that helps you get better prints. <a href="/blog/introducing-jusprin-2/">See what it does</a>`,
     },
     colorMode: {
       // "light" | "dark"

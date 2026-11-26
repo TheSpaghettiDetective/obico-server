@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, Optional
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 import logging
 import os
@@ -32,6 +33,13 @@ LOGGER = logging.getLogger(__name__)
 class PrinterManager(SafeDeleteManager):
     def get_queryset(self):
         return super(PrinterManager, self).get_queryset().filter(archived_at__isnull=True)
+
+
+@dataclass(frozen=True)
+class DetectionRefusal:
+    # Why Printer.start_detection() refused: detection is off (reason), or the last detection was too recent (wait_secs)
+    reason: Optional[str] = None
+    wait_secs: float = 0
 
 
 class Printer(SafeDeleteModel):
@@ -134,10 +142,50 @@ class Printer(SafeDeleteModel):
     # not_watching_reason is used by the web app and mobile app
 
     def should_watch(self):
-        if not self.watching_enabled or self.user.dh_balance < 0:
-            return False
+        return self.reason_not_to_watch() is None
 
-        return self.current_print is not None and self.current_print.alert_muted_at is None
+    def reason_not_to_watch(self):
+        # The rules behind should_watch, each with the sentence not_watching_reason shows for it
+        if not self.watching_enabled:
+            return 'AI failure detection is disabled'
+
+        if self.user.dh_balance < 0:
+            return "You have run out of AI Detection Hours"
+
+        if self.current_print is None:
+            return "Printer is not actively printing"
+
+        if self.current_print.alert_muted_at is not None:
+            return "Alerts are muted for current print"
+
+        return None
+
+    def start_detection(self):
+        '''
+        The rules every failure detection on this printer follows, whether the picture comes
+        from the printer's agent or from an app through the API: detection must be on for the
+        current print with AI hours left, and detections are at least MIN_DETECTION_INTERVAL apart.
+        A detection that may run is counted toward the print's AI hours.
+
+        Returns (prediction, None) when the detection may run, or (prediction, DetectionRefusal).
+        '''
+        reason = self.reason_not_to_watch()
+        if reason:
+            return None, DetectionRefusal(reason=reason)
+
+        prediction, _ = PrinterPrediction.objects.get_or_create(printer=self)
+
+        wait_secs = settings.MIN_DETECTION_INTERVAL - (timezone.now() - prediction.updated_at).total_seconds()
+        if wait_secs > 0:
+            return prediction, DetectionRefusal(wait_secs=wait_secs)
+
+        # Requests that arrive together all pass the check above; only one of them gets the detection
+        wait_secs = cache.printer_detection_claim(self.id, settings.MIN_DETECTION_INTERVAL)
+        if wait_secs > 0:
+            return prediction, DetectionRefusal(wait_secs=wait_secs)
+
+        cache.print_num_predictions_incr(self.current_print.id)
+        return prediction, None
 
     def not_watching_reason(self):
         if not self.watching_enabled:
@@ -830,7 +878,9 @@ class OctoPrintTunnel(SafeDeleteModel):
         return free.pop()
 
     def get_host(self, request):
-        if self.subdomain_code:
+        if self.subdomain_code and settings.TUNNEL_DOMAIN:
+            host = f'{self.subdomain_code}.{settings.TUNNEL_DOMAIN}'
+        elif self.subdomain_code:
             host = '{subdomain_code}.tunnels.{site.domain}'.format(
                 subdomain_code=self.subdomain_code,
                 site=get_current_site(request),

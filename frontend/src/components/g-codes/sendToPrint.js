@@ -83,7 +83,7 @@ export const sendToPrint = (args) => {
       clearPrinterTransientState(printerId)
       Swal.Toast.fire({
         icon: 'error',
-        title: err,
+        titleText: err,
       })
     })
   })

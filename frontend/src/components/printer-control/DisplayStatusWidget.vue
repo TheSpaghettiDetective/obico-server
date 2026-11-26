@@ -54,7 +54,7 @@ export default {
         if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: err,
+            titleText: err,
           })
         }
       })

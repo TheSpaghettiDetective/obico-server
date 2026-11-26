@@ -17,13 +17,17 @@ export default function BlogSidebar({sidebar, tags}) {
   return (
     <>
       <div className={styles.nozzleNinzaBlock}>
-        <h2>Next-Gen AI</h2>
-        <h3>Failure Detection <span className={styles.obicoAccent}>General Release</span></h3>
-        <div className={styles.nozzleNizaBadgeImage}>
-          <img src='/img/AI_GENERAL_RELEASE_BANNER.jpg' alt='Next-Gen AI failure detection general release'/>
+        <h2>JusPrin 2</h2>
+        <h3>The AI slicer that helps you get better prints <span className={styles.obicoAccent}>Out now</span></h3>
+        <div className={clsx(styles.nozzleNizaBadgeImage, styles.jusprinLockup)}>
+          <img className={styles.jusprinCone} src='/img/jusprin-2/jusprin-cone-white.svg' alt=''/>
+          <picture>
+            <source srcSet='/img/jusprin-2/jusprin-name.png' media='(prefers-reduced-motion: reduce)'/>
+            <img className={styles.jusprinName} src='/img/jusprin-2/jusprin-name-animated.webp' alt='JusPrin 2, the AI slicer'/>
+          </picture>
         </div>
         <div>
-          <a href='https://www.obico.io/blog/next-gen-ai-failure-detection-general-release/'>
+          <a href='/blog/introducing-jusprin-2/'>
             <button className={styles.learnMoreButton}>Check it out</button>
           </a>
         </div>

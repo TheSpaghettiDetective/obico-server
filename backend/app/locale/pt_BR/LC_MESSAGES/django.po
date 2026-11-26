@@ -619,8 +619,8 @@ msgstr "Nunca compartilharemos seu e-mail com mais ninguém."
 
 #: app/templates/account/signup.html:107
 #: app/templates/mobile/account/signup.html:101
-msgid "At least 6 characters. And be secure, please."
-msgstr "Pelo menos 6 caracteres. E seja seguro, por favor."
+msgid "At least 8 characters. And be secure, please."
+msgstr "Pelo menos 8 caracteres. E seja seguro, por favor."
 
 #: app/templates/account/signup.html:131
 #: app/templates/mobile/account/signup.html:125
@@ -651,8 +651,8 @@ msgid "you are already logged in as %(user_display)s."
 msgstr "você já está logado como %(user_display)s."
 
 #: app/templates/account/snippets/password_change_form.html:4
-msgid "Passwords must be At least 6 characters. And be secure, please."
-msgstr "As senhas devem ter pelo menos 6 caracteres. E ser seguras, por favor."
+msgid "Passwords must be At least 8 characters. And be secure, please."
+msgstr "As senhas devem ter pelo menos 8 caracteres. E ser seguras, por favor."
 
 #: app/templates/account/verification_sent.html:5
 #: app/templates/account/verification_sent.html:9

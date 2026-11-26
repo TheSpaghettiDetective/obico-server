@@ -6,7 +6,7 @@
           <i class="fas fa-robot"></i>
         </div>
         <div class="message-content">
-          <VueMarkdown :key="message.content">{{ message.content }}</VueMarkdown>
+          <VueMarkdown :key="message.content" :html="false">{{ message.content }}</VueMarkdown>
           <div v-if="Object.keys(changedParams(message)).length > 0" class="pt-2">
             <div>{{ $t('I have changed the following parameters:') }}</div>
             <div v-for="(value, key) in changedParams(message)" :key="key">

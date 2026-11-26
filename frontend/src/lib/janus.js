@@ -1833,7 +1833,10 @@ function Janus(gatewayCallbacks) {
     }
     // If we still need to create a PeerConnection, let's do that
     if(!config.pc) {
-      var pc_config = {'iceServers': iceServers, 'iceTransportPolicy': iceTransportPolicy, 'bundlePolicy': bundlePolicy}
+      // Obico: iceServers may be a function, called for each new peer
+      // connection, so the caller can hand over relay credentials that are
+      // current at that moment rather than when Janus was created.
+      var pc_config = {'iceServers': typeof iceServers === 'function' ? iceServers() : iceServers, 'iceTransportPolicy': iceTransportPolicy, 'bundlePolicy': bundlePolicy}
       if(Janus.webRTCAdapter.browserDetails.browser === 'chrome') {
         // For Chrome versions before 72, we force a plan-b semantic, and unified-plan otherwise
         pc_config['sdpSemantics'] = (Janus.webRTCAdapter.browserDetails.version < 72) ? 'plan-b' : 'unified-plan'

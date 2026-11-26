@@ -14,6 +14,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils import timezone
+from django.utils._os import safe_join
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -30,7 +31,7 @@ from lib import channels
 from lib.file_storage import save_file_obj
 from lib import cache
 from lib.syndicate import syndicate_from_request
-from app.accounts import filter_users_by_email_and_syndicate
+from app.accounts import users_by_email
 from allauth.account.views import EmailView
 
 from app.forms import SyndicateSpecificResetPasswordForm
@@ -60,7 +61,7 @@ class SocialAccountAwareSignupView(SignupView):
     def form_valid(self, form):
             email = form.cleaned_data['email']
             syndicate = syndicate_from_request(self.request)
-            if filter_users_by_email_and_syndicate(email, syndicate):
+            if users_by_email(email, syndicate):
                 form.add_error('email', _('A user is already registered with this email address.'))
                 return self.form_invalid(form)
             return super(SocialAccountAwareSignupView, self).form_valid(form)
@@ -177,6 +178,10 @@ def slack_oauth_callback(request):
     return redirect('/user_preferences/notification_slack/')
 
 
+# The link in an email's body (GET), and one-click unsubscribe (RFC 8058): mail
+# providers POST 'List-Unsubscribe=One-Click' to the List-Unsubscribe URL, with no
+# CSRF token. The unguessable unsub_token in the URL is what authorizes either.
+@csrf_exempt
 def unsubscribe_email(request):
     unsub_token = request.GET.get('unsub_token')
     email_list = request.GET.get('list')
@@ -298,7 +303,9 @@ def serve_jpg_file(request, file_path):
     url = HmacSignedUrl(request.get_full_path())
     if not url.is_authorized():
         return HttpResponseForbidden("You do not have permission to view this media")
-    full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    # The digest only proves the server signed this path. safe_join refuses a path
+    # outside MEDIA_ROOT (absolute, or climbing out with '..').
+    full_path = safe_join(settings.MEDIA_ROOT, file_path)
 
     # Determine content type based on file extension
     content_type = mimetypes.guess_type(file_path)[0]

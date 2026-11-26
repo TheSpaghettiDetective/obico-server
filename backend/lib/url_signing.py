@@ -3,11 +3,13 @@ import hashlib
 from datetime import timedelta
 
 from django.utils import timezone
-from urllib.parse import urlparse, parse_qs, urlunparse, ParseResult
+from urllib.parse import urlparse, parse_qs, urlunparse, unquote, ParseResult
 from dataclasses import dataclass, field, InitVar
 from typing import Optional, List, Union
 import hmac
 from django.conf import settings
+from django.core.exceptions import SuspiciousFileOperation
+from django.utils._os import safe_join
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -34,6 +36,22 @@ def new_signed_url(url_str: str) -> str:
     digest = calculate_hmac_digest(parsed_url.path)
     signed_url = parsed_url._replace(query=f"digest={digest}")
     return urlunparse(signed_url)
+
+
+def is_media_url(url_str: str) -> bool:
+    """
+    True if the URL's path is a /media/ link to a file inside MEDIA_ROOT, i.e. one
+    this server could have stored and signed. Anything else must never be signed,
+    because a signed link is served to anyone who has it.
+    """
+    path = unquote(urlparse(url_str).path)
+    if not path.startswith(settings.MEDIA_URL):
+        return False
+    try:
+        safe_join(settings.MEDIA_ROOT, path[len(settings.MEDIA_URL):])
+    except SuspiciousFileOperation:
+        return False
+    return True
 
 
 def normalize_origin(origin_str: str) -> str:

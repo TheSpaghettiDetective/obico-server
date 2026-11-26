@@ -1,7 +1,8 @@
 # Note: Please don't place single quotes (') or double quote (") around the values. Also it's case-sensitive
 
 # DJANGO_SECRET_KEY=
-# Generate your own unique secret key by running the following command:
+# Leave it unset and the server generates a key on its first start and keeps it in backend/.django_secret_key
+# (keep that file in your backups). To set your own, generate one by running the following command:
 # docker compose exec web ./manage.py gen_site_secret
 
 # EMAIL_HOST=
@@ -30,11 +31,20 @@
 #  Existing timelapses will keep using whatever domain/localhost was configured when they were created which can make them inaccessible through the webpage
 
 # CSRF_TRUSTED_ORIGINS=
+# A list of trusted origins for unsafe requests (e.g. POST). For example: ["https://obico.mydomain.com", "https://*.example.com"]. Necessary if, for example, a Cloudflare tunnel is used for external access.
 
+# NUM_TRUSTED_PROXIES=0
 # Number of reverse proxies in front of the server that add to X-Forwarded-For (for example 1 for one nginx).
 # 0 ignores that header. See https://www.obico.io/docs/server-guides/advanced/reverse-proxy/
-# NUM_TRUSTED_PROXIES=0
-# A list of trusted origins for unsafe requests (e.g. POST). For example: ["https://obico.mydomain.com", "https://*.example.com"]. Necessary if, for example, a Cloudflare tunnel is used for external access.
+
+# TUNNEL_DOMAIN=
+# Leave it unset. It is used by the hosted service and is not supported on self-hosted servers yet.
+
+# RELAY_HOST=
+# RELAY_SECRETS=
+# Leave both unset unless you run your own coturn relay with use-auth-secret. RELAY_HOST is its host name;
+# RELAY_SECRETS is the secret it has (comma-separated, newest first, only while changing it).
+# The server refuses to start with RELAY_HOST set and RELAY_SECRETS empty.
 
 # SOCIAL_LOGIN=False
 # Set it to True to allow social account login. You will need to set "Provider" in Django admin (https://django-allauth.readthedocs.io/en/latest/providers.html)

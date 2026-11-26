@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.core import mail
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import Client, RequestFactory, SimpleTestCase, TestCase
+from django.test import Client, RequestFactory, SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
 from packaging.version import InvalidVersion
@@ -844,11 +844,19 @@ class SendTestEmailAdminActionTestCase(TestCase):
         self.assertEqual(sorted(m.level for m in response.context['messages']), [messages.SUCCESS, messages.ERROR])
 
 
-class SiteSyndicateMigrationTestCase(TestCase):
+class SiteSyndicateMigrationTestCase(TransactionTestCase):
     """Migration 0086, from the many-to-many link to one syndicate per site.
-    PostgreSQL rolls the schema back with the test's transaction."""
+    Outside a transaction, because SQLite, the self-hosted default, cannot
+    change its schema inside one. serialized_rollback puts back the rows the
+    migrations created, and tearDown the latest schema, for the tests after it."""
     before = [('app', '0085_printerprediction_normalized_p')]
     after = [('app', '0086_sitesyndicate')]
+    serialized_rollback = True
+
+    def tearDown(self):
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())
+        super().tearDown()
 
     def test_each_site_keeps_its_first_syndicate_and_an_unlinked_one_gets_the_first(self):
         executor = MigrationExecutor(connection)
@@ -865,10 +873,6 @@ class SiteSyndicateMigrationTestCase(TestCase):
         other.sites.add(theirs)
         unlinked = Site.objects.create(domain='unlinked.example.com', name='unlinked')
 
-        # The rows' foreign key checks are deferred to the end of the
-        # transaction, and a table with checks pending cannot be dropped.
-        with connection.cursor() as cursor:
-            cursor.execute('SET CONSTRAINTS ALL IMMEDIATE')
         executor = MigrationExecutor(connection)
         executor.migrate(self.after)
         apps = executor.loader.project_state(self.after).apps

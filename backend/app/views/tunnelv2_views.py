@@ -43,6 +43,21 @@ TUNNEL_SIGNIN_EXPIRE_SECS = 60
 # Values of Sec-Fetch-Dest for a request whose answer the browser shows as a page
 PAGE_FETCH_DESTS = ('document', 'iframe', 'frame', 'embed', 'object')
 
+# Fluidd and Mainsail install an offline cache (a service worker) that answers every page
+# address on the tunnel from its copy of the interface, including the sign-in link: the
+# server never sees the link, and the page stays blank. Browsers fetch a service worker's
+# script again, with "Service-Worker: script", on every page load the worker answers. This
+# script replaces the interface's worker: it removes itself and reloads the pages the old
+# worker answered, which then reach the server. A page it did not answer, such as a fresh
+# load that registers the interface's worker again, is left alone, so nothing reloads twice.
+SELF_REMOVING_SERVICE_WORKER = b"""
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', event => event.waitUntil((async () => {
+  await self.registration.unregister();
+  for (const client of await self.clients.matchAll({type: 'window'})) client.navigate(client.url);
+})()));
+"""
+
 OCTOPRINT_COOKIE_PORT_RE = re.compile(r'^[_\w]+_P(\d+)')
 COOKIE_DOMAIN_ATTR_RE = re.compile(r';\s*domain\s*(=[^;]*)?(?=;|$)', re.IGNORECASE)
 
@@ -168,6 +183,11 @@ def tunnel_signin(request):
         tunnel and data and user.is_active and
         data['tunnel'] == tunnel.id and data['user'] == user.id
     ):
+        if tunnel and OctoprintTunnelV2Helper._tunnel_session_user(request, tunnel) is not None:
+            # The link was used already by this browser, which is signed in to the tunnel. This
+            # is how a page stuck on an offline cache comes back: the browser sent the link to
+            # the server while showing the cached page, then reloads it once the cache is gone.
+            return HttpResponseRedirect('/')
         return HttpResponse('invalid or expired sign-in link', status=401)
 
     path = data['path'] if data['path'].startswith('/') and not data['path'].startswith('//') else '/'
@@ -225,6 +245,13 @@ def tunnel_auth_error_response(exc):
 @xframe_options_exempt
 def octoprint_http_tunnel(request):
     on_tunnel_domain = OctoprintTunnelV2Helper.get_tunnel_domain_code(request) is not None
+    if on_tunnel_domain and request.headers.get('Service-Worker') == 'script':
+        # Before the sign-in check: a browser stuck on the cached page has not been signed in
+        # to the tunnel yet. The script is the same for everyone and tells nothing.
+        resp = HttpResponse(SELF_REMOVING_SERVICE_WORKER, content_type='text/javascript')
+        resp['Cache-Control'] = 'no-store'
+        return resp
+
     if on_tunnel_domain and request.path == TUNNEL_SIGNIN_PATH:
         return tunnel_signin(request)
 
@@ -417,6 +444,13 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
             not k.startswith('HTTP_X_FORWARDED')  # meant for TSD server
         )
     }
+
+    if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path == '/config.json':
+        # Obico for Klipper rewrites Fluidd's and Mainsail's config.json, and answers 502 when
+        # the web server's answer is an empty "not modified" (seen with 2.2.7). Without the
+        # file, Fluidd shows a blank page. Asking for the whole file avoids that.
+        req_headers.pop('If-None-Match', None)
+        req_headers.pop('If-Modified-Since', None)
 
     if 'content-type' in request.headers:
         req_headers['Content-Type'] = request.headers['content-type']

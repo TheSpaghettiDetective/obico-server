@@ -44,10 +44,13 @@ class AppriseNotificationPlugin(BaseNotificationPlugin):
 
     def points_inward(self, apprise_url: str) -> bool:
         # For services Apprise reaches at a host the user names (json://, ntfy://,
-        # gotify://, ...), that host must be on the public internet. Services at a
-        # fixed address carry a token where the host would be; a token does not
-        # resolve, so it passes.
+        # gotify://, ...), that host must be on the public internet. Their URL
+        # templates name a {host}. Services at a fixed address (tgram://, discord://,
+        # ...) carry an id or token where the host would be, and are never sent there:
+        # a Telegram bot id such as 4012345678 also reads as the address 239.39.137.78.
         service = apprise.Apprise.instantiate(apprise_url)
+        if not any('{host}' in template for template in getattr(service, 'templates', ())):
+            return False
         host = getattr(service, 'host', None)
         return bool(host) and is_public_host(host) is False
 

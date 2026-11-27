@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.core import mail
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import Client, RequestFactory, SimpleTestCase, TestCase
+from django.test import Client, RequestFactory, SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import timezone
 from unittest.mock import ANY, patch, PropertyMock
 from packaging.version import InvalidVersion
@@ -581,6 +581,65 @@ class TunnelDomainTestCase(TestCase):
         client.force_login(self.user)
         self.assertEqual(client.get('/_tsd_/tunnelusage/', HTTP_SEC_FETCH_DEST='document').status_code, 200)
 
+    def test_an_offline_cache_on_the_tunnel_domain_is_replaced_by_one_that_removes_itself(self):
+        # Fluidd's and Mainsail's cache would otherwise answer the sign-in link with a blank page
+        from app.views import tunnelv2_views
+        with patch.object(tunnelv2_views.channels, 'send_msg_to_printer') as to_printer:
+            resp = Client(HTTP_HOST=self.host).get('/sw.js', HTTP_SERVICE_WORKER='script')
+        self.assertEqual((resp.status_code, resp['Content-Type'], resp['Cache-Control']),
+                         (200, 'text/javascript', 'no-store'))
+        self.assertIn(b'self.registration.unregister()', resp.content)
+        to_printer.assert_not_called()
+
+    def test_a_used_sign_in_link_reloaded_by_a_signed_in_browser_opens_the_tunnel(self):
+        # A page stuck on an offline cache sends the link once, then reloads it
+        link = self.sign_in_link()
+        cookie = self.tunnel_cookie(self.follow_sign_in(link))
+        from lib.tunnelv2 import TUNNEL_SESSION_COOKIE_NAME
+        client = Client(HTTP_HOST=self.host)
+        client.cookies[TUNNEL_SESSION_COOKIE_NAME] = cookie
+        resp = client.get(link[len(f'http://{self.host}'):])
+        self.assertEqual((resp.status_code, resp['Location']), (302, '/'))
+        # A cookie of another tunnel does not count
+        other_printer = Printer.objects.create(user=self.user, name='q', auth_token='tunnel-domain-test-3')
+        from app.models import OctoPrintTunnel
+        other = OctoPrintTunnel.get_or_create_for_internal_use(other_printer)
+        client = Client(HTTP_HOST=f'{other.subdomain_code}.tun.example')
+        client.cookies[TUNNEL_SESSION_COOKIE_NAME] = cookie
+        self.assertEqual(client.get('/_tsd_/signin/?token=used').status_code, 401)
+
+    def forwarded_headers(self, agent_name, path):
+        from lib.tunnelv2 import TUNNEL_SESSION_COOKIE_NAME
+        from app.views import tunnelv2_views
+        self.printer.agent_name, self.printer.agent_version = agent_name, '2.7.2'
+        self.printer.save()
+        cookie = self.tunnel_cookie(self.follow_sign_in(self.sign_in_link()))
+        client = Client(HTTP_HOST=self.host)
+        client.cookies[TUNNEL_SESSION_COOKIE_NAME] = cookie
+        reply = {'response': {'status': 200, 'headers': {}, 'content': b'{}'}}
+        with patch.object(tunnelv2_views.channels, 'num_ws_connections', return_value=1), \
+                patch.object(tunnelv2_views.channels, 'send_msg_to_printer') as to_printer, \
+                patch.object(tunnelv2_views.cache, 'octoprinttunnel_http_response_get', return_value=reply):
+            client.get(path, HTTP_IF_NONE_MATCH='"abc"', HTTP_IF_MODIFIED_SINCE='Thu, 01 Jan 2026 00:00:00 GMT')
+        return to_printer.call_args[0][1]['http.tunnelv2']['headers']
+
+    def test_klipper_printers_are_asked_for_the_whole_config_json(self):
+        # Obico for Klipper answers 502 to an empty "not modified" config.json; Fluidd goes blank
+        headers = self.forwarded_headers('moonraker_obico', '/config.json')
+        self.assertNotIn('If-None-Match', headers)
+        self.assertNotIn('If-Modified-Since', headers)
+        for agent, path in (('moonraker_obico', '/index.html'), ('octoprint_obico', '/config.json')):
+            self.assertEqual(self.forwarded_headers(agent, path)['If-None-Match'], '"abc"', (agent, path))
+
+    def test_other_scripts_on_the_tunnel_domain_still_need_the_sign_in(self):
+        self.assertEqual(Client(HTTP_HOST=self.host).get('/sw.js').status_code, 401)
+
+    def test_offline_caches_elsewhere_are_left_alone(self):
+        # An old address, or a server without a tunnel domain (as self-hosted servers run)
+        self.assertEqual(Client(HTTP_HOST=self.old_host).get('/sw.js', HTTP_SERVICE_WORKER='script').status_code, 401)
+        with override_settings(TUNNEL_DOMAIN=''):
+            self.assertEqual(Client(HTTP_HOST=self.old_host).get('/sw.js', HTTP_SERVICE_WORKER='script').status_code, 401)
+
     def test_the_tunnel_cookie_is_not_sent_to_the_printer(self):
         from app.views.tunnelv2_views import DJANGO_COOKIE_RE
         self.assertTrue(DJANGO_COOKIE_RE.match('tsd_tunnel_session=x'))
@@ -844,11 +903,19 @@ class SendTestEmailAdminActionTestCase(TestCase):
         self.assertEqual(sorted(m.level for m in response.context['messages']), [messages.SUCCESS, messages.ERROR])
 
 
-class SiteSyndicateMigrationTestCase(TestCase):
+class SiteSyndicateMigrationTestCase(TransactionTestCase):
     """Migration 0086, from the many-to-many link to one syndicate per site.
-    PostgreSQL rolls the schema back with the test's transaction."""
+    Outside a transaction, because SQLite, the self-hosted default, cannot
+    change its schema inside one. serialized_rollback puts back the rows the
+    migrations created, and tearDown the latest schema, for the tests after it."""
     before = [('app', '0085_printerprediction_normalized_p')]
     after = [('app', '0086_sitesyndicate')]
+    serialized_rollback = True
+
+    def tearDown(self):
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())
+        super().tearDown()
 
     def test_each_site_keeps_its_first_syndicate_and_an_unlinked_one_gets_the_first(self):
         executor = MigrationExecutor(connection)
@@ -865,10 +932,6 @@ class SiteSyndicateMigrationTestCase(TestCase):
         other.sites.add(theirs)
         unlinked = Site.objects.create(domain='unlinked.example.com', name='unlinked')
 
-        # The rows' foreign key checks are deferred to the end of the
-        # transaction, and a table with checks pending cannot be dropped.
-        with connection.cursor() as cursor:
-            cursor.execute('SET CONSTRAINTS ALL IMMEDIATE')
         executor = MigrationExecutor(connection)
         executor.migrate(self.after)
         apps = executor.loader.project_state(self.after).apps

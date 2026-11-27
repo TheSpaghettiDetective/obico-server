@@ -25,8 +25,9 @@ def fake_getaddrinfo(host, port=None, *args, **kwargs):
     if host in ('redis', 'db'):  # the test's own services, where they run under those names
         return REAL_GETADDRINFO(host, port, *args, **kwargs)
     try:
-        socket.inet_pton(socket.AF_INET, host)
-        addr = host
+        # Like the real resolver, read every form of an IPv4 address, including a bare number
+        # ('2130706433' is 127.0.0.1) and short forms ('127.1').
+        addr = socket.inet_ntoa(socket.inet_aton(host))
     except OSError:
         if host not in DNS:
             raise socket.gaierror(socket.EAI_NONAME, 'Name or service not known')
@@ -134,6 +135,24 @@ class NotificationAddressTestCase(TestCase):
             response = self.create('apprise', {'apprise_url': url})
             self.assertEqual(response.status_code, 201, (url, response.content))
             NotificationSetting.objects.filter(name='apprise').delete()
+
+    # Telegram's bot id and Discord's webhook id stand where a host would be, and can be a number
+    # that also reads as an address: 4012345678 is 239.39.137.78, 170000000 is 10.33.254.128.
+    # Apprise sends these to Telegram and Discord, never to that address.
+    def test_apprise_accepts_service_ids_that_read_as_internal_addresses(self, *_):
+        for url in ('tgram://4012345678:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsawX/12345',
+                    'tgram://170000000:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsawX/12345',
+                    'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js'):
+            response = self.create('apprise', {'apprise_url': url})
+            self.assertEqual(response.status_code, 201, (url, response.content))
+            NotificationSetting.objects.filter(name='apprise').delete()
+
+    def test_internal_addresses_written_as_numbers_are_refused(self, *_):
+        for url in ('json://2130706433/hook', 'json://167772161/', 'json://127.1/', 'ntfy://2130706433/topic'):
+            self.assertEqual(self.create('apprise', {'apprise_url': url}).status_code, 400, url)
+        for url in ('http://2130706433/hook', 'http://127.1/', 'http://0x7f000001/'):
+            self.assertEqual(self.create('webhook', {'custom_webhook_URL': url}).status_code, 400, url)
+        self.assertFalse(NotificationSetting.objects.filter(name__in=('apprise', 'webhook')).exists())
 
     @patch('apprise.Apprise.notify')
     def test_apprise_checks_the_address_again_when_sending(self, notify, *_):

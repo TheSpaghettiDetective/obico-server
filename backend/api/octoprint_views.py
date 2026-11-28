@@ -410,7 +410,8 @@ class PrinterEventView(CreateAPIView):
             event_text=request.data.get('event_text').replace('\x00', ''), # For unknown reason some events contains null bytes
             info_url=request.data.get('info_url'),
             image_url=rotated_jpg_url,
-            task_handler=request.data.get('notify', '').lower() in ['t', 'true'],
+            # The plugins send notify as form data, 't' or 'f'; a script may send JSON true or false.
+            task_handler=str(request.data.get('notify', '')).lower() in ['t', 'true'],
         )
         return Response({'result': 'ok'})
 

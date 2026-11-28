@@ -1121,3 +1121,35 @@ class PrinterDiscoverySecretTestCase(TestCase):
         self.assertEqual(self.link(self.SECRET).status_code, 200)
         messages = self.poll().json()['messages']
         self.assertEqual([m['data'] for m in messages], [{'code': '424242', 'secret': self.SECRET}])
+
+
+class PrinterEventPostTestCase(TestCase):
+    """The plugins post an event as form data with notify as 't' or 'f'. A
+    script may post JSON instead, with notify as true or false."""
+
+    def setUp(self):
+        user = User.objects.create(email='printer-event@example.invalid', syndicate=setup_syndicate())
+        self.printer = Printer.objects.create(user=user, name='p', auth_token='printer-event-test-token')
+
+    def post(self, notify, as_json):
+        data = {'event_type': 'WARNING', 'event_class': 'WARNING', 'event_title': 'Test', 'event_text': 'x'}
+        if notify is not None:
+            data['notify'] = notify
+        kwargs = {'content_type': 'application/json'} if as_json else {}
+        with patch('app.models.other_models.celery_app.send_task') as send_task:
+            resp = Client().post('/api/v1/octo/printer_events/', data,
+                                 HTTP_AUTHORIZATION=f'Token {self.printer.auth_token}', **kwargs)
+        self.assertEqual(resp.status_code, 200, (notify, as_json))
+        return send_task.called
+
+    def test_notify_as_form_data(self):
+        self.assertTrue(self.post('t', as_json=False))
+        self.assertTrue(self.post('true', as_json=False))
+        self.assertFalse(self.post('f', as_json=False))
+        self.assertFalse(self.post(None, as_json=False))
+
+    def test_notify_as_json(self):
+        self.assertTrue(self.post(True, as_json=True))
+        self.assertTrue(self.post('true', as_json=True))
+        self.assertFalse(self.post(False, as_json=True))
+        self.assertFalse(self.post(None, as_json=True))
